@@ -1,10 +1,14 @@
 import React, { createContext, useReducer, Dispatch } from "react";
-import { accountsReducer, initialAccounts, AccountsState } from "./accounts";
-import { serversReducer, initialServers, ServersState } from "./servers";
+import {
+  accountsReducer,
+  initialAccountsState,
+  AccountsState,
+} from "./accounts";
+import { serversReducer, initialServersState, ServersState } from "./servers";
 
 export interface Action {
   type: string;
-  payload?: {};
+  payload?: any;
 }
 
 interface State {
@@ -13,15 +17,18 @@ interface State {
 }
 
 const initialState = {
-  accounts: initialAccounts,
-  servers: initialServers,
+  accounts: initialAccountsState,
+  servers: initialServersState,
 };
 
 const rootReducer = (state: State, action: Action) => {
-  return {
+  console.log(action);
+  const newState = {
     accounts: accountsReducer(state.accounts, action),
     servers: serversReducer(state.servers, action),
   };
+  console.log(newState);
+  return newState;
 };
 
 export const StoreContext = createContext<{

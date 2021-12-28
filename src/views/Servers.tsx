@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { StoreContext } from "../store";
 
 function ServersView() {
-  const { state } = useContext(StoreContext);
+  const { dispatch, state } = useContext(StoreContext);
   return (
     <pre>
       [SERVERS]
@@ -13,8 +13,15 @@ function ServersView() {
         </li>
       </ul>
       <ul>
-        {state.servers.map((server, index) => (
-          <li key={index}>{server.name}</li>
+        {Array.from(state.servers.servers, ([id, server]) => (
+          <li key={id}>
+            {state.servers.activeIds.has(id) ? "✓ " : "  "}
+            <span
+              onClick={() => dispatch({ type: "SERVERS.TOGGLE", payload: id })}
+            >
+              {server.name}
+            </span>
+          </li>
         ))}
       </ul>
       <ul>

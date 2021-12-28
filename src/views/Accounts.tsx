@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { StoreContext } from "../store";
 
 function AccountsView() {
-  const { state } = useContext(StoreContext);
+  const { dispatch, state } = useContext(StoreContext);
   return (
     <pre>
       [ACCOUNTS]
@@ -13,8 +13,15 @@ function AccountsView() {
         </li>
       </ul>
       <ul>
-        {state.accounts.map((account, index) => (
-          <li key={index}>{account.name}</li>
+        {Array.from(state.accounts.accounts, ([id, account]) => (
+          <li key={id}>
+            {state.accounts.activeIds.has(id) ? "✓ " : "  "}
+            <span
+              onClick={() => dispatch({ type: "ACCOUNTS.TOGGLE", payload: id })}
+            >
+              {account.name}
+            </span>
+          </li>
         ))}
       </ul>
       <ul>
