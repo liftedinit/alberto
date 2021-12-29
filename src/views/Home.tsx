@@ -1,39 +1,38 @@
-// import { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-// import omni from "omni";
-// import { StoreContext } from "../store";
+import omni from "omni";
+import { StoreContext } from "../store";
 
 function HomeView() {
-  // const { state } = useContext(StoreContext);
-  // useEffect(() => {
-  //   const fetchLedgerInfo = async () => {
-  //     const activeServer = state.servers.servers.get(
-  //       state.servers.activeIds.values().next().value
-  //     );
-  //     const activeAccount = state.accounts.accounts.get(
-  //       state.accounts.activeIds.values().next().value
-  //     );
-  //     if (activeServer && activeAccount) {
-  //       try {
-  //         const [symbols] = await omni.server.send(activeServer.url, {
-  //           method: "ledger.info",
-  //         });
-  //         const balance = await omni.server.send(
-  //           activeServer.url,
-  //           {
-  //             method: "ledger.balance",
-  //             data: `[null, "${symbols[0]}"]`,
-  //           },
-  //           activeAccount.identity
-  //         );
-  //         console.log(balance);
-  //       } catch (e) {
-  //         throw new Error((e as Error).message);
-  //       }
-  //     }
-  //   };
-  //   fetchLedgerInfo();
-  // }, []);
+  const { dispatch, state } = useContext(StoreContext);
+  useEffect(() => {
+    state.servers.activeIds.forEach((serverId) => {
+      state.accounts.activeIds.forEach(async (accountId) => {
+        const { url } = state.servers.byId.get(serverId)!;
+        const { identity } = state.accounts.byId.get(accountId)!;
+
+        try {
+          const server = omni.server.connect(url);
+
+          const [symbols] = await server.ledger_info();
+          dispatch({ type: "BALANCES.SYMBOLS", payload: symbols });
+
+          const balances = await server.ledger_balance(symbols, identity);
+          dispatch({
+            type: "BALANCES.UPDATE",
+            payload: { serverId, balances: balances[0] },
+          });
+        } catch (e) {
+          throw new Error((e as Error).message);
+        }
+      });
+    });
+  }, [
+    state.accounts.activeIds,
+    state.accounts.byId,
+    state.servers.activeIds,
+    state.servers.byId,
+  ]);
   return (
     <pre>
       [HOME]
@@ -50,7 +49,14 @@ function HomeView() {
       </ul>
       <details>
         <summary>Symbols</summary>
-        [SYMBOLS]
+        <ul>
+          {Array.from(state.balances.symbols, (symbol) => (
+            <li key={symbol}>
+              {symbol}...
+              {state.balances.bySymbol.get(symbol)?.toString()}
+            </li>
+          ))}
+        </ul>
       </details>
       <details>
         <summary>Transactions</summary>

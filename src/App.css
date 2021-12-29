@@ -1,5 +1,5 @@
 .App {
-  margin: 25vh auto;
+  margin: 0 auto;
   max-width: 400px;
 }
 
@@ -36,4 +36,12 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+details {
+  margin: 1em 0;
+}
+
+summary {
+  margin: 1em 0;
 }

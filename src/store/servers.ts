@@ -1,20 +1,22 @@
 import { Action } from "../store";
 
+export type ServerId = number;
+
 export interface Server {
   name: string;
   url: string;
 }
 
 export interface ServersState {
-  activeIds: Set<number>;
-  nextId: number;
-  servers: Map<number, Server>;
+  activeIds: Set<ServerId>;
+  byId: Map<ServerId, Server>;
+  nextId: ServerId;
 }
 
 export const initialServersState = {
   activeIds: new Set([0]),
+  byId: new Map([[0, { name: "Localhost", url: "http://localhost:8000/" }]]),
   nextId: 1,
-  servers: new Map([[0, { name: "Localhost", url: "http://localhost:8000/" }]]),
 };
 
 export const serversReducer = (
@@ -24,11 +26,14 @@ export const serversReducer = (
   switch (type) {
     case "SERVERS.CREATE": {
       const id = state.nextId;
-      const servers = new Map(state.servers);
-      servers.set(id, payload as Server);
+
+      const byId = new Map(state.byId);
+      byId.set(id, payload as Server);
+
       const activeIds = new Set(state.activeIds);
       activeIds.add(id);
-      return { ...state, servers, activeIds, nextId: id + 1 };
+
+      return { ...state, byId, activeIds, nextId: id + 1 };
     }
     case "SERVERS.TOGGLE": {
       const activeIds = new Set(state.activeIds);

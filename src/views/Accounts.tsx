@@ -13,7 +13,7 @@ function AccountsView() {
         </li>
       </ul>
       <ul>
-        {Array.from(state.accounts.accounts, ([id, account]) => (
+        {Array.from(state.accounts.byId, ([id, account]) => (
           <li key={id}>
             {state.accounts.activeIds.has(id) ? "✓ " : "  "}
             <span

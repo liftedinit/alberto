@@ -13,7 +13,7 @@ function ServersView() {
         </li>
       </ul>
       <ul>
-        {Array.from(state.servers.servers, ([id, server]) => (
+        {Array.from(state.servers.byId, ([id, server]) => (
           <li key={id}>
             {state.servers.activeIds.has(id) ? "✓ " : "  "}
             <span

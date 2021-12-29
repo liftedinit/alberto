@@ -5,6 +5,11 @@ import {
   AccountsState,
 } from "./accounts";
 import { serversReducer, initialServersState, ServersState } from "./servers";
+import {
+  balancesReducer,
+  initialBalancesState,
+  BalancesState,
+} from "./balances";
 
 export interface Action {
   type: string;
@@ -13,21 +18,24 @@ export interface Action {
 
 interface State {
   accounts: AccountsState;
+  balances: BalancesState;
   servers: ServersState;
 }
 
 const initialState = {
   accounts: initialAccountsState,
+  balances: initialBalancesState,
   servers: initialServersState,
 };
 
 const rootReducer = (state: State, action: Action) => {
-  console.log(action);
+  console.log("[ACTION]", action);
   const newState = {
     accounts: accountsReducer(state.accounts, action),
+    balances: balancesReducer(state.balances, action),
     servers: serversReducer(state.servers, action),
   };
-  console.log(newState);
+  console.log("[STATE]", newState);
   return newState;
 };
 
