@@ -15,7 +15,7 @@ export interface ServersState {
 
 export const initialServersState = {
   activeIds: new Set([0]),
-  byId: new Map([[0, { name: "Localhost", url: "http://localhost:8000/" }]]),
+  byId: new Map([[0, { name: "Localhost", url: "/api" }]]),
   nextId: 1,
 };
 

@@ -2,8 +2,19 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { StoreContext } from "../store";
 
+import omni from "omni";
+import { Identity } from "omni/dist/identity";
+
 function AccountsView() {
   const { dispatch, state } = useContext(StoreContext);
+  
+  const parseIdentity = (keys: Identity) => {
+    if (keys === null) {
+      return '<0x00>'
+    }
+    return `<0x01${omni.identity.toString(keys)}>`
+  }
+
   return (
     <pre>
       [ACCOUNTS]
@@ -19,7 +30,8 @@ function AccountsView() {
             <span
               onClick={() => dispatch({ type: "ACCOUNTS.TOGGLE", payload: id })}
             >
-              {account.name}
+              {account.name} 
+              {' '} { parseIdentity(account.identity) }
             </span>
           </li>
         ))}
