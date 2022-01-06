@@ -1,6 +1,5 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import "./App.css";
 import {
   AccountsView,
   AddAccountView,
@@ -15,6 +14,8 @@ import {
   SplashView,
 } from "./views";
 
+import styles from "./App.module.css";
+
 const SPLASH_DELAY = 1 * 1000;
 
 function App() {
@@ -23,10 +24,14 @@ function App() {
     setTimeout(() => setShowSplash(false), SPLASH_DELAY);
   }, []);
   if (showSplash) {
-    return <SplashView />;
+    return (
+      <div className={styles.App}>
+        <SplashView />
+      </div>
+    );
   }
   return (
-    <div className="App">
+    <div className={styles.App}>
       <Routes>
         <Route path="/" element={<HomeView />} />
         <Route path="accounts" element={<AccountsView />} />
