@@ -22,6 +22,9 @@ function ConfirmView() {
     // TODO here
     try {
       const data = createSendArugments(transaction);
+      console.log('============================')
+      console.log(data)
+      console.log('============================')
       await omni.server.send(transaction.server.url, {method: "ledger.send", data})      
       dispatch({type: "TRANSACTION.SENT"});
       navigate("/send");
@@ -47,7 +50,7 @@ function ConfirmView() {
       </p>
       <p>      
         <label>Amount:</label> 
-        <input disabled type="number" name="amount" defaultValue={transaction.amount}/>
+        <input disabled type="number" name="amount" defaultValue={transaction.amount.toString()}/>
       </p>
       <p>      
         <label>Symbol:</label> 

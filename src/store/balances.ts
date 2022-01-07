@@ -3,7 +3,7 @@ import { ServerId } from "./servers";
 
 type SymbolId = string;
 
-type Amount = bigint;
+export type Amount = bigint;
 
 export type Balances = { [index: SymbolId]: Amount };
 

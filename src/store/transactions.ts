@@ -1,12 +1,12 @@
 import { Action } from ".";
 import { Account } from "../store/accounts";
 import { Server } from "../store/servers";
-
+import { Amount } from "../store/balances";
 export type TransactionId = number;
 
 export interface Transaction {
   server: Server;
-  amount: number;
+  amount: Amount;
   symbol: string;
   receiver: Account;
   from: Account;
@@ -22,7 +22,7 @@ export const initialTransactionState = {
       name: "Localhost",
       url: "/api"
     }, 
-    amount: 0, 
+    amount: BigInt(0), 
     symbol: "", 
     receiver: {
       name: "",

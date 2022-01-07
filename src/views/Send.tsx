@@ -4,6 +4,7 @@ import { StoreContext } from "../store";
 import { Server } from "../store/servers";
 import { Account } from "../store/accounts";
 import { Transaction } from "../store/transactions";
+import { Amount } from "../store/balances";
 import { parseIdentity } from "../helper/common";
 
 function SendView() {
@@ -11,7 +12,7 @@ function SendView() {
   const { dispatch, state } = useContext(StoreContext)
   
   const [server, setServer] = useState<Server>({ name: "Localhost", url: "/api" });
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<string>("0");
   const [symbol, setSymbol] = useState<string>("FBT");
   const [receiver, setReceiver] = useState<Account>({ name: "", identity: null });
   const [from, setFrom] = useState<Account>({ name: "", identity: null });
@@ -23,7 +24,7 @@ function SendView() {
   }
 
   const handleAmount = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const amount: number = parseInt(event.target.value);
+    const amount: string = event.target.value;
     setAmount(amount);  
   }
 
@@ -44,11 +45,12 @@ function SendView() {
 }
 
   const handleNext = () => {
-    if (amount === 0) {
+    if (amount === "0") {
       alert('Please input amount!');
       return;
     }
-    const transaction: Transaction = { server, amount, symbol, receiver, from };
+    const transactionAmount: Amount = BigInt(amount);
+    const transaction: Transaction = { server, amount: transactionAmount, symbol, receiver, from };
 
     dispatch({ type: "TRANSACTION.CREATE", payload: transaction});
     navigate("/confirm");
