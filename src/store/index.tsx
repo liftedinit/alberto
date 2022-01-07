@@ -11,6 +11,8 @@ import {
   BalancesState,
 } from "./balances";
 
+import { transactionReducer, initialTransactionState, TransactionState} from "./transactions";
+
 export interface Action {
   type: string;
   payload?: any;
@@ -20,12 +22,14 @@ interface State {
   accounts: AccountsState;
   balances: BalancesState;
   servers: ServersState;
+  transactions: TransactionState;
 }
 
 const initialState = {
   accounts: initialAccountsState,
   balances: initialBalancesState,
   servers: initialServersState,
+  transactions: initialTransactionState,
 };
 
 const rootReducer = (state: State, action: Action) => {
@@ -34,6 +38,7 @@ const rootReducer = (state: State, action: Action) => {
     accounts: accountsReducer(state.accounts, action),
     balances: balancesReducer(state.balances, action),
     servers: serversReducer(state.servers, action),
+    transactions: transactionReducer(state.transactions, action),
   };
   console.log("[STATE]", newState);
   return newState;

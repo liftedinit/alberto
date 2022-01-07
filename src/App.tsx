@@ -13,6 +13,7 @@ import {
   SendView,
   ServersView,
   SplashView,
+  NewReceiverView,
 } from "./views";
 
 const SPLASH_DELAY = 1 * 1000;
@@ -38,6 +39,7 @@ function App() {
         <Route path="servers/add" element={<AddServerView />} />
         <Route path="send" element={<SendView />} />
         <Route path="confirm" element={<ConfirmView />} />
+        <Route path="receiver/add/new" element={<NewReceiverView />} />
       </Routes>
     </div>
   );

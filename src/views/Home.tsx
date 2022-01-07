@@ -11,10 +11,10 @@ function HomeView() {
         const { url } = state.servers.byId.get(serverId)!;
         const { identity } = state.accounts.byId.get(accountId)!;
 
-        try {
-          const server = omni.server.connect(url);
-
-          const [symbols] = await server.ledger_info();
+        try {          
+          const server = omni.server.connect(url);          
+          const ledgerInfo = await server.ledger_info();                    
+          const symbols = ledgerInfo[0];
           dispatch({ type: "BALANCES.SYMBOLS", payload: symbols });
 
           const balances = await server.ledger_balance(symbols, identity);
