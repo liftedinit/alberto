@@ -1,0 +1,41 @@
+.Splash {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  text-align: center;
+  padding: 0;
+  background: radial-gradient(
+      circle at center,
+      var(--primary-dark),
+      transparent
+    ),
+    var(--black);
+}
+
+.Splash img {
+  height: 10rem;
+  width: 10rem;
+  position: absolute;
+  top: calc(50vh - 12rem);
+  left: calc(50vw - 5rem);
+}
+
+.Splash h1 {
+  position: absolute;
+  top: calc(50vh - 5rem);
+  width: 100vw;
+  text-align: center;
+  font-size: 4rem;
+  color: white;
+}
+
+.Splash h2 {
+  position: absolute;
+  bottom: 2rem;
+  width: 100vw;
+  font-size: 2rem;
+  text-align: center;
+  font-weight: 300;
+  color: var(--primary-dark);
+}
