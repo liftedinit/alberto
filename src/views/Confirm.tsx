@@ -21,11 +21,8 @@ function ConfirmView() {
   const handleConfirm = async () => {
     // TODO here
     try {
-      const data = createSendArugments(transaction);
-      console.log('============================')
-      console.log(data)
-      console.log('============================')
-      await omni.server.send(transaction.server.url, {method: "ledger.send", data})      
+      const data = createSendArugments(transaction);      
+      await omni.server.send(transaction.server.url, {method: "ledger.send", data}, transaction.from.identity)      
       dispatch({type: "TRANSACTION.SENT"});
       navigate("/send");
     } catch (e) {

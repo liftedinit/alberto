@@ -48,7 +48,10 @@ export const balancesReducer = (
     }
     case "BALANCES.SYMBOLS": {
       const symbols = new Set(state.symbols);
-      payload.forEach((symbol: SymbolId) => symbols.add(symbol));
+      console.log(symbols)
+      payload.forEach((symbol: SymbolId) => {                 
+          symbols.add(symbol)
+      });
       return { ...state, symbols };
     }
     default:
