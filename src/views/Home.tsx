@@ -2,6 +2,7 @@ import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import omni from "omni";
 import { StoreContext } from "../store";
+import Header from "../components/Header";
 
 function HomeView() {
   const { dispatch, state } = useContext(StoreContext);
@@ -28,41 +29,45 @@ function HomeView() {
       });
     });
   }, [
+    dispatch,
     state.accounts.activeIds,
     state.accounts.byId,
     state.servers.activeIds,
     state.servers.byId,
   ]);
   return (
-    <pre>
-      [HOME]
-      <ul>
-        <li>
-          <Link to="/accounts">Accounts</Link>
-        </li>
-        <li>
-          <Link to="/servers">Servers</Link>
-        </li>
-        <li>
-          <Link to="/send">Send</Link>
-        </li>
-      </ul>
-      <details>
-        <summary>Symbols</summary>
+    <>
+      <Header />
+      <pre>
+        [HOME]
         <ul>
-          {Array.from(state.balances.symbols, (symbol) => (
-            <li key={symbol}>
-              {symbol}...
-              {state.balances.bySymbol.get(symbol)?.toString()}
-            </li>
-          ))}
+          <li>
+            <Link to="/accounts">Accounts</Link>
+          </li>
+          <li>
+            <Link to="/servers">Servers</Link>
+          </li>
+          <li>
+            <Link to="/send">Send</Link>
+          </li>
         </ul>
-      </details>
-      <details>
-        <summary>Transactions</summary>
-        [TRANSACTIONS]
-      </details>
-    </pre>
+        <details>
+          <summary>Symbols</summary>
+          <ul>
+            {Array.from(state.balances.symbols, (symbol) => (
+              <li key={symbol}>
+                {symbol}...
+                {state.balances.bySymbol.get(symbol)?.toString()}
+              </li>
+            ))}
+          </ul>
+        </details>
+        <details>
+          <summary>Transactions</summary>
+          [TRANSACTIONS]
+        </details>
+      </pre>
+    </>
   );
 }
 export default HomeView;

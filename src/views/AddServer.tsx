@@ -4,6 +4,10 @@ import omni from "omni";
 import { StoreContext } from "../store";
 import { Server } from "../store/servers";
 
+import Header from "../components/Header";
+import Input from "../components/Input";
+import Button from "../components/Button";
+
 function AddServerView() {
   const navigate = useNavigate();
   const { dispatch } = useContext(StoreContext);
@@ -23,23 +27,21 @@ function AddServerView() {
   };
 
   return (
-    <pre>
-      [ADD SERVER]
-      <p>
-        Name: <input name="name" onChange={handleChange} />
-      </p>
-      <p>
-        URL: <input name="url" type="url" onChange={handleChange} />
-      </p>
-      <ul>
-        <li>
+    <div className="Page">
+      <Header>
+        <Header.Right>
           <Link to="/servers">Back</Link>
-        </li>
-      </ul>
-      <button disabled={!server.name || !server.url} onClick={handleSave}>
-        Save
-      </button>
-    </pre>
+        </Header.Right>
+      </Header>
+      <Input label="Name" name="name" onChange={handleChange} />
+      <Input label="URL" name="url" type="url" onChange={handleChange} />
+
+      <Button.Footer
+        disabled={!server.name || !server.url}
+        label="Save"
+        onClick={handleSave}
+      />
+    </div>
   );
 }
 export default AddServerView;
