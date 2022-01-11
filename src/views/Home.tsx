@@ -2,6 +2,7 @@ import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import omni from "omni";
 import { StoreContext } from "../store";
+import { getAddressFromHex } from "../helper/common";
 
 function HomeView() {
   const { dispatch, state } = useContext(StoreContext);
@@ -9,19 +10,15 @@ function HomeView() {
     state.servers.activeIds.forEach((serverId) => {
       state.accounts.activeIds.forEach(async (accountId) => {
         const { url } = state.servers.byId.get(serverId)!;
-        
-        const { identity } = state.accounts.byId.get(accountId)!;
+        const { keys } = state.accounts.byId.get(accountId)!;
 
         try {          
           const server = omni.server.connect(url);
 
-          const accountInfo = await omni.server.send(url, {method: "account.info", data: {}});
-          
-          let symbols: string[] = [accountInfo[0]];          
-          if (state.balances.symbols.size === 0)
-            dispatch({ type: "BALANCES.SYMBOLS", payload: symbols });
+          const symbols = await server.accountInfo(keys!);
+          dispatch({ type: "BALANCES.SYMBOLS", payload: symbols[0] });
 
-          const balances = await server.ledger_balance(symbols, identity);
+          const balances = await server.accountBalance(symbols, keys!);
           dispatch({
             type: "BALANCES.UPDATE",
             payload: { serverId, balances: balances[0] },
@@ -74,8 +71,8 @@ function HomeView() {
         <ul>
         {Array.from(state.transactions.byTransactionId, ([id, transaction]) => (
             <li key={`transaction-detail-${id}`}>
-              From:  {transaction.from}<br />
-              To: {transaction.to}<br />
+              From:  {getAddressFromHex(transaction.from)}<br />
+              To: {getAddressFromHex(transaction.to)}<br />
               Amount: {transaction.amount.toString()} {transaction.symbol}
             </li>            
           ))}

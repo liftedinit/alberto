@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { StoreContext } from "../store";
  
@@ -22,7 +22,7 @@ function AccountsView() {
               onClick={() => dispatch({ type: "ACCOUNTS.TOGGLE", payload: id })}
             >
               {account.name} 
-              {' '} { parseIdentity(account.identity) }
+              {' '} {parseIdentity(account.keys?.publicKey)}
             </span>
           </li>
         ))}

@@ -15,14 +15,13 @@ function ConfirmView() {
 
   useEffect(() => {
     const account: Account = transaction.receiver || { name: "", identity: null }
-    setAccount(`${account.name} ${parseIdentity(account.identity)}`)
+    setAccount(`${account.name} ${parseIdentity(account.keys?.publicKey)}`)
   },[]);
 
-  const handleConfirm = async () => {
-    // TODO here
+  const handleConfirm = async () => {    
     try {
       const data = createSendArugments(transaction);      
-      await omni.server.send(transaction.server.url, {method: "ledger.send", data}, transaction.from.identity)      
+      await omni.server.send(transaction.server.url, {method: "ledger.send", data});
       dispatch({type: "TRANSACTION.SENT"});
       navigate("/send");
     } catch (e) {
@@ -55,7 +54,7 @@ function ConfirmView() {
       </p>
       <p>
         <label>Receiver:</label> 
-        <input disabled type="text" name="receiver" defaultValue={account} maxLength={512} style={{width: "120%"}}/>
+        <input disabled type="text" name="receiver" defaultValue={account} maxLength={512} style={{width: "70%"}}/>
       </p>
       <p>
         <button type="button" onClick={handleConfirm}>Confirm</button>

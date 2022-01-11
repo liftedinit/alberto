@@ -7,14 +7,14 @@ import { Account } from "../store/accounts";
 function NewAccountView() {
   const navigate = useNavigate();
   const { dispatch } = useContext(StoreContext);
-  const [account, setAccount] = useState<Account>({ name: "", identity: null });
+  const [account, setAccount] = useState<Account>({ name: "" });
   const [seedWords, setSeedWords] = useState("");
 
   useEffect(() => {
-    const mnemonic = omni.identity.getSeedWords();
-    const identity = omni.identity.fromSeedWords(mnemonic);
+    const mnemonic = omni.keys.getSeedWords();
+    const keys = omni.keys.fromSeedWords(mnemonic);
     setSeedWords(mnemonic);
-    setAccount((account) => ({ ...account, identity }));
+    setAccount((account) => ({ ...account, keys }));
   }, []);
 
   const handleName = (event: React.ChangeEvent<HTMLInputElement>) => {

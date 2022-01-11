@@ -1,7 +1,8 @@
 import { Action } from ".";
-import { Account, Identity } from "../store/accounts";
+import { Account } from "../store/accounts";
 import { Server } from "../store/servers";
 import { Amount } from "../store/balances";
+import { Receiver } from "../store/receivers";
 import { Uint8Array2Hex } from "../helper/convert";
 
 export type TransactionId = number;
@@ -10,14 +11,14 @@ export interface Transaction {
   server: Server;
   amount: Amount;
   symbol: string;
-  receiver: Account;
-  from: Account;
+  receiver: Receiver;
+  from?: Account;
 };
 
 export interface TransactionDetails {
   amount: Amount;
   symbol: string;
-  from: string,
+  from?: string,
   to: string,
   timestamp: Date;
 }
@@ -37,11 +38,12 @@ export const initialTransactionState = {
     symbol: "", 
     receiver: {
       name: "",
-      identity: null
+      publicKey: null,      
+      address: ""
     },
     from: {
       name: "",
-      identity: null
+      identity: null,      
     }
   },
   byTransactionId: new Map<TransactionId, TransactionDetails>(),

@@ -4,7 +4,7 @@ export type AccountId = number;
 export type Identity = { publicKey: Uint8Array; privateKey: Uint8Array } | null;
 
 export interface Account {
-  identity: { publicKey: Uint8Array; privateKey: Uint8Array } | null;
+  keys?: { publicKey: Uint8Array; privateKey: Uint8Array };
   name: string;
 }
 
@@ -16,9 +16,9 @@ export interface AccountsState {
 
 export const initialAccountsState = {
   activeIds: new Set([0]),
-  byId: new Map([[0, { name: "Anonymous", identity: null }]]),
+  byId: new Map([[0, { name: "Anonymous" }]]),
   nextId: 1,
-};
+}
 
 export const accountsReducer = (
   state: AccountsState,

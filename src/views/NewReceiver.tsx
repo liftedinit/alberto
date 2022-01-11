@@ -1,7 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import omni from "omni";
+import { Identity } from "omni/dist/identity";
+import { StoreContext } from "../store";
+import { Receiver } from "../store/receivers";
 
 const NewReceiverView = () => {
+  const navigate = useNavigate();
+  const { dispatch } = useContext(StoreContext);
   const [name, setName] = useState<string>("");
   const [address, setAddress] = useState<string>("");
 
@@ -11,7 +17,7 @@ const NewReceiverView = () => {
   }
 
   const handleAddress = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const address = event.target.value;
+    const address = event.target.value;    
     setAddress(address);
   }
 
@@ -20,6 +26,10 @@ const NewReceiverView = () => {
       alert("Please input name and address");
       return;
     }
+    const publicKey: Identity = omni.identity.fromString(address);
+    const newReceiver: Receiver = { name, publicKey, address };
+    dispatch({ type: "RECEIVER.CREATE", payload: newReceiver} );
+    navigate("/send");
 
   }
 
