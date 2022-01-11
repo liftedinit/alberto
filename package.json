@@ -9,7 +9,7 @@
     "@types/jest": "^26.0.24",
     "@types/node": "^12.20.37",
     "@types/react": "^17.0.37",
-    "@types/react-dom": "^17.0.11",
+    "@types/react-dom": "^17.0.11",    
     "eslint-config-react-app": "^7.0.0",
     "omni": "github:l-1-labs/omni-js",
     "react": "^17.0.2",
@@ -43,5 +43,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "proxy": "http://localhost:8000"
 }

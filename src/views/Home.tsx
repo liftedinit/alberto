@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import omni from "omni";
 import { StoreContext } from "../store";
-import Header from "../components/Header";
+import { getAddressFromHex } from "../helper/common";
 
 function HomeView() {
   const { dispatch, state } = useContext(StoreContext);
@@ -12,7 +12,7 @@ function HomeView() {
         const { url } = state.servers.byId.get(serverId)!;
         const { keys } = state.accounts.byId.get(accountId)!;
 
-        try {
+        try {          
           const server = omni.server.connect(url);
 
           const symbols = await server.accountInfo(keys!);
@@ -23,6 +23,14 @@ function HomeView() {
             type: "BALANCES.UPDATE",
             payload: { serverId, balances: balances[0] },
           });
+
+          // Get Transactions
+          const transactions = await omni.server.send(url, {method: "ledger.list", data: {}});
+          
+          dispatch({
+            type: "TRANSACTION.LIST",
+            payload: transactions
+          });          
         } catch (e) {
           throw new Error((e as Error).message);
         }
@@ -33,41 +41,45 @@ function HomeView() {
     state.accounts.activeIds,
     state.accounts.byId,
     state.servers.activeIds,
-    state.servers.byId,
+    state.servers.byId    
   ]);
   return (
-    <>
-      <Header />
-      <pre>
-        [HOME]
+    <pre>
+      [HOME]
+      <ul>
+        <li>
+          <Link to="/accounts">Accounts</Link>
+        </li>
+        <li>
+          <Link to="/servers">Servers</Link>
+        </li>
+        <li>
+          <Link to="/send">Send</Link>       
+        </li>
+      </ul>
+      <details>
+        <summary>Symbols</summary>
         <ul>
-          <li>
-            <Link to="/accounts">Accounts</Link>
-          </li>
-          <li>
-            <Link to="/servers">Servers</Link>
-          </li>
-          <li>
-            <Link to="/send">Send</Link>
-          </li>
+          {Array.from(state.balances.symbols, (symbol) => (
+            <li key={`symbol-${symbol}`}>
+              {symbol}... 
+            </li>
+          ))}
         </ul>
-        <details>
-          <summary>Symbols</summary>
-          <ul>
-            {Array.from(state.balances.symbols, (symbol) => (
-              <li key={symbol}>
-                {symbol}...
-                {state.balances.bySymbol.get(symbol)?.toString()}
-              </li>
-            ))}
-          </ul>
-        </details>
-        <details>
-          <summary>Transactions</summary>
-          [TRANSACTIONS]
-        </details>
-      </pre>
-    </>
+      </details>
+      <details>
+        <summary>Transactions</summary>
+        <ul>
+        {Array.from(state.transactions.byTransactionId, ([id, transaction]) => (
+            <li key={`transaction-detail-${id}`}>
+              From:  {getAddressFromHex(transaction.from)}<br />
+              To: {getAddressFromHex(transaction.to)}<br />
+              Amount: {transaction.amount.toString()} {transaction.symbol}
+            </li>            
+          ))}
+        </ul>
+      </details>
+    </pre>
   );
 }
 export default HomeView;

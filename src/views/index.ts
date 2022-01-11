@@ -11,6 +11,7 @@ import NoAccountView from "./NoAccount";
 import SendView from "./Send";
 import ServersView from "./Servers";
 import SplashView from "./Splash";
+import NewReceiverView from "./NewReceiver";
 
 export {
   AccountsView,
@@ -26,4 +27,5 @@ export {
   SendView,
   ServersView,
   SplashView,
+  NewReceiverView,
 };

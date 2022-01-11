@@ -1,6 +1,8 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { StoreContext } from "../store";
+ 
+import { parseIdentity } from "../helper/common";
 
 function AccountsView() {
   const { dispatch, state } = useContext(StoreContext);
@@ -19,7 +21,8 @@ function AccountsView() {
             <span
               onClick={() => dispatch({ type: "ACCOUNTS.TOGGLE", payload: id })}
             >
-              {account.name}
+              {account.name} 
+              {' '} {parseIdentity(account.keys?.publicKey)}
             </span>
           </li>
         ))}

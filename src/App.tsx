@@ -12,6 +12,7 @@ import {
   SendView,
   ServersView,
   SplashView,
+  NewReceiverView,
 } from "./views";
 
 import "./App.css";
@@ -43,6 +44,7 @@ function App() {
         <Route path="servers/add" element={<AddServerView />} />
         <Route path="send" element={<SendView />} />
         <Route path="confirm" element={<ConfirmView />} />
+        <Route path="receiver/add/new" element={<NewReceiverView />} />
       </Routes>
     </div>
   );
