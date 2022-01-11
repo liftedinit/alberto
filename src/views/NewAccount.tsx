@@ -4,6 +4,10 @@ import omni from "omni";
 import { StoreContext } from "../store";
 import { Account } from "../store/accounts";
 
+import Header from "../components/Header";
+import Button from "../components/Button";
+import Input from "../components/Input";
+
 function NewAccountView() {
   const navigate = useNavigate();
   const { dispatch } = useContext(StoreContext);
@@ -17,9 +21,9 @@ function NewAccountView() {
     setAccount((account) => ({ ...account, keys }));
   }, []);
 
-  const handleName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const name = event.target.value;
-    setAccount({ ...account, name });
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setAccount({ ...account, [name]: value });
   };
 
   const handleSave = () => {
@@ -28,21 +32,23 @@ function NewAccountView() {
   };
 
   return (
-    <pre>
-      [NEW ACCOUNT]
-      <p>
-        Name: <input name="name" onChange={handleName} />
-      </p>
-      <p>{seedWords}</p>
-      <ul>
-        <li>
+    <div className="Page">
+      <Header>
+        <Header.Right>
           <Link to="/accounts/add">Back</Link>
-        </li>
-      </ul>
-      <button disabled={!account.name} onClick={handleSave}>
-        Save
-      </button>
-    </pre>
+        </Header.Right>
+      </Header>
+
+      <Input name="name" label="Name" onChange={handleChange} />
+      <label>Seed Words</label>
+      <p style={{ fontSize: "2rem", fontWeight: 300 }}>{seedWords}</p>
+
+      <Button.Footer
+        disabled={!account.name}
+        label="Save"
+        onClick={handleSave}
+      />
+    </div>
   );
 }
 export default NewAccountView;

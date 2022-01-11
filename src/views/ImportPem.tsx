@@ -4,14 +4,18 @@ import omni from "omni";
 import { StoreContext } from "../store";
 import { Account } from "../store/accounts";
 
+import Header from "../components/Header";
+import Button from "../components/Button";
+import Input from "../components/Input";
+
 function ImportPemView() {
   const navigate = useNavigate();
   const { dispatch } = useContext(StoreContext);
   const [account, setAccount] = useState<Account>({ name: "" });
 
-  const handleName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const name = event.target.value;
-    setAccount({ ...account, name });
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setAccount({ ...account, [name]: value });
   };
 
   const handlePem = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -30,23 +34,21 @@ function ImportPemView() {
   };
 
   return (
-    <pre>
-      [IMPORT PEM]
-      <p>
-        Name: <input name="name" onChange={handleName} />
-      </p>
-      <p>
-        PEM File: <textarea name="pem" onChange={handlePem} />
-      </p>
-      <ul>
-        <li>
+    <div className="Page">
+      <Header>
+        <Header.Right>
           <Link to="/accounts/add">Back</Link>
-        </li>
-      </ul>
-      <button disabled={!account.name || !account.keys} onClick={handleSave}>
-        Save
-      </button>
-    </pre>
+        </Header.Right>
+      </Header>
+      <Input name="name" label="Name" onChange={handleChange} />
+      <Input name="pem" label="PEM File" onChange={handlePem} type="textarea" />
+
+      <Button.Footer
+        disabled={!account.name || !account.keys}
+        onClick={handleSave}
+        label="Save"
+      />
+    </div>
   );
 }
 export default ImportPemView;

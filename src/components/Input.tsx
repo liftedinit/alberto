@@ -12,7 +12,11 @@ function Input({ label, name, onChange, type = "text" }: InputProps) {
   return (
     <div className="Input">
       <label>{label}</label>
-      <input name={name} type={type} onChange={onChange} />
+      {type === "textarea" ? (
+        <textarea name={name} onChange={onChange} />
+      ) : (
+        <input name={name} type={type} onChange={onChange} />
+      )}
     </div>
   );
 }

@@ -1,26 +1,21 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+import Header from "../components/Header";
+import Button from "../components/Button";
 
 function AddAccountView() {
+  const navigate = useNavigate();
   return (
-    <pre>
-      [ADD ACCOUNT]
-      <ul>
-        <li>
+    <div className="Page">
+      <Header>
+        <Header.Right>
           <Link to="/accounts">Back</Link>
-        </li>
-      </ul>
-      <ul>
-        <li>
-          <Link to="new">Create New Account</Link>
-        </li>
-        <li>
-          <Link to="seed">Import from Seed Words</Link>
-        </li>
-        <li>
-          <Link to="pem">Import from PEM File</Link>
-        </li>
-      </ul>
-    </pre>
+        </Header.Right>
+      </Header>
+      <Button label="Create New Account" onClick={() => navigate("new")} />
+      <Button label="Import Seed Words" onClick={() => navigate("seed")} />
+      <Button label="Import PEM File" onClick={() => navigate("pem")} />
+    </div>
   );
 }
 export default AddAccountView;
