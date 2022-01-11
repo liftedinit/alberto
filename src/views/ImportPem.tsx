@@ -7,7 +7,7 @@ import { Account } from "../store/accounts";
 function ImportPemView() {
   const navigate = useNavigate();
   const { dispatch } = useContext(StoreContext);
-  const [account, setAccount] = useState<Account>({ name: "", identity: null });
+  const [account, setAccount] = useState<Account>({ name: "" });
 
   const handleName = (event: React.ChangeEvent<HTMLInputElement>) => {
     const name = event.target.value;
@@ -17,10 +17,10 @@ function ImportPemView() {
   const handlePem = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const pem = event.target.value;
     try {
-      const identity = omni.identity.fromPem(pem);
-      setAccount({ ...account, identity });
+      const keys = omni.keys.fromPem(pem);
+      setAccount({ ...account, keys });
     } catch (e) {
-      setAccount({ ...account, identity: null });
+      setAccount({ ...account, keys: undefined });
     }
   };
 
@@ -43,10 +43,7 @@ function ImportPemView() {
           <Link to="/accounts/add">Back</Link>
         </li>
       </ul>
-      <button
-        disabled={!account.name || !account.identity}
-        onClick={handleSave}
-      >
+      <button disabled={!account.name || !account.keys} onClick={handleSave}>
         Save
       </button>
     </pre>
