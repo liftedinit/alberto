@@ -1,0 +1,17 @@
+.Input {
+  margin: 1rem 0;
+}
+
+.Input label {
+  display: block;
+  text-transform: uppercase;
+  color: var(--secondary);
+}
+
+.Input input {
+  box-sizing: border-box;
+  border: none;
+  background: white;
+  width: 100%;
+  padding: 0.5rem;
+}

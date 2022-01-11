@@ -37,6 +37,7 @@ function HomeView() {
       });
     });
   }, [
+    dispatch,
     state.accounts.activeIds,
     state.accounts.byId,
     state.servers.activeIds,
