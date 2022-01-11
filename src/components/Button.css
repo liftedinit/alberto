@@ -1,0 +1,6 @@
+.Button {
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: var(--white);
+  text-transform: uppercase;
+}

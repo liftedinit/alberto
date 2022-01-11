@@ -1,0 +1,55 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap");
+
+:root {
+  --black: #452e33;
+  --white: #faf0ea;
+
+  --primary: #f0cfbf;
+  --primary-dark: #ab7781;
+
+  --secondary: #dd9c80;
+  --secondary-dark: #654d43;
+
+  --highlight: #8ddfd4;
+  --highlight-dark: #6aa8a0;
+
+  --radius: 16px;
+
+  --sans-serif: Rubik, sans-serif;
+  --monospace: monospace;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  color: var(--black);
+  background: var(--white);
+  font: 16px var(--sans-serif);
+}
+
+.App {
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 3rem 1rem 0;
+  height: 100vh;
+  width: 100vw;
+}
+
+.App.no-header {
+  margin: 0;
+  padding: 0;
+}
+
+details {
+  margin: 1em 0;
+}
+
+summary {
+  margin: 1em 0;
+}
+
+a {
+  color: var(--highlight);
+  text-decoration: none;
+}

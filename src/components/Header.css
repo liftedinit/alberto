@@ -1,0 +1,24 @@
+.Header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 3rem;
+  background: var(--primary-dark);
+}
+
+.Header .Left {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+}
+
+.Header .Right {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.Header a {
+  display: block;
+}

@@ -1,0 +1,47 @@
+.SelectList {
+  position: relative;
+}
+
+.SelectListItem {
+  position: relative;
+  margin: 1rem 0;
+  padding: 0.5rem;
+  padding-left: 3rem;
+  border: 1px solid var(--highlight);
+  color: var(--highlight);
+  border-radius: var(--radius);
+}
+
+.SelectListItem.selected {
+  background: var(--highlight);
+  color: var(--black);
+}
+
+.SelectListItem:before {
+  content: "";
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  height: 2rem;
+  width: 2rem;
+  border: 1px solid var(--highlight);
+  border-radius: var(--radius);
+  color: var(--black);
+  line-height: 2rem;
+  text-align: center;
+}
+
+.SelectListItem.selected:before {
+  content: "✓";
+  background: var(--white);
+}
+
+.SelectListItem h3 {
+  margin: 0;
+  font: 1rem var(--sans-serif);
+}
+
+.SelectListItem h4 {
+  margin: 0;
+  font: 0.75rem var(--monospace);
+}
