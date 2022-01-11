@@ -4,7 +4,7 @@
   left: 0;
   width: 100vw;
   height: 3rem;
-  background: var(--primary-dark);
+  background: var(--highlight);
 }
 
 .Header .Left {
@@ -20,5 +20,7 @@
 }
 
 .Header a {
+  color: white;
   display: block;
+  text-transform: uppercase;
 }

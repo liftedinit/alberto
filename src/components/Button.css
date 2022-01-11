@@ -1,6 +1,22 @@
 .Button {
+  display: block;
   border-radius: var(--radius);
-  background: var(--primary);
+  background: var(--highlight);
   color: var(--white);
   text-transform: uppercase;
+  margin: 0 auto;
+  width: 50vw;
+  border: none;
+  line-height: 2rem;
+  font-size: 1rem;
+}
+
+.Button.Footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  border-radius: 0;
+  width: 100vw;
+  background: var(--highlight-dark);
+  height: 3rem;
 }

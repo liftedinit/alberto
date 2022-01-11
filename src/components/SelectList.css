@@ -6,34 +6,31 @@
   position: relative;
   margin: 1rem 0;
   padding: 0.5rem;
-  padding-left: 3rem;
-  border: 1px solid var(--highlight);
-  color: var(--highlight);
-  border-radius: var(--radius);
+  padding-right: 3rem;
+  border: 1px solid var(--primary);
+  color: var(--primary);
 }
 
 .SelectListItem.selected {
-  background: var(--highlight);
+  border-color: var(--highlight);
   color: var(--black);
 }
 
 .SelectListItem:before {
   content: "";
   position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
-  height: 2rem;
-  width: 2rem;
-  border: 1px solid var(--highlight);
-  border-radius: var(--radius);
-  color: var(--black);
-  line-height: 2rem;
-  text-align: center;
+  top: 1rem;
+  right: 1rem;
+  height: 1rem;
+  width: 1rem;
+  border-radius: 50%;
+  background: none;
+  border: 1px solid var(--primary);
 }
 
 .SelectListItem.selected:before {
-  content: "✓";
-  background: var(--white);
+  background: var(--highlight);
+  border-color: var(--highlight);
 }
 
 .SelectListItem h3 {

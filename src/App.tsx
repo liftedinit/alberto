@@ -14,7 +14,7 @@ import {
   SplashView,
 } from "./views";
 
-import styles from "./App.module.css";
+import "./App.css";
 
 const SPLASH_DELAY = 1 * 1000;
 
@@ -25,13 +25,13 @@ function App() {
   }, []);
   if (showSplash) {
     return (
-      <div className={styles.App}>
+      <div className="App no-header">
         <SplashView />
       </div>
     );
   }
   return (
-    <div className={styles.App}>
+    <div className="App">
       <Routes>
         <Route path="/" element={<HomeView />} />
         <Route path="accounts" element={<AccountsView />} />
