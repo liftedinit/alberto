@@ -18,7 +18,7 @@ export const initialAccountsState = {
   activeIds: new Set([0]),
   byId: new Map([[0, { name: "Anonymous" }]]),
   nextId: 1,
-}
+};
 
 export const accountsReducer = (
   state: AccountsState,

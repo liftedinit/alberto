@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import omni from "omni";
-import { Identity } from "omni/dist/identity";
 import { StoreContext } from "../store";
 import { Receiver } from "../store/receivers";
+import { Identity } from "omni/dist/identity";
 
 const NewReceiverView = () => {
   const navigate = useNavigate();
@@ -26,11 +26,10 @@ const NewReceiverView = () => {
       alert("Please input name and address");
       return;
     }
-    const publicKey: Identity = omni.identity.fromString(address);
-    const newReceiver: Receiver = { name, publicKey, address };
+    const identity: Identity = omni.identity.fromString(address);
+    const newReceiver: Receiver = { name, identity };
     dispatch({ type: "RECEIVER.CREATE", payload: newReceiver} );
     navigate("/send");
-
   }
 
   return (

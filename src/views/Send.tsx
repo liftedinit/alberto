@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+import omni from "omni";
 import { useNavigate, Link } from "react-router-dom";
 import { StoreContext } from "../store";
 import { Server } from "../store/servers";
@@ -15,9 +16,17 @@ function SendView() {
   const [server, setServer] = useState<Server>({ name: "Localhost", url: "/api" });
   const [amount, setAmount] = useState<string>("0");
   const [symbol, setSymbol] = useState<string>("FBT");
-  const [receiver, setReceiver] = useState<Receiver>();
+  const [receiver, setReceiver] = useState<Receiver>({name: ""});
   const [from, setFrom] = useState<Account>({name:""});
- 
+  
+  useEffect(() => {    
+    const receiver: Receiver = state.receivers.byId.get(state.receivers.nextId-1) || {name: ""};         
+    setReceiver(receiver);
+
+    const account: Account = state.accounts.byId.get(state.accounts.nextId-1) || {name: ""};      
+    setFrom(account);
+  }, [state.receivers.nextId, state.accounts.nextId]);
+
   const handleServer = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const id: number = parseInt(event.target.value);
     const server: Server = state.servers.byId.get(id) || {name: "", url: ""};      
@@ -36,7 +45,7 @@ function SendView() {
 
   const handleReceiver = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const id: number = parseInt(event.target.value);            
-    const receiver: Receiver = state.receivers.byId.get(id) || {name: "", address: ""};      
+    const receiver: Receiver = state.receivers.byId.get(id) || {name: ""};          
     setReceiver(receiver);
   }
   const handleFrom = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -51,16 +60,16 @@ function SendView() {
       return;
     }
     const transactionAmount: Amount = BigInt(amount);
-    //const transaction: Transaction = { server, amount: transactionAmount, symbol, receiver, from };
+    const transaction: Transaction = { server, amount: transactionAmount, symbol, receiver, from };
 
-    //dispatch({ type: "TRANSACTION.CREATE", payload: transaction});
+    dispatch({ type: "TRANSACTION.CREATE", payload: transaction});
     navigate("/confirm");
   };
 
   const handlAddeReceiver = () => {
     navigate("/receiver/add/new")
   }
-
+ 
   return (
     <pre>
       [SEND]
@@ -96,7 +105,7 @@ function SendView() {
       </p>
       <p>
         <label>From:</label>
-        <select name="from" onChange={handleFrom}>          
+        <select name="from" defaultValue={state.accounts.nextId -1} onChange={handleFrom}>          
           {Array.from(state.accounts.byId, ([id, account]) => (            
             <option key={`from-${id}`} value={id}> {account.name} 
             {' '} {`${parseIdentity(account.keys?.publicKey)}`}</option>
@@ -105,10 +114,10 @@ function SendView() {
       </p>
       <p>
         <label>Receiver:</label>
-        <select name="receiver" onChange={handleReceiver}>          
+        <select name="receiver" defaultValue={state.receivers.nextId -1} onChange={handleReceiver}>          
           {Array.from(state.receivers.byId, ([id, receiver]) => (            
-            <option key={`receiver-${id}`} value={id}> {receiver.name} 
-            {' '} {`<${receiver.address}>`}</option>
+            <option key={`receiver-${id}`} value={id} > {receiver.name} 
+            {' '} {`<${omni.identity.toString(receiver.identity)}>`}</option>
           ))}
         </select>
       </p>

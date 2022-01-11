@@ -37,9 +37,7 @@ export const initialTransactionState = {
     amount: BigInt(0), 
     symbol: "", 
     receiver: {
-      name: "",
-      publicKey: null,      
-      address: ""
+      name: "",      
     },
     from: {
       name: "",
@@ -69,16 +67,12 @@ export const transactionReducer = (
       let byTransactionId = new Map<TransactionId, TransactionDetails>();      
       
       transactionPayload.forEach((transaction: any, transactionId: TransactionId) => {
-        const uid = Uint8Array2Hex(transaction[0]);
-
-        console.log(uid)
+        // const uid = Uint8Array2Hex(transaction[0]);        
         const timestamp: any = transaction[1];
         const details = transaction[2];
         
         const from: string = Uint8Array2Hex(details[1].value);
-
         const to: string = Uint8Array2Hex(details[2].value);
-
         const symbol: string = details[3];
         const amount: Amount = details[4];
 

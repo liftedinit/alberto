@@ -1,10 +1,11 @@
 import { Action } from "../store";
+import { Identity } from "omni/dist/identity";
+
 export type ReceiverId = number;
 
-export interface Receiver {
-  publicKey?: Buffer | null;
+export interface Receiver {  
   name: string;
-  address: string;
+  identity?: Identity;
 }
 
 export interface ReceiversState {
@@ -24,7 +25,7 @@ export const receiversReducer = (
   { type, payload }: Action
 ) => {
   switch (type) {
-    case "RECEIVER.CREATE": {
+    case "RECEIVER.CREATE": {      
       const id = state.nextId;
       const byId = new Map(state.byId);
       byId.set(id, payload as Receiver);
