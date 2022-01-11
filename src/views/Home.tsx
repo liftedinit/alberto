@@ -12,7 +12,7 @@ function HomeView() {
         const { url } = state.servers.byId.get(serverId)!;
         const { keys } = state.accounts.byId.get(accountId)!;
 
-        try {          
+        try {
           const server = omni.server.connect(url);
 
           const symbols = await server.accountInfo(keys!);
@@ -25,12 +25,12 @@ function HomeView() {
           });
 
           // Get Transactions
-          const transactions = await omni.server.send(url, {method: "ledger.list", data: {}});
-          
+          const transactions = await omni.server.send(url, {method: "ledger.list", data: {}}, keys);
+
           dispatch({
             type: "TRANSACTION.LIST",
             payload: transactions
-          });          
+          });
         } catch (e) {
           throw new Error((e as Error).message);
         }
@@ -41,7 +41,7 @@ function HomeView() {
     state.accounts.activeIds,
     state.accounts.byId,
     state.servers.activeIds,
-    state.servers.byId    
+    state.servers.byId
   ]);
   return (
     <pre>
@@ -54,7 +54,7 @@ function HomeView() {
           <Link to="/servers">Servers</Link>
         </li>
         <li>
-          <Link to="/send">Send</Link>       
+          <Link to="/send">Send</Link>
         </li>
       </ul>
       <details>
@@ -62,7 +62,7 @@ function HomeView() {
         <ul>
           {Array.from(state.balances.symbols, (symbol) => (
             <li key={`symbol-${symbol}`}>
-              {symbol}... 
+              {symbol}...
             </li>
           ))}
         </ul>
@@ -75,7 +75,7 @@ function HomeView() {
               From:  {getAddressFromHex(transaction.from)}<br />
               To: {getAddressFromHex(transaction.to)}<br />
               Amount: {transaction.amount.toString()} {transaction.symbol}
-            </li>            
+            </li>
           ))}
         </ul>
       </details>
