@@ -9,15 +9,15 @@ function HomeView() {
     state.servers.activeIds.forEach((serverId) => {
       state.accounts.activeIds.forEach(async (accountId) => {
         const { url } = state.servers.byId.get(serverId)!;
-        const { identity } = state.accounts.byId.get(accountId)!;
+        const { keys } = state.accounts.byId.get(accountId)!;
 
         try {
           const server = omni.server.connect(url);
 
-          const [symbols] = await server.ledger_info();
-          dispatch({ type: "BALANCES.SYMBOLS", payload: symbols });
+          const symbols = await server.accountInfo(keys!);
+          dispatch({ type: "BALANCES.SYMBOLS", payload: symbols[0] });
 
-          const balances = await server.ledger_balance(symbols, identity);
+          const balances = await server.accountBalance(symbols, keys!);
           dispatch({
             type: "BALANCES.UPDATE",
             payload: { serverId, balances: balances[0] },

@@ -7,7 +7,7 @@ import { Account } from "../store/accounts";
 function ImportSeedWordsView() {
   const navigate = useNavigate();
   const { dispatch } = useContext(StoreContext);
-  const [account, setAccount] = useState<Account>({ name: "", identity: null });
+  const [account, setAccount] = useState<Account>({ name: "" });
 
   const handleName = (event: React.ChangeEvent<HTMLInputElement>) => {
     const name = event.target.value;
@@ -17,10 +17,10 @@ function ImportSeedWordsView() {
   const handleMnemonic = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const mnemonic = event.target.value;
     try {
-      const identity = omni.identity.fromSeedWords(mnemonic);
-      setAccount({ ...account, identity });
+      const keys = omni.keys.fromSeedWords(mnemonic);
+      setAccount({ ...account, keys });
     } catch (e) {
-      setAccount({ ...account, identity: null });
+      setAccount({ ...account, keys: undefined });
     }
   };
 
@@ -43,10 +43,7 @@ function ImportSeedWordsView() {
           <Link to="/accounts/add">Back</Link>
         </li>
       </ul>
-      <button
-        disabled={!account.name || !account.identity}
-        onClick={handleSave}
-      >
+      <button disabled={!account.name || !account.keys} onClick={handleSave}>
         Save
       </button>
     </pre>
