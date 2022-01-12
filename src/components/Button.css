@@ -19,4 +19,5 @@
   width: 100vw;
   background: var(--highlight-dark);
   height: 3rem;
+  font-size: 1rem;
 }

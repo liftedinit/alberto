@@ -7,6 +7,7 @@ import { Account } from "../store/accounts";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import Input from "../components/Input";
+import Page from "../components/Page";
 
 function ImportPemView() {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ function ImportPemView() {
   };
 
   return (
-    <div className="Page">
+    <Page>
       <Header>
         <Header.Right>
           <Link to="/accounts/add">Back</Link>
@@ -48,7 +49,7 @@ function ImportPemView() {
         onClick={handleSave}
         label="Save"
       />
-    </div>
+    </Page>
   );
 }
 export default ImportPemView;

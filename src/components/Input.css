@@ -23,3 +23,10 @@ label {
 .Input textarea {
   height: 10rem;
 }
+
+.Box {
+  margin-top: 0;
+  border: 1px solid var(--primary);
+  line-height: 1.5rem;
+  padding: 0.5rem;
+}

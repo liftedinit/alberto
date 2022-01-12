@@ -7,6 +7,7 @@ import { Account } from "../store/accounts";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import Input from "../components/Input";
+import Page from "../components/Page";
 
 function ImportSeedWordsView() {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ function ImportSeedWordsView() {
   };
 
   return (
-    <div className="Page">
+    <Page>
       <Header>
         <Header.Right>
           <Link to="/accounts/add">Back</Link>
@@ -52,7 +53,7 @@ function ImportSeedWordsView() {
         onClick={handleSave}
         label="Save"
       />
-    </div>
+    </Page>
   );
 }
 export default ImportSeedWordsView;

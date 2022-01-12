@@ -5,7 +5,12 @@ import { StoreContext } from "../store";
 import { Receiver } from "../store/receivers";
 import { Identity } from "omni/dist/identity";
 
-const NewReceiverView = () => {
+import Header from "../components/Header";
+import Page from "../components/Page";
+import Button from "../components/Button";
+import Input from "../components/Input";
+
+const AddReceiverView = () => {
   const navigate = useNavigate();
   const { dispatch } = useContext(StoreContext);
   const [name, setName] = useState<string>("");
@@ -14,12 +19,12 @@ const NewReceiverView = () => {
   const handleName = (event: React.ChangeEvent<HTMLInputElement>) => {
     const name = event.target.value;
     setName(name);
-  }
+  };
 
   const handleAddress = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const address = event.target.value;    
+    const address = event.target.value;
     setAddress(address);
-  }
+  };
 
   const handleAdd = () => {
     if (name === "" || address === "") {
@@ -28,26 +33,23 @@ const NewReceiverView = () => {
     }
     const identity: Identity = omni.identity.fromString(address);
     const newReceiver: Receiver = { name, identity };
-    dispatch({ type: "RECEIVER.CREATE", payload: newReceiver} );
+    dispatch({ type: "RECEIVER.CREATE", payload: newReceiver });
     navigate("/send");
-  }
+  };
 
   return (
-    <pre>
-       <Link to="/send">Back</Link>
-      <p>
-        <label>Name: </label>
-        <input type="text" onChange={handleName} maxLength={128}/>
-      </p>
-      <p>
-        <label>Address: </label>
-        <input type="text" onChange={handleAddress} maxLength={512} />
-      </p>
-      <p style={{textAlign: "center"}}>
-        <button type="button" onClick={handleAdd}>Add</button>
-      </p>
-    </pre>
+    <Page>
+      <Header>
+        <Header.Right>
+          <Link to="/send">Back</Link>
+        </Header.Right>
+      </Header>
+      <Input name="Name" onChange={handleName} label="Name" />
+      <Input name="Address" onChange={handleAddress} label="Address" />
+      <Button.Footer label="Add" onClick={handleAdd} />
+    </Page>
   );
-}
+};
 
-export default NewReceiverView;
+export default AddReceiverView;
+

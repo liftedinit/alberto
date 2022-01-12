@@ -7,6 +7,7 @@ import { Server } from "../store/servers";
 import Header from "../components/Header";
 import Input from "../components/Input";
 import Button from "../components/Button";
+import Page from "../components/Page";
 
 function AddServerView() {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ function AddServerView() {
   };
 
   return (
-    <div className="Page">
+    <Page>
       <Header>
         <Header.Right>
           <Link to="/servers">Back</Link>
@@ -41,7 +42,7 @@ function AddServerView() {
         label="Save"
         onClick={handleSave}
       />
-    </div>
+    </Page>
   );
 }
 export default AddServerView;

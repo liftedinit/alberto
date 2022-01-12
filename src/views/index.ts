@@ -1,6 +1,7 @@
 import AccountsView from "./Accounts";
 import AddAccountView from "./AddAccount";
 import AddAddressView from "./AddAddress";
+import AddReceiverView from "./AddReceiver";
 import AddServerView from "./AddServer";
 import ConfirmView from "./Confirm";
 import HomeView from "./Home";
@@ -11,12 +12,12 @@ import NoAccountView from "./NoAccount";
 import SendView from "./Send";
 import ServersView from "./Servers";
 import SplashView from "./Splash";
-import NewReceiverView from "./NewReceiver";
 
 export {
   AccountsView,
   AddAccountView,
   AddAddressView,
+  AddReceiverView,
   AddServerView,
   ConfirmView,
   HomeView,
@@ -27,5 +28,4 @@ export {
   SendView,
   ServersView,
   SplashView,
-  NewReceiverView,
 };
