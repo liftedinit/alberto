@@ -1,10 +1,8 @@
-import { useState, useContext, useEffect } from "react";
+import { useContext } from "react";
 import omni from "omni";
 import { useNavigate, Link } from "react-router-dom";
 
 import { StoreContext } from "../store";
-import { Receiver } from "../store/receivers";
-import { Transaction } from "../store/transactions";
 
 import Header from "../components/Header";
 import Page from "../components/Page";
@@ -13,30 +11,21 @@ import Button from "../components/Button";
 function ConfirmView() {
   const navigate = useNavigate();
   const { dispatch, state } = useContext(StoreContext);
-  const transaction: Transaction = state.transactions.newTransaction;
-  const [account, setAccount] = useState<string>("");
+  const txn = state.transactions.newTransaction;
 
-  useEffect(() => {
-    const receiver: Receiver = transaction.receiver || {
-      name: "",
-      address: "",
-    };
-    setAccount(
-      `${receiver.name} <${omni.identity.toString(receiver.identity)}>`
-    );
-  }, [transaction.receiver]);
+  const activeAccount = state.accounts.byId.get(state.accounts.activeId)!;
+  const activeServer = state.servers.byId.get(state.servers.activeId)!;
+  const receiver = state.receivers.byId.get(txn.receiverId!)!;
+  const idString = receiver ? omni.identity.toString(receiver.identity) : "oaa";
 
   const handleConfirm = async () => {
     try {
-      const server = omni.server.connect(transaction.server.url);
-      const to: any = transaction.receiver.identity;
-      const keys: any = transaction.from?.keys;
-
+      const server = omni.server.connect(activeServer.url);
       await server.accountSend(
-        to,
-        transaction.amount,
-        transaction.symbol,
-        keys
+        receiver.identity!,
+        txn.amount,
+        txn.symbol!,
+        activeAccount.keys!
       );
       dispatch({ type: "TRANSACTION.SENT" });
       navigate("/");
@@ -54,19 +43,24 @@ function ConfirmView() {
       </Header>
 
       <label>Server</label>
-      <p className="Box">{transaction.server.name}</p>
+      <p className="Box">{activeServer.name}</p>
 
       <label>Amount</label>
-      <p className="Box">{transaction.amount.toString()}</p>
+      <p className="Box">{txn.amount.toString()}</p>
 
       <label>Symbol</label>
-      <p className="Box">{transaction.symbol}</p>
+      <p className="Box">{txn.symbol}</p>
 
       <label>From</label>
-      <p className="Box">{transaction.amount.toString()}</p>
+      <p className="Box">{activeAccount.name}</p>
 
-      <label>Receiver</label>
-      <p className="Box">{account}</p>
+      <label>To</label>
+      <p className="Box">
+        {`${receiver ? receiver.name : ""} <${idString.slice(
+          0,
+          4
+        )}...${idString.slice(-4)}>`}
+      </p>
 
       <Button.Footer label="Confirm" onClick={handleConfirm} />
     </Page>

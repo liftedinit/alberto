@@ -1,38 +1,40 @@
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { StoreContext } from "../store";
- 
-import { parseIdentity } from "../helper/common";
+
+import { displayId } from "../helper/common";
+
+import Page from "../components/Page";
+import Header from "../components/Header";
+import Button from "../components/Button";
+import SelectList from "../components/SelectList";
 
 function AccountsView() {
   const { dispatch, state } = useContext(StoreContext);
+  const handleClick = (id: number) => () =>
+    dispatch({ type: "ACCOUNTS.TOGGLE", payload: id });
+  const navigate = useNavigate();
   return (
-    <pre>
-      [ACCOUNTS]
-      <ul>
-        <li>
+    <Page>
+      <Header>
+        <Header.Right>
           <Link to="/">Back</Link>
-        </li>
-      </ul>
-      <ul>
+        </Header.Right>
+      </Header>
+      <SelectList>
         {Array.from(state.accounts.byId, ([id, account]) => (
-          <li key={id}>
-            {state.accounts.activeIds.has(id) ? "✓ " : "  "}
-            <span
-              onClick={() => dispatch({ type: "ACCOUNTS.TOGGLE", payload: id })}
-            >
-              {account.name} 
-              {' '} {parseIdentity(account.keys?.publicKey)}
-            </span>
-          </li>
+          <SelectList.Item
+            key={id}
+            selected={state.accounts.activeId === id}
+            onClick={handleClick(id)}
+          >
+            <h3>{account.name}</h3>
+            <h4>{displayId(account)}</h4>
+          </SelectList.Item>
         ))}
-      </ul>
-      <ul>
-        <li>
-          <Link to="add">Add</Link>
-        </li>
-      </ul>
-    </pre>
+      </SelectList>
+      <Button label="Add an Account" onClick={() => navigate("add")} />
+    </Page>
   );
 }
 export default AccountsView;

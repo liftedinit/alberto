@@ -24,3 +24,9 @@
   display: block;
   text-transform: uppercase;
 }
+
+.Header h3 {
+  margin: 0;
+  color: white;
+  font-weight: 300;
+}

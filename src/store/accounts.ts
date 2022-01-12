@@ -9,13 +9,13 @@ export interface Account {
 }
 
 export interface AccountsState {
-  activeIds: Set<AccountId>;
+  activeId: AccountId;
   byId: Map<AccountId, Account>;
   nextId: AccountId;
 }
 
 export const initialAccountsState = {
-  activeIds: new Set([0]),
+  activeId: 0,
   byId: new Map([[0, { name: "Anonymous" }]]),
   nextId: 1,
 };
@@ -27,24 +27,12 @@ export const accountsReducer = (
   switch (type) {
     case "ACCOUNTS.CREATE": {
       const id = state.nextId;
-
       const byId = new Map(state.byId);
       byId.set(id, payload as Account);
-
-      const activeIds = new Set(state.activeIds);
-      activeIds.add(id);
-
-      return { ...state, byId, activeIds, nextId: id + 1 };
+      return { ...state, byId, activeId: id, nextId: id + 1 };
     }
-    case "ACCOUNTS.TOGGLE": {
-      const activeIds = new Set(state.activeIds);
-      if (activeIds.has(payload)) {
-        activeIds.delete(payload);
-      } else {
-        activeIds.add(payload);
-      }
-      return { ...state, activeIds };
-    }
+    case "ACCOUNTS.TOGGLE":
+      return { ...state, activeId: payload };
     default:
       return state;
   }

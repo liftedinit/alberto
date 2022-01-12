@@ -15,11 +15,18 @@ interface SelectProps {
   defaultValue?: any;
 }
 
-function Select({ defaultValue, name, label, options = [] }: SelectProps) {
+function Select({
+  defaultValue,
+  name,
+  label,
+  onChange,
+  options = [],
+}: SelectProps) {
   return (
     <div className="Select">
       <label>{label}</label>
-      <select name={name} defaultValue={defaultValue}>
+      <select name={name} onChange={onChange} defaultValue={defaultValue}>
+        <option></option>
         {options.map(({ label, value }, index) => (
           <option key={index} value={value}>
             {label}
