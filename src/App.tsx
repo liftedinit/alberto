@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import {
   AccountsView,
   AddAccountView,
+  AddReceiverView,
   AddServerView,
   ConfirmView,
   HomeView,
@@ -12,7 +13,6 @@ import {
   SendView,
   ServersView,
   SplashView,
-  NewReceiverView,
 } from "./views";
 
 import "./App.css";
@@ -43,8 +43,8 @@ function App() {
         <Route path="servers" element={<ServersView />} />
         <Route path="servers/add" element={<AddServerView />} />
         <Route path="send" element={<SendView />} />
-        <Route path="confirm" element={<ConfirmView />} />
-        <Route path="receiver/add/new" element={<NewReceiverView />} />
+        <Route path="send/confirm" element={<ConfirmView />} />
+        <Route path="receivers/add" element={<AddReceiverView />} />
       </Routes>
     </div>
   );

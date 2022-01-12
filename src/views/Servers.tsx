@@ -1,9 +1,11 @@
 import { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { StoreContext } from "../store";
+
 import Header from "../components/Header";
 import SelectList from "../components/SelectList";
 import Button from "../components/Button";
+import Page from "../components/Page";
 
 function ServersView() {
   const { dispatch, state } = useContext(StoreContext);
@@ -11,7 +13,7 @@ function ServersView() {
     dispatch({ type: "SERVERS.TOGGLE", payload: id });
   const navigate = useNavigate();
   return (
-    <div className="Page">
+    <Page>
       <Header>
         <Header.Right>
           <Link to="/">Back</Link>
@@ -30,7 +32,7 @@ function ServersView() {
         ))}
       </SelectList>
       <Button label="Add a Server" onClick={() => navigate("add")} />
-    </div>
+    </Page>
   );
 }
 export default ServersView;

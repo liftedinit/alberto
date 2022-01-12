@@ -6,16 +6,28 @@ interface InputProps {
   name: string;
   onChange: React.ChangeEventHandler;
   type?: string;
+  defaultValue?: any;
 }
 
-function Input({ label, name, onChange, type = "text" }: InputProps) {
+function Input({
+  defaultValue,
+  label,
+  name,
+  onChange,
+  type = "text",
+}: InputProps) {
   return (
     <div className="Input">
       <label>{label}</label>
       {type === "textarea" ? (
-        <textarea name={name} onChange={onChange} />
+        <textarea name={name} onChange={onChange} defaultValue={defaultValue} />
       ) : (
-        <input name={name} type={type} onChange={onChange} />
+        <input
+          name={name}
+          type={type}
+          defaultValue={defaultValue}
+          onChange={onChange}
+        />
       )}
     </div>
   );

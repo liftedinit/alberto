@@ -1,0 +1,21 @@
+.Select {
+  position: relative;
+  margin: 1rem 0 0;
+}
+
+.Select select {
+  appearance: none;
+  width: 100%;
+  border-radius: 0;
+  border: none;
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.Select:after {
+  color: var(--black);
+  content: "▾";
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+}
