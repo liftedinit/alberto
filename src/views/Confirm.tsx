@@ -24,7 +24,7 @@ function ConfirmView() {
     setAccount(
       `${receiver.name} <${omni.identity.toString(receiver.identity)}>`
     );
-  }, []);
+  }, [transaction.receiver]);
 
   const handleConfirm = async () => {
     try {

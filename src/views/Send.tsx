@@ -38,7 +38,12 @@ function SendView() {
       state.accounts.nextId - 1
     ) || { name: "" };
     setFrom(account);
-  }, [state.receivers.nextId, state.accounts.nextId]);
+  }, [
+    state.receivers.byId,
+    state.receivers.nextId,
+    state.accounts.byId,
+    state.accounts.nextId,
+  ]);
 
   const handleServer = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const id: number = parseInt(event.target.value);
