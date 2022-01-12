@@ -4,6 +4,9 @@ import omni from "omni";
 import { StoreContext } from "../store";
 import { getAddressFromHex } from "../helper/common";
 
+import Header from "../components/Header";
+import Page from "../components/Page";
+
 function HomeView() {
   const { dispatch, state } = useContext(StoreContext);
   useEffect(() => {
@@ -44,7 +47,12 @@ function HomeView() {
     state.servers.byId
   ]);
   return (
-    <pre>
+    <Page>
+      <Header>
+        <Header.Right>
+          <Link to="/">Back</Link>
+        </Header.Right>
+      </Header>
       [HOME]
       <ul>
         <li>
@@ -55,6 +63,9 @@ function HomeView() {
         </li>
         <li>
           <Link to="/send">Send</Link>
+        </li>
+        <li>
+          <Link to="/accounts/detail">Details</Link>
         </li>
       </ul>
       <details>
@@ -79,7 +90,7 @@ function HomeView() {
           ))}
         </ul>
       </details>
-    </pre>
+    </Page>
   );
 }
 export default HomeView;

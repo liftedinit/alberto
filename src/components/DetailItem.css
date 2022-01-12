@@ -1,0 +1,56 @@
+.DetailItem {
+  border: 1px solid white;
+  display: flex;
+  padding: 6px;  
+  margin: 10px 0;
+  align-items: center;
+}
+
+.DetailItem .Address {
+  padding-right: 65%;
+  color: #452E33; 
+  display: flex;
+  flex-direction: column;   
+}
+
+.DetailItem .Address .FromTo {
+  font-size: 14px;
+  line-height: 9px;
+}
+
+.DetailItem .Address .Name {
+  font-size: 18px;  
+}
+
+.DetailItem .Address .Identity {
+  font-size: 12px;
+  width: 15vw;
+}
+
+.DetailItem .Amount {
+  padding-right: 12%;  
+  display: flex;
+  flex-direction: column; 
+  text-align: right;  
+  width: 50px;
+}
+
+.DetailItem .Amount .From {
+  color: #6AA8A0;
+  font-size: 14px;
+}
+
+.DetailItem .Amount .Symbol {
+  font-size: 10px;
+}
+
+.DetailItem .Time {
+  color: #DD9C80;
+  font-family: Rubik;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 9px;
+  text-align: right;
+  display: flex;  
+}

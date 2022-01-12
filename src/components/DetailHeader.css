@@ -1,0 +1,27 @@
+.DetailHeader {
+  background-color: #F0CFBF;
+  color: white;
+  text-transform: uppercase;  
+  padding: 3px 6px;
+}
+
+.DetailHeader .SymbolHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+.DetailHeader .HistoryHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+.HistoryHeader .Address {
+  padding-right: 60%;
+}
+
+.HistoryContent .Button {
+  position: absolute;
+  bottom: 10vh;
+  left: 50%;
+  transform: translate(-50%);
+}

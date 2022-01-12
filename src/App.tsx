@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import {
+  AccountDetailView,
   AccountsView,
   AddAccountView,
   AddReceiverView,
@@ -45,6 +46,7 @@ function App() {
         <Route path="send" element={<SendView />} />
         <Route path="send/confirm" element={<ConfirmView />} />
         <Route path="receivers/add" element={<AddReceiverView />} />
+        <Route path="accounts/detail" element={<AccountDetailView />} />
       </Routes>
     </div>
   );
