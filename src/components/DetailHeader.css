@@ -19,6 +19,11 @@
   padding-right: 60%;
 }
 
+.HistoryContent {
+  overflow-y: scroll;
+  height: 80vh;
+}
+
 .HistoryContent .Button {
   position: absolute;
   bottom: 10vh;

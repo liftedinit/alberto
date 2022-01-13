@@ -1,7 +1,7 @@
 import "./DetailItem.css";
-import { getAddressFromHex } from "../helper/common";
-
 import { TransactionDetails } from "../store/transactions";
+import { getAddressFromHex } from "../helper/common";
+import { fromNow } from "../helper/convert";
 interface HistoryItemProps {
   id: number,
   transaction: TransactionDetails
@@ -20,7 +20,7 @@ const HistoryDetailItem:React.FC<HistoryItemProps> = ({id, transaction}) =>{
         <span className="Symbol">{transaction.symbol}</span>
       </div>
       <div className="Time">
-        6 min ago
+        {fromNow(new Date)}
       </div>
     </div>
   )

@@ -28,7 +28,7 @@
 }
 
 .DetailItem .Amount {
-  padding-right: 12%;  
+  padding-right: 9%;  
   display: flex;
   flex-direction: column; 
   text-align: right;  
