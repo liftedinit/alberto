@@ -16,8 +16,8 @@ const DetailHeader: React.FC<Props> = ({type}) => {
       { type === 'history' && 
         <div className="HistoryHeader">
           <span className="Address">address</span>
-          <span>amount</span>
-          <span>time</span>
+          <span className="Amount">amount</span>
+          <span className="Time">time</span>
         </div> 
       }      
     </div>    

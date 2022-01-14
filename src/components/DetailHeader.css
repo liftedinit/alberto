@@ -16,7 +16,11 @@
 }
 
 .HistoryHeader .Address {
-  padding-right: 60%;
+  flex: 8;
+}
+
+.HistoryHeader .Amount {
+  flex: 2;
 }
 
 .HistoryContent {

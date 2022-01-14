@@ -52,10 +52,11 @@ const AccountDetailView = () => {
           <DetailHeader type='history' />        
           <div className="HistoryContent">
             {Array.from(state.transactions.byTransactionId, ([id, transaction]) => (
-              <HistoryDetailItem 
-                id={id} 
-                transaction={transaction}              
-              />            
+              <div key={transaction.uid}>
+                <HistoryDetailItem                 
+                  transaction={transaction}                              
+                />            
+              </div>
             ))} 
             <Button onClick={handleNewTransaction} label="New Transaction" />                     
           </div>          

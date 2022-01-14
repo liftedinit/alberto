@@ -18,8 +18,9 @@ function HomeView() {
         try {
           const server = omni.server.connect(url);
 
-          const symbols = await server.accountInfo(keys!);
-          dispatch({ type: "BALANCES.SYMBOLS", payload: symbols[0] });
+          const accountInfo = await server.accountInfo(keys!);
+          const symbols = accountInfo[0]
+          dispatch({ type: "BALANCES.SYMBOLS", payload: symbols });
 
           const balances = await server.accountBalance(symbols, keys!);
           dispatch({

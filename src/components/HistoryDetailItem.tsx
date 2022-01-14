@@ -1,16 +1,15 @@
 import "./DetailItem.css";
 import { TransactionDetails } from "../store/transactions";
 import { getAddressFromHex } from "../helper/common";
-import { fromNow } from "../helper/convert";
-interface HistoryItemProps {
-  id: number,
+import { fromDateTime } from "../helper/convert";
+
+interface HistoryItemProps {    
   transaction: TransactionDetails
 }
 
-const HistoryDetailItem:React.FC<HistoryItemProps> = ({id, transaction}) =>{  
- 
-  return (
-    <div className="DetailItem" key={`transaction-${id}`}>
+const HistoryDetailItem:React.FC<HistoryItemProps> = ({transaction}) =>{     
+  return (        
+    <div className="DetailItem">
       <div className="Address">        
         <span className="Identity"><b>From:</b> {`<${getAddressFromHex(transaction.from)}>`}</span>
         <span className="Identity"><b>To:</b> {`<${getAddressFromHex(transaction.to)}>`}</span>
@@ -20,11 +19,10 @@ const HistoryDetailItem:React.FC<HistoryItemProps> = ({id, transaction}) =>{
         <span className="Symbol">{transaction.symbol}</span>
       </div>
       <div className="Time">
-        {fromNow(new Date)}
+        {fromDateTime(transaction.timestamp)}
       </div>
-    </div>
+    </div>    
   )
-
 };
  
 export default HistoryDetailItem;

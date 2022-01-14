@@ -16,6 +16,7 @@ export interface Transaction {
 };
 
 export interface TransactionDetails {
+  uid: string,
   amount: Amount;
   symbol: string;
   from?: string,
@@ -61,23 +62,23 @@ export const transactionReducer = (
     }
     case "TRANSACTION.LIST": {
       const transactionPayload = payload[1];
-      console.log('--------------Transaction Payload-----------------')
-      console.log(transactionPayload)
-      console.log('-----------------------------------------------')
+            
       let byTransactionId = new Map<TransactionId, TransactionDetails>();
 
-      transactionPayload?.forEach((transaction: any, transactionId: TransactionId) => {
-        // const uid = Uint8Array2Hex(transaction[0]);
-        const timestamp: any = transaction[1];
-        const details = transaction[2];
+      transactionPayload?.forEach((transaction: any, transactionId: TransactionId) => {      
+        const uid = transaction.has(0)? Uint8Array2Hex(transaction.get(0)) : '';  
+        const timestamp: any = transaction.has(1) ? transaction.get(1) : null;
+        const details = transaction.has(2) ? transaction.get(2) : [];
+ 
+        if (details.length === 5) {
+          const from: string = Uint8Array2Hex(details[1]);
+          const to: string = Uint8Array2Hex(details[2]);
+          const symbol: string = details[3];
+          const amount: Amount = details[4];
 
-        const from: string = Uint8Array2Hex(details[1].value);
-        const to: string = Uint8Array2Hex(details[2].value);
-        const symbol: string = details[3];
-        const amount: Amount = details[4];
-
-        const detail: TransactionDetails = { amount, symbol, from, to, timestamp };
-        byTransactionId.set(transactionId, detail);
+          const detail: TransactionDetails = { uid, amount, symbol, from, to, timestamp };
+          byTransactionId.set(transactionId, detail);
+        }
       });
       return { ...state, byTransactionId};
     }

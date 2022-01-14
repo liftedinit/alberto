@@ -6,7 +6,7 @@ export const Hex2Base64 = (input: string) => {
   return Buffer.from(input, 'hex').toString('base64')
 }
 
-export const fromNow = (date: Date) => {
+export const fromDateTime = (date: Date) => {
   const rft = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" })
 
   const SECOND = 1000;

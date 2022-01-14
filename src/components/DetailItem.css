@@ -6,11 +6,11 @@
   align-items: center;
 }
 
-.DetailItem .Address {
-  padding-right: 65%;
+.DetailItem .Address {  
   color: #452E33; 
   display: flex;
   flex-direction: column;   
+  width: 85%;
 }
 
 .DetailItem .Address .FromTo {
@@ -27,12 +27,11 @@
   width: 15vw;
 }
 
-.DetailItem .Amount {
-  padding-right: 9%;  
+.DetailItem .Amount {  
   display: flex;
   flex-direction: column; 
   text-align: right;  
-  width: 50px;
+  width: 4%;
 }
 
 .DetailItem .Amount .From {
@@ -52,5 +51,5 @@
   font-size: 12px;
   line-height: 9px;
   text-align: right;
-  display: flex;  
+  width: 20%;
 }
