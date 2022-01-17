@@ -1,40 +1,12 @@
-.TabsContainer {
-  display: flex;
-  flex-direction: column;
+.Tabs .Tab {
+  display: none;
 }
 
-.TabContent {
-  background: linear-gradient(180deg, #FAF0EA 0%, #F0CFBF 100%);
-  height: 85vh;
+.Tabs .Tab.active {
+  display: block;  
 }
 
-.TabTitle {
-  display: flex;
-  flex-direction: row;
-}
-
-.TabTitle .Button {
-  text-transform: uppercase;
-  width: 50%;
-  height: 50px;
-  border-radius: 0;
-  background-color: white;
-  color: #654D43;
-  margin-top: 0;
-}
-
-.TabTitle .Button:hover {
-  cursor: pointer;  
-}
-
-.TabTitle .Active {
-  background-color: #F0CFBF;
-  color: #654D43;
-  border-bottom: 3px solid #8DDFD4;
-}
-
-
-.tabs-container li {
-  display: inline;
-  list-style-type: none;
-}
+.Tabs .Tab .HistoryContent {
+  overflow-y: scroll;
+  height: 80vh;
+} 

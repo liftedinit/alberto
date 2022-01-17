@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import omni from "omni";
 import { StoreContext } from "../store";
@@ -52,4 +52,3 @@ const AddReceiverView = () => {
 };
 
 export default AddReceiverView;
-

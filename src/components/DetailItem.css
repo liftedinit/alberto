@@ -1,13 +1,13 @@
 .DetailItem {
   border: 1px solid white;
   display: flex;
-  padding: 6px;  
-  margin: 10px 0;
+  padding: 0.5rem;  
+  margin: 1rem 0;
   align-items: center;
 }
 
 .DetailItem .Address {  
-  color: #452E33; 
+  color: var(--black);
   display: flex;
   flex-direction: column;   
   width: 85%;
@@ -35,7 +35,7 @@
 }
 
 .DetailItem .Amount .From {
-  color: #6AA8A0;
+  color: var(--highlight-dark);
   font-size: 14px;
 }
 
@@ -44,10 +44,7 @@
 }
 
 .DetailItem .Time {
-  color: #DD9C80;
-  font-family: Rubik;
-  font-style: normal;
-  font-weight: normal;
+  color: var(--secondary);  
   font-size: 12px;
   line-height: 9px;
   text-align: right;

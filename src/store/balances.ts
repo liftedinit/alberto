@@ -1,7 +1,7 @@
 import { Action } from "../store";
 import { ServerId } from "./servers";
 
-type SymbolId = string;
+export type SymbolId = string;
 
 export type Amount = bigint;
 
@@ -46,13 +46,8 @@ export const balancesReducer = (
       const bySymbol = new Map(Object.entries(symbolObj));
       return { ...state, byServer, bySymbol };
     }
-    case "BALANCES.SYMBOLS": {
-      const symbols = new Set(state.symbols);      
-      payload.forEach((symbol: SymbolId) => {                 
-          symbols.add(symbol)
-      });
-      return { ...state, symbols };
-    }
+    case "BALANCES.SYMBOLS":
+      return { ...state, symbols: payload };
     default:
       return state;
   }

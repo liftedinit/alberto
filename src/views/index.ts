@@ -12,7 +12,6 @@ import NoAccountView from "./NoAccount";
 import SendView from "./Send";
 import ServersView from "./Servers";
 import SplashView from "./Splash";
-import AccountDetailView from "./AccountDetail";
 
 export {
   AccountsView,
@@ -29,5 +28,4 @@ export {
   SendView,
   ServersView,
   SplashView,
-  AccountDetailView
 };

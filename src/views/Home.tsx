@@ -1,96 +1,122 @@
-import { useContext, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import omni from "omni";
 import { StoreContext } from "../store";
-import { getAddressFromHex } from "../helper/common";
 
-import Header from "../components/Header";
 import Page from "../components/Page";
+import Header from "../components/Header";
+import Button from "../components/Button";
+import Tabs from "../components/Tabs";
+import DetailHeader from "../components/DetailHeader";
+import HistoryDetailItem from "../components/HistoryDetailItem";
 
 function HomeView() {
   const { dispatch, state } = useContext(StoreContext);
+  const [tab, setTab] = useState(0);
+  const navigate = useNavigate();
+
+  const activeAccount = state.accounts.byId.get(state.accounts.activeId)!;
+  const activeServer = state.servers.byId.get(state.servers.activeId)!;
+
   useEffect(() => {
-    state.servers.activeIds.forEach((serverId) => {
-      state.accounts.activeIds.forEach(async (accountId) => {
-        const { url } = state.servers.byId.get(serverId)!;
-        const { keys } = state.accounts.byId.get(accountId)!;
+    const fetchAccount = async () => {
+      const { keys } = activeAccount;
+      const { url } = activeServer;
 
-        try {
-          const server = omni.server.connect(url);
+      try {
+        const server = omni.server.connect(url);
 
-          const accountInfo = await server.accountInfo(keys!);
-          const symbols = accountInfo[0]
-          dispatch({ type: "BALANCES.SYMBOLS", payload: symbols });
+        const accountInfo = await server.accountInfo(keys!);
+        const symbols = accountInfo[0]
+        dispatch({ type: "BALANCES.SYMBOLS", payload: symbols });
 
-          const balances = await server.accountBalance(symbols, keys!);
-          dispatch({
-            type: "BALANCES.UPDATE",
-            payload: { serverId, balances: balances[0] },
-          });
+        // Get Balances if not Anonymous
+        // if (keys) {
+        const balances = await server.accountBalance(symbols[0], keys!);
+        dispatch({
+          type: "BALANCES.UPDATE",
+          payload: {
+            serverId: state.servers.activeId,
+            balances: balances[0],
+          },
+        });
 
-          // Get Transactions
-          const transactions = await omni.server.send(url, {method: "ledger.list", data: {}}, keys);
+        // Get Transactions
+        const transactions = await omni.server.send(
+          url,
+          { method: "ledger.list", data: {} },
+          keys
+        );
 
-          dispatch({
-            type: "TRANSACTION.LIST",
-            payload: transactions
-          });
-        } catch (e) {
-          throw new Error((e as Error).message);
-        }
-      });
-    });
-  }, [
-    dispatch,
-    state.accounts.activeIds,
-    state.accounts.byId,
-    state.servers.activeIds,
-    state.servers.byId
-  ]);
+        dispatch({
+          type: "TRANSACTION.LIST",
+          payload: transactions,
+        });
+        // }
+      } catch (e) {
+        throw new Error((e as Error).message);
+      }
+    };
+    fetchAccount();
+    const fetchInterval = setInterval(fetchAccount, 2000);
+    return () => {
+      clearInterval(fetchInterval);
+    };
+  }, [dispatch, activeServer, activeAccount, state.servers.activeId]);
   return (
-    <Page>
+    <Page className="Home">
       <Header>
+        <Header.Left>
+          <Link to="/accounts">{activeAccount.name}</Link>
+        </Header.Left>
         <Header.Right>
-          <Link to="/">Back</Link>
+          <Link to="/servers">{activeServer.name}</Link>
         </Header.Right>
       </Header>
-      [HOME]
-      <ul>
-        <li>
-          <Link to="/accounts">Accounts</Link>
-        </li>
-        <li>
-          <Link to="/servers">Servers</Link>
-        </li>
-        <li>
-          <Link to="/send">Send</Link>
-        </li>
-        <li>
-          <Link to="/accounts/detail">Details</Link>
-        </li>
-      </ul>
-      <details>
-        <summary>Symbols</summary>
-        <ul>
-          {Array.from(state.balances.symbols, (symbol) => (
-            <li key={`symbol-${symbol}`}>
-              {symbol}...
-            </li>
-          ))}
-        </ul>
-      </details>
-      <details>
-        <summary>Transactions</summary>
-        <ul>
-        {Array.from(state.transactions.byTransactionId, ([id, transaction]) => (
-            <li key={`transaction-detail-${id}`}>
-              From:  {getAddressFromHex(transaction.from)}<br />
-              To: {getAddressFromHex(transaction.to)}<br />
-              Amount: {transaction.amount.toString()} {transaction.symbol}
-            </li>
-          ))}
-        </ul>
-      </details>
+      <Tabs tab={tab}>
+        <Tabs.Tab>
+          <div className="Symbols">
+            <DetailHeader type='symbols' />
+            {Array.from(state.balances.symbols, (symbol) => (
+              <div key={symbol} className="Balance">
+                <h3>{symbol}</h3>
+                <h4>
+                  {state.balances.bySymbol.get(symbol)?.toLocaleString() || 0}
+                </h4>
+              </div>
+            ))}
+          </div>
+        </Tabs.Tab>
+        <Tabs.Tab>
+          <div className="History">
+            <DetailHeader type='history' />
+            <div className="HistoryContent">
+              {Array.from(state.transactions.byTransactionId, ([id, transaction]) => (
+                <div key={transaction.uid}>
+                  <HistoryDetailItem
+                    transaction={transaction}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </Tabs.Tab>
+      </Tabs>
+      <div className="PageTabs">
+        <div
+          className={`PageTab ${tab === 0 ? " active" : ""}`}
+          onClick={() => setTab(0)}
+        >
+          Symbols
+        </div>
+        <div
+          className={`PageTab ${tab === 1 ? " active" : ""}`}
+          onClick={() => setTab(1)}
+        >
+          History
+        </div>
+      </div>
+      <Button.Footer onClick={() => navigate("/send")} label="Send" />
     </Page>
   );
 }

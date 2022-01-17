@@ -1,50 +1,36 @@
-import { Action } from ".";
-import { Account } from "../store/accounts";
-import { Server } from "../store/servers";
-import { Amount } from "../store/balances";
-import { Receiver } from "../store/receivers";
+import { Action } from "../store";
+import { Amount, SymbolId } from "../store/balances";
+import { ReceiverId } from "../store/receivers";
 import { Uint8Array2Hex } from "../helper/convert";
 
 export type TransactionId = number;
 
 export interface Transaction {
-  server: Server;
   amount: Amount;
-  symbol: string;
-  receiver: Receiver;
-  from?: Account;
-};
+  receiverId?: ReceiverId;
+  symbol?: SymbolId;
+}
 
 export interface TransactionDetails {
   uid: string,
   amount: Amount;
   symbol: string;
-  from?: string,
-  to: string,
+  from?: string;
+  to: string;
   timestamp: Date;
 }
 
 export interface TransactionState {
   newTransaction: Transaction;
   byTransactionId: Map<TransactionId, TransactionDetails>;
+}
+
+export const defaultTransaction = {
+  amount: BigInt(0),
 };
 
 export const initialTransactionState = {
-  newTransaction: {
-    server: {
-      name: "Localhost",
-      url: "/api"
-    },
-    amount: BigInt(0),
-    symbol: "",
-    receiver: {
-      name: "",
-    },
-    from: {
-      name: "",
-      identity: null,
-    }
-  },
+  newTransaction: { ...defaultTransaction },
   byTransactionId: new Map<TransactionId, TransactionDetails>(),
 };
 
@@ -55,10 +41,10 @@ export const transactionReducer = (
   switch (type) {
     case "TRANSACTION.CREATE": {
       const newTransaction = payload;
-      return { ...state, newTransaction }
+      return { ...state, newTransaction };
     }
     case "TRANSACTION.SENT": {
-      return { ...state, initialTransactionState}
+      return { ...state, newTransaction: { ...defaultTransaction } };
     }
     case "TRANSACTION.LIST": {
       const transactionPayload = payload[1];
@@ -85,4 +71,4 @@ export const transactionReducer = (
     default:
       return state;
   }
-}
+};

@@ -1,5 +1,5 @@
 .DetailHeader {
-  background-color: #F0CFBF;
+  background-color: var(--primary);
   color: white;
   text-transform: uppercase;  
   padding: 3px 6px;
@@ -23,14 +23,6 @@
   flex: 2;
 }
 
-.HistoryContent {
-  overflow-y: scroll;
-  height: 80vh;
-}
-
-.HistoryContent .Button {
-  position: absolute;
-  bottom: 10vh;
-  left: 50%;
-  transform: translate(-50%);
+.HistoryHeader .Time {
+  padding-right: 1.5rem;
 }

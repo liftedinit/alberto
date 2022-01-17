@@ -1,29 +1,35 @@
-import {ReactElement, useState} from "react";
-import TabTitle from "./TabTitle";
+import React, { Children } from "react";
+
 import "./Tabs.css";
-type Props = {
-  children: ReactElement[]
+
+interface TabsProps {
+  children?: React.ReactNode;
+  tab: number;
 }
 
-const Tabs: React.FC<Props> = ({children}) => {  
-  const [selectedTab, setSelectedTab] = useState(0);
-
+function Tabs({ tab = 0, children }: TabsProps) {
   return (
-    <div className="TabsContainer">     
-      {children[selectedTab]}      
-      <div className="TabTitle">
-        {children.map((item, index) => (
-          <TabTitle
-            key={index}
-            title={item.props.title}
-            index={index}
-            selectedTab={selectedTab}
-            setSelectedTab={setSelectedTab}
-          />
-        ))} 
-      </div>              
+    <div className="Tabs">
+      {Children.map(children, (child, index) =>
+        React.isValidElement(child)
+          ? React.cloneElement(child, {
+              isActive: tab === index,
+            })
+          : ""
+      )}
     </div>
-  )
+  );
 }
+
+interface TabProps {
+  children?: React.ReactNode;
+  isActive?: boolean;
+}
+
+function Tab({ children, isActive }: TabProps) {
+  return <div className={`Tab ${isActive ? " active" : ""}`}>{children}</div>;
+}
+
+Tabs.Tab = Tab;
 
 export default Tabs;
