@@ -1,4 +1,5 @@
 import React, { createContext, useReducer, Dispatch } from "react";
+
 import {
   accountsReducer,
   initialAccountsState,
@@ -10,15 +11,16 @@ import {
   initialBalancesState,
   BalancesState,
 } from "./balances";
-
-import { transactionReducer, initialTransactionState, TransactionState} from "./transactions";
-
+import {
+  transactionReducer,
+  initialTransactionState,
+  TransactionState,
+} from "./transactions";
 import {
   receiversReducer,
   initialReceiversState,
   ReceiversState,
 } from "./receivers";
-
 
 export interface Action {
   type: string;
@@ -43,15 +45,22 @@ const initialState = {
 
 const rootReducer = (state: State, action: Action) => {
   console.log("[ACTION]", action);
-  const newState = {
-    accounts: accountsReducer(state.accounts, action),
-    balances: balancesReducer(state.balances, action),
-    servers: serversReducer(state.servers, action),
-    transactions: transactionReducer(state.transactions, action),
-    receivers: receiversReducer(state.receivers, action),
-  };
-  console.log("[STATE]", newState);
-  return newState;
+  switch (action.type) {
+    case "APP.RESTORE":
+      console.log("[RESTORE]", action.payload);
+      return { ...action.payload };
+    default: {
+      const newState = {
+        accounts: accountsReducer(state.accounts, action),
+        balances: balancesReducer(state.balances, action),
+        servers: serversReducer(state.servers, action),
+        transactions: transactionReducer(state.transactions, action),
+        receivers: receiversReducer(state.receivers, action),
+      };
+      console.log("[STATE]", newState);
+      return newState;
+    }
+  }
 };
 
 export const StoreContext = createContext<{

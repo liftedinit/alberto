@@ -2,11 +2,12 @@ import React from "react";
 import "./Page.css";
 
 interface PageProps {
-children?: React.ReactNode;
+  children?: React.ReactNode;
+  className?: string;
 }
 
-function Page ({ children }:PageProps) {
-return <div className="Page">{children}</div>;
+function Page({ children, className }: PageProps) {
+  return <div className={`Page ${className ? className : ""}`}>{children}</div>;
 }
 
 export default Page;

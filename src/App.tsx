@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { Routes, Route } from "react-router-dom";
+import localForage from "localforage";
+
+import { StoreContext } from "./store";
 import {
   AccountsView,
   AddAccountView,
@@ -18,12 +21,26 @@ import {
 import "./App.css";
 
 const SPLASH_DELAY = 1 * 1000;
+const STATE_KEY = "ALBERT.STATE";
 
 function App() {
-  const [showSplash, setShowSplash] = React.useState(true);
+  const [showSplash, setShowSplash] = useState(true);
+  const { state, dispatch } = useContext(StoreContext);
   React.useEffect(() => {
     setTimeout(() => setShowSplash(false), SPLASH_DELAY);
-  }, []);
+    const loadState = async () => {
+      try {
+        const restoredState = await localForage.getItem(STATE_KEY);
+        dispatch({ type: "APP.RESTORE", payload: restoredState });
+      } catch (e) {}
+    };
+    // loadState();
+  }, [dispatch]);
+
+  React.useEffect(() => {
+    localForage.setItem(STATE_KEY, state);
+  }, [state]);
+
   if (showSplash) {
     return (
       <div className="App no-header">

@@ -23,7 +23,7 @@ function ServersView() {
         {Array.from(state.servers.byId, ([id, server]) => (
           <SelectList.Item
             key={id}
-            selected={state.servers.activeIds.has(id)}
+            selected={state.servers.activeId === id}
             onClick={handleClick(id)}
           >
             <h3>{server.name}</h3>

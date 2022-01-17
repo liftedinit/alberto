@@ -1,0 +1,7 @@
+.Tabs .Tab {
+  display: none;
+}
+
+.Tabs .Tab.active {
+  display: block;
+}
