@@ -3,5 +3,10 @@
 }
 
 .Tabs .Tab.active {
-  display: block;
+  display: block;  
 }
+
+.Tabs .Tab .HistoryContent {
+  overflow-y: scroll;
+  height: 80vh;
+} 

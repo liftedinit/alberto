@@ -1,0 +1,28 @@
+.DetailHeader {
+  background-color: var(--primary);
+  color: white;
+  text-transform: uppercase;  
+  padding: 3px 6px;
+}
+
+.DetailHeader .SymbolHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+.DetailHeader .HistoryHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+.HistoryHeader .Address {
+  flex: 8;
+}
+
+.HistoryHeader .Amount {
+  flex: 2;
+}
+
+.HistoryHeader .Time {
+  padding-right: 1.5rem;
+}

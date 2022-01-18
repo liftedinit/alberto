@@ -1,0 +1,52 @@
+.DetailItem {
+  border: 1px solid white;
+  display: flex;
+  padding: 0.5rem;  
+  margin: 1rem 0;
+  align-items: center;
+}
+
+.DetailItem .Address {  
+  color: var(--black);
+  display: flex;
+  flex-direction: column;   
+  width: 85%;
+}
+
+.DetailItem .Address .FromTo {
+  font-size: 14px;
+  line-height: 9px;
+}
+
+.DetailItem .Address .Name {
+  font-size: 18px;  
+}
+
+.DetailItem .Address .Identity {
+  font-size: 12px;
+  width: 15vw;
+}
+
+.DetailItem .Amount {  
+  display: flex;
+  flex-direction: column; 
+  text-align: right;  
+  width: 4%;
+}
+
+.DetailItem .Amount .From {
+  color: var(--highlight-dark);
+  font-size: 14px;
+}
+
+.DetailItem .Amount .Symbol {
+  font-size: 10px;
+}
+
+.DetailItem .Time {
+  color: var(--secondary);  
+  font-size: 12px;
+  line-height: 9px;
+  text-align: right;
+  width: 20%;
+}

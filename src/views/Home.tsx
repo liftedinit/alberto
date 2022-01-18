@@ -2,12 +2,13 @@ import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import omni from "omni";
 import { StoreContext } from "../store";
-import { getAddressFromHex } from "../helper/common";
 
 import Page from "../components/Page";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import Tabs from "../components/Tabs";
+import DetailHeader from "../components/DetailHeader";
+import HistoryDetailItem from "../components/HistoryDetailItem";
 
 function HomeView() {
   const { dispatch, state } = useContext(StoreContext);
@@ -25,9 +26,9 @@ function HomeView() {
       try {
         const server = omni.server.connect(url);
 
-        // Get Symbols
-        const symbols = await server.accountInfo(keys!);
-        dispatch({ type: "BALANCES.SYMBOLS", payload: symbols[0] });
+        const accountInfo = await server.accountInfo(keys!);
+        const symbols = accountInfo[0]
+        dispatch({ type: "BALANCES.SYMBOLS", payload: symbols });
 
         // Get Balances if not Anonymous
         // if (keys) {
@@ -74,30 +75,31 @@ function HomeView() {
       </Header>
       <Tabs tab={tab}>
         <Tabs.Tab>
-          {Array.from(state.balances.symbols, (symbol) => (
-            <div key={symbol} className="Balance">
-              <h3>{symbol}</h3>
-              <h4>
-                {state.balances.bySymbol.get(symbol)?.toLocaleString() || 0}
-              </h4>
-            </div>
-          ))}
+          <div className="Symbols">
+            <DetailHeader type='symbols' />
+            {Array.from(state.balances.symbols, (symbol) => (
+              <div key={symbol} className="Balance">
+                <h3>{symbol}</h3>
+                <h4>
+                  {state.balances.bySymbol.get(symbol)?.toLocaleString() || 0}
+                </h4>
+              </div>
+            ))}
+          </div>
         </Tabs.Tab>
         <Tabs.Tab>
-          <ul>
-            {Array.from(
-              state.transactions.byTransactionId,
-              ([id, transaction]) => (
-                <li key={`transaction-detail-${id}`}>
-                  From: {getAddressFromHex(transaction.from)}
-                  <br />
-                  To: {getAddressFromHex(transaction.to)}
-                  <br />
-                  Amount: {transaction.amount.toString()} {transaction.symbol}
-                </li>
-              )
-            )}
-          </ul>
+          <div className="History">
+            <DetailHeader type='history' />
+            <div className="HistoryContent">
+              {Array.from(state.transactions.byTransactionId, ([id, transaction]) => (
+                <div key={transaction.uid}>
+                  <HistoryDetailItem
+                    transaction={transaction}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </Tabs.Tab>
       </Tabs>
       <div className="PageTabs">
