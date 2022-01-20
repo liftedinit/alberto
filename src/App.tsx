@@ -23,7 +23,6 @@ import "./App.css";
 const SPLASH_DELAY = 1 * 1000;
 const STATE_KEY = "ALBERT.STATE";
 
-
 function App() {
   const [showSplash, setShowSplash] = useState(true);
   const { state, dispatch } = useContext(StoreContext);
