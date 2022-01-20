@@ -23,21 +23,22 @@ import "./App.css";
 const SPLASH_DELAY = 1 * 1000;
 const STATE_KEY = "ALBERT.STATE";
 
+
 function App() {
   const [showSplash, setShowSplash] = useState(true);
   const { state, dispatch } = useContext(StoreContext);
-  React.useEffect(() => {
+  
+  React.useEffect(() => {        
     setTimeout(() => setShowSplash(false), SPLASH_DELAY);
-    const loadState = async () => {
-      try {
-        const restoredState = await localForage.getItem(STATE_KEY);
-        dispatch({ type: "APP.RESTORE", payload: restoredState });
-      } catch (e) {}
+    const loadState = async () => {      
+      const restoredState = await localForage.getItem(STATE_KEY);
+      dispatch({ type: "APP.RESTORE", payload: restoredState });      
     };
-    // loadState();
+
+    loadState();
   }, [dispatch]);
 
-  React.useEffect(() => {
+  React.useEffect(() => {    
     localForage.setItem(STATE_KEY, state);
   }, [state]);
 
