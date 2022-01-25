@@ -20,6 +20,11 @@
   right: 1rem;
 }
 
+.Header .Center {
+  padding-top: 1rem;
+  text-align: center;
+}
+
 .Header a {
   color: white;
   display: block;

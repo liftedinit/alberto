@@ -10,6 +10,9 @@ import Tabs from "../components/Tabs";
 import DetailHeader from "../components/DetailHeader";
 import HistoryDetailItem from "../components/HistoryDetailItem";
 
+import { displayNotification } from "../helper/common";
+import { Identity } from "omni/dist/identity";
+
 function HomeView() {
   const { dispatch, state } = useContext(StoreContext);
   const [tab, setTab] = useState(0);
@@ -25,14 +28,21 @@ function HomeView() {
 
       try {
         const server = omni.server.connect(url);
-
-        const accountInfo = await server.accountInfo(keys!);
+        const accountInfo = await server.ledgerInfo();
         const symbols = accountInfo[0]
+        
+        let balances = null;
+        if ( keys === undefined) {
+          balances = await omni.server.send(url, { method: "ledger.balance", data: {}})
+        } else {
+          const identity: Identity = omni.identity.fromPublicKey(keys?.publicKey);
+          balances = await server.ledgerBalance(identity, symbols[0], keys!)
+        }        
+        
         dispatch({ type: "BALANCES.SYMBOLS", payload: symbols });
-
-        // Get Balances if not Anonymous
-        // if (keys) {
-        const balances = await server.accountBalance(symbols[0], keys!);
+        
+        // Get Balances if not Anonymous                
+        
         dispatch({
           type: "BALANCES.UPDATE",
           payload: {
@@ -54,7 +64,8 @@ function HomeView() {
         });
         // }
       } catch (e) {
-        throw new Error((e as Error).message);
+        console.log(e)
+        // displayNotification(e)
       }
     };
     fetchAccount();
@@ -69,9 +80,14 @@ function HomeView() {
         <Header.Left>
           <Link to="/accounts">{activeAccount.name}</Link>
         </Header.Left>
+        <Header.Center>
+          <Link to="/search">Search</Link>
+        </Header.Center>
         <Header.Right>
           <Link to="/servers">{activeServer.name}</Link>
         </Header.Right>
+       
+
       </Header>
       <Tabs tab={tab}>
         <Tabs.Tab>

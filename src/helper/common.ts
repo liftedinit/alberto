@@ -1,5 +1,7 @@
+import { toast } from 'react-toastify';
 import omni from "omni";
 import { Identity } from "omni/dist/identity";
+import { OmniError } from "omni/dist/cose";
 import { Account } from "../store/accounts";
 
 export const parseIdentity = (key: any): string => {
@@ -23,4 +25,13 @@ export function displayId(account: Account): string {
   const identity = omni.identity.fromPublicKey(account.keys.publicKey);
   const idString = omni.identity.toString(identity);
   return `<${idString.slice(0, 4)}...${idString.slice(-4)}>`;
+}
+
+export const displayNotification = (error: any) => {
+  let message = error.message || 'Opps!!!'
+  if (error instanceof OmniError) { 
+    message = error.fields?.details || 'OmniError!'           
+  }
+  
+  toast.error(message)
 }

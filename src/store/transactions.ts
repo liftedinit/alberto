@@ -2,7 +2,7 @@ import { Action } from "../store";
 import { Amount, SymbolId } from "../store/balances";
 import { ReceiverId } from "../store/receivers";
 import { Uint8Array2Hex } from "../helper/convert";
-
+import { TransactionType } from "omni/dist/types";
 export type TransactionId = number;
 
 export interface Transaction {
@@ -18,6 +18,7 @@ export interface TransactionDetails {
   from?: string;
   to: string;
   timestamp: Date;
+  type: TransactionType;
 }
 
 export interface TransactionState {
@@ -52,17 +53,18 @@ export const transactionReducer = (
       let byTransactionId = new Map<TransactionId, TransactionDetails>();
 
       transactionPayload?.forEach((transaction: any, transactionId: TransactionId) => {      
-        const uid = transaction.has(0)? Uint8Array2Hex(transaction.get(0)) : '';  
+        const uid = transaction.has(0)? transaction.get(0) : '';  
         const timestamp: any = transaction.has(1) ? transaction.get(1) : null;
         const details = transaction.has(2) ? transaction.get(2) : [];
  
         if (details.length === 5) {
+          const type: number = details[0];
           const from: string = Uint8Array2Hex(details[1]);
           const to: string = Uint8Array2Hex(details[2]);
           const symbol: string = details[3];
           const amount: Amount = details[4];
 
-          const detail: TransactionDetails = { uid, amount, symbol, from, to, timestamp };
+          const detail: TransactionDetails = { uid, amount, symbol, from, to, timestamp, type };
           byTransactionId.set(transactionId, detail);
         }
       });

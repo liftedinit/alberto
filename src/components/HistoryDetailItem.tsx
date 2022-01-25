@@ -15,6 +15,7 @@ const HistoryDetailItem:React.FC<HistoryItemProps> = ({transaction}) =>{
         <span className="Identity"><b>To:</b> {`<${getAddressFromHex(transaction.to)}>`}</span>
       </div>
       <div className="Amount">
+        {transaction.uid}
         <span className="From">+{transaction.amount.toString()}</span>
         <span className="Symbol">{transaction.symbol}</span>
       </div>

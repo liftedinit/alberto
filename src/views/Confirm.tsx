@@ -21,7 +21,7 @@ function ConfirmView() {
   const handleConfirm = async () => {
     try {
       const server = omni.server.connect(activeServer.url);
-      await server.accountSend(
+      await server.ledgerSend(
         receiver.identity!,
         txn.amount,
         txn.symbol!,
