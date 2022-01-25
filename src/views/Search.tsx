@@ -92,7 +92,7 @@ const SearchView = () => {
   }
 
   const handleOrderType = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const orderType: any = event.target.value
+    const orderType: any = event.target.value    
     setOrder(orderType)
   }
 
@@ -131,20 +131,24 @@ const SearchView = () => {
       }
       
       filter.set(0, value);
-      if (transactionType !== 'all') {
+      
+      if (transactionType !== 'all' && transactionType !== '') {        
         filter.set(1, parseInt(transactionType))
       }
       
       let argument = new Map();
-      if (limit !== 'all') {
+      if (limit !== 'all' && limit !== '') {
         argument.set(0, parseInt(limit))
       }
-      argument.set(1, parseInt(order.toString()))
+
+      if ( order.toString() !== '') {        
+        argument.set(1, parseInt(order.toString()))
+      }
+      
       argument.set(2, filter)
       
       const transactionInfo = await server.ledgerList(argument)
       console.log(transactionInfo)
-
 
       setTransactionCount(transactionInfo[0])
       let byTransactionId = new Map<TransactionId, TransactionDetails>();
