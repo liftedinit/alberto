@@ -95,7 +95,7 @@ const SearchView = () => {
 
   const handleFilterInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const filterInput = event.target.value
-    setValue(filterInput)
+    setValue(filterInput)    
   }
 
   const handleLimit = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,7 +118,7 @@ const SearchView = () => {
       toast.warning('Please select the filter type.')
       return
     }
-    await getData()
+    setOffset(1)    
   }
 
   const getData = async () => {
