@@ -101,6 +101,7 @@ const SearchView = () => {
   const handleLimit = (event: React.ChangeEvent<HTMLInputElement>) => {
     const limit = event.target.value
     setLimit(parseInt(limit))
+    setOffset(1)
   }
 
   const handleOrderType = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,8 +118,8 @@ const SearchView = () => {
     if (isNaN(type)) {
       toast.warning('Please select the filter type.')
       return
-    }
-    setOffset(1)    
+    }    
+    await getData()
   }
 
   const getData = async () => {
@@ -185,8 +186,12 @@ const SearchView = () => {
           ? 4 => range<time>,
       }
       *****************************************************************/
+      const countFilter = new Map()
+      const countArgument = new Map()
+
       if (value !== "") {
-        filter.set(0, value);
+        filter.set(0, value);        
+        countFilter.set(0, value)
       }
 
       if (!isNaN(transactionType)) {
@@ -229,6 +234,8 @@ const SearchView = () => {
       ; Transaction filter criteria.
       ? 2 => filter,
       *****************************************************************/
+      // Get Transaction Count
+      
 
       let argument = new Map();
       if (!isNaN(limit)) {
@@ -240,14 +247,17 @@ const SearchView = () => {
       }
 
       argument.set(2, filter)
+      countArgument.set(2, countFilter)
+      const countTransactionInfo = await server.ledgerList(countArgument)
 
       const transactionInfo = await server.ledgerList(argument)
 
       let byTransactionId = new Map<TransactionId, TransactionDetails>();
       const transactionPayload = transactionInfo[1];
       
-      if (transactionPayload.length > 0) {
-        setTransactionCount(transactionInfo[0])
+      if (countTransactionInfo[1]?.length > 0) {
+        setTransactionCount(countTransactionInfo[1].length)
+        setPageCount(Math.floor(Math.floor(parseInt(countTransactionInfo[1].length) + parseInt(limit) - 1) / limit))
       } else {
         setTransactionCount(0)
       }
@@ -268,10 +278,6 @@ const SearchView = () => {
         }
       })
       setTransactions(byTransactionId)
-      const dd = Math.floor(parseInt(transactionInfo[0]) + parseInt(limit) - 1) / limit
-
-      console.log(dd)
-      setPageCount(Math.floor(Math.floor(parseInt(transactionInfo[0]) + parseInt(limit) - 1) / limit))
     } catch (e) {
       displayNotification(e)
     }
