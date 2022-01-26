@@ -10,13 +10,13 @@ export type Balances = { [index: SymbolId]: Amount };
 export interface BalancesState {
   byServer: Map<ServerId, Balances>;
   bySymbol: Map<SymbolId, Amount>;
-  symbols: Set<SymbolId>;
+  symbols: Map<string, SymbolId>;
 }
 
 export const initialBalancesState = {
   byServer: new Map<ServerId, Balances>(),
   bySymbol: new Map<SymbolId, Amount>(),
-  symbols: new Set<SymbolId>(),
+  symbols: new Map<string, SymbolId>()
 };
 
 type BalancesPayload = {

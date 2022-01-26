@@ -1,5 +1,6 @@
-import React, { useState, useContext } from "react"
+import React, { useState, useContext, useEffect } from "react"
 import { useNavigate, Link } from "react-router-dom"
+import ReactPaginate from "react-paginate"
 import { toast } from 'react-toastify'
 import omni from "omni"
 import { Identity } from "omni/dist/identity"
@@ -16,6 +17,7 @@ import { displayNotification } from "../helper/common"
 import { TransactionType, Order } from "omni/dist/types"
 import { TransactionDetails, TransactionId } from "../store/transactions"
 
+
 export interface FilterType {
   value: number,
   name: string,
@@ -28,8 +30,7 @@ enum SearchTypes {
 }
 
 const filterTypes: Array<FilterType> = [
-  { value: SearchTypes.IDENTITY, name: 'Identity' },
-  { value: SearchTypes.TRANSACTION, name: 'Transaction Id' },  
+  { value: SearchTypes.IDENTITY, name: 'Identity' }
 ]
 
 const orderTypes: Array<any> = [
@@ -46,7 +47,6 @@ const rowLimits: Array<any> = [
 ]
 
 const transactionTypes: Array<any> = [
-  { value: 'all', label: "All" },
   { value: TransactionType.send, label: "Transaction Send" },
   { value: TransactionType.mint, label: "Transaction Mint" },
   { value: TransactionType.burn, label: "Transaction Burn" },
@@ -62,18 +62,30 @@ const SearchView = () => {
 
   const [type, setType] = useState<number>(SearchTypes.IDENTITY)
   const [value, setValue] = useState<string>('oaffbahksdwaqeenayy2gxke32hgb7aq4ao4wt745lsfs6wijp')
-  const [result, setResult] = useState([])
+
   const [limit, setLimit] = useState<any>(5)
-  const [order, setOrder] = useState<Order>(Order.indeterminate)
-  const [transactionType, setTransactionType] = useState<any>('all')
-  const [symbol, setSymbol] = useState<any>('FBT')
+  const [order, setOrder] = useState<Order>(Order.descending)
+  const [transactionType, setTransactionType] = useState<TransactionType>(TransactionType.send)
+  const [symbol, setSymbol] = useState<string>('FBT')
+  const [symbolIdentity, setSymbolIdentity] = useState<any>()
   const [balances, setBalances] = useState<any>([])
 
   const [transactionCount, setTransactionCount] = useState<number>(0)
   const [transactions, setTransactions] = useState<any>([])
+
+  // Paginate
+  const [offset, setOffset] = useState<number>(0)
+  const [pageCount, setPageCount] = useState<number>(0)
+
   const handleSymbolType = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const symbolType = parseInt(event.target.value)
-    setSymbol(symbolType)
+    const value = event.target.value    
+    if ( value !== '') {
+      const identity: Identity = omni.identity.fromString(value)
+      setSymbol(value)
+      setSymbolIdentity(identity)
+    } else {
+      setSymbolIdentity(undefined)
+    }
   }
 
   const handleFilterType = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -88,17 +100,17 @@ const SearchView = () => {
 
   const handleLimit = (event: React.ChangeEvent<HTMLInputElement>) => {
     const limit = event.target.value
-    setLimit(limit)
+    setLimit(parseInt(limit))
   }
 
   const handleOrderType = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const orderType: any = event.target.value    
-    setOrder(orderType)
+    const orderType = event.target.value
+    setOrder(parseInt(orderType))
   }
 
   const handleTransactionType = (event: React.ChangeEvent<HTMLInputElement>) => {
     const tType = event.target.value
-    setTransactionType(tType)
+    setTransactionType(parseInt(tType))
   }
 
   const handleSearch = async (event: React.MouseEvent) => {
@@ -106,6 +118,10 @@ const SearchView = () => {
       toast.warning('Please select the filter type.')
       return
     }
+    await getData()
+  }
+
+  const getData = async () => {
     // Get the current user
     try {
       const activeAccount = state.accounts.byId.get(activeAccountId)!
@@ -120,63 +136,155 @@ const SearchView = () => {
         case SearchTypes.IDENTITY:
           const identity: Identity = omni.identity.fromString(value)
           // Balance Info
-          const balanceInfo = await server.ledgerBalance(identity, symbol, keys!)
-          setBalances(balanceInfo)
-          
+          if (symbolIdentity !== undefined) {
+            const balanceInfo = await server.ledgerBalance(identity, symbolIdentity, keys!)
+            console.log(balanceInfo)
+            setBalances(balanceInfo)
+          }
           break
         case SearchTypes.TRANSACTION:
-          break        
+
+          break
         default:
           break
       }
-      
-      filter.set(0, value);
-      
-      if (transactionType !== 'all' && transactionType !== '') {        
-        filter.set(1, parseInt(transactionType))
+
+      /******************************************************************
+      ; A filter argument for transactions.
+      filter = {
+          ; Filter by account affected.
+          ? 0 => identity / [ * identity ],
+
+          ; Filter by transaction type.
+          ? 1 => transaction-type / [ * transaction-type ],
+
+          ; Filter by symbol.
+          ? 2 => symbol / [ * symbol ],
+
+          ; Filter by transaction ID range.
+          ? 3 => range<transaction-id>,
+              ; A Range of scalar. Must specify both bounds, but can specify any bound to being
+              ; unbounded. If omitted, the value is unbounded.
+              range<T> = {
+                  ; Lower bound.
+                  ? 0 => bound<T>1,
+                  ; Upper bound.
+                  ? 1 => bound<T>,
+              }
+
+              ; A bound, either upper or lower, serialized.
+              bound<T> =
+                  ; Unbounded.
+                  [] /
+                  ; Inclusive bound.
+                  / [0, T]
+                  ; Exclusive bound.
+                  / [1, T]
+
+          ; Filter by date range.
+          ? 4 => range<time>,
       }
-      
+      *****************************************************************/
+      if (value !== "") {
+        filter.set(0, value);
+      }
+
+      if (!isNaN(transactionType)) {
+        filter.set(1, transactionType)
+      }
+
+      if (symbolIdentity !== undefined) {
+        filter.set(2, symbolIdentity)
+      }
+
+      if (offset > 0 && !isNaN(limit) ) {
+        let bound = 1
+        let T = 0
+
+        switch (order) {
+          case Order.descending:
+            T = transactionCount - offset * limit + parseInt(limit) + 1
+            break;
+          case Order.indeterminate:
+          case Order.ascending:
+            T = (offset - 1) * limit + 1
+            bound = 0
+            break;
+        }
+
+        let range = new Map()
+        range.set(bound, [1, T])
+        filter.set(3, range)
+      }
+
+      /******************************************************************
+      ; Maximum number of transactions to return. The server can still limit the number of
+      ; transactions it returns.
+      ? 0 => uint,
+  
+      ; Whether or not to show the last transactions or the first ones. The default behaviour
+      ; is left to the server implementation.
+      ? 1 => order,
+  
+      ; Transaction filter criteria.
+      ? 2 => filter,
+      *****************************************************************/
+
       let argument = new Map();
-      if (limit !== 'all' && limit !== '') {
-        argument.set(0, parseInt(limit))
+      if (!isNaN(limit)) {
+        argument.set(0, limit)
       }
 
-      if ( order.toString() !== '') {        
-        argument.set(1, parseInt(order.toString()))
+      if (!isNaN(order)) {
+        argument.set(1, order)
       }
-      
+
       argument.set(2, filter)
-      
-      const transactionInfo = await server.ledgerList(argument)
-      console.log(transactionInfo)
 
-      setTransactionCount(transactionInfo[0])
+      const transactionInfo = await server.ledgerList(argument)
+
       let byTransactionId = new Map<TransactionId, TransactionDetails>();
       const transactionPayload = transactionInfo[1];
-
-      transactionPayload?.forEach((transaction: any, transactionId: TransactionId) => {      
-        const uid = transaction.has(0)? transaction.get(0) : '';  
+      
+      if (transactionPayload.length > 0) {
+        setTransactionCount(transactionInfo[0])
+      } else {
+        setTransactionCount(0)
+      }
+      transactionPayload?.forEach((transaction: any, transactionId: TransactionId) => {
+        const uid = transaction.has(0) ? transaction.get(0) : '';
         const timestamp: any = transaction.has(1) ? transaction.get(1) : null;
         const details = transaction.has(2) ? transaction.get(2) : [];
- 
+
         if (details.length === 5) {
           const type: number = details[0];
           const from: string = Uint8Array2Hex(details[1]);
           const to: string = Uint8Array2Hex(details[2]);
-          const symbol: string = details[3];
+          const symbol: Identity = omni.identity.fromString(details[3]);
           const amount: Amount = details[4];
 
-          const detail: TransactionDetails = { uid, amount, symbol, from, to, timestamp, type };          
+          const detail: TransactionDetails = { uid, amount, symbol, from, to, timestamp, type };
           byTransactionId.set(transactionId, detail);
         }
       })
       setTransactions(byTransactionId)
-      console.log(byTransactionId)
+      const dd = Math.floor(parseInt(transactionInfo[0]) + parseInt(limit) - 1) / limit
+
+      console.log(dd)
+      setPageCount(Math.floor(Math.floor(parseInt(transactionInfo[0]) + parseInt(limit) - 1) / limit))
     } catch (e) {
       displayNotification(e)
     }
   }
 
+  useEffect(() => {
+    getData()
+  }, [offset])
+
+  const handlePageNumber = (event: any) => {
+    const selectedPage = event.selected;
+    setOffset(selectedPage + 1)
+  }
   return (
     <Page>
       <Header>
@@ -205,10 +313,10 @@ const SearchView = () => {
           name="symbol"
           label="SYMBOLS"
           options={Array.from(symbols, (s) => ({
-            label: s,
-            value: s
+            label: s[1],
+            value: s[0]
           }))}
-          defaultValue={symbol}
+          defaultValue={symbol || "FBT"}
           onChange={handleSymbolType}
         />
         <Select
@@ -228,7 +336,7 @@ const SearchView = () => {
             label: orderType.label,
             value: orderType.value
           }))}
-          defaultValue={order}
+          defaultValue={order || ""}
           onChange={handleOrderType}
         />
         <Select
@@ -238,7 +346,7 @@ const SearchView = () => {
             label: t.label,
             value: t.value
           }))}
-          defaultValue={transactionType}
+          defaultValue={transactionType || TransactionType.send}
           onChange={handleTransactionType}
         />
         <Button
@@ -264,9 +372,22 @@ const SearchView = () => {
             </div>
           )
         }
-
         <h3>Transactions: </h3>
         <h4>All transaction count: {transactionCount}</h4>
+        {
+          transactionCount > 0 && (
+            <ReactPaginate
+              previousLabel={"Prev"}
+              nextLabel={"Next"}
+              breakLabel={"..."}
+              breakClassName={"break-me"}
+              pageCount={pageCount}
+              onPageChange={handlePageNumber}
+              containerClassName={"Pagination"}
+              activeClassName={"active"}
+            />
+          )
+        }
         {Array.from(transactions, ([id, row]) => (
           <div key={row.uid}>
             <HistoryDetailItem

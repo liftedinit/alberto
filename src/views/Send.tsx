@@ -51,8 +51,8 @@ function SendView() {
         label="Symbol"
         onChange={handleSymbol}
         options={Array.from(state.balances.symbols, (symbol) => ({
-          label: symbol,
-          value: symbol,
+          label: symbol[1],
+          value: symbol[0],
         }))}
         defaultValue={txn.symbol}
       />

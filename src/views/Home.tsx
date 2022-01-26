@@ -29,25 +29,35 @@ function HomeView() {
       try {
         const server = omni.server.connect(url);
         const accountInfo = await server.ledgerInfo();
-        const symbols = accountInfo[0]
+        const symbolInfo = accountInfo[4]
+        let symbols = new Map<string, string>();
+
+        Array.from(symbolInfo, (symbol: any) => {
+          const symbolIdentity: string = omni.identity.toString(symbol[0])          
+          symbols.set(symbolIdentity, symbol[1])
+        })
         
-        let balances = null;
+        let balances = [];
         if ( keys === undefined) {
           balances = await omni.server.send(url, { method: "ledger.balance", data: {}})
         } else {
-          const identity: Identity = omni.identity.fromPublicKey(keys?.publicKey);
-          balances = await server.ledgerBalance(identity, symbols[0], keys!)
+          const identity: Identity = omni.identity.fromPublicKey(keys?.publicKey);          
+
+          symbols.forEach(async (value, key) => {
+            const symboleIdentity: Identity = omni.identity.fromString(key)
+            const balance = await server.ledgerBalance(identity, symboleIdentity, keys!)
+            balances.push(balance)
+          })        
         }        
         
         dispatch({ type: "BALANCES.SYMBOLS", payload: symbols });
         
-        // Get Balances if not Anonymous                
-        
+        // Get Balances if not Anonymous                        
         dispatch({
           type: "BALANCES.UPDATE",
           payload: {
             serverId: state.servers.activeId,
-            balances: balances[0],
+            balances,
           },
         });
 
@@ -94,10 +104,10 @@ function HomeView() {
           <div className="Symbols">
             <DetailHeader type='symbols' />
             {Array.from(state.balances.symbols, (symbol) => (
-              <div key={symbol} className="Balance">
-                <h3>{symbol}</h3>
+              <div key={`symbol-key-uid-${symbol[1]}`} className="Balance">
+                <h3>{symbol[1]}</h3>
                 <h4>
-                  {state.balances.bySymbol.get(symbol)?.toLocaleString() || 0}
+                  {state.balances.bySymbol.get(symbol[1])?.toLocaleString() || 0}
                 </h4>
               </div>
             ))}

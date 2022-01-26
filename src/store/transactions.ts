@@ -1,20 +1,23 @@
+import omni from "omni";
 import { Action } from "../store";
-import { Amount, SymbolId } from "../store/balances";
+import { Amount } from "../store/balances";
 import { ReceiverId } from "../store/receivers";
 import { Uint8Array2Hex } from "../helper/convert";
 import { TransactionType } from "omni/dist/types";
+import { Identity } from "omni/dist/identity";
+
 export type TransactionId = number;
 
 export interface Transaction {
   amount: Amount;
   receiverId?: ReceiverId;
-  symbol?: SymbolId;
+  symbol?: Identity;
 }
 
 export interface TransactionDetails {
   uid: string,
   amount: Amount;
-  symbol: string;
+  symbol: Identity;
   from?: string;
   to: string;
   timestamp: Date;
@@ -60,8 +63,8 @@ export const transactionReducer = (
         if (details.length === 5) {
           const type: number = details[0];
           const from: string = Uint8Array2Hex(details[1]);
-          const to: string = Uint8Array2Hex(details[2]);
-          const symbol: string = details[3];
+          const to: string = Uint8Array2Hex(details[2]);          
+          const symbol: Identity = omni.identity.fromString(details[3]);
           const amount: Amount = details[4];
 
           const detail: TransactionDetails = { uid, amount, symbol, from, to, timestamp, type };

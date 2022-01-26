@@ -1,7 +1,6 @@
 import { Action } from "../store";
 
 export type AccountId = number;
-export type Identity = { publicKey: Uint8Array; privateKey: Uint8Array } | null;
 
 export interface Account {
   keys?: { publicKey: Uint8Array; privateKey: Uint8Array };

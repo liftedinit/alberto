@@ -35,3 +35,4 @@ export const displayNotification = (error: any) => {
   
   toast.error(message)
 }
+

@@ -3,7 +3,7 @@ import omni from "omni";
 import { useNavigate, Link } from "react-router-dom";
 
 import { StoreContext } from "../store";
-
+import { displayNotification } from "../helper/common"
 import Header from "../components/Header";
 import Page from "../components/Page";
 import Button from "../components/Button";
@@ -17,20 +17,23 @@ function ConfirmView() {
   const activeServer = state.servers.byId.get(state.servers.activeId)!;
   const receiver = state.receivers.byId.get(txn.receiverId!)!;
   const idString = receiver ? omni.identity.toString(receiver.identity) : "oaa";
-
+  
   const handleConfirm = async () => {
-    try {
+    try {      
+      const s:any = txn.symbol
+      const symbolIdentity = omni.identity.fromString(s)
+
       const server = omni.server.connect(activeServer.url);
       await server.ledgerSend(
         receiver.identity!,
         txn.amount,
-        txn.symbol!,
+        symbolIdentity!,
         activeAccount.keys!
       );
       dispatch({ type: "TRANSACTION.SENT" });
       navigate("/");
     } catch (e) {
-      console.log(e);
+      displayNotification(e)
     }
   };
 
