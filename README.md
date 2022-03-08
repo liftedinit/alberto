@@ -1,7 +1,7 @@
 # Albert
 
 Albert by L1 Labs is a cryptocurrency wallet that can hold identities and manage
-communications with a ledger running as a module on a server that supports the Omni
+communications with a ledger running as a module on a network that supports the Many
 Protocol.
 
 ## Getting Started

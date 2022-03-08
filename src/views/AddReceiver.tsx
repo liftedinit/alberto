@@ -1,9 +1,8 @@
 import React, { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import omni from "omni";
 import { StoreContext } from "../store";
 import { Receiver } from "../store/receivers";
-import { Identity } from "omni/dist/identity";
+import { Identity } from "many";
 
 import Header from "../components/Header";
 import Page from "../components/Page";
@@ -31,7 +30,7 @@ const AddReceiverView = () => {
       alert("Please input name and address");
       return;
     }
-    const identity: Identity = omni.identity.fromString(address);
+    const identity = Identity.fromString(address);
     const newReceiver: Receiver = { name, identity };
     dispatch({ type: "RECEIVER.CREATE", payload: newReceiver });
     navigate("/send");

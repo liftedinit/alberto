@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import omni from "omni";
+import { KeyPair } from "many";
 import { StoreContext } from "../store";
 import { Account } from "../store/accounts";
 
@@ -22,7 +22,7 @@ function ImportPemView() {
   const handlePem = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const pem = event.target.value;
     try {
-      const keys = omni.keys.fromPem(pem);
+      const keys = KeyPair.fromPem(pem);
       setAccount({ ...account, keys });
     } catch (e) {
       setAccount({ ...account, keys: undefined });

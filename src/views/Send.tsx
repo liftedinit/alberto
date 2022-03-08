@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import omni from "omni";
 import { useNavigate, Link } from "react-router-dom";
 
 import { StoreContext } from "../store";
@@ -62,7 +61,9 @@ function SendView() {
         onChange={handleReceiver}
         label="To"
         options={Array.from(state.receivers.byId, ([id, receiver]) => {
-          const idString = omni.identity.toString(receiver.identity);
+          const idString = receiver.identity
+            ? receiver.identity.toString()
+            : "";
           return {
             label: `${receiver.name} <${idString.slice(
               0,

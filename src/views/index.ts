@@ -2,7 +2,7 @@ import AccountsView from "./Accounts";
 import AddAccountView from "./AddAccount";
 import AddAddressView from "./AddAddress";
 import AddReceiverView from "./AddReceiver";
-import AddServerView from "./AddServer";
+import AddNetworkView from "./AddNetwork";
 import ConfirmView from "./Confirm";
 import HomeView from "./Home";
 import ImportPemView from "./ImportPem";
@@ -10,7 +10,7 @@ import ImportSeedWordsView from "./ImportSeedWords";
 import NewAccountView from "./NewAccount";
 import NoAccountView from "./NoAccount";
 import SendView from "./Send";
-import ServersView from "./Servers";
+import NetworksView from "./Networks";
 import SplashView from "./Splash";
 
 export {
@@ -18,7 +18,7 @@ export {
   AddAccountView,
   AddAddressView,
   AddReceiverView,
-  AddServerView,
+  AddNetworkView,
   ConfirmView,
   HomeView,
   ImportPemView,
@@ -26,6 +26,6 @@ export {
   NewAccountView,
   NoAccountView,
   SendView,
-  ServersView,
+  NetworksView,
   SplashView,
 };

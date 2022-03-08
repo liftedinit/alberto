@@ -1,26 +1,25 @@
-import omni from "omni";
-import { Identity } from "omni/dist/identity";
+import { Identity } from "many";
 import { Account } from "../store/accounts";
 
 export const parseIdentity = (key: any): string => {
   if (key === undefined) {
     return "<oaa>";
   }
-  const identity: Identity = omni.identity.fromPublicKey(key);
+  const identity = Identity.fromPublicKey(key);
 
-  return `<${omni.identity.toString(identity)}>`;
+  return `<${identity.toString()}>`;
 };
 
 export const getAddressFromHex = (hex: any): string => {
-  const identity: Identity = omni.identity.fromHex(hex);
-  return omni.identity.toString(identity);
+  const identity = Identity.fromHex(hex);
+  return identity.toString();
 };
 
 export function displayId(account: Account): string {
   if (!account.keys) {
-    return `<${omni.identity.toString()}>`;
+    return `<oaa>`;
   }
-  const identity = omni.identity.fromPublicKey(account.keys.publicKey);
-  const idString = omni.identity.toString(identity);
+  const identity = Identity.fromPublicKey(account.keys.publicKey);
+  const idString = identity.toString();
   return `<${idString.slice(0, 4)}...${idString.slice(-4)}>`;
 }

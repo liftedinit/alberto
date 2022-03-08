@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import omni from "omni";
+import { Network } from "many";
 import { StoreContext } from "../store";
 
 import Page from "../components/Page";
@@ -16,37 +16,32 @@ function HomeView() {
   const navigate = useNavigate();
 
   const activeAccount = state.accounts.byId.get(state.accounts.activeId)!;
-  const activeServer = state.servers.byId.get(state.servers.activeId)!;
+  const activeNetwork = state.networks.byId.get(state.networks.activeId)!;
 
   useEffect(() => {
     const fetchAccount = async () => {
       const { keys } = activeAccount;
-      const { url } = activeServer;
+      const { url } = activeNetwork;
 
       try {
-        const server = omni.server.connect(url);
+        const network = new Network(url, keys!);
+        const { symbols } = await network.ledger.info();
 
-        const accountInfo = await server.accountInfo(keys!);
-        const symbols = accountInfo[0]
         dispatch({ type: "BALANCES.SYMBOLS", payload: symbols });
 
         // Get Balances if not Anonymous
         // if (keys) {
-        const balances = await server.accountBalance(symbols[0], keys!);
+        const balances = await network.ledger.balance(symbols[0]);
         dispatch({
           type: "BALANCES.UPDATE",
           payload: {
-            serverId: state.servers.activeId,
-            balances: balances[0],
+            networkId: state.networks.activeId,
+            balances: balances,
           },
         });
 
         // Get Transactions
-        const transactions = await omni.server.send(
-          url,
-          { method: "ledger.list", data: {} },
-          keys
-        );
+        const transactions = await network.ledger.list();
 
         dispatch({
           type: "TRANSACTION.LIST",
@@ -62,7 +57,7 @@ function HomeView() {
     return () => {
       clearInterval(fetchInterval);
     };
-  }, [dispatch, activeServer, activeAccount, state.servers.activeId]);
+  }, [dispatch, activeNetwork, activeAccount, state.networks.activeId]);
   return (
     <Page className="Home">
       <Header>
@@ -70,13 +65,13 @@ function HomeView() {
           <Link to="/accounts">{activeAccount.name}</Link>
         </Header.Left>
         <Header.Right>
-          <Link to="/servers">{activeServer.name}</Link>
+          <Link to="/networks">{activeNetwork.name}</Link>
         </Header.Right>
       </Header>
       <Tabs tab={tab}>
         <Tabs.Tab>
           <div className="Symbols">
-            <DetailHeader type='symbols' />
+            <DetailHeader type="symbols" />
             {Array.from(state.balances.symbols, (symbol) => (
               <div key={symbol} className="Balance">
                 <h3>{symbol}</h3>
@@ -89,15 +84,16 @@ function HomeView() {
         </Tabs.Tab>
         <Tabs.Tab>
           <div className="History">
-            <DetailHeader type='history' />
+            <DetailHeader type="history" />
             <div className="HistoryContent">
-              {Array.from(state.transactions.byTransactionId, ([id, transaction]) => (
-                <div key={transaction.uid}>
-                  <HistoryDetailItem
-                    transaction={transaction}
-                  />
-                </div>
-              ))}
+              {Array.from(
+                state.transactions.byTransactionId,
+                ([id, transaction]) => (
+                  <div key={transaction.uid}>
+                    <HistoryDetailItem transaction={transaction} />
+                  </div>
+                )
+              )}
             </div>
           </div>
         </Tabs.Tab>

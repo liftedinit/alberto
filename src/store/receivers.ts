@@ -1,9 +1,9 @@
 import { Action } from "../store";
-import { Identity } from "omni/dist/identity";
+import { Identity } from "many";
 
 export type ReceiverId = number;
 
-export interface Receiver {  
+export interface Receiver {
   name: string;
   identity?: Identity;
 }
@@ -18,23 +18,23 @@ export const initialReceiversState = {
   activeIds: new Set([0]),
   byId: new Map<ReceiverId, Receiver>(),
   nextId: 1,
-}
+};
 
 export const receiversReducer = (
   state: ReceiversState,
   { type, payload }: Action
 ) => {
   switch (type) {
-    case "RECEIVER.CREATE": {      
+    case "RECEIVER.CREATE": {
       const id = state.nextId;
       const byId = new Map(state.byId);
       byId.set(id, payload as Receiver);
 
       const activeIds = new Set(state.activeIds);
-      activeIds.add(id);      
+      activeIds.add(id);
       return { ...state, byId, activeIds, nextId: id + 1 };
     }
     default:
       return state;
   }
-}
+};

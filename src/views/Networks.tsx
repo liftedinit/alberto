@@ -7,10 +7,10 @@ import SelectList from "../components/SelectList";
 import Button from "../components/Button";
 import Page from "../components/Page";
 
-function ServersView() {
+function NetworksView() {
   const { dispatch, state } = useContext(StoreContext);
   const handleClick = (id: number) => () =>
-    dispatch({ type: "SERVERS.TOGGLE", payload: id });
+    dispatch({ type: "NETWORKS.SELECT", payload: id });
   const navigate = useNavigate();
   return (
     <Page>
@@ -20,19 +20,19 @@ function ServersView() {
         </Header.Right>
       </Header>
       <SelectList>
-        {Array.from(state.servers.byId, ([id, server]) => (
+        {Array.from(state.networks.byId, ([id, network]) => (
           <SelectList.Item
             key={id}
-            selected={state.servers.activeId === id}
+            selected={state.networks.activeId === id}
             onClick={handleClick(id)}
           >
-            <h3>{server.name}</h3>
-            <h4>{server.url}</h4>
+            <h3>{network.name}</h3>
+            <h4>{network.url}</h4>
           </SelectList.Item>
         ))}
       </SelectList>
-      <Button label="Add a Server" onClick={() => navigate("add")} />
+      <Button label="Add a Network" onClick={() => navigate("add")} />
     </Page>
   );
 }
-export default ServersView;
+export default NetworksView;

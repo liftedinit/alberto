@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import omni from "omni";
+import { KeyPair } from "many";
 import { StoreContext } from "../store";
 import { Account } from "../store/accounts";
 
@@ -22,7 +22,7 @@ function ImportSeedWordsView() {
   const handleMnemonic = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const mnemonic = event.target.value;
     try {
-      const keys = omni.keys.fromSeedWords(mnemonic);
+      const keys = KeyPair.fromMnemonic(mnemonic);
       setAccount({ ...account, keys });
     } catch (e) {
       setAccount({ ...account, keys: undefined });

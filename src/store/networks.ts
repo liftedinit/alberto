@@ -1,36 +1,36 @@
 import { Action } from "../store";
 
-export type ServerId = number;
+export type NetworkId = number;
 
-export interface Server {
+export interface NetworkParams {
   name: string;
   url: string;
 }
 
-export interface ServersState {
-  activeId: ServerId;
-  byId: Map<ServerId, Server>;
-  nextId: ServerId;
+export interface NetworksState {
+  activeId: NetworkId;
+  byId: Map<NetworkId, NetworkParams>;
+  nextId: NetworkId;
 }
 
-export const initialServersState = {
+export const initialNetworksState = {
   activeId: 0,
   byId: new Map([[0, { name: "Localhost", url: "/api" }]]),
   nextId: 1,
 };
 
-export const serversReducer = (
-  state: ServersState,
+export const networksReducer = (
+  state: NetworksState,
   { type, payload }: Action
 ) => {
   switch (type) {
-    case "SERVERS.CREATE": {
+    case "NETWORKS.CREATE": {
       const id = state.nextId;
       const byId = new Map(state.byId);
-      byId.set(id, payload as Server);
+      byId.set(id, payload as NetworkParams);
       return { ...state, byId, activeId: id, nextId: id + 1 };
     }
-    case "SERVERS.TOGGLE":
+    case "NETWORKS.SELECT":
       return { ...state, activeId: payload };
     default:
       return state;
