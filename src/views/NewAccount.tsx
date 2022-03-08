@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import omni from "omni";
+import { KeyPair } from "many";
 import { StoreContext } from "../store";
 import { Account } from "../store/accounts";
 
@@ -16,8 +16,8 @@ function NewAccountView() {
   const [seedWords, setSeedWords] = useState("");
 
   useEffect(() => {
-    const mnemonic = omni.keys.getSeedWords();
-    const keys = omni.keys.fromSeedWords(mnemonic);
+    const mnemonic = KeyPair.getMnemonic();
+    const keys = KeyPair.fromMnemonic(mnemonic);
     setSeedWords(mnemonic);
     setAccount((account) => ({ ...account, keys }));
   }, []);

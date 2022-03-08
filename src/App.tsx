@@ -6,15 +6,15 @@ import { StoreContext } from "./store";
 import {
   AccountsView,
   AddAccountView,
+  AddNetworkView,
   AddReceiverView,
-  AddServerView,
   ConfirmView,
   HomeView,
   ImportPemView,
   ImportSeedWordsView,
+  NetworksView,
   NewAccountView,
   SendView,
-  ServersView,
   SplashView,
 } from "./views";
 
@@ -57,8 +57,8 @@ function App() {
         <Route path="accounts/add/new" element={<NewAccountView />} />
         <Route path="accounts/add/seed" element={<ImportSeedWordsView />} />
         <Route path="accounts/add/pem" element={<ImportPemView />} />
-        <Route path="servers" element={<ServersView />} />
-        <Route path="servers/add" element={<AddServerView />} />
+        <Route path="networks" element={<NetworksView />} />
+        <Route path="networks/add" element={<AddNetworkView />} />
         <Route path="send" element={<SendView />} />
         <Route path="send/confirm" element={<ConfirmView />} />
         <Route path="receivers/add" element={<AddReceiverView />} />

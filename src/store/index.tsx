@@ -5,7 +5,11 @@ import {
   initialAccountsState,
   AccountsState,
 } from "./accounts";
-import { serversReducer, initialServersState, ServersState } from "./servers";
+import {
+  networksReducer,
+  initialNetworksState,
+  NetworksState,
+} from "./networks";
 import {
   balancesReducer,
   initialBalancesState,
@@ -30,7 +34,7 @@ export interface Action {
 interface State {
   accounts: AccountsState;
   balances: BalancesState;
-  servers: ServersState;
+  networks: NetworksState;
   transactions: TransactionState;
   receivers: ReceiversState;
 }
@@ -38,7 +42,7 @@ interface State {
 const initialState = {
   accounts: initialAccountsState,
   balances: initialBalancesState,
-  servers: initialServersState,
+  networks: initialNetworksState,
   transactions: initialTransactionState,
   receivers: initialReceiversState,
 };
@@ -53,7 +57,7 @@ const rootReducer = (state: State, action: Action) => {
       const newState = {
         accounts: accountsReducer(state.accounts, action),
         balances: balancesReducer(state.balances, action),
-        servers: serversReducer(state.servers, action),
+        networks: networksReducer(state.networks, action),
         transactions: transactionReducer(state.transactions, action),
         receivers: receiversReducer(state.receivers, action),
       };

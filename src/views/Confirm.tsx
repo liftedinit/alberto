@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import omni from "omni";
+import { Network } from "many";
 import { useNavigate, Link } from "react-router-dom";
 
 import { StoreContext } from "../store";
@@ -14,19 +14,14 @@ function ConfirmView() {
   const txn = state.transactions.newTransaction;
 
   const activeAccount = state.accounts.byId.get(state.accounts.activeId)!;
-  const activeServer = state.servers.byId.get(state.servers.activeId)!;
+  const activeNetwork = state.networks.byId.get(state.networks.activeId)!;
   const receiver = state.receivers.byId.get(txn.receiverId!)!;
-  const idString = receiver ? omni.identity.toString(receiver.identity) : "oaa";
+  const idString = receiver.identity.toString();
 
   const handleConfirm = async () => {
     try {
-      const server = omni.server.connect(activeServer.url);
-      await server.accountSend(
-        receiver.identity!,
-        txn.amount,
-        txn.symbol!,
-        activeAccount.keys!
-      );
+      const network = new Network(activeNetwork.url, activeAccount.keys!);
+      await network.ledger.send(receiver.identity!, txn.amount, txn.symbol!);
       dispatch({ type: "TRANSACTION.SENT" });
       navigate("/");
     } catch (e) {
@@ -42,8 +37,8 @@ function ConfirmView() {
         </Header.Right>
       </Header>
 
-      <label>Server</label>
-      <p className="Box">{activeServer.name}</p>
+      <label>Network</label>
+      <p className="Box">{activeNetwork.name}</p>
 
       <label>Amount</label>
       <p className="Box">{txn.amount.toString()}</p>
