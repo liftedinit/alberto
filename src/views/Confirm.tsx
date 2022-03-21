@@ -1,5 +1,6 @@
+// @ts-nocheck
 import { useContext } from "react";
-import { Network } from "many";
+import { Network } from "many-js";
 import { useNavigate, Link } from "react-router-dom";
 
 import { StoreContext } from "../store";
@@ -16,12 +17,13 @@ function ConfirmView() {
   const activeAccount = state.accounts.byId.get(state.accounts.activeId)!;
   const activeNetwork = state.networks.byId.get(state.networks.activeId)!;
   const receiver = state.receivers.byId.get(txn.receiverId!)!;
-  const idString = receiver.identity.toString();
+  const idString = receiver!.identity.toString();
 
   const handleConfirm = async () => {
     try {
       const network = new Network(activeNetwork.url, activeAccount.keys!);
-      await network.ledger.send(receiver.identity!, txn.amount, txn.symbol!);
+      //
+      await network.ledgerSend(receiver.identity!, txn.amount, txn.symbol!);
       dispatch({ type: "TRANSACTION.SENT" });
       navigate("/");
     } catch (e) {

@@ -12,20 +12,32 @@ import NoAccountView from "./NoAccount";
 import SendView from "./Send";
 import NetworksView from "./Networks";
 import SplashView from "./Splash";
+////////////////////////////////////////////////////
+import { Home } from "./_home";
+import { Networks } from "./_networks";
+import { AddNetwork } from "./_add-network";
+import { Accounts } from "./_accounts";
+import { AddAccount } from "./_add-account";
 
 export {
-  AccountsView,
-  AddAccountView,
-  AddAddressView,
-  AddReceiverView,
-  AddNetworkView,
-  ConfirmView,
-  HomeView,
-  ImportPemView,
-  ImportSeedWordsView,
-  NewAccountView,
-  NoAccountView,
-  SendView,
-  NetworksView,
+  // AccountsView,
+  // AddAccountView,
+  // AddAddressView,
+  // AddReceiverView,
+  // AddNetworkView,
+  // ConfirmView,
+  // HomeView,
+  // ImportPemView,
+  // ImportSeedWordsView,
+  // NewAccountView,
+  // NoAccountView,
+  // SendView,
+  // NetworksView,
   SplashView,
+  ////////////////////////////
+  Accounts,
+  AddNetwork,
+  Home,
+  Networks,
+  AddAccount,
 };

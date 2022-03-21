@@ -1,4 +1,4 @@
-import { Identity } from "many";
+import { Identity } from "many-js";
 import { Account } from "../store/accounts";
 
 export const parseIdentity = (key: any): string => {

@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { KeyPair } from "many";
+import { KeyPair } from "many-js";
 import { StoreContext } from "../store";
 import { Account } from "../store/accounts";
 
