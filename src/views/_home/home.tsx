@@ -11,12 +11,13 @@ import {
   Tab,
   Tabs,
   TabList,
-} from "components";
-import { useIsBaseBreakpoint } from "hooks";
-import { useNetworkContext } from "features/network";
-import { Symbols } from "./symbols";
-import { useLedgerInfo } from "features/network";
-import { useBalances } from "features/balances";
+  useLayoutContext,
+} from "components"
+import { useIsBaseBreakpoint } from "hooks"
+import { useNetworkContext } from "features/network"
+import { Symbols } from "./symbols"
+import { useLedgerInfo } from "features/network"
+import { useBalances } from "features/balances"
 
 enum TabNames {
   symbols = "symbols",
@@ -24,33 +25,30 @@ enum TabNames {
 }
 
 export function Home() {
-  const isBase = useIsBaseBreakpoint();
-  const network = useNetworkContext();
-  const [activeTab, setActiveTab] = React.useState<TabNames>(TabNames.symbols);
-  console.log({ isBase, activeTab });
+  const [, setLayout] = useLayoutContext()
+  const isBase = useIsBaseBreakpoint()
+  const network = useNetworkContext()
+  const [activeTab, setActiveTab] = React.useState<TabNames>(TabNames.symbols)
 
-  const ledgerInfoQuery = useLedgerInfo(network);
-  const { data: symbolsData, isFetching } = ledgerInfoQuery;
+  const ledgerInfoQuery = useLedgerInfo(network)
+  const { data: symbolsData, isFetching } = ledgerInfoQuery
 
   const symbolsArr = symbolsData?.symbols
     ? Array.from(symbolsData?.symbols?.entries())
-    : null;
+    : null
 
   const onlySymbolNames = symbolsArr
     ? symbolsArr.map(([, symbolName]) => symbolName)
-    : undefined;
+    : undefined
 
-  console.log({ onlySymbolNames });
-
-  const balancesQuery = useBalances(onlySymbolNames);
-  console.log({ balancesQuery });
+  const balancesQuery = useBalances(onlySymbolNames)
 
   function isTabActive(tab: TabNames) {
-    return tab === activeTab;
+    return tab === activeTab
   }
 
   function getButtonStyles(tab: TabNames) {
-    const isActive = isTabActive(tab);
+    const isActive = isTabActive(tab)
     return {
       h: "100%",
       isFullWidth: true,
@@ -58,18 +56,26 @@ export function Home() {
       onClick: () => setActiveTab(tab),
       opacity: isActive ? 1 : 0.4,
       colorScheme: isActive ? "green" : "gray",
-    };
+    }
   }
 
-  const symbolsWithBalance = onlySymbolNames?.map((symbolName) => {
+  const symbolsWithBalance = onlySymbolNames?.map(symbolName => {
     return {
       name: symbolName,
       balance: "0",
-    };
-  });
+    }
+  })
+
+  React.useLayoutEffect(() => {
+    // use a different bottom menu
+    setLayout({ hideMenu: true })
+    return () => {
+      setLayout({ hideMenu: false })
+    }
+  }, [])
 
   return (
-    <Layout withMenu={false}>
+    <>
       <Layout.Main py={4} px={8}>
         <ContainerWrapper>
           {isFetching && (
@@ -82,7 +88,7 @@ export function Home() {
             <Tabs
               colorScheme="green"
               index={isTabActive(TabNames.symbols) ? 0 : 1}
-              onChange={(index) =>
+              onChange={index =>
                 setActiveTab(index === 0 ? TabNames.symbols : TabNames.history)
               }
               mb={4}
@@ -126,6 +132,6 @@ export function Home() {
         )}
         <AppMenu />
       </Layout.Menu>
-    </Layout>
-  );
+    </>
+  )
 }
