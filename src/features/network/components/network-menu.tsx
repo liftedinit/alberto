@@ -7,6 +7,7 @@ import {
   Circle,
   FormControl,
   FormLabel,
+  FormHelperText,
   HStack,
   Input,
   Modal,
@@ -48,7 +49,6 @@ export function NetworkMenu() {
       setActiveId: s.setActiveId,
     }),
   )
-  console.log({ activeNetwork, networks, isOpen, activeId })
 
   return (
     <Box>
@@ -60,20 +60,22 @@ export function NetworkMenu() {
           minWidth="100px"
         >
           <HStack justifyContent="center">
-            <Circle bg="green.400" size="10px" />
+            {activeNetwork && <Circle bg="green.400" size="10px" />}
             <Text fontSize="sm" casing="uppercase" fontWeight="medium">
-              {activeNetwork?.name}
+              {`${activeNetwork?.name ?? "no network selected"}`}
             </Text>
           </HStack>
         </MenuButton>
         <MenuList>
           <Box overflow="auto" maxHeight="40vh">
-            <NetworkMenuItem
-              activeId={activeId}
-              id={activeId}
-              network={activeNetwork!}
-              onEditNetwork={onEditNetwork}
-            />
+            {activeNetwork ? (
+              <NetworkMenuItem
+                activeId={activeId}
+                id={activeId}
+                network={activeNetwork!}
+                onEditNetwork={onEditNetwork}
+              />
+            ) : null}
             {networks.map(([id, network]) =>
               id === activeId ? null : (
                 <NetworkMenuItem
@@ -173,17 +175,22 @@ function NetworkDetailsModal({
   network?: [NetworkId, NetworkParams]
 }) {
   const IS_UPDATE = !!network
-  const [formValues, setFormValues] = React.useState({ name: "", url: "" })
+  const [formValues, setFormValues] = React.useState({
+    name: "",
+    url: "",
+  })
+  const [deleteUrl, setDeleteUrl] = React.useState("")
   const toast = useToast()
-  const { createNetwork, updateNetwork, byId } = useNetworkStore(s => ({
-    createNetwork: s.createNetwork,
-    updateNetwork: s.updateNetwork,
-    byId: s.byId,
-  }))
+  const { createNetwork, updateNetwork, deleteNetwork, byId } = useNetworkStore(
+    ({ createNetwork, updateNetwork, deleteNetwork, byId }) => ({
+      createNetwork,
+      updateNetwork,
+      deleteNetwork,
+      byId,
+    }),
+  )
   function onChange(e: React.FormEvent<HTMLInputElement>) {
-    console.log("e", e.currentTarget)
     const { name, value } = e.currentTarget
-    console.log({ name, value })
     setFormValues(s => ({
       ...s,
       [name]: value,
@@ -204,7 +211,7 @@ function NetworkDetailsModal({
       onClose()
       return
     }
-    // creating new
+
     const exists = Array.from(byId).some(
       ([, networkParams]) => networkParams.url === url,
     )
@@ -219,23 +226,40 @@ function NetworkDetailsModal({
     }
 
     createNetwork({ name, url })
-    onClose()
     toast({
       title: "Add Network",
       description: "New network added. This network is now active.",
       status: "success",
       ...commonToastOptions,
     })
+    onClose()
   }
+
+  function onDelete(id: NetworkId) {
+    if (!byId.has(id)) return
+    deleteNetwork(id)
+    toast({
+      title: "Remove Network",
+      description: "Network was removed.",
+      status: "success",
+      ...commonToastOptions,
+    })
+    onClose()
+  }
+
   React.useEffect(() => {
     if (network) {
       setFormValues(network[1])
     }
-    return () => {
+  }, [network])
+
+  // reset form state when modal is closed
+  React.useEffect(() => {
+    if (!isOpen) {
+      setDeleteUrl("")
       setFormValues({ name: "", url: "" })
     }
-  }, [network])
-  console.log({ formValues, network })
+  }, [isOpen])
 
   return (
     <Modal
@@ -243,41 +267,73 @@ function NetworkDetailsModal({
       onClose={onClose}
       header={`${network ? "Update" : "Create A"} Network`}
     >
-      <form onSubmit={handleSubmit}>
-        <Modal.Body>
+      <Modal.Body>
+        <form onSubmit={handleSubmit} id="network-create-update-form">
           <Stack spacing={3} alignItems="stretch">
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel htmlFor="name">Name</FormLabel>
               <Input
                 autoFocus
                 name="name"
-                required
                 id="name"
                 variant="filled"
                 onChange={onChange}
                 value={formValues.name}
               />
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel htmlFor="url">URL</FormLabel>
               <Input
                 name="url"
                 onChange={onChange}
-                required
                 id="url"
                 variant="filled"
                 value={formValues.url}
               />
             </FormControl>
           </Stack>
-        </Modal.Body>
-        <Modal.Footer>
-          <HStack justifyContent="flex-end">
-            <Button onClick={onClose}>Cancel</Button>
-            <Button type="submit">Save</Button>
-          </HStack>
-        </Modal.Footer>
-      </form>
+        </form>
+        {IS_UPDATE && (
+          <form id="network-remove-form">
+            <FormControl mt={3}>
+              <FormLabel color="red" htmlFor="deleteUrl">
+                Remove Network
+              </FormLabel>
+              <HStack spacing={0}>
+                <Input
+                  name="deleteUrl"
+                  required
+                  id="deleteUrl"
+                  variant="filled"
+                  onChange={e => setDeleteUrl(e.currentTarget.value)}
+                  value={deleteUrl}
+                  borderTopRightRadius={0}
+                  borderBottomRightRadius={0}
+                />
+                <Button
+                  borderTopLeftRadius={0}
+                  borderBottomLeftRadius={0}
+                  colorScheme="red"
+                  disabled={deleteUrl !== formValues.url}
+                  onClick={() => onDelete(network[0])}
+                >
+                  Remove
+                </Button>
+              </HStack>
+              <FormHelperText color="red">
+                Enter the URL and click remove to remove this network.
+              </FormHelperText>
+            </FormControl>
+          </form>
+        )}
+      </Modal.Body>
+      <Modal.Footer>
+        <HStack justifyContent="flex-end">
+          <Button form="network-create-update-form" type="submit">
+            Save
+          </Button>
+        </HStack>
+      </Modal.Footer>
     </Modal>
   )
 }

@@ -45,7 +45,19 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "testing-library/no-debugging-utils": [
+        "error",
+        {
+          "utilsToCheckFor": {
+            "debug": false,
+            "logRoles": true,
+            "logDOM": true
+          }
+        }
+      ]
+    }
   },
   "browserslist": {
     "production": [

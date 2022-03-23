@@ -9,15 +9,16 @@ export function NetworkProvider({ children }: React.PropsWithChildren<{}>) {
   const activeNetwork = useNetworkStore((state) =>
     state.byId.get(state.activeId)
   );
-  const activeAccount = useAccountsStore((state) =>
-    state.byId.get(state.activeId)
-  );
-  console.log({ activeNetwork, activeAccount });
+  const activeAccount = useAccountsStore(state =>
+    state.byId.get(state.activeId),
+  )
 
-  const network = React.useMemo(
-    () => new Network(activeNetwork!.url, activeAccount!.keys),
-    [activeNetwork, activeAccount]
-  );
+  const network = React.useMemo(() => {
+    return new Network(
+      activeNetwork?.url || "",
+      activeAccount?.keys || undefined,
+    )
+  }, [activeNetwork, activeAccount])
   return (
     <NetworkContext.Provider value={network}>
       {children}

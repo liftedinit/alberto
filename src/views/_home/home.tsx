@@ -86,6 +86,7 @@ export function Home() {
 
           {!isBase && (
             <Tabs
+              data-testid="main-tabs"
               colorScheme="green"
               index={isTabActive(TabNames.symbols) ? 0 : 1}
               onChange={index =>
@@ -117,7 +118,12 @@ export function Home() {
 
       <Layout.Menu>
         {isBase && (
-          <HStack justify="space-evenly" spacing={0} h="48px">
+          <HStack
+            justify="space-evenly"
+            spacing={0}
+            h="48px"
+            data-testid="menu-tabs"
+          >
             <Button {...getButtonStyles(TabNames.symbols)}>
               <Text fontWeight="semibold" casing="uppercase" fontSize="lg">
                 symbols

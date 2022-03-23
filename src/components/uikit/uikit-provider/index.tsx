@@ -8,5 +8,9 @@ import { ChakraProvider, ChakraProviderProps } from "@chakra-ui/react"
 import { theme } from "../theme"
 
 export function UiKitProvder({ children }: ChakraProviderProps) {
-  return <ChakraProvider theme={theme}>{children}</ChakraProvider>
+  return (
+    <ChakraProvider resetCSS theme={theme}>
+      {children}
+    </ChakraProvider>
+  )
 }

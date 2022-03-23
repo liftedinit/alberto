@@ -1,5 +1,5 @@
 import React, { Dispatch } from "react"
-import { Grid, GridItem, GridItemProps, useBreakpointValue } from "components"
+import { Grid, GridItem, GridItemProps } from "components"
 import { AppNav } from "./app-nav"
 import { AppMenu } from "./app-menu"
 
@@ -16,6 +16,7 @@ const LayoutContext = React.createContext<LayoutContextState>([
 ])
 
 export function Layout({ children }: React.PropsWithChildren<{}>) {
+  // we can also have the grid attributes in context if views need more control
   const layoutContext = React.useReducer(
     (state: LayoutState, payload: { [k in keyof LayoutState]: boolean }) => {
       return { ...state, ...payload }
@@ -24,28 +25,19 @@ export function Layout({ children }: React.PropsWithChildren<{}>) {
   )
   const { hideNav, hideMenu } = layoutContext[0]
 
-  const templateGridArea = useBreakpointValue({
-    base: `'nav' 'main' 'menu'`,
-    md: `
-    'menu nav'
-    'menu main'
-    'menu main'`,
-  })
-  const templateRows = useBreakpointValue({
-    base: `minmax(auto, 36px) 1fr auto`,
-    md: `minmax(auto, 48px) auto 1fr`,
-  })
-  const templateColumns = useBreakpointValue({
-    base: `1fr`,
-    md: `100px 1fr`,
-  })
-
   return (
     <LayoutContext.Provider value={layoutContext}>
       <Grid
-        templateRows={templateRows}
-        templateColumns={templateColumns}
-        templateAreas={templateGridArea}
+        data-testid="layout-grid"
+        templateRows={{
+          base: `minmax(auto, 36px) 1fr auto`,
+          md: `minmax(auto, 48px) auto 1fr`,
+        }}
+        templateColumns={{ base: `1fr`, md: `100px 1fr` }}
+        templateAreas={{
+          base: `'nav' 'main' 'menu'`,
+          md: `'menu nav' 'menu main' 'menu main'`,
+        }}
         height="100vh"
       >
         {!hideNav && (

@@ -1,3 +1,2 @@
-export * from "./uikit";
-export * from "./query-provider";
-export * from "./layout";
+export * from "./uikit"
+export * from "./layout"

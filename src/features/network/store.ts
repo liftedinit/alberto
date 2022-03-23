@@ -10,13 +10,14 @@ const initialState = {
   byId: new Map([[0, { name: "Localhost", url: "/api" }]]),
 }
 
-interface NetworkMutations {
+interface NetworkActions {
   createNetwork: (n: NetworkParams) => void
   setActiveId: (id: NetworkId) => void
   updateNetwork: (id: NetworkId, n: NetworkParams) => void
+  deleteNetwork: (id: NetworkId) => void
 }
 
-export const useNetworkStore = create<NetworksState & NetworkMutations>(
+export const useNetworkStore = create<NetworksState & NetworkActions>(
   persist(
     set => ({
       ...initialState,
@@ -36,6 +37,17 @@ export const useNetworkStore = create<NetworksState & NetworkMutations>(
           return {
             ...state,
             byId: newById,
+          }
+        }),
+      deleteNetwork: (id: NetworkId) =>
+        // @ts-ignore
+        set(state => {
+          const byId = new Map(state.byId)
+          byId.delete(id)
+          return {
+            ...state,
+            activeId: state.activeId === id ? undefined : state.activeId,
+            byId,
           }
         }),
       setActiveId: (id: NetworkId) =>
