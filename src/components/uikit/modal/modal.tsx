@@ -15,11 +15,19 @@ export function Modal({
   footer,
   children,
   ...props
-}: ModalProps & { header?: string; footer?: React.ReactNode }) {
+}: ModalProps & {
+  header?: string
+  footer?: React.ReactNode
+  "data-testid"?: string
+}) {
   return (
     <BaseModal {...props}>
       <BaseModalOverlay />
-      <BaseModalContent>
+      <BaseModalContent
+        {...(props["data-testid"]
+          ? { "data-testid": props["data-testid"] }
+          : {})}
+      >
         {header && <BaseModalHeader>{header}</BaseModalHeader>}
         <BaseModalCloseButton />
         <BaseModalBody>{children}</BaseModalBody>

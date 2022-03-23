@@ -1,1 +1,1 @@
-export { NetworkMenu } from "./network-menu"
+export * from "./network-menu"

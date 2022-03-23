@@ -1,6 +1,6 @@
 import React from "react"
 import { FiChevronDown } from "react-icons/fi"
-import { useNetworkStore } from "../store"
+import { useNetworkStore } from "../../store"
 import {
   Box,
   Button,
@@ -22,7 +22,7 @@ import {
   UseToastOptions,
   useDisclosure,
 } from "components"
-import { NetworkId, NetworkParams } from "../types"
+import { NetworkId, NetworkParams } from "../../types"
 
 type EditNetwork = [NetworkId, NetworkParams]
 
@@ -58,6 +58,7 @@ export function NetworkMenu() {
           rightIcon={<FiChevronDown />}
           size="sm"
           minWidth="100px"
+          data-testid="active-network-menu-trigger"
         >
           <HStack justifyContent="center">
             {activeNetwork && <Circle bg="green.400" size="10px" />}
@@ -266,9 +267,21 @@ function NetworkDetailsModal({
       isOpen={isOpen}
       onClose={onClose}
       header={`${network ? "Update" : "Create A"} Network`}
+      data-testid="network-create-update-contents"
+      footer={
+        <HStack justifyContent="flex-end">
+          <Button form="network-create-update-form" type="submit">
+            Save
+          </Button>
+        </HStack>
+      }
     >
-      <Modal.Body>
-        <form onSubmit={handleSubmit} id="network-create-update-form">
+      <>
+        <form
+          onSubmit={handleSubmit}
+          data-testid="create-update-network-form"
+          id="network-create-update-form"
+        >
           <Stack spacing={3} alignItems="stretch">
             <FormControl isRequired>
               <FormLabel htmlFor="name">Name</FormLabel>
@@ -294,7 +307,7 @@ function NetworkDetailsModal({
           </Stack>
         </form>
         {IS_UPDATE && (
-          <form id="network-remove-form">
+          <form id="remove-network-form">
             <FormControl mt={3}>
               <FormLabel color="red" htmlFor="deleteUrl">
                 Remove Network
@@ -316,6 +329,7 @@ function NetworkDetailsModal({
                   colorScheme="red"
                   disabled={deleteUrl !== formValues.url}
                   onClick={() => onDelete(network[0])}
+                  data-testid="remove-network-btn"
                 >
                   Remove
                 </Button>
@@ -326,14 +340,7 @@ function NetworkDetailsModal({
             </FormControl>
           </form>
         )}
-      </Modal.Body>
-      <Modal.Footer>
-        <HStack justifyContent="flex-end">
-          <Button form="network-create-update-form" type="submit">
-            Save
-          </Button>
-        </HStack>
-      </Modal.Footer>
+      </>
     </Modal>
   )
 }

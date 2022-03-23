@@ -1,8 +1,12 @@
 import { render, screen, within } from "test/test-utils"
 import * as useIsBaseBreakpoint from "hooks/useIsBaseBreakpoint"
-import { useLedgerInfo } from "features/network"
+import { useLedgerInfo } from "features/network/queries"
 
 import { Home } from "views/_home"
+
+jest.mock("features/network/queries", () => ({
+  useLedgerInfo: jest.fn(),
+}))
 
 const mockUseIsBaseBreakpoint = jest.spyOn(
   useIsBaseBreakpoint,
@@ -10,6 +14,19 @@ const mockUseIsBaseBreakpoint = jest.spyOn(
 )
 
 describe("home page", () => {
+  beforeEach(() => {
+    useLedgerInfo.mockImplementation(() => ({
+      isFetching: false,
+      isError: false,
+      isLoading: false,
+      data: {
+        symbols: new Map([
+          ["identity1", "symbol1"],
+          ["identity2", "symbol2"],
+        ]),
+      },
+    }))
+  })
   it("should render bottom menu tabs for base screen layout", async () => {
     // base is the smallest screen width
     mockUseIsBaseBreakpoint.mockImplementation(() => true)
@@ -36,5 +53,11 @@ describe("home page", () => {
 
     const symbolsTab = within(mainTabs).getByText(/symbols/i)
     expect(symbolsTab).toBeInTheDocument()
+  })
+  it("should display a list of symbols", async () => {
+    render(<Home />)
+    expect(screen.getByText(/symbols/i)).toBeInTheDocument()
+    expect(screen.getByText(/symbol1/i)).toBeInTheDocument()
+    expect(screen.getByText(/symbol2/i)).toBeInTheDocument()
   })
 })
