@@ -19,7 +19,6 @@ import {
   Stack,
   Text,
   useToast,
-  UseToastOptions,
   useDisclosure,
 } from "components"
 import { NetworkId, NetworkParams } from "../../types"
@@ -159,13 +158,6 @@ function NetworkMenuItem({
   )
 }
 
-const commonToastOptions: UseToastOptions = {
-  duration: 5000,
-  variant: "subtle",
-  isClosable: true,
-  position: "top",
-}
-
 function NetworkDetailsModal({
   isOpen,
   onClose,
@@ -207,7 +199,6 @@ function NetworkDetailsModal({
         title: "Update Network",
         description: "Network was updated.",
         status: "success",
-        ...commonToastOptions,
       })
       onClose()
       return
@@ -221,7 +212,6 @@ function NetworkDetailsModal({
         title: "Add Network",
         description: "Network already exists.",
         status: "warning",
-        ...commonToastOptions,
       })
       return
     }
@@ -231,7 +221,6 @@ function NetworkDetailsModal({
       title: "Add Network",
       description: "New network added. This network is now active.",
       status: "success",
-      ...commonToastOptions,
     })
     onClose()
   }
@@ -243,7 +232,6 @@ function NetworkDetailsModal({
       title: "Remove Network",
       description: "Network was removed.",
       status: "success",
-      ...commonToastOptions,
     })
     onClose()
   }
@@ -275,7 +263,7 @@ function NetworkDetailsModal({
         </HStack>
       }
     >
-      <>
+      <Modal.Body>
         <form
           onSubmit={handleSubmit}
           data-testid="create-update-network-form"
@@ -339,7 +327,7 @@ function NetworkDetailsModal({
             </FormControl>
           </form>
         )}
-      </>
+      </Modal.Body>
     </Modal>
   )
 }
