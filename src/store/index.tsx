@@ -70,6 +70,7 @@ const rootReducer = (state: State, action: Action) => {
 export const StoreContext = createContext<{
   state: State;
   dispatch: Dispatch<Action>;
+  // @ts-ignore
 }>({ state: initialState, dispatch: () => {} });
 
 interface StoreProviderProps {

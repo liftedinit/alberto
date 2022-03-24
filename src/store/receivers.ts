@@ -1,5 +1,5 @@
 import { Action } from "../store";
-import { Identity } from "many";
+import { Identity } from "many-js";
 
 export type ReceiverId = number;
 

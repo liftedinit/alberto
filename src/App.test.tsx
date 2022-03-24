@@ -1,9 +1,17 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { render, screen, waitForElementToBeRemoved } from "test/test-utils"
+import App from "./App"
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
-});
+describe("App", () => {
+  it("first renders the splash page", async () => {
+    render(<App />)
+
+    const albertText = screen.getByTestId("splash-screen")
+    expect(albertText).toBeInTheDocument()
+  })
+  it("should render the layout grid after the splash screen", async () => {
+    render(<App />)
+    await waitForElementToBeRemoved(screen.queryByTestId("splash-screen"))
+    expect(screen.queryByTestId("splash-screen")).not.toBeInTheDocument()
+    expect(screen.getByTestId("layout-grid")).toBeInTheDocument()
+  })
+})

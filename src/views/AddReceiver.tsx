@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { StoreContext } from "../store";
 import { Receiver } from "../store/receivers";
-import { Identity } from "many";
+import { Identity } from "many-js";
 
 import Header from "../components/Header";
 import Page from "../components/Page";

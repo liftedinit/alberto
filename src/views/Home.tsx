@@ -1,6 +1,7 @@
+// @ts-nocheck
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Network } from "many";
+import { Network } from "many-js";
 import { StoreContext } from "../store";
 
 import Page from "../components/Page";
@@ -25,39 +26,48 @@ function HomeView() {
 
       try {
         const network = new Network(url, keys!);
-        const { symbols } = await network.ledger.info();
+        const info = await network.fetchLedgerInfo();
+        const { symbols } = info;
+        console.log({ info });
 
-        dispatch({ type: "BALANCES.SYMBOLS", payload: symbols });
+        console.log({ symbols });
+        // symbols.entries()
+        let entries = symbols.entries();
+        const arrayEntries = Array.from(entries);
+        console.log("entries", arrayEntries);
+
+        dispatch({ type: "BALANCES.SYMBOLS", payload: arrayEntries });
 
         // Get Balances if not Anonymous
         // if (keys) {
-        const balances = await network.ledger.balance(symbols[0]);
-        dispatch({
-          type: "BALANCES.UPDATE",
-          payload: {
-            networkId: state.networks.activeId,
-            balances: balances,
-          },
-        });
+        // const balances = await network.ledger.balance(symbols[0]);
+        // dispatch({
+        //   type: "BALANCES.UPDATE",
+        //   payload: {
+        //     networkId: state.networks.activeId,
+        //     balances: balances,
+        //   },
+        // });
 
         // Get Transactions
-        const transactions = await network.ledger.list();
+        // const transactions = await network.ledger.list();
 
-        dispatch({
-          type: "TRANSACTION.LIST",
-          payload: transactions,
-        });
+        // dispatch({
+        //   type: "TRANSACTION.LIST",
+        //   payload: transactions,
+        // });
         // }
       } catch (e) {
         throw new Error((e as Error).message);
       }
     };
     fetchAccount();
-    const fetchInterval = setInterval(fetchAccount, 2000);
+    // const fetchInterval = setInterval(fetchAccount, 2000);
     return () => {
-      clearInterval(fetchInterval);
+      // clearInterval(fetchInterval);
     };
   }, [dispatch, activeNetwork, activeAccount, state.networks.activeId]);
+  console.log("state.balances.symbols", state.balances.symbols);
   return (
     <Page className="Home">
       <Header>
@@ -72,14 +82,14 @@ function HomeView() {
         <Tabs.Tab>
           <div className="Symbols">
             <DetailHeader type="symbols" />
-            {Array.from(state.balances.symbols, (symbol) => (
+            {/* {Array.from(state.balances.symbols, (symbol) => (
               <div key={symbol} className="Balance">
                 <h3>{symbol}</h3>
                 <h4>
                   {state.balances.bySymbol.get(symbol)?.toLocaleString() || 0}
                 </h4>
               </div>
-            ))}
+            ))} */}
           </div>
         </Tabs.Tab>
         <Tabs.Tab>

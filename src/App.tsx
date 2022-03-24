@@ -1,70 +1,35 @@
-import React, { useContext, useState } from "react";
-import { Routes, Route } from "react-router-dom";
-import localForage from "localforage";
+import React from "react"
+import { Outlet } from "react-router"
+import { Routes, Route } from "react-router-dom"
+import { Layout } from "components"
+import { SplashView, Home } from "./views"
 
-import { StoreContext } from "./store";
-import {
-  AccountsView,
-  AddAccountView,
-  AddNetworkView,
-  AddReceiverView,
-  ConfirmView,
-  HomeView,
-  ImportPemView,
-  ImportSeedWordsView,
-  NetworksView,
-  NewAccountView,
-  SendView,
-  SplashView,
-} from "./views";
-
-import "./App.css";
-
-const SPLASH_DELAY = 1 * 1000;
-const STATE_KEY = "ALBERT.STATE";
+const ONE_SECOND = 1 * 1000
 
 function App() {
-  const [showSplash, setShowSplash] = useState(true);
-  const { state, dispatch } = useContext(StoreContext);
+  const [showSplash, setShowSplash] = React.useState(true)
   React.useEffect(() => {
-    setTimeout(() => setShowSplash(false), SPLASH_DELAY);
-    const loadState = async () => {
-      try {
-        const restoredState = await localForage.getItem(STATE_KEY);
-        dispatch({ type: "APP.RESTORE", payload: restoredState });
-      } catch (e) {}
-    };
-    // loadState();
-  }, [dispatch]);
-
-  React.useEffect(() => {
-    localForage.setItem(STATE_KEY, state);
-  }, [state]);
+    let id = setTimeout(() => setShowSplash(false), ONE_SECOND)
+    return () => clearTimeout(id)
+  }, [])
 
   if (showSplash) {
-    return (
-      <div className="App no-header">
-        <SplashView />
-      </div>
-    );
+    return <SplashView />
   }
   return (
-    <div className="App">
-      <Routes>
-        <Route path="/" element={<HomeView />} />
-        <Route path="accounts" element={<AccountsView />} />
-        <Route path="accounts/add" element={<AddAccountView />} />
-        <Route path="accounts/add/new" element={<NewAccountView />} />
-        <Route path="accounts/add/seed" element={<ImportSeedWordsView />} />
-        <Route path="accounts/add/pem" element={<ImportPemView />} />
-        <Route path="networks" element={<NetworksView />} />
-        <Route path="networks/add" element={<AddNetworkView />} />
-        <Route path="send" element={<SendView />} />
-        <Route path="send/confirm" element={<ConfirmView />} />
-        <Route path="receivers/add" element={<AddReceiverView />} />
-      </Routes>
-    </div>
-  );
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <Layout>
+            <Outlet />
+          </Layout>
+        }
+      >
+        <Route index element={<Home />} />
+      </Route>
+    </Routes>
+  )
 }
 
-export default App;
+export default App

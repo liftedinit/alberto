@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Network } from "many";
+import { Network } from "many-js";
 import { StoreContext } from "../store";
 import { NetworkParams } from "../store/networks";
 
@@ -12,16 +12,19 @@ import Page from "../components/Page";
 function AddNetworkView() {
   const navigate = useNavigate();
   const { dispatch } = useContext(StoreContext);
-  const [network, setNetwork] = useState<NetworkParams>({ name: "", url: "" });
+  const [newNetwork, setNetwork] = useState<NetworkParams>({
+    name: "",
+    url: "",
+  });
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setNetwork({ ...network, [name]: value });
+    setNetwork({ ...newNetwork, [name]: value });
   };
 
   const handleSave = async () => {
     try {
-      const network = new Network(network.url);
+      const network = new Network(newNetwork.url);
       await network.base.heartbeat();
       dispatch({ type: "NETWORKS.CREATE", payload: network });
       navigate("/networks");
@@ -39,7 +42,7 @@ function AddNetworkView() {
       <Input label="URL" name="url" type="url" onChange={handleChange} />
 
       <Button.Footer
-        disabled={!network.name || !network.url}
+        disabled={!newNetwork.name || !newNetwork.url}
         label="Save"
         onClick={handleSave}
       />

@@ -53,7 +53,7 @@ function SendView() {
           label: symbol,
           value: symbol,
         }))}
-        defaultValue={txn.symbol}
+        // defaultValue={txn.symbol}
       />
 
       <Select
