@@ -254,7 +254,6 @@ function NetworkDetailsModal({
     }
   }, [network])
 
-  // reset form state when modal is closed
   React.useEffect(() => {
     if (!isOpen) {
       setDeleteUrl("")

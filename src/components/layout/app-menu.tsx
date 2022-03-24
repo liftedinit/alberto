@@ -12,7 +12,6 @@ export function AppMenu() {
   const iconsRef = React.useRef([
     IoHomeOutline,
     IoWalletOutline,
-    // AiOutlineDollarCircle,
     FaExchangeAlt,
     RiBankLine,
     IoSettingsOutline,

@@ -16,7 +16,6 @@ const LayoutContext = React.createContext<LayoutContextState>([
 ])
 
 export function Layout({ children }: React.PropsWithChildren<{}>) {
-  // we can also have the grid attributes in context if views need more control
   const layoutContext = React.useReducer(
     (state: LayoutState, payload: { [k in keyof LayoutState]: boolean }) => {
       return { ...state, ...payload }

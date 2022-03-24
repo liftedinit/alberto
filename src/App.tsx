@@ -10,7 +10,6 @@ function App() {
   const [showSplash, setShowSplash] = React.useState(true)
   React.useEffect(() => {
     let id = setTimeout(() => setShowSplash(false), ONE_SECOND)
-    // without clearing timeout here, we get the "indicates a memory-leak in your application" warning.
     return () => clearTimeout(id)
   }, [])
 
