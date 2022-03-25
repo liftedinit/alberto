@@ -2,10 +2,13 @@ import create from "zustand";
 import { persist } from "zustand/middleware";
 import localforage from "localforage";
 import { replacer, reviver } from "helper/json";
-import { Account, AccountsState } from "./types"
+import { Account, AccountId, AccountsState } from "./types"
 
 interface AccountMethods {
   createAccount: (a: Account) => void
+  deleteAccount: (id: AccountId) => void
+  updateAccount: (id: AccountId, a: Account) => void
+  setActiveId: (id: AccountId) => void
 }
 
 export const initialState: AccountsState = {
@@ -27,6 +30,25 @@ export const useAccountsStore = create<AccountsState & AccountMethods>(
             byId: new Map(state.byId).set(id, account),
           }
         }),
+      updateAccount: (id: AccountId, account: Account) =>
+        set(state => ({
+          ...state,
+          byId: new Map(state.byId).set(id, account),
+        })),
+      deleteAccount: (id: AccountId) =>
+        set(state => {
+          const map = new Map(state.byId)
+          map.delete(id)
+          return {
+            ...state,
+            byId: map,
+          }
+        }),
+      setActiveId: (id: AccountId) =>
+        set(state => ({
+          ...state,
+          activeId: id,
+        })),
     }),
     {
       name: "ALBERT.ACCOUNT",

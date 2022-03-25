@@ -15,11 +15,14 @@ export const getAddressFromHex = (hex: any): string => {
   return identity.toString();
 };
 
-export function displayId(account: Account): string {
+const makeShortId = (idString: string): string =>
+  `<${idString.slice(0, 4)}...${idString.slice(-4)}>`
+
+export function displayId(account: Account): { full: string; short: string } {
   if (!account.keys) {
-    return `<oaa>`;
+    return { full: "", short: `<oaa>` }
   }
-  const identity = Identity.fromPublicKey(account.keys.publicKey);
-  const idString = identity.toString();
-  return `<${idString.slice(0, 4)}...${idString.slice(-4)}>`;
+  const identity = Identity.fromPublicKey(account.keys.publicKey)
+  const idString = identity.toString()
+  return { full: idString, short: makeShortId(idString) }
 }

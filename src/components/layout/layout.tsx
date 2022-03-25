@@ -29,7 +29,7 @@ export function Layout({ children }: React.PropsWithChildren<{}>) {
       <Grid
         data-testid="layout-grid"
         templateRows={{
-          base: `minmax(auto, 36px) 1fr auto`,
+          base: `auto 1fr auto`,
           md: `minmax(auto, 48px) auto 1fr`,
         }}
         templateColumns={{ base: `1fr`, md: `100px 1fr` }}
@@ -40,7 +40,7 @@ export function Layout({ children }: React.PropsWithChildren<{}>) {
         height="100vh"
       >
         {!hideNav && (
-          <GridItem gridArea="nav">
+          <GridItem gridArea="nav" overflow="hidden">
             <AppNav />
           </GridItem>
         )}
