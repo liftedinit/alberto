@@ -30,7 +30,7 @@ export function Modal({
       >
         {header && <BaseModalHeader>{header}</BaseModalHeader>}
         <BaseModalCloseButton />
-        <BaseModalBody>{children}</BaseModalBody>
+        {children}
         {footer && <BaseModalFooter>{footer}</BaseModalFooter>}
       </BaseModalContent>
     </BaseModal>

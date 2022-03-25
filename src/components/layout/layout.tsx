@@ -40,14 +40,7 @@ export function Layout({ children }: React.PropsWithChildren<{}>) {
         height="100vh"
       >
         {!hideNav && (
-          <GridItem
-            gridArea="nav"
-            shadow="md"
-            py={4}
-            px={4}
-            display="flex"
-            alignItems="center"
-          >
+          <GridItem gridArea="nav">
             <AppNav />
           </GridItem>
         )}
