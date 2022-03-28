@@ -14,6 +14,7 @@ import { KeyPair } from "many-js"
 import { doesAccountExist } from "../../utils"
 import { AddAccountMethodProps } from "./add-account-modal"
 
+const toastTitle = "Add Account"
 export function PemFile({ setAddMethod, onSuccess }: AddAccountMethodProps) {
   const toast = useToast()
   const { createAccount, accounts } = useAccountsStore(
@@ -32,6 +33,7 @@ export function PemFile({ setAddMethod, onSuccess }: AddAccountMethodProps) {
       keysFromPem = KeyPair.fromPem(pem)
     } catch {
       return toast({
+        title: toastTitle,
         status: "warning",
         description: "Invalid PEM",
       })
@@ -41,6 +43,7 @@ export function PemFile({ setAddMethod, onSuccess }: AddAccountMethodProps) {
 
     if (exists) {
       return toast({
+        title: toastTitle,
         status: "warning",
         description: "Account already exists.",
       })
@@ -48,6 +51,7 @@ export function PemFile({ setAddMethod, onSuccess }: AddAccountMethodProps) {
 
     createAccount({ name, keys: keysFromPem })
     toast({
+      title: toastTitle,
       status: "success",
       description: "New account was created.",
     })
@@ -74,9 +78,13 @@ export function PemFile({ setAddMethod, onSuccess }: AddAccountMethodProps) {
               />
             </FormControl>
             <FormControl isRequired>
-              <FormLabel mt={6}>PEM File</FormLabel>
+              <FormLabel htmlFor="pem" mt={6}>
+                PEM File
+              </FormLabel>
               <Textarea
                 value={pem}
+                name="pem"
+                id="pem"
                 variant="filled"
                 onChange={e => setPem(e.target.value)}
               />
