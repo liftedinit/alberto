@@ -42,11 +42,13 @@ export function AccountsMenu() {
     onClose: onAddModalClose,
     onOpen: onAddModalOpen,
   } = useDisclosure()
+
   const {
     isOpen: isEditModalOpen,
     onClose: onEditModalClose,
     onOpen: onEditModalOpen,
   } = useDisclosure()
+
   const { activeAccount, accounts, activeId, setActiveId } = useAccountsStore(
     s => ({
       accounts: Array.from(s.byId).sort((a, b) => {
@@ -86,8 +88,6 @@ export function AccountsMenu() {
 
   const idStrs = displayId(activeAccount!)
 
-  console.log({ activeAccount })
-
   return (
     <Flex alignItems="center" minWidth="100px" mr={2}>
       <Menu autoSelect={false}>
@@ -95,6 +95,7 @@ export function AccountsMenu() {
           as={Button}
           rightIcon={<FiChevronDown />}
           size={isBase ? "md" : "sm"}
+          aria-label="active account menu trigger"
         >
           <HStack alignItems="center">
             <Icon as={AiOutlineUser} w={5} h={5} />
@@ -193,23 +194,22 @@ function AccountMenuItem({
       as={SimpleGrid}
       columns={2}
       borderTopWidth={1}
+      spacing={4}
+      py={4}
     >
       <VStack align="flex-start" spacing={1}>
         <HStack>
           {activeId === id && <Circle bg="green.400" size="10px" />}
           {activeId === id ? (
-            <Text fontSize={{ base: "lg", md: "md" }} casing="uppercase">
+            <Text fontSize={{ base: "xl", md: "md" }} casing="uppercase">
               {accountData.name}
             </Text>
           ) : (
-            <Text
-              fontSize={{ base: "lg", md: "md" }}
-              casing="uppercase"
-              cursor="poiner"
-              onClick={() => setActiveId?.(id)}
-            >
-              {accountData.name}
-            </Text>
+            <Button variant="link" onClick={() => setActiveId?.(id)}>
+              <Text fontSize={{ base: "xl", md: "md" }} casing="uppercase">
+                {accountData.name}
+              </Text>
+            </Button>
           )}
         </HStack>
         {accountData.idDisplayStrings.full && (
@@ -226,7 +226,7 @@ function AccountMenuItem({
       {accountData.keys && (
         <IconButton
           variant="ghost"
-          aria-label="edit account button"
+          aria-label="edit account"
           icon={<FaRegEdit />}
           size="lg"
           onClick={() => onEditClick(account)}

@@ -45,7 +45,12 @@ export function AddAccountModal({
   }, [isOpen])
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="4xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="4xl"
+      data-testid="add-account-form-container"
+    >
       {addMethod === "" && (
         <ScaleFade in={true} initialScale={0.9}>
           <AddAccountMethods
@@ -124,6 +129,7 @@ function AddAccountMethods({
             <Text>Some description of how this works maybe?</Text>
             <Button
               mt={4}
+              aria-label="import seed"
               isFullWidth
               textTransform="uppercase"
               onClick={() => onAddMethodClick(AddAccountMethodTypes.seed)}
@@ -139,6 +145,7 @@ function AddAccountMethods({
             <Button
               mt={4}
               isFullWidth
+              aria-label="import pem"
               textTransform="uppercase"
               onClick={() => onAddMethodClick(AddAccountMethodTypes.pem)}
             >

@@ -31,8 +31,6 @@ export function SeedWords({ setAddMethod, onSuccess }: AddAccountMethodProps) {
     e.preventDefault()
     let keysFromMnemonic: KeyPair | undefined
     try {
-      const mn = account.mnemonic.trim().split(/\s+/g).join(" ")
-      console.log({ mn })
       keysFromMnemonic = KeyPair.fromMnemonic(account.mnemonic)
     } catch {
       return toast({
@@ -85,12 +83,13 @@ export function SeedWords({ setAddMethod, onSuccess }: AddAccountMethodProps) {
               <Textarea
                 value={account.mnemonic}
                 variant="filled"
-                onChange={e =>
+                onChange={e => {
+                  const val = e.target.value
                   setAccount(s => ({
                     ...s,
-                    mnemonic: e.target.value,
+                    mnemonic: val,
                   }))
-                }
+                }}
               />
             </FormControl>
           </form>

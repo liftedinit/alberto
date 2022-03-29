@@ -61,7 +61,8 @@ export function CreateAccount({
                 id="name"
                 variant="filled"
                 onChange={e => {
-                  setAccount(s => ({ ...s, name: e.target.value }))
+                  const val = e.target.value
+                  setAccount(s => ({ ...s, name: val }))
                 }}
                 value={account.name}
               />
@@ -69,9 +70,11 @@ export function CreateAccount({
             <FormLabel mt={6}>Seed words</FormLabel>
             <SimpleGrid spacing={1} columns={{ base: 4 }} max-width="400px">
               {!!seedWords &&
-                seedWords
-                  .split(" ")
-                  .map(word => <Text fontSize="lg">{word}</Text>)}
+                seedWords.split(" ").map(word => (
+                  <Text data-testid="seed-word" key={word} fontSize="lg">
+                    {word}
+                  </Text>
+                ))}
             </SimpleGrid>
           </form>
         </ContainerWrapper>
