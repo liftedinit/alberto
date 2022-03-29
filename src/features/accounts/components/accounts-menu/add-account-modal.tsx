@@ -2,6 +2,8 @@ import React from "react"
 import {
   Box,
   Button,
+  ContainerWrapper,
+  Flex,
   Heading,
   Modal,
   ScaleFade,
@@ -65,9 +67,13 @@ export function AddAccountModal({
             <PemFile setAddMethod={setAddMethod} onSuccess={onSuccess} />
           )}
           <Modal.Footer>
-            <Button type="submit" form="add-account-form">
-              Save
-            </Button>
+            <ContainerWrapper>
+              <Flex justifyContent="flex-end">
+                <Button type="submit" form="add-account-form">
+                  Save
+                </Button>
+              </Flex>
+            </ContainerWrapper>
           </Modal.Footer>
         </ScaleFade>
       )}

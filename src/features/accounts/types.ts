@@ -1,3 +1,4 @@
+export const ANON_ID = "<oaa>"
 export type AccountId = number
 export type Identity = { publicKey: Uint8Array; privateKey: Uint8Array } | null
 
