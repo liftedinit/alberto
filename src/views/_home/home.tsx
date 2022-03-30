@@ -6,18 +6,25 @@ import { useAccountsStore } from "features/accounts"
 import { Symbols } from "./symbols"
 
 enum TabNames {
-  balance = "balance",
-  history = "history",
+  assets = "assets",
+  transactions = "transactions",
 }
 
 export function Home() {
   const isBase = useIsBaseBreakpoint()
   const network = useNetworkContext()
-  const [activeTab, setActiveTab] = React.useState<TabNames>(TabNames.balance)
+  const [activeTab, setActiveTab] = React.useState<TabNames>(TabNames.assets)
   const account = useAccountsStore(s => s.byId.get(s.activeId))
 
   function isTabActive(tab: TabNames) {
     return tab === activeTab
+  }
+
+  function getTabStyles(tab: TabNames) {
+    return {
+      fontWeight: "medium",
+      opacity: tab === activeTab ? 1 : 0.4,
+    }
   }
 
   return (
@@ -27,31 +34,24 @@ export function Home() {
           <Tabs
             isFitted={isBase ? true : false}
             colorScheme="brand.teal"
-            variant={isBase ? "enclosed" : "line"}
-            index={isTabActive(TabNames.balance) ? 0 : 1}
+            index={isTabActive(TabNames.assets) ? 0 : 1}
             onChange={index =>
-              setActiveTab(index === 0 ? TabNames.balance : TabNames.history)
+              setActiveTab(
+                index === 0 ? TabNames.assets : TabNames.transactions,
+              )
             }
             mb={4}
           >
             <TabList>
-              <Tab
-                fontWeight={isTabActive(TabNames.balance) ? "bold" : "normal"}
-              >
-                Balance
-              </Tab>
-              <Tab
-                fontWeight={isTabActive(TabNames.history) ? "bold" : "normal"}
-              >
-                History
-              </Tab>
+              <Tab {...getTabStyles(TabNames.assets)}>Assets</Tab>
+              <Tab {...getTabStyles(TabNames.transactions)}>Transactions</Tab>
             </TabList>
           </Tabs>
 
-          {isTabActive(TabNames.balance) && (
+          {isTabActive(TabNames.assets) && (
             <Symbols network={network} account={account} />
           )}
-          {isTabActive(TabNames.history) && "history goes here"}
+          {isTabActive(TabNames.transactions) && "history goes here"}
         </ContainerWrapper>
       </Layout.Main>
     </>

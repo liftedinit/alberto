@@ -30,10 +30,10 @@ describe("home page", () => {
 
     const tabs = screen.getByRole("tablist")
 
-    const historyTab = within(tabs).getByText(/balance/i)
+    const historyTab = within(tabs).getByText(/assets/i)
     expect(historyTab).toBeInTheDocument()
 
-    const symbolsTab = within(tabs).getByText(/history/i)
+    const symbolsTab = within(tabs).getByText(/transactions/i)
     expect(symbolsTab).toBeInTheDocument()
   })
   it("should list the balances of each token the account holds", async () => {
