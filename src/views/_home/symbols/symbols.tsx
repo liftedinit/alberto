@@ -19,8 +19,8 @@ export function Symbols({
     return (
       <Center>
         {errors.length > 0 ? (
-          errors.map(e => (
-            <Text key={JSON.stringify(e)}>
+          errors.map((e, idx) => (
+            <Text key={idx}>
               {typeof e === "string" ? e : JSON.stringify(e)}
             </Text>
           ))
