@@ -9,5 +9,5 @@ export function ContainerWrapper({
   const Comp = React.useMemo(() => {
     return isBase ? React.Fragment : Container;
   }, [isBase]);
-  return <Comp {...props}>{children}</Comp>;
+  return <Comp {...(isBase ? {} : props)}>{children}</Comp>
 }

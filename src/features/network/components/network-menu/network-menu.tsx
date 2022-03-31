@@ -26,12 +26,10 @@ import {
   useDisclosure,
 } from "components"
 import { NetworkId, NetworkParams } from "../../types"
-import { useIsBaseBreakpoint } from "hooks"
 
 type EditNetwork = [NetworkId, NetworkParams]
 
 export function NetworkMenu() {
-  const isBase = useIsBaseBreakpoint()
   const [editingNetwork, setEditingNetwork] = React.useState<
     EditNetwork | undefined
   >(undefined)
@@ -57,25 +55,23 @@ export function NetworkMenu() {
 
   return (
     <Flex alignItems="center" justifyContent="flex-end" minW="100px">
-      <Menu>
+      <Menu autoSelect={false}>
         <MenuButton
           as={Button}
           rightIcon={<FiChevronDown />}
-          size={isBase ? "md" : "sm"}
+          lineHeight="normal"
+          size="md"
+          variant="outline"
+          colorScheme="brand.brown"
           minWidth="100px"
           data-testid="active-network-menu-trigger"
+          leftIcon={
+            activeNetwork ? <Circle bg="green.400" size="10px" /> : null
+          }
         >
-          <HStack justifyContent="center">
-            {activeNetwork && <Circle bg="green.400" size="10px" />}
-            <Text
-              fontSize={{ base: "lg", md: "md" }}
-              casing="uppercase"
-              fontWeight="medium"
-              isTruncated
-            >
-              {`${activeNetwork?.name ?? "no network selected"}`}
-            </Text>
-          </HStack>
+          <Text casing="uppercase" isTruncated fontWeight="semibold">
+            {`${activeNetwork?.name ?? "no network selected"}`}
+          </Text>
         </MenuButton>
         <MenuList maxW="100vw">
           <MenuOptionGroup title="Networks" />
@@ -172,9 +168,9 @@ function NetworkMenuItem({
         </Button>
       )}
       <IconButton
-        variant="link"
+        variant="ghost"
         color="brand.black"
-        aria-label="edit account button"
+        aria-label="edit network"
         icon={<FaRegEdit />}
         size="lg"
         onClick={() => onEditNetwork([id, network])}
