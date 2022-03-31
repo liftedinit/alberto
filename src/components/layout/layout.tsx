@@ -37,7 +37,8 @@ export function Layout({ children }: React.PropsWithChildren<{}>) {
           base: `'nav' 'main' 'menu'`,
           md: `'menu nav' 'menu main' 'menu main'`,
         }}
-        height="100vh"
+        overflow="hidden"
+        height="100%"
       >
         {!hideNav && (
           <GridItem gridArea="nav" overflow="hidden">
