@@ -17,17 +17,19 @@ export function Symbols({
 
   if (isError) {
     return (
-      <Center>
+      <Stack flexDir="column">
         {errors.length > 0 ? (
           errors.map((e, idx) => (
-            <Text key={idx}>
-              {typeof e === "string" ? e : JSON.stringify(e)}
+            <Text key={idx} wordBreak="break-word">
+              {typeof e === "string"
+                ? e
+                : JSON.stringify(e, Object.getOwnPropertyNames(e))}
             </Text>
           ))
         ) : (
           <Text>An unexpected error occurred.</Text>
         )}
-      </Center>
+      </Stack>
     )
   }
 
