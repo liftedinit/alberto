@@ -18,10 +18,12 @@ describe("home page", () => {
       isFetching: false,
       isError: false,
       errors: [],
-      data: [
-        { name: "ABC", value: BigInt(1000000) },
-        { name: "GHI", value: BigInt(5000000) },
-      ],
+      data: {
+        ownedAssetsWithBalance: [
+          { symbol: "ABC", balance: BigInt(1000000), identity: "oabc" },
+          { symbol: "GHI", balance: BigInt(5000000), identity: "ocba" },
+        ],
+      },
     }))
   })
   it("should render tabs for balances and history", async () => {
