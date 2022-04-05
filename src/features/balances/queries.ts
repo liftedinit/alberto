@@ -26,6 +26,7 @@ export function useBalances({ network, account }: UseBalancesOpts) {
     enabled: !!network?.url && !!account?.keys,
     retry: false,
   })
+
   const ownedAssetBalances = balancesQuery?.data?.balances ?? new Map()
 
   const allAssetsWithBalance: Asset[] = Array.from(
