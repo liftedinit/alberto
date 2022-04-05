@@ -1,7 +1,20 @@
-import { Center, Circle, HStack, Spinner, Stack, Text } from "components"
+import { Link as RouterLink } from "react-router-dom"
+
+import { GrSend } from "react-icons/gr"
+import { Network } from "many-js"
+import {
+  Button,
+  Center,
+  HStack,
+  Icon,
+  Image,
+  Spinner,
+  Stack,
+  Text,
+} from "components"
 import { Account } from "features/accounts"
 import { useBalances } from "features/balances"
-import { Network } from "many-js"
+import cubeImg from "assets/cube.png"
 
 export function Symbols({
   network,
@@ -33,7 +46,7 @@ export function Symbols({
     )
   }
 
-  if (data.length === 0 && !isFetching) {
+  if (data.ownedAssetsWithBalance.length === 0 && !isFetching) {
     return (
       <Center>
         <Text fontSize="lg">There are no tokens for this account.</Text>
@@ -50,22 +63,22 @@ export function Symbols({
       ) : null}
 
       <Stack spacing={3}>
-        {data?.map(symbol => {
+        {data.ownedAssetsWithBalance.map(asset => {
           return (
             <HStack
               shadow="base"
               px={3}
-              py={3}
+              py={2}
               bg="gray.50"
-              key={symbol.name}
+              key={asset.identity}
               rounded="md"
               borderWidth={1}
               spacing={4}
               overflow="hidden"
               alignItems="center"
             >
-              <Circle size="8" borderWidth={1} borderColor="gray.400" />
-              <HStack overflow="hidden" alignItems="center">
+              <Image src={cubeImg} boxSize={10} />
+              <HStack overflow="hidden" alignItems="center" flexGrow={1}>
                 <Text
                   overflow="hidden"
                   whiteSpace="nowrap"
@@ -73,12 +86,22 @@ export function Symbols({
                   fontSize="xl"
                   fontWeight="medium"
                 >
-                  {symbol.value.toLocaleString()}
+                  {asset.balance.toLocaleString()}
                 </Text>
                 <Text fontSize="lg" casing="uppercase" lineHeight="normal">
-                  {symbol.name}
+                  {asset.symbol}
                 </Text>
               </HStack>
+              <Button
+                leftIcon={<Icon as={GrSend} />}
+                variant="link"
+                as={RouterLink}
+                to="send"
+                justifySelf="flex-end"
+                state={{ assetIdentity: asset.identity }}
+              >
+                Send
+              </Button>
             </HStack>
           )
         })}

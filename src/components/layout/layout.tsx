@@ -30,7 +30,7 @@ export function Layout({ children }: React.PropsWithChildren<{}>) {
         data-testid="layout-grid"
         templateRows={{
           base: `auto 1fr auto`,
-          md: `minmax(auto, 48px) auto 1fr`,
+          md: `auto 1fr auto`,
         }}
         templateColumns={{ base: `1fr`, md: `100px 1fr` }}
         templateAreas={{

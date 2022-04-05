@@ -1,20 +1,27 @@
 import React from "react";
-import { RiBankLine } from "react-icons/ri";
-import { IoSettingsOutline, IoWalletOutline } from "react-icons/io5";
-import { FaExchangeAlt } from "react-icons/fa";
-import { IoHomeOutline } from "react-icons/io5";
+import { useLocation, Link as RouterLink } from "react-router-dom"
+import { IoSettingsOutline, IoWalletOutline } from "react-icons/io5"
+import { FaExchangeAlt } from "react-icons/fa"
 import { Center, Icon, Image, Link, Stack, Show, StackProps } from "components"
 import cubeImg from "assets/cube.png"
 import { useIsBaseBreakpoint } from "hooks"
 
 export function AppMenu() {
+  const location = useLocation()
   const isBase = useIsBaseBreakpoint()
   const iconsRef = React.useRef([
-    IoHomeOutline,
-    IoWalletOutline,
-    FaExchangeAlt,
-    RiBankLine,
-    IoSettingsOutline,
+    {
+      pathname: "/",
+      icon: IoWalletOutline,
+    },
+    {
+      pathname: "/send",
+      icon: FaExchangeAlt,
+    },
+    {
+      pathname: "/settings",
+      icon: IoSettingsOutline,
+    },
   ])
   const stackProps: StackProps = isBase
     ? {
@@ -38,8 +45,8 @@ export function AppMenu() {
     : { borderWidth: "0" }
 
   const iconStyles = {
-    w: 8,
-    h: 8,
+    w: 9,
+    h: 9,
   }
 
   return (
@@ -47,9 +54,17 @@ export function AppMenu() {
       <Show above="md">
         <Image src={cubeImg} />
       </Show>
-      {iconsRef.current.map((TabIcon, idx) => (
-        <Center as={Link} {...centerProps} key={idx} p={3}>
-          <Icon as={TabIcon} {...iconStyles} />
+      {iconsRef.current.map(({ icon: NavIcon, pathname }, idx) => (
+        <Center {...centerProps} key={idx} p={3}>
+          <Link as={RouterLink} to={pathname}>
+            <Icon
+              color={
+                pathname === location.pathname ? "brand.teal.500" : undefined
+              }
+              as={NavIcon}
+              {...iconStyles}
+            />
+          </Link>
         </Center>
       ))}
     </Stack>

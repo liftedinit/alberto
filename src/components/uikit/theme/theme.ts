@@ -4,12 +4,10 @@ import { Button, Heading, Text } from "./components"
 export const theme = extendTheme({
   styles: {
     global: {
-      "html,body, #root": {
-        height: "100%",
-      },
-      body: {
+      "html,body,#root": {
         bgColor: "brand.white",
         color: "brand.black",
+        height: "100%",
       },
     },
   },
