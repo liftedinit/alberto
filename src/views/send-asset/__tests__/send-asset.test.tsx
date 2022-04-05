@@ -1,6 +1,6 @@
 import { render, screen, within, fireEvent, userEvent } from "test/test-utils"
 import { useBalances } from "features/balances/queries"
-import { useCreateTransaction } from "features/transactions/queries"
+import { useSendToken } from "features/transactions/queries"
 import { SendAsset } from "views"
 
 jest.mock("features/balances/queries", () => ({
@@ -8,7 +8,7 @@ jest.mock("features/balances/queries", () => ({
 }))
 
 jest.mock("features/transactions/queries", () => ({
-  useCreateTransaction: jest.fn(),
+  useSendToken: jest.fn(),
 }))
 
 const ownedAssetsWithBalance = [
@@ -24,8 +24,8 @@ describe("<SendAsset />", () => {
       errors: [],
       data: { ownedAssetsWithBalance },
     }))
-    useCreateTransaction.mockImplementation(() => ({
-      createTransaction: jest.fn((_, opts) => {
+    useSendToken.mockImplementation(() => ({
+      sendToken: jest.fn((_, opts) => {
         opts?.onSuccess()
       }),
     }))
