@@ -1,11 +1,10 @@
 import { render, screen, within } from "test/test-utils"
 import * as useIsBaseBreakpoint from "hooks/useIsBaseBreakpoint"
-import { useLedgerInfo } from "features/network/queries"
-
+import { useBalances } from "features/balances/queries"
 import { Home } from "views/_home"
 
-jest.mock("features/network/queries", () => ({
-  useLedgerInfo: jest.fn(),
+jest.mock("features/balances/queries", () => ({
+  useBalances: jest.fn(),
 }))
 
 const mockUseIsBaseBreakpoint = jest.spyOn(
@@ -15,49 +14,55 @@ const mockUseIsBaseBreakpoint = jest.spyOn(
 
 describe("home page", () => {
   beforeEach(() => {
-    useLedgerInfo.mockImplementation(() => ({
+    useBalances.mockImplementation(() => ({
       isFetching: false,
       isError: false,
-      isLoading: false,
-      data: {
-        symbols: new Map([
-          ["identity1", "symbol1"],
-          ["identity2", "symbol2"],
-        ]),
-      },
+      errors: [],
+      data: [
+        { name: "ABC", value: BigInt(1000000) },
+        { name: "GHI", value: BigInt(5000000) },
+      ],
     }))
   })
-  it("should render bottom menu tabs for base screen layout", async () => {
-    // base is the smallest screen width
+  it("should render tabs for balances and history", async () => {
     mockUseIsBaseBreakpoint.mockImplementation(() => true)
-    render(<Home />)
+    setupHome()
 
-    const menuTabs = screen.getByTestId("menu-tabs")
-    expect(menuTabs).toBeInTheDocument()
+    const tabs = screen.getByRole("tablist")
 
-    const historyTab = within(menuTabs).queryByText(/history/i)
+    const historyTab = within(tabs).getByText(/assets/i)
     expect(historyTab).toBeInTheDocument()
 
-    const symbolsTab = within(menuTabs).queryByText(/symbols/i)
+    const symbolsTab = within(tabs).getByText(/transactions/i)
     expect(symbolsTab).toBeInTheDocument()
   })
-  it("should render main menu tabs for screen sizes above the base width", async () => {
-    mockUseIsBaseBreakpoint.mockImplementation(() => false)
-    render(<Home />)
+  it("should list the balances of each token the account holds", async () => {
+    setupHome()
+    expect(screen.getByText(/abc/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(BigInt(1000000).toLocaleString()),
+    ).toBeInTheDocument()
 
-    const mainTabs = screen.getByTestId("main-tabs")
-    expect(mainTabs).toBeInTheDocument()
-
-    const historyTab = within(mainTabs).getByText(/history/i)
-    expect(historyTab).toBeInTheDocument()
-
-    const symbolsTab = within(mainTabs).getByText(/symbols/i)
-    expect(symbolsTab).toBeInTheDocument()
+    expect(screen.getByText(/ghi/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(BigInt(5000000).toLocaleString()),
+    ).toBeInTheDocument()
   })
-  it("should display a list of symbols", async () => {
-    render(<Home />)
-    expect(screen.getByText(/symbols/i)).toBeInTheDocument()
-    expect(screen.getByText(/symbol1/i)).toBeInTheDocument()
-    expect(screen.getByText(/symbol2/i)).toBeInTheDocument()
+  it("should display the error message", async () => {
+    useBalances.mockImplementation(() => ({
+      isFetching: false,
+      isError: true,
+      errors: ["something went wrong"],
+      data: [
+        { name: "ABC", value: BigInt(1000000) },
+        { name: "GHI", value: BigInt(5000000) },
+      ],
+    }))
+    setupHome()
+    expect(screen.getByText(/something went wrong/i)).toBeInTheDocument()
   })
 })
+
+function setupHome() {
+  render(<Home />)
+}

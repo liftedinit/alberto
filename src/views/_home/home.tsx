@@ -1,143 +1,59 @@
 import React from "react";
-import {
-  AppMenu,
-  Button,
-  ContainerWrapper,
-  Center,
-  HStack,
-  Layout,
-  Spinner,
-  Text,
-  Tab,
-  Tabs,
-  TabList,
-  useLayoutContext,
-} from "components"
+import { ContainerWrapper, Layout, Tab, Tabs, TabList } from "components"
 import { useIsBaseBreakpoint } from "hooks"
 import { useNetworkContext } from "features/network"
+import { useAccountsStore } from "features/accounts"
 import { Symbols } from "./symbols"
-import { useLedgerInfo } from "features/network"
-import { useBalances } from "features/balances"
 
 enum TabNames {
-  symbols = "symbols",
-  history = "history",
+  assets = "assets",
+  transactions = "transactions",
 }
 
 export function Home() {
-  const [, setLayout] = useLayoutContext()
   const isBase = useIsBaseBreakpoint()
   const network = useNetworkContext()
-  const [activeTab, setActiveTab] = React.useState<TabNames>(TabNames.symbols)
-
-  const ledgerInfoQuery = useLedgerInfo(network)
-  const { data: symbolsData, isFetching } = ledgerInfoQuery
-
-  const symbolsArr = symbolsData?.symbols
-    ? Array.from(symbolsData?.symbols?.entries())
-    : null
-
-  const onlySymbolNames = symbolsArr
-    ? symbolsArr.map(([, symbolName]) => symbolName)
-    : undefined
-
-  const balancesQuery = useBalances(onlySymbolNames)
+  const [activeTab, setActiveTab] = React.useState<TabNames>(TabNames.assets)
+  const account = useAccountsStore(s => s.byId.get(s.activeId))
 
   function isTabActive(tab: TabNames) {
     return tab === activeTab
   }
 
-  function getButtonStyles(tab: TabNames) {
-    const isActive = isTabActive(tab)
+  function getTabStyles(tab: TabNames) {
     return {
-      h: "100%",
-      isFullWidth: true,
-      rounded: 0,
-      onClick: () => setActiveTab(tab),
-      opacity: isActive ? 1 : 0.4,
-      colorScheme: isActive ? "green" : "gray",
+      fontWeight: "medium",
+      opacity: tab === activeTab ? 1 : 0.4,
     }
   }
 
-  const symbolsWithBalance = onlySymbolNames?.map(symbolName => {
-    return {
-      name: symbolName,
-      balance: "0",
-    }
-  })
-
-  React.useLayoutEffect(() => {
-    // use a different bottom menu
-    setLayout({ hideMenu: true })
-    return () => {
-      setLayout({ hideMenu: false })
-    }
-  }, [])
-
   return (
     <>
-      <Layout.Main py={4} px={8}>
-        <ContainerWrapper>
-          {isFetching && (
-            <Center left={0} right={0} position="absolute">
-              <Spinner />
-            </Center>
-          )}
+      <Layout.Main py={2} px={{ base: 4, md: 0 }}>
+        <ContainerWrapper position="relative">
+          <Tabs
+            isFitted={isBase ? true : false}
+            colorScheme="brand.teal"
+            index={isTabActive(TabNames.assets) ? 0 : 1}
+            onChange={index =>
+              setActiveTab(
+                index === 0 ? TabNames.assets : TabNames.transactions,
+              )
+            }
+            mb={4}
+          >
+            <TabList>
+              <Tab {...getTabStyles(TabNames.assets)}>Assets</Tab>
+              <Tab {...getTabStyles(TabNames.transactions)}>Transactions</Tab>
+            </TabList>
+          </Tabs>
 
-          {!isBase && (
-            <Tabs
-              data-testid="main-tabs"
-              colorScheme="green"
-              index={isTabActive(TabNames.symbols) ? 0 : 1}
-              onChange={index =>
-                setActiveTab(index === 0 ? TabNames.symbols : TabNames.history)
-              }
-              mb={4}
-            >
-              <TabList>
-                <Tab
-                  fontWeight={isTabActive(TabNames.symbols) ? "bold" : "normal"}
-                >
-                  Symbols
-                </Tab>
-                <Tab
-                  fontWeight={isTabActive(TabNames.history) ? "bold" : "normal"}
-                >
-                  History
-                </Tab>
-              </TabList>
-            </Tabs>
+          {isTabActive(TabNames.assets) && (
+            <Symbols network={network} account={account} />
           )}
-
-          {isTabActive(TabNames.symbols) && (
-            <Symbols symbolsWithBalance={symbolsWithBalance} />
-          )}
-          {isTabActive(TabNames.history) && "history goes here"}
+          {isTabActive(TabNames.transactions) && "history goes here"}
         </ContainerWrapper>
       </Layout.Main>
-
-      <Layout.Menu>
-        {isBase && (
-          <HStack
-            justify="space-evenly"
-            spacing={0}
-            h="48px"
-            data-testid="menu-tabs"
-          >
-            <Button {...getButtonStyles(TabNames.symbols)}>
-              <Text fontWeight="semibold" casing="uppercase" fontSize="lg">
-                symbols
-              </Text>
-            </Button>
-            <Button {...getButtonStyles(TabNames.history)}>
-              <Text fontWeight="semibold" casing="uppercase" fontSize="lg">
-                history
-              </Text>
-            </Button>
-          </HStack>
-        )}
-        <AppMenu />
-      </Layout.Menu>
     </>
   )
 }

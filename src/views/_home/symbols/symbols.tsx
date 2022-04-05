@@ -1,31 +1,88 @@
-import { HStack, Stack, Text } from "components";
+import { Center, Circle, HStack, Spinner, Stack, Text } from "components"
+import { Account } from "features/accounts"
+import { useBalances } from "features/balances"
+import { Network } from "many-js"
 
 export function Symbols({
-  symbolsWithBalance,
-  ...props
+  network,
+  account,
 }: {
-  symbolsWithBalance?: { name: string; balance: string }[];
-  [k: string]: any;
+  network?: Network
+  account?: Account
 }) {
-  return (
-    <Stack spacing={3} {...props}>
-      {symbolsWithBalance?.map((symbol) => {
-        return (
-          <HStack
-            justify="space-between"
-            shadow="md"
-            p={4}
-            bg="gray.50"
-            key={symbol.name}
-            borderWidth={1}
-          >
-            <Text fontSize="2xl" casing="uppercase">
-              {symbol.name}
+  const { data, isError, isFetching, errors } = useBalances({
+    network,
+    account,
+  })
+
+  if (isError) {
+    return (
+      <Stack flexDir="column">
+        {errors.length > 0 ? (
+          errors.map((e, idx) => (
+            <Text key={idx} wordBreak="break-word">
+              {typeof e === "string"
+                ? e
+                : JSON.stringify(e, Object.getOwnPropertyNames(e))}
             </Text>
-            <Text fontSize="2xl">{symbol.balance}</Text>
-          </HStack>
-        );
-      })}
-    </Stack>
-  );
+          ))
+        ) : (
+          <Text>An unexpected error occurred.</Text>
+        )}
+      </Stack>
+    )
+  }
+
+  if (data.length === 0 && !isFetching) {
+    return (
+      <Center>
+        <Text fontSize="lg">There are no tokens for this account.</Text>
+      </Center>
+    )
+  }
+
+  return (
+    <>
+      {isFetching ? (
+        <Center position="absolute" left={0} right={0}>
+          <Spinner />
+        </Center>
+      ) : null}
+
+      <Stack spacing={3}>
+        {data?.map(symbol => {
+          return (
+            <HStack
+              shadow="base"
+              px={3}
+              py={3}
+              bg="gray.50"
+              key={symbol.name}
+              rounded="md"
+              borderWidth={1}
+              spacing={4}
+              overflow="hidden"
+              alignItems="center"
+            >
+              <Circle size="8" borderWidth={1} borderColor="gray.400" />
+              <HStack overflow="hidden" alignItems="center">
+                <Text
+                  overflow="hidden"
+                  whiteSpace="nowrap"
+                  textOverflow="ellipsis"
+                  fontSize="xl"
+                  fontWeight="medium"
+                >
+                  {symbol.value.toLocaleString()}
+                </Text>
+                <Text fontSize="lg" casing="uppercase" lineHeight="normal">
+                  {symbol.name}
+                </Text>
+              </HStack>
+            </HStack>
+          )
+        })}
+      </Stack>
+    </>
+  )
 }
