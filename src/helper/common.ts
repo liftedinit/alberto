@@ -15,7 +15,7 @@ export const getAddressFromHex = (hex: any): string => {
   return identity.toString();
 };
 
-const makeShortId = (idString: string): string =>
+export const makeShortId = (idString: string): string =>
   `<${idString.slice(0, 4)}...${idString.slice(-4)}>`
 
 export function displayId(account: Account): { full: string; short: string } {

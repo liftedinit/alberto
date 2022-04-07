@@ -1,29 +1,23 @@
 import { useQuery } from "react-query";
 import { Balances, Network } from "many-js"
-import { Account } from "features/accounts"
 import { useLedgerInfo } from "features/network"
+import { Asset } from "./types"
 
 type UseBalancesOpts = {
   network?: Network
-  account?: Account
+  accountPublicKey: string
 }
 
-export interface Asset {
-  identity: string
-  symbol: string
-  balance: bigint
-}
-
-export function useBalances({ network, account }: UseBalancesOpts) {
-  const ledgerInfoQuery = useLedgerInfo({ account, network })
+export function useBalances({ network, accountPublicKey }: UseBalancesOpts) {
+  const ledgerInfoQuery = useLedgerInfo({ accountPublicKey, network })
   const ledgerInfoSymbols = ledgerInfoQuery?.data?.symbols ?? new Map()
 
   const balancesQuery = useQuery<Balances | undefined>({
-    queryKey: ["balances", network?.url, account],
+    queryKey: ["balances", accountPublicKey, network?.url],
     queryFn: async () => {
       return await network?.ledger.balance()
     },
-    enabled: !!network?.url && !!account?.keys,
+    enabled: !!network?.url && !!accountPublicKey,
     retry: false,
   })
   const ownedAssetBalances = balancesQuery?.data?.balances ?? new Map()

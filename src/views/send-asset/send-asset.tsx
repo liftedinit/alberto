@@ -1,13 +1,10 @@
 import React from "react"
 import { useLocation } from "react-router-dom"
-import { FiChevronDown } from "react-icons/fi"
 import {
   Button,
-  ButtonProps,
   Box,
   Checkbox,
   ContainerWrapper,
-  Divider,
   Heading,
   FormControl,
   FormLabel,
@@ -16,22 +13,18 @@ import {
   Image,
   Input,
   Layout,
-  List,
-  ListItem,
-  Modal,
   Text,
   useToast,
-  useDisclosure,
   VStack,
 } from "components"
+import { AssetSelector } from "./asset-selector"
 import cubeImg from "assets/cube.png"
 import { useNetworkContext } from "features/network"
 import { useAccountsStore } from "features/accounts"
 import { useBalances } from "features/balances"
-import { useDebounce } from "hooks"
-
 import { useSendToken } from "features/transactions"
-import { Asset } from "features/balances/queries"
+import { Asset } from "features/balances"
+import { displayId } from "helper/common"
 
 enum ConfirmState {
   requireConfirmation = "requireConfirmation",
@@ -54,7 +47,8 @@ export function SendAsset() {
   const toast = useToast()
   const network = useNetworkContext()
   const account = useAccountsStore(s => s.byId.get(s.activeId))
-  const balances = useBalances({ network, account })
+  const { full: accountPublicKey } = displayId(account!)
+  const balances = useBalances({ network, accountPublicKey })
 
   const [confirmState, setConfirmState] = React.useState<
     ConfirmState | undefined
@@ -72,10 +66,7 @@ export function SendAsset() {
   )
   const asset = formValues.asset
 
-  const { sendToken, isLoading } = useSendToken({
-    network,
-    account,
-  })
+  const { sendToken, isLoading } = useSendToken({ network })
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -124,7 +115,7 @@ export function SendAsset() {
     return () => {
       setFormValues({ ...defaultFormState })
     }
-  }, [network, account])
+  }, [network, accountPublicKey])
 
   return (
     <Layout.Main px={{ base: 4, md: 0 }} py={2}>
@@ -132,7 +123,7 @@ export function SendAsset() {
         <Heading size="lg" mb={3}>
           Send
         </Heading>
-        <Box shadow="base" rounded="md" p={8} bgColor="white">
+        <Box shadow="base" rounded="md" py={8} px={6} bgColor="white">
           <form onSubmit={onSubmit} aria-label="send form">
             <FormControl isRequired mb={4}>
               <FormLabel htmlFor="to">To</FormLabel>
@@ -147,7 +138,13 @@ export function SendAsset() {
             </FormControl>
             <FormControl isRequired>
               <FormLabel htmlFor="amount">Amount</FormLabel>
-              <Box bgColor="gray.100" px={4} py={2} rounded="md" display="flex">
+              <HStack
+                bgColor="gray.100"
+                px={4}
+                py={2}
+                rounded="md"
+                display="flex"
+              >
                 <Input
                   alignSelf="flex-start"
                   name="amount"
@@ -159,9 +156,10 @@ export function SendAsset() {
                   required
                   pattern="^[0-9]*[.,]?[0-9]*$"
                 />
-                <VStack alignItems="flex-end">
+                <VStack alignItems="flex-end" w="full">
                   <AssetSelector
-                    assets={balances.data.ownedAssetsWithBalance}
+                    ownedAssets={balances.data.ownedAssetsWithBalance}
+                    allAssets={balances.data.allAssetsWithBalance}
                     fontWeight={asset ? "medium" : "normal"}
                     leftIcon={
                       asset ? (
@@ -175,7 +173,7 @@ export function SendAsset() {
                       }))
                     }}
                   >
-                    {asset?.symbol || "Select a token"}
+                    {asset?.symbol || "Select an asset"}
                   </AssetSelector>
                   {asset ? (
                     <HStack>
@@ -198,7 +196,7 @@ export function SendAsset() {
                     </HStack>
                   ) : null}
                 </VStack>
-              </Box>
+              </HStack>
             </FormControl>
             {confirmState ? (
               <Flex flexDir="row-reverse">
@@ -249,112 +247,5 @@ export function SendAsset() {
         </Box>
       </ContainerWrapper>
     </Layout.Main>
-  )
-}
-
-function AssetSelector({
-  assets,
-  onChange,
-  children,
-  ...props
-}: Omit<ButtonProps, "onChange"> & {
-  onChange: (asset: Asset) => void
-  assets: { identity: string; balance: bigint; symbol: string }[]
-}) {
-  const { isOpen, onClose, onToggle } = useDisclosure()
-  const [searchTerm, setSearchTerm] = React.useState("")
-  const debouncedSearchTerm = useDebounce(searchTerm)
-
-  const visibleAssets = React.useMemo(() => {
-    return assets.filter(a =>
-      debouncedSearchTerm
-        ? a.symbol
-            .toLocaleLowerCase()
-            .startsWith(debouncedSearchTerm.toLocaleLowerCase())
-        : true,
-    )
-  }, [debouncedSearchTerm, assets])
-
-  return (
-    <>
-      <Button
-        rightIcon={<FiChevronDown />}
-        aria-label="select token"
-        onClick={onToggle}
-        lineHeight="normal"
-        px={2}
-        bgColor="white"
-        shadow="base"
-        fontSize="lg"
-        {...props}
-      >
-        {children}
-      </Button>
-      <Modal
-        header="Select a token"
-        isOpen={isOpen}
-        onClose={onClose}
-        size="sm"
-        scrollBehavior="inside"
-      >
-        <Modal.Body>
-          <Box>
-            <Input
-              name="assetNameFilter"
-              id="assetNameFilter"
-              variant="filled"
-              placeholder="Search name"
-              onChange={e => setSearchTerm(e.target.value)}
-            />
-          </Box>
-          <Divider my={3} />
-          <List spacing={3} mb={1}>
-            {visibleAssets?.map(asset => {
-              return (
-                <ListItem
-                  key={asset.identity}
-                  as={Button}
-                  isFullWidth
-                  variant="ghost"
-                  justifyContent="flex-start"
-                  aria-label="select asset"
-                  h="auto"
-                  p={2}
-                  onClick={() => {
-                    onChange(asset)
-                    onClose()
-                  }}
-                >
-                  <HStack
-                    alignItems="center"
-                    justifyContent="space-between"
-                    w="full"
-                  >
-                    <HStack>
-                      <Image src={cubeImg} borderRadius="full" boxSize={9} />
-                      <VStack alignItems="flex-start" spacing={0}>
-                        <Text fontSize="lg" lineHeight="normal">
-                          {asset.symbol}
-                        </Text>
-                        <Text
-                          fontSize="xs"
-                          lineHeight="normal"
-                          fontWeight="light"
-                        >
-                          Asset Full Name
-                        </Text>
-                      </VStack>
-                    </HStack>
-                    <Text whiteSpace="nowrap" overflow="hidden" isTruncated>
-                      {asset.balance?.toLocaleString() || "0"}
-                    </Text>
-                  </HStack>
-                </ListItem>
-              )
-            })}
-          </List>
-        </Modal.Body>
-      </Modal>
-    </>
   )
 }
