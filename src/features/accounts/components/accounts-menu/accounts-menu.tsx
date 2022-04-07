@@ -28,7 +28,6 @@ import { AddAccountModal } from "./add-account-modal"
 import { EditAccountModal } from "./edit-account-modal"
 import { displayId } from "helper/common"
 import { Account, ANON_ID, AccountId } from "../../types"
-import { useIsBaseBreakpoint } from "hooks"
 
 export type AccountItemWithIdDisplayStrings = [
   AccountId,
@@ -36,7 +35,6 @@ export type AccountItemWithIdDisplayStrings = [
 ]
 
 export function AccountsMenu() {
-  const isBase = useIsBaseBreakpoint()
   const {
     isOpen: isAddModalOpen,
     onClose: onAddModalClose,
@@ -94,20 +92,18 @@ export function AccountsMenu() {
         <MenuButton
           as={Button}
           rightIcon={<FiChevronDown />}
-          size={isBase ? "md" : "sm"}
+          leftIcon={<Icon as={AiOutlineUser} w={5} h={5} />}
+          size="md"
           aria-label="active account menu trigger"
         >
-          <HStack alignItems="center">
-            <Icon as={AiOutlineUser} w={5} h={5} />
-            <Text
-              fontSize={{ base: "lg", md: "md" }}
-              casing="uppercase"
-              fontWeight="medium"
-              isTruncated
-            >
-              {activeAccount?.name}
-            </Text>
-          </HStack>
+          <Text
+            casing="uppercase"
+            fontWeight="semibold"
+            isTruncated
+            lineHeight="normal"
+          >
+            {activeAccount?.name}
+          </Text>
         </MenuButton>
         <MenuList maxW="100vw">
           <MenuOptionGroup title="Accounts" />
@@ -223,7 +219,7 @@ function AccountMenuItem({
           </HStack>
         )}
       </VStack>
-      {accountData.keys && (
+      {accountData.keys && activeId !== id && (
         <IconButton
           variant="ghost"
           aria-label="edit account"
