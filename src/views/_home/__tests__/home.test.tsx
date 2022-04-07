@@ -35,7 +35,7 @@ describe("home page", () => {
     const historyTab = within(tabs).getByText(/assets/i)
     expect(historyTab).toBeInTheDocument()
 
-    const symbolsTab = within(tabs).getByText(/transactions/i)
+    const symbolsTab = within(tabs).getByText(/activity/i)
     expect(symbolsTab).toBeInTheDocument()
   })
   it("should list the balances of each token the account holds", async () => {
