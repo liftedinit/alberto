@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery } from "react-query"
 import { Network, LedgerInfo } from "many-js"
 
 export function useLedgerInfo({

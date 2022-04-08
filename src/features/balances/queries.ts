@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery } from "react-query"
 import { Balances, Network } from "many-js"
 import { useLedgerInfo } from "features/network"
 import { Asset } from "./types"
