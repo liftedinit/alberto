@@ -2,17 +2,15 @@ import { GrFormPrevious } from "react-icons/gr"
 import {
   Box,
   Button,
-  Center,
   CopyToClipboard,
   Flex,
   Heading,
   Image,
   SlideFade,
-  Spinner,
   Text,
   VStack,
 } from "components"
-import { TxnList, useTransactionsList } from "features/transactions"
+import { TxnList } from "features/transactions"
 import cubeImg from "assets/cube.png"
 import { Asset } from "features/balances"
 import { Network } from "many-js"
@@ -25,7 +23,6 @@ type Props = {
   accountPublicKey: string
 }
 
-// @ts-ignore
 export function AssetDetails({
   asset,
   setAsset,
@@ -56,54 +53,15 @@ export function AssetDetails({
           Activity
         </Heading>
         <Box pos="relative">
-          <AssetTransactions
+          <TxnList
             network={network}
-            assetIdentity={asset.identity}
+            filter={{
+              symbols: asset.identity,
+            }}
             accountPublicKey={accountPublicKey}
           />
         </Box>
       </Box>
     </SlideFade>
-  )
-}
-
-function AssetTransactions({
-  network,
-  accountPublicKey,
-  assetIdentity,
-}: {
-  network?: Network
-  accountPublicKey: string
-  assetIdentity: string
-}) {
-  const { data, isLoading } = useTransactionsList({
-    network,
-    accountPublicKey,
-    filter: {
-      symbols: assetIdentity,
-    },
-  })
-  const { count, transactions } = data
-
-  if (count === 0) {
-    return (
-      <Center>
-        <Text fontSize="lg">There are no transactions for this asset.</Text>
-      </Center>
-    )
-  }
-
-  return (
-    <>
-      {isLoading ? (
-        <Center position="absolute" left={0} right={0}>
-          <Spinner />
-        </Center>
-      ) : null}
-      <TxnList
-        transactions={transactions}
-        accountPublicKey={accountPublicKey}
-      />
-    </>
   )
 }

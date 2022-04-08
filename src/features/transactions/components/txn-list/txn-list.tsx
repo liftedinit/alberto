@@ -1,10 +1,15 @@
-import { GrUpload, GrDownload } from "react-icons/gr"
-import { TransactionType } from "many-js"
+import { ListFilterArgs, Network, TransactionType } from "many-js"
+import { FiChevronRight, FiChevronLeft } from "react-icons/fi"
 import type { Transaction } from "many-js"
 import {
+  Button,
   CopyToClipboard,
+  Code,
+  Center,
   Flex,
-  Icon,
+  ReceiveIcon,
+  SendIcon,
+  Spinner,
   Table,
   Td,
   Tr,
@@ -14,30 +19,96 @@ import {
   VStack,
 } from "components"
 import { makeShortId } from "helper/common"
+import { useTransactionsList } from "features/transactions/queries"
 
 export function TxnList({
-  transactions,
   accountPublicKey,
+  network,
+  filter = {},
 }: {
-  transactions: Transaction[]
   accountPublicKey: string
+  network?: Network
+  filter?: ListFilterArgs
 }) {
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    isPreviousData,
+    nextBtnProps,
+    prevBtnProps,
+    hasNextPage,
+    currPageCount,
+  } = useTransactionsList({
+    network,
+    accountPublicKey,
+    filter,
+  })
+
+  const { count, transactions } = data
+
+  if (isError && error) {
+    return (
+      <Center>
+        <Text colorScheme="red" fontSize="lg">
+          {JSON.stringify(error)}
+        </Text>
+      </Center>
+    )
+  }
+
+  if (!isLoading && (count === 0 || transactions.length === 0)) {
+    return (
+      <Center>
+        <Text fontSize="lg">There are no transactions.</Text>
+      </Center>
+    )
+  }
+
   return (
-    <TableContainer>
-      <Table size="sm">
-        <Tbody>
-          {transactions.map((t: Transaction) => {
-            return (
-              <TxnListItem
-                transaction={t}
-                key={t.time.getTime()}
-                accountPublicKey={accountPublicKey}
-              />
-            )
-          })}
-        </Tbody>
-      </Table>
-    </TableContainer>
+    <>
+      {isLoading ? (
+        <Center position="absolute" left={0} right={0}>
+          <Spinner />
+        </Center>
+      ) : null}
+      <TableContainer>
+        <Table size="sm">
+          <Tbody>
+            {transactions.map((t: Transaction) => {
+              return (
+                <TxnListItem
+                  transaction={t}
+                  key={t.time.getTime()}
+                  accountPublicKey={accountPublicKey}
+                />
+              )
+            })}
+          </Tbody>
+        </Table>
+        {(currPageCount > 0 || hasNextPage) && (
+          <Flex mt={2} gap={2} justifyContent="flex-end">
+            <Button
+              leftIcon={<FiChevronLeft />}
+              size="sm"
+              w={{ base: "full", md: "auto" }}
+              {...prevBtnProps}
+            >
+              Prev Page
+            </Button>
+            <Button
+              rightIcon={<FiChevronRight />}
+              size="sm"
+              w={{ base: "full", md: "auto" }}
+              {...nextBtnProps}
+            >
+              Next Page
+            </Button>
+          </Flex>
+        )}
+      </TableContainer>
+    </>
   )
 }
 
@@ -63,18 +134,16 @@ function SendTxnListItem({
   isSender: boolean
 }) {
   const { to, from, amount, symbol, time } = transaction
-  const icon = isSender ? GrUpload : GrDownload
+  const TxnIcon = isSender ? SendIcon : ReceiveIcon
   const title = isSender ? "send" : "receive"
 
   const displayAmount = `${isSender ? "-" : "+"}${amount}`
-  const description = `${isSender ? "To:" : "From:"} ${
-    isSender ? makeShortId(to!) : makeShortId(from!)
-  }`
+  const address = isSender ? to! : from!
 
   return (
     <Tr>
       <Td>
-        <Icon as={icon} w={5} h={5} />
+        <TxnIcon />
       </Td>
       <Td>
         <VStack alignItems="flex-start" spacing={0} flexGrow={1}>
@@ -85,13 +154,25 @@ function SendTxnListItem({
         </VStack>
       </Td>
       <Td>
-        <Flex gap={1} alignItems="center">
-          <Text fontSize="sm">{description} </Text>
-          <CopyToClipboard
-            iconProps={{ "data-testid": "copy-to-clipboard-btn" }}
-            toCopy={isSender ? to! : from!}
-          />
-        </Flex>
+        <VStack alignItems="flex-start" spacing={0}>
+          <Text fontSize="sm">{isSender ? "To:" : "From:"} </Text>
+          <Flex
+            alignItems="center"
+            rounded="md"
+            px={2}
+            py={1}
+            bgColor="gray.100"
+            gap={1}
+          >
+            <Text fontSize="xs" as={Code}>
+              {makeShortId(address)}
+            </Text>
+            <CopyToClipboard
+              iconProps={{ "data-testid": "copy-to-clipboard-btn" }}
+              toCopy={isSender ? to! : from!}
+            />
+          </Flex>
+        </VStack>
       </Td>
       <Td>
         <Flex gap={2}>

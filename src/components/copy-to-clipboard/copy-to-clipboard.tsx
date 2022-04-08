@@ -14,8 +14,8 @@ export function CopyToClipboard({
   const { hasCopied, onCopy } = useClipboard(toCopy)
   return (
     <Tooltip isOpen={hasCopied} label={msg ?? "Copied to clipboard"}>
-      {children ? (
-        children
+      {typeof children === "function" ? (
+        children({ onCopy })
       ) : (
         <Flex>
           <Icon

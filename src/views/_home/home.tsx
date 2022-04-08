@@ -12,11 +12,11 @@ import { useIsBaseBreakpoint } from "hooks"
 import { useNetworkContext } from "features/network"
 import { useAccountsStore } from "features/accounts"
 import { Symbols } from "./symbols"
-import { Transactions } from "./transactions"
 import { AssetDetails } from "./asset-details"
 
 import { displayId } from "helper/common"
 import { Asset } from "features/balances"
+import { TxnList } from "features/transactions"
 
 enum TabNames {
   assets = "assets",
@@ -38,6 +38,13 @@ export function Home() {
     return tab === activeTab
   }
 
+  React.useEffect(() => {
+    return () => {
+      setActiveTab(TabNames.assets)
+      setAsset(undefined)
+    }
+  }, [account, network])
+
   return (
     <>
       <Layout.Main py={2}>
@@ -48,7 +55,7 @@ export function Home() {
           <Box
             rounded="md"
             shadow="base"
-            p={6}
+            p={{ base: 2, md: 6 }}
             bgColor="white"
             position="relative"
           >
@@ -89,9 +96,9 @@ export function Home() {
                 )}
                 {isTabActive(TabNames.activity) && (
                   <SlideFade in={true}>
-                    <Transactions
-                      network={network}
+                    <TxnList
                       accountPublicKey={accountPublicKey}
+                      network={network}
                     />
                   </SlideFade>
                 )}
