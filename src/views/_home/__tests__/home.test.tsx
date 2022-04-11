@@ -144,7 +144,6 @@ describe("home page", () => {
   })
   it("should show asset details and transactions", async () => {
     mockNetwork.ledger.list = jest.fn().mockImplementationOnce(async () => {
-      console.log("MOCK list 2 >>>>>>>>>>>>>>>>>>")
       return {
         count: 2,
         transactions: [
