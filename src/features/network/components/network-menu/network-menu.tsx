@@ -61,8 +61,6 @@ export function NetworkMenu() {
           rightIcon={<FiChevronDown />}
           lineHeight="normal"
           size="md"
-          variant="outline"
-          colorScheme="brand.brown"
           minWidth="100px"
           data-testid="active-network-menu-trigger"
           leftIcon={

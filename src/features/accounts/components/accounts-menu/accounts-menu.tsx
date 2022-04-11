@@ -28,6 +28,7 @@ import { AddAccountModal } from "./add-account-modal"
 import { EditAccountModal } from "./edit-account-modal"
 import { displayId } from "helper/common"
 import { Account, ANON_ID, AccountId } from "../../types"
+import { IdentityText } from "components/uikit/identity-text"
 
 export type AccountItemWithIdDisplayStrings = [
   AccountId,
@@ -157,7 +158,9 @@ export function AccountsMenu() {
           py={1}
           rounded="md"
         >
-          <Code fontWeight="md">{idStrs.short}</Code>
+          <Code fontWeight="md">
+            <IdentityText fullIdentity={idStrs.full} />
+          </Code>
           <CopyToClipboard toCopy={idStrs.full as string} />
         </HStack>
       )}

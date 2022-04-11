@@ -111,7 +111,6 @@ export function EditAccountModal({
               {account[1].idDisplayStrings.full}
             </Code>
             <CopyToClipboard
-              iconProps={{ "data-testid": "copy-to-clipboard-btn" }}
               toCopy={account[1].idDisplayStrings.full as string}
             />
           </HStack>

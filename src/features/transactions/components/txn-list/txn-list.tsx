@@ -18,8 +18,8 @@ import {
   Text,
   VStack,
 } from "components"
-import { makeShortId } from "helper/common"
 import { useTransactionsList } from "features/transactions/queries"
+import { IdentityText } from "components/uikit/identity-text"
 
 export function TxnList({
   accountPublicKey,
@@ -30,21 +30,21 @@ export function TxnList({
   network?: Network
   filter?: ListFilterArgs
 }) {
+  const queryData = useTransactionsList({
+    network,
+    accountPublicKey,
+    filter,
+  })
   const {
     data,
     isLoading,
     isError,
     error,
-    isPreviousData,
     nextBtnProps,
     prevBtnProps,
     hasNextPage,
     currPageCount,
-  } = useTransactionsList({
-    network,
-    accountPublicKey,
-    filter,
-  })
+  } = queryData
 
   const { count, transactions } = data
 
@@ -87,27 +87,29 @@ export function TxnList({
             })}
           </Tbody>
         </Table>
-        {(currPageCount > 0 || hasNextPage) && (
-          <Flex mt={2} gap={2} justifyContent="flex-end">
-            <Button
-              leftIcon={<FiChevronLeft />}
-              size="sm"
-              w={{ base: "full", md: "auto" }}
-              {...prevBtnProps}
-            >
-              Prev Page
-            </Button>
-            <Button
-              rightIcon={<FiChevronRight />}
-              size="sm"
-              w={{ base: "full", md: "auto" }}
-              {...nextBtnProps}
-            >
-              Next Page
-            </Button>
-          </Flex>
-        )}
       </TableContainer>
+      {(currPageCount > 0 || hasNextPage) && (
+        <Flex mt={2} gap={2} justifyContent="flex-end">
+          <Button
+            leftIcon={<FiChevronLeft />}
+            lineHeight="normal"
+            size="sm"
+            w={{ base: "full", md: "auto" }}
+            {...prevBtnProps}
+          >
+            Prev
+          </Button>
+          <Button
+            rightIcon={<FiChevronRight />}
+            lineHeight="normal"
+            size="sm"
+            w={{ base: "full", md: "auto" }}
+            {...nextBtnProps}
+          >
+            Next
+          </Button>
+        </Flex>
+      )}
     </>
   )
 }
@@ -141,13 +143,13 @@ function SendTxnListItem({
   const address = isSender ? to! : from!
 
   return (
-    <Tr>
+    <Tr aria-label="transaction list item">
       <Td>
         <TxnIcon />
       </Td>
       <Td>
         <VStack alignItems="flex-start" spacing={0} flexGrow={1}>
-          <Text lineHeight="normal" textTransform="capitalize">
+          <Text lineHeight="normal" casing="capitalize">
             {title}
           </Text>
           <Text fontSize="xs">{time?.toLocaleString()}</Text>
@@ -163,14 +165,10 @@ function SendTxnListItem({
             py={1}
             bgColor="gray.100"
             gap={1}
+            as={Code}
           >
-            <Text fontSize="xs" as={Code}>
-              {makeShortId(address)}
-            </Text>
-            <CopyToClipboard
-              iconProps={{ "data-testid": "copy-to-clipboard-btn" }}
-              toCopy={isSender ? to! : from!}
-            />
+            <IdentityText fullIdentity={address} />
+            <CopyToClipboard toCopy={isSender ? to! : from!} />
           </Flex>
         </VStack>
       </Td>

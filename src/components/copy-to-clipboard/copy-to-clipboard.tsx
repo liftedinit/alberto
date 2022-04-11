@@ -24,6 +24,7 @@ export function CopyToClipboard({
             h={5}
             onClick={onCopy}
             cursor="pointer"
+            aria-label="copy to clipboard button"
             {...iconProps}
           />
         </Flex>

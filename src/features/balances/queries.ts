@@ -40,7 +40,11 @@ export function useBalances({ network, accountPublicKey }: UseBalancesOpts) {
   return {
     errors: [ledgerInfoQuery.error, balancesQuery.error].filter(Boolean),
     isError: balancesQuery.isError || ledgerInfoQuery.isError,
-    isFetching: balancesQuery.isFetching || ledgerInfoQuery.isFetching,
+    isLoading:
+      balancesQuery.isFetching ||
+      ledgerInfoQuery.isFetching ||
+      balancesQuery.isLoading ||
+      ledgerInfoQuery.isLoading,
     data: {
       allAssetsWithBalance,
       ownedAssetsWithBalance,

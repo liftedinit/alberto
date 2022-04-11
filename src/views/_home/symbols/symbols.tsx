@@ -26,7 +26,7 @@ export function Symbols({
   accountPublicKey: string
   onAssetClicked: (asset: Asset) => void
 }) {
-  const { data, isError, isFetching, errors } = useBalances({
+  const { data, isError, isLoading, errors } = useBalances({
     network,
     accountPublicKey,
   })
@@ -49,7 +49,7 @@ export function Symbols({
     )
   }
 
-  if (data.ownedAssetsWithBalance.length === 0 && !isFetching) {
+  if (data.ownedAssetsWithBalance.length === 0 && !isLoading) {
     return (
       <Center>
         <Text fontSize="lg">There are no tokens for this account.</Text>
@@ -59,7 +59,7 @@ export function Symbols({
 
   return (
     <>
-      {isFetching ? (
+      {isLoading ? (
         <Center position="absolute" left={0} right={0}>
           <Spinner />
         </Center>
@@ -101,6 +101,7 @@ function AssetLlistItem({
       onMouseEnter={toggleShowSend}
       onMouseLeave={toggleShowSend}
       cursor="pointer"
+      aria-label="asset list item"
       onClick={() => onAssetClicked(asset)}
       py={1}
       px={3}

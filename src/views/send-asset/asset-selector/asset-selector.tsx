@@ -93,7 +93,7 @@ export function AssetSelector({
         })}
       </List>
     )
-  }, [visibleAssets])
+  }, [visibleAssets, onChange, onClose])
 
   return (
     <>
