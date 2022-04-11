@@ -32,7 +32,7 @@ export function useTransactionsList({
   network,
   accountPublicKey,
   filter = {},
-  count: reqCount = 4,
+  count: reqCount = 11,
 }: {
   network?: Network
   accountPublicKey: string
