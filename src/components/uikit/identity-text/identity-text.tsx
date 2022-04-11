@@ -3,6 +3,7 @@ import { makeShortId } from "helper/common"
 
 export function IdentityText({
   fullIdentity,
+  children,
   ...props
 }: TextProps & {
   fullIdentity: string
@@ -15,7 +16,7 @@ export function IdentityText({
         e.preventDefault()
       }}
     >
-      {makeShortId(fullIdentity)}
+      {children ? children : makeShortId(fullIdentity)}
     </Text>
   )
 }
