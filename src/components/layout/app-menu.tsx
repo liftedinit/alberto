@@ -1,8 +1,17 @@
-import React from "react";
+import React from "react"
 import { useLocation, Link as RouterLink } from "react-router-dom"
-import { IoSettingsOutline, IoWalletOutline } from "react-icons/io5"
-import { FaExchangeAlt } from "react-icons/fa"
-import { Center, Icon, Image, Link, Stack, Show, StackProps } from "components"
+import {
+  Center,
+  Icon,
+  Image,
+  Link,
+  SendIcon,
+  SettingsIcon,
+  Stack,
+  Show,
+  StackProps,
+  WalletIcon,
+} from "components"
 import cubeImg from "assets/cube.png"
 import { useIsBaseBreakpoint } from "hooks"
 
@@ -12,15 +21,15 @@ export function AppMenu() {
   const iconsRef = React.useRef([
     {
       pathname: "/",
-      icon: IoWalletOutline,
+      icon: WalletIcon,
     },
     {
       pathname: "/send",
-      icon: FaExchangeAlt,
+      icon: SendIcon,
     },
     {
       pathname: "/settings",
-      icon: IoSettingsOutline,
+      icon: SettingsIcon,
     },
   ])
   const stackProps: StackProps = isBase

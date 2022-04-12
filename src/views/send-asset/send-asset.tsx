@@ -1,13 +1,14 @@
 import React from "react"
 import { useLocation } from "react-router-dom"
-import { FiChevronDown } from "react-icons/fi"
 import {
+  AlertDialog,
+  AlertDialogProps,
   Button,
-  ButtonProps,
+  ButtonGroup,
   Box,
   Checkbox,
-  ContainerWrapper,
-  Divider,
+  Code,
+  Container,
   Heading,
   FormControl,
   FormLabel,
@@ -16,27 +17,21 @@ import {
   Image,
   Input,
   Layout,
-  List,
-  ListItem,
-  Modal,
   Text,
   useToast,
   useDisclosure,
   VStack,
+  CopyToClipboard,
 } from "components"
+import { AssetSelector } from "./asset-selector"
 import cubeImg from "assets/cube.png"
 import { useNetworkContext } from "features/network"
 import { useAccountsStore } from "features/accounts"
 import { useBalances } from "features/balances"
-import { useDebounce } from "hooks"
-
 import { useSendToken } from "features/transactions"
-import { Asset } from "features/balances/queries"
-
-enum ConfirmState {
-  requireConfirmation = "requireConfirmation",
-  confirmed = "confirmed",
-}
+import { Asset } from "features/balances"
+import { displayId } from "helper/common"
+import { IdentityText } from "components/uikit/identity-text"
 
 const defaultFormState: {
   to: string
@@ -52,13 +47,15 @@ export function SendAsset() {
   const location = useLocation()
   const routeState = location?.state as Record<string, string>
   const toast = useToast()
+  const {
+    isOpen: isShowConfirmDialog,
+    onOpen: onShowConfirmAlert,
+    onClose: onCloseConfirmDialog,
+  } = useDisclosure()
   const network = useNetworkContext()
   const account = useAccountsStore(s => s.byId.get(s.activeId))
-  const balances = useBalances({ network, account })
-
-  const [confirmState, setConfirmState] = React.useState<
-    ConfirmState | undefined
-  >(undefined)
+  const { full: accountPublicKey } = displayId(account!)
+  const balances = useBalances({ network, accountPublicKey })
 
   const [formValues, setFormValues] = React.useState<typeof defaultFormState>(
     () => ({
@@ -72,44 +69,41 @@ export function SendAsset() {
   )
   const asset = formValues.asset
 
-  const { sendToken, isLoading } = useSendToken({
-    network,
-    account,
-  })
+  const { sendToken, isLoading } = useSendToken({ network })
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSendTxn(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (!confirmState) {
-      setConfirmState(ConfirmState.requireConfirmation)
-    } else if (confirmState === ConfirmState.confirmed) {
-      if (!formValues.amount || !formValues.to || !formValues.asset?.identity)
-        return
-      sendToken(
-        {
-          to: formValues.to,
-          amount: BigInt(formValues.amount!),
-          symbol: formValues.asset.identity,
+    sendToken(
+      {
+        to: formValues.to,
+        amount: BigInt(formValues.amount!),
+        symbol: formValues.asset!.identity,
+      },
+      {
+        onSuccess: () => {
+          setFormValues({ ...defaultFormState })
+          onCloseConfirmDialog()
+          toast({
+            status: "success",
+            title: "Send",
+            description: "Transaction sent.",
+          })
         },
-        {
-          onSuccess: () => {
-            setFormValues({ to: "", amount: undefined, asset: undefined })
-            setConfirmState(undefined)
-            toast({
-              status: "success",
-              title: "Send",
-              description: "Transaction sent.",
-            })
-          },
-          onError: e => {
-            toast({
-              status: "warning",
-              title: "Send",
-              description: String(e),
-            })
-          },
+        onError: e => {
+          toast({
+            status: "warning",
+            title: "Send",
+            description: String(e),
+          })
         },
-      )
-    }
+      },
+    )
+  }
+
+  async function onNext(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    onShowConfirmAlert()
+    return
   }
 
   function onChange(
@@ -124,16 +118,16 @@ export function SendAsset() {
     return () => {
       setFormValues({ ...defaultFormState })
     }
-  }, [network, account])
+  }, [network, accountPublicKey])
 
   return (
-    <Layout.Main px={{ base: 4, md: 0 }} py={2}>
-      <ContainerWrapper maxW="md">
+    <Layout.Main py={2}>
+      <Container w={{ base: "full", md: "md" }}>
         <Heading size="lg" mb={3}>
           Send
         </Heading>
-        <Box shadow="base" rounded="md" p={8} bgColor="white">
-          <form onSubmit={onSubmit} aria-label="send form">
+        <Box shadow="base" rounded="md" py={8} px={6} bgColor="white">
+          <form onSubmit={onNext} aria-label="send form">
             <FormControl isRequired mb={4}>
               <FormLabel htmlFor="to">To</FormLabel>
               <Input
@@ -147,7 +141,13 @@ export function SendAsset() {
             </FormControl>
             <FormControl isRequired>
               <FormLabel htmlFor="amount">Amount</FormLabel>
-              <Box bgColor="gray.100" px={4} py={2} rounded="md" display="flex">
+              <HStack
+                bgColor="gray.100"
+                px={4}
+                py={2}
+                rounded="md"
+                display="flex"
+              >
                 <Input
                   alignSelf="flex-start"
                   name="amount"
@@ -159,9 +159,10 @@ export function SendAsset() {
                   required
                   pattern="^[0-9]*[.,]?[0-9]*$"
                 />
-                <VStack alignItems="flex-end">
+                <VStack alignItems="flex-end" w="full">
                   <AssetSelector
-                    assets={balances.data.ownedAssetsWithBalance}
+                    ownedAssets={balances.data.ownedAssetsWithBalance}
+                    allAssets={balances.data.allAssetsWithBalance}
                     fontWeight={asset ? "medium" : "normal"}
                     leftIcon={
                       asset ? (
@@ -175,7 +176,7 @@ export function SendAsset() {
                       }))
                     }}
                   >
-                    {asset?.symbol || "Select a token"}
+                    {asset?.symbol || "Select an asset"}
                   </AssetSelector>
                   {asset ? (
                     <HStack>
@@ -198,163 +199,114 @@ export function SendAsset() {
                     </HStack>
                   ) : null}
                 </VStack>
-              </Box>
+              </HStack>
             </FormControl>
-            {confirmState ? (
-              <Flex flexDir="row-reverse">
-                <Checkbox
-                  mt={2}
-                  justifyContent="flex-end"
-                  colorScheme="brand.teal"
-                  aria-label="confirm transaction"
-                  onChange={e =>
-                    setConfirmState(s =>
-                      e.target.checked
-                        ? ConfirmState.confirmed
-                        : ConfirmState.requireConfirmation,
-                    )
-                  }
-                >
-                  Confirm this transaction
-                </Checkbox>
-              </Flex>
-            ) : null}
             <Flex justifyContent="flex-end" w="full" mt={4}>
-              {confirmState ? (
-                <Button
-                  mr={2}
-                  width={{ base: "full", md: "auto" }}
-                  autoFocus
-                  onClick={() => setConfirmState(undefined)}
-                  disabled={isLoading}
-                >
-                  Cancel
-                </Button>
-              ) : null}
               <Button
                 width={{ base: "full", md: "auto" }}
                 isLoading={isLoading}
                 colorScheme="brand.teal"
-                disabled={
-                  isLoading ||
-                  !asset ||
-                  (confirmState && confirmState !== ConfirmState.confirmed)
-                }
+                disabled={!asset || !formValues.amount || !formValues.to}
                 type="submit"
               >
-                {confirmState ? "Send" : "Next"}
+                Next
               </Button>
             </Flex>
           </form>
         </Box>
-      </ContainerWrapper>
+      </Container>
+      <ConfirmTxnDialog
+        isOpen={isShowConfirmDialog}
+        onClose={onCloseConfirmDialog}
+        onSendTxn={onSendTxn}
+        txnDetails={formValues}
+        isLoading={isLoading}
+      />
     </Layout.Main>
   )
 }
 
-function AssetSelector({
-  assets,
-  onChange,
-  children,
-  ...props
-}: Omit<ButtonProps, "onChange"> & {
-  onChange: (asset: Asset) => void
-  assets: { identity: string; balance: bigint; symbol: string }[]
+function ConfirmTxnDialog({
+  isOpen,
+  onClose,
+  onSendTxn,
+  txnDetails,
+  isLoading,
+}: Omit<AlertDialogProps, "children" | "leastDestructiveRef"> & {
+  onSendTxn: (e: React.FormEvent<HTMLFormElement>) => void
+  txnDetails: typeof defaultFormState
+  isLoading: boolean
 }) {
-  const { isOpen, onClose, onToggle } = useDisclosure()
-  const [searchTerm, setSearchTerm] = React.useState("")
-  const debouncedSearchTerm = useDebounce(searchTerm)
-
-  const visibleAssets = React.useMemo(() => {
-    return assets.filter(a =>
-      debouncedSearchTerm
-        ? a.symbol
-            .toLocaleLowerCase()
-            .startsWith(debouncedSearchTerm.toLocaleLowerCase())
-        : true,
-    )
-  }, [debouncedSearchTerm, assets])
-
+  const cancelTxnRef = React.useRef(null)
+  const [isConfirmed, setIsConfirmed] = React.useState(false)
+  React.useEffect(() => () => setIsConfirmed(false), [isOpen])
   return (
-    <>
-      <Button
-        rightIcon={<FiChevronDown />}
-        aria-label="select token"
-        onClick={onToggle}
-        lineHeight="normal"
-        px={2}
-        bgColor="white"
-        shadow="base"
-        fontSize="lg"
-        {...props}
-      >
-        {children}
-      </Button>
-      <Modal
-        header="Select a token"
-        isOpen={isOpen}
-        onClose={onClose}
-        size="sm"
-        scrollBehavior="inside"
-      >
-        <Modal.Body>
-          <Box>
-            <Input
-              name="assetNameFilter"
-              id="assetNameFilter"
-              variant="filled"
-              placeholder="Search name"
-              onChange={e => setSearchTerm(e.target.value)}
-            />
+    <AlertDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      leastDestructiveRef={cancelTxnRef}
+      header="Confirm"
+      footer={
+        <ButtonGroup w="full" justifyContent="flex-end">
+          <Button
+            width={{ base: "full", md: "auto" }}
+            onClick={onClose}
+            ref={cancelTxnRef}
+            type="submit"
+          >
+            Cancel
+          </Button>
+          <Button
+            width={{ base: "full", md: "auto" }}
+            isLoading={isLoading}
+            colorScheme="brand.teal"
+            disabled={!isConfirmed || isLoading}
+            form="confirm-txn-form"
+            type="submit"
+          >
+            Send
+          </Button>
+        </ButtonGroup>
+      }
+    >
+      <form id="confirm-txn-form" onSubmit={onSendTxn}>
+        <VStack alignItems="flex-start" spacing={4}>
+          <Box width="full">
+            <FormLabel color="gray.500">To</FormLabel>
+            <Flex as={Code} px={2} py={1} rounded="md" alignItems="center">
+              <IdentityText
+                fullIdentity={txnDetails.to}
+                isTruncated
+                fontSize="xl"
+              >
+                {txnDetails.to}
+              </IdentityText>
+              <CopyToClipboard toCopy={txnDetails.to} />
+            </Flex>
           </Box>
-          <Divider my={3} />
-          <List spacing={3} mb={1}>
-            {visibleAssets?.map(asset => {
-              return (
-                <ListItem
-                  key={asset.identity}
-                  as={Button}
-                  isFullWidth
-                  variant="ghost"
-                  justifyContent="flex-start"
-                  aria-label="select asset"
-                  h="auto"
-                  p={2}
-                  onClick={() => {
-                    onChange(asset)
-                    onClose()
-                  }}
-                >
-                  <HStack
-                    alignItems="center"
-                    justifyContent="space-between"
-                    w="full"
-                  >
-                    <HStack>
-                      <Image src={cubeImg} borderRadius="full" boxSize={9} />
-                      <VStack alignItems="flex-start" spacing={0}>
-                        <Text fontSize="lg" lineHeight="normal">
-                          {asset.symbol}
-                        </Text>
-                        <Text
-                          fontSize="xs"
-                          lineHeight="normal"
-                          fontWeight="light"
-                        >
-                          Asset Full Name
-                        </Text>
-                      </VStack>
-                    </HStack>
-                    <Text whiteSpace="nowrap" overflow="hidden" isTruncated>
-                      {asset.balance?.toLocaleString() || "0"}
-                    </Text>
-                  </HStack>
-                </ListItem>
-              )
-            })}
-          </List>
-        </Modal.Body>
-      </Modal>
-    </>
+          <Box>
+            <FormLabel color="gray.500">Amount</FormLabel>
+            <HStack>
+              <Image src={cubeImg} borderRadius="full" boxSize={9} />
+              <Text fontWeight="medium" fontSize="2xl" isTruncated>
+                {txnDetails.amount}
+              </Text>
+              <Text fontSize="xl">{txnDetails.asset?.symbol}</Text>
+            </HStack>
+          </Box>
+        </VStack>
+
+        <Checkbox
+          mt={2}
+          w="full"
+          justifyContent="flex-end"
+          colorScheme="brand.teal"
+          aria-label="confirm transaction"
+          onChange={e => setIsConfirmed(e.target.checked)}
+        >
+          Approve this transaction
+        </Checkbox>
+      </form>
+    </AlertDialog>
   )
 }
