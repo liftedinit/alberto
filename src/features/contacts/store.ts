@@ -3,7 +3,6 @@ import { persist } from "zustand/middleware"
 import localforage from "localforage"
 import { replacer, reviver } from "helper/json"
 import { Contact } from "./types"
-import { stringify } from "querystring"
 
 interface Actions {
   createContact: (a: Contact) => void
@@ -56,11 +55,11 @@ export const useContactsStore = create<ContactsState & Actions>(
 export function useContactsList(searchName: string = "") {
   const contacts = useContactsStore(s => s.byId)
 
-  const groups = Array.from(contacts).reduce((acc, [id, contact]) => {
+  const groups = Array.from(contacts).reduce((acc, [, contact]) => {
     const { name } = contact
-    const l = name[0]
-    if (!acc[l]) acc[l] = [contact]
-    else acc[l].push(contact)
+    const letter = name[0]
+    if (!acc[letter]) acc[letter] = [contact]
+    else acc[letter].push(contact)
     return acc
   }, {} as { [k: string]: Contact[] })
 
