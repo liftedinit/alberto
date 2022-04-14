@@ -8,7 +8,7 @@ import {
   Center,
   Flex,
   ReceiveIcon,
-  SendIcon,
+  SendOutlineIcon,
   Spinner,
   Table,
   Td,
@@ -136,7 +136,7 @@ function SendTxnListItem({
   isSender: boolean
 }) {
   const { to, from, amount, symbol, time } = transaction
-  const TxnIcon = isSender ? SendIcon : ReceiveIcon
+  const TxnIcon = isSender ? SendOutlineIcon : ReceiveIcon
   const title = isSender ? "send" : "receive"
 
   const displayAmount = `${isSender ? "-" : "+"}${amount}`

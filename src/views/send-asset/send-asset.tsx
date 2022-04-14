@@ -1,5 +1,6 @@
 import React from "react"
 import { useLocation } from "react-router-dom"
+import { FiChevronDown } from "react-icons/fi"
 import {
   AlertDialog,
   AlertDialogProps,
@@ -7,8 +8,9 @@ import {
   ButtonGroup,
   Box,
   Checkbox,
-  Code,
   Container,
+  Grid,
+  GridItem,
   Heading,
   FormControl,
   FormLabel,
@@ -17,6 +19,7 @@ import {
   Image,
   Input,
   Layout,
+  SlideFade,
   Text,
   useToast,
   useDisclosure,
@@ -29,6 +32,8 @@ import { useNetworkContext } from "features/network"
 import { useAccountsStore } from "features/accounts"
 import { useBalances } from "features/balances"
 import { useSendToken } from "features/transactions"
+import { Contact, ContactSelector } from "features/contacts"
+
 import { Asset } from "features/balances"
 import { displayId } from "helper/common"
 import { IdentityText } from "components/uikit/identity-text"
@@ -69,6 +74,8 @@ export function SendAsset() {
   )
   const asset = formValues.asset
 
+  const [contact, setContact] = React.useState<Contact | undefined>()
+
   const { sendToken, isLoading } = useSendToken({ network })
 
   async function onSendTxn(e: React.FormEvent<HTMLFormElement>) {
@@ -82,6 +89,7 @@ export function SendAsset() {
       {
         onSuccess: () => {
           setFormValues({ ...defaultFormState })
+          contact && setContact(undefined)
           onCloseConfirmDialog()
           toast({
             status: "success",
@@ -111,6 +119,7 @@ export function SendAsset() {
   ) {
     e.preventDefault()
     const { name, value } = e.target
+    name === "to" && contact && setContact(undefined)
     setFormValues(s => ({ ...s, [name]: value }))
   }
 
@@ -121,106 +130,164 @@ export function SendAsset() {
   }, [network, accountPublicKey])
 
   return (
-    <Layout.Main py={2}>
-      <Container w={{ base: "full", md: "md" }}>
-        <Heading size="lg" mb={3}>
-          Send
-        </Heading>
-        <Box shadow="base" rounded="md" py={8} px={6} bgColor="white">
-          <form onSubmit={onNext} aria-label="send form">
-            <FormControl isRequired mb={4}>
-              <FormLabel htmlFor="to">To</FormLabel>
-              <Input
-                autoFocus
-                name="to"
-                id="to"
-                variant="filled"
-                onChange={onChange}
-                value={formValues.to}
-              />
-            </FormControl>
-            <FormControl isRequired>
-              <FormLabel htmlFor="amount">Amount</FormLabel>
-              <HStack
-                bgColor="gray.100"
-                px={4}
-                py={2}
-                rounded="md"
-                display="flex"
-              >
-                <Input
-                  alignSelf="flex-start"
-                  name="amount"
-                  id="amount"
-                  variant="unstyled"
-                  onChange={onChange}
-                  value={formValues.amount ?? ""}
-                  placeholder="0.0"
-                  required
-                  pattern="^[0-9]*[.,]?[0-9]*$"
-                />
-                <VStack alignItems="flex-end" w="full">
-                  <AssetSelector
-                    ownedAssets={balances.data.ownedAssetsWithBalance}
-                    allAssets={balances.data.allAssetsWithBalance}
-                    fontWeight={asset ? "medium" : "normal"}
-                    leftIcon={
-                      asset ? (
-                        <Image src={cubeImg} borderRadius="full" boxSize={9} />
-                      ) : undefined
-                    }
-                    onChange={asset => {
-                      setFormValues(s => ({
-                        ...s,
-                        asset,
-                      }))
-                    }}
-                  >
-                    {asset?.symbol || "Select an asset"}
-                  </AssetSelector>
-                  {asset ? (
-                    <HStack>
-                      <Text whiteSpace="nowrap" fontSize="xs">
-                        Balance: {asset.balance.toLocaleString()}
-                      </Text>
-                      <Button
-                        variant="link"
-                        colorScheme="red"
-                        size="xs"
-                        onClick={() => {
-                          setFormValues(s => ({
-                            ...s,
-                            amount: asset.balance.toString(),
-                          }))
-                        }}
-                      >
-                        Max
-                      </Button>
-                    </HStack>
-                  ) : null}
+    <Layout.Main>
+      <SlideFade in>
+        <Container w={{ base: "full", md: "md" }}>
+          <Heading size="lg" mb={3}>
+            Send
+          </Heading>
+          <Box shadow="base" rounded="md" py={8} px={6} bgColor="white">
+            <form onSubmit={onNext} aria-label="send form">
+              <FormControl isRequired mb={4}>
+                <HStack justifyContent="space-between" alignItems="stretch">
+                  <FormLabel htmlFor="to">To</FormLabel>
+                  <Box>
+                    <ContactSelector
+                      onContactClicked={(onClose, c) => {
+                        setFormValues(s => ({ ...s, to: c.identity }))
+                        setContact(c)
+                        onClose()
+                      }}
+                    >
+                      {onOpen => {
+                        return (
+                          <Button
+                            size="sm"
+                            variant="link"
+                            rightIcon={<FiChevronDown />}
+                            onClick={onOpen}
+                          >
+                            Select a contact
+                          </Button>
+                        )
+                      }}
+                    </ContactSelector>
+                  </Box>
+                </HStack>
+                <VStack
+                  bgColor="gray.100"
+                  px={4}
+                  py={2}
+                  rounded="md"
+                  spacing={0}
+                  alignItems="flex-start"
+                >
+                  {contact ? <Text fontSize="lg">{contact.name}</Text> : null}
+                  <Input
+                    autoFocus
+                    name="to"
+                    id="to"
+                    variant="unstyled"
+                    onChange={onChange}
+                    value={formValues.to}
+                    placeholder="oaffbahksdwaqeenayy..."
+                    pattern="^[a-z0-9]*$"
+                    minLength={50}
+                    maxLength={50}
+                    fontFamily="monospace"
+                    isTruncated
+                    size="lg"
+                  />
                 </VStack>
-              </HStack>
-            </FormControl>
-            <Flex justifyContent="flex-end" w="full" mt={4}>
-              <Button
-                width={{ base: "full", md: "auto" }}
-                isLoading={isLoading}
-                colorScheme="brand.teal"
-                disabled={!asset || !formValues.amount || !formValues.to}
-                type="submit"
-              >
-                Next
-              </Button>
-            </Flex>
-          </form>
-        </Box>
-      </Container>
+              </FormControl>
+              <FormControl isRequired>
+                <Flex alignItems="stretch" justifyContent="space-between">
+                  <FormLabel htmlFor="amount">Amount</FormLabel>
+                  <Box>
+                    <AssetSelector
+                      ownedAssets={balances.data.ownedAssetsWithBalance}
+                      allAssets={balances.data.allAssetsWithBalance}
+                      onAssetClicked={asset => {
+                        setFormValues(s => ({
+                          ...s,
+                          asset,
+                        }))
+                      }}
+                    >
+                      {onOpen => (
+                        <Button
+                          size="sm"
+                          rightIcon={<FiChevronDown />}
+                          aria-label="select token"
+                          onClick={onOpen}
+                          variant="link"
+                        >
+                          Select an asset
+                        </Button>
+                      )}
+                    </AssetSelector>
+                  </Box>
+                </Flex>
+                <HStack bgColor="gray.100" px={4} py={2} rounded="md">
+                  <Input
+                    alignSelf="flex-start"
+                    name="amount"
+                    id="amount"
+                    variant="unstyled"
+                    onChange={onChange}
+                    value={formValues.amount ?? ""}
+                    placeholder="0.0"
+                    required
+                    pattern="^[0-9]*[.,]?[0-9]*$"
+                    fontFamily="monospace"
+                    size="lg"
+                  />
+                  <VStack alignItems="flex-end" spacing={0}>
+                    {asset ? (
+                      <>
+                        <HStack spacing={1}>
+                          <Image
+                            src={cubeImg}
+                            borderRadius="full"
+                            boxSize={9}
+                          />
+                          <Text fontSize="xl">{asset.symbol}</Text>
+                        </HStack>
+                        <HStack>
+                          <Text whiteSpace="nowrap" fontSize="xs">
+                            Balance: {asset.balance.toLocaleString()}
+                          </Text>
+                          <Button
+                            variant="link"
+                            colorScheme="red"
+                            size="xs"
+                            onClick={() => {
+                              setFormValues(s => ({
+                                ...s,
+                                amount: asset.balance.toString(),
+                              }))
+                            }}
+                          >
+                            Max
+                          </Button>
+                        </HStack>
+                      </>
+                    ) : null}
+                  </VStack>
+                </HStack>
+              </FormControl>
+              <Flex justifyContent="flex-end" w="full" mt={4}>
+                <Button
+                  width={{ base: "full", md: "auto" }}
+                  isLoading={isLoading}
+                  colorScheme="brand.teal"
+                  disabled={!asset || !formValues.amount || !formValues.to}
+                  type="submit"
+                >
+                  Next
+                </Button>
+              </Flex>
+            </form>
+          </Box>
+        </Container>
+      </SlideFade>
       <ConfirmTxnDialog
         isOpen={isShowConfirmDialog}
         onClose={onCloseConfirmDialog}
         onSendTxn={onSendTxn}
         txnDetails={formValues}
         isLoading={isLoading}
+        contact={contact}
       />
     </Layout.Main>
   )
@@ -232,10 +299,12 @@ function ConfirmTxnDialog({
   onSendTxn,
   txnDetails,
   isLoading,
+  contact,
 }: Omit<AlertDialogProps, "children" | "leastDestructiveRef"> & {
   onSendTxn: (e: React.FormEvent<HTMLFormElement>) => void
   txnDetails: typeof defaultFormState
   isLoading: boolean
+  contact?: Contact
 }) {
   const cancelTxnRef = React.useRef(null)
   const [isConfirmed, setIsConfirmed] = React.useState(false)
@@ -246,6 +315,7 @@ function ConfirmTxnDialog({
       onClose={onClose}
       leastDestructiveRef={cancelTxnRef}
       header="Confirm"
+      size="xl"
       footer={
         <ButtonGroup w="full" justifyContent="flex-end">
           <Button
@@ -269,44 +339,54 @@ function ConfirmTxnDialog({
         </ButtonGroup>
       }
     >
-      <form id="confirm-txn-form" onSubmit={onSendTxn}>
-        <VStack alignItems="flex-start" spacing={4}>
-          <Box width="full">
-            <FormLabel color="gray.500">To</FormLabel>
-            <Flex as={Code} px={2} py={1} rounded="md" alignItems="center">
+      <AlertDialog.Body>
+        <form id="confirm-txn-form" onSubmit={onSendTxn}>
+          <Grid
+            templateColumns={{ base: "1fr", md: "auto 1fr" }}
+            gap={{ base: 0, md: 4 }}
+          >
+            <GridItem>
+              <FormLabel m={0}>To</FormLabel>
+            </GridItem>
+            <GridItem overflow="hidden" paddingInlineStart={{ base: 4, md: 0 }}>
+              {contact ? <Text fontSize="lg">{contact.name}</Text> : null}
               <IdentityText
                 fullIdentity={txnDetails.to}
                 isTruncated
-                fontSize="xl"
+                fontSize="lg"
+                title={txnDetails.to}
+                fontFamily="monospace"
+                whiteSpace="normal"
               >
                 {txnDetails.to}
               </IdentityText>
-              <CopyToClipboard toCopy={txnDetails.to} />
-            </Flex>
-          </Box>
-          <Box>
-            <FormLabel color="gray.500">Amount</FormLabel>
-            <HStack>
-              <Image src={cubeImg} borderRadius="full" boxSize={9} />
-              <Text fontWeight="medium" fontSize="2xl" isTruncated>
-                {txnDetails.amount}
-              </Text>
-              <Text fontSize="xl">{txnDetails.asset?.symbol}</Text>
-            </HStack>
-          </Box>
-        </VStack>
+            </GridItem>
+            <GridItem mt={{ base: 6, md: 0 }}>
+              <FormLabel m={0}>Amount</FormLabel>
+            </GridItem>
+            <GridItem paddingInlineStart={{ base: 4, md: 0 }}>
+              <HStack spacing={1}>
+                <Image src={cubeImg} borderRadius="full" boxSize={9} />
+                <Text fontSize="2xl" isTruncated>
+                  {txnDetails.amount}
+                </Text>
+                <Text fontSize="2xl">{txnDetails.asset?.symbol}</Text>
+              </HStack>
+            </GridItem>
+          </Grid>
 
-        <Checkbox
-          mt={2}
-          w="full"
-          justifyContent="flex-end"
-          colorScheme="brand.teal"
-          aria-label="confirm transaction"
-          onChange={e => setIsConfirmed(e.target.checked)}
-        >
-          Approve this transaction
-        </Checkbox>
-      </form>
+          <Checkbox
+            mt={2}
+            w="full"
+            justifyContent="flex-end"
+            colorScheme="brand.teal"
+            aria-label="confirm transaction"
+            onChange={e => setIsConfirmed(e.target.checked)}
+          >
+            Approve this transaction
+          </Checkbox>
+        </form>
+      </AlertDialog.Body>
     </AlertDialog>
   )
 }

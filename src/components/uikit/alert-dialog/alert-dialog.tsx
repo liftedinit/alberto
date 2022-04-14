@@ -16,12 +16,14 @@ export function AlertDialog({
   footer,
   header,
   children,
-}: AlertDialogProps & { header: React.ReactNode; footer: React.ReactNode }) {
+  ...props
+}: AlertDialogProps & { header?: React.ReactNode; footer?: React.ReactNode }) {
   return (
     <BaseDialog
       isOpen={isOpen}
       leastDestructiveRef={leastDestructiveRef}
       onClose={onClose}
+      {...props}
     >
       <BaseOverlay>
         <BaseContent>
@@ -31,7 +33,7 @@ export function AlertDialog({
             </BaseHeader>
           ) : null}
 
-          <BaseBody>{children}</BaseBody>
+          {children}
 
           {footer ? <BaseFooter>{footer}</BaseFooter> : null}
         </BaseContent>

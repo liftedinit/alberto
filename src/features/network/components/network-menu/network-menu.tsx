@@ -307,6 +307,7 @@ function NetworkDetailsModal({
                 onChange={onChange}
                 id="url"
                 variant="filled"
+                autoCapitalize="off"
                 value={formValues.url}
               />
             </FormControl>
