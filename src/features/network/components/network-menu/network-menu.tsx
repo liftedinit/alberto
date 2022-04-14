@@ -71,7 +71,7 @@ export function NetworkMenu() {
             {`${activeNetwork?.name ?? "no network selected"}`}
           </Text>
         </MenuButton>
-        <MenuList maxW="100vw">
+        <MenuList maxW="100vw" zIndex={2}>
           <MenuOptionGroup title="Networks" />
           <Box overflow="auto" maxHeight="40vh">
             {activeNetwork ? (
