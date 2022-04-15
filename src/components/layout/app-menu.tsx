@@ -74,11 +74,13 @@ export function AppMenu() {
       {iconsRef.current.map(({ icon, activeIcon, pathname }, idx) => {
         const isActive = pathname === location.pathname
         return (
-          <Center {...centerProps} key={idx} p={3}>
+          <Center {...centerProps} key={idx} p={2} rounded="full">
             <Link
               as={RouterLink}
               to={pathname}
               display="flex"
+              rounded="full"
+              p={2}
               _focus={{ border: "none" }}
             >
               <Icon
