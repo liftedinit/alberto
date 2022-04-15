@@ -1,10 +1,11 @@
 import React from "react"
-import { FiChevronDown } from "react-icons/fi"
+import { ANON_IDENTITY } from "many-js"
 import { useAccountsStore } from "features/accounts"
 import {
   Box,
   Button,
   Circle,
+  ChevronDownIcon,
   Code,
   CopyToClipboard,
   EditIcon,
@@ -92,7 +93,7 @@ export function AccountsMenu() {
       <Menu autoSelect={false}>
         <MenuButton
           as={Button}
-          rightIcon={<FiChevronDown />}
+          rightIcon={<ChevronDownIcon />}
           leftIcon={<Icon as={UserIcon} w={5} h={5} />}
           size="md"
           aria-label="active account menu trigger"
@@ -149,7 +150,7 @@ export function AccountsMenu() {
           </MenuItem>
         </MenuList>
       </Menu>
-      {idStrs && idStrs.short !== "oaa" && (
+      {idStrs && idStrs.short !== ANON_IDENTITY && (
         <HStack
           display={{ base: "none", md: "inline-flex" }}
           bgColor="gray.100"

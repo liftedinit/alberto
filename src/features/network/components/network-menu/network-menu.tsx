@@ -1,11 +1,11 @@
 import React from "react"
 import { FaRegEdit } from "react-icons/fa"
-import { FiChevronDown } from "react-icons/fi"
 import { useNetworkStore } from "../../store"
 import {
   Box,
   Button,
   Circle,
+  ChevronDownIcon,
   Flex,
   FormControl,
   FormLabel,
@@ -58,7 +58,7 @@ export function NetworkMenu() {
       <Menu autoSelect={false}>
         <MenuButton
           as={Button}
-          rightIcon={<FiChevronDown />}
+          rightIcon={<ChevronDownIcon />}
           lineHeight="normal"
           size="md"
           minWidth="100px"

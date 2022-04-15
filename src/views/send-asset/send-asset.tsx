@@ -1,6 +1,5 @@
 import React from "react"
 import { useLocation } from "react-router-dom"
-import { FiChevronDown } from "react-icons/fi"
 import {
   AlertDialog,
   AlertDialogProps,
@@ -8,6 +7,7 @@ import {
   ButtonGroup,
   Box,
   Checkbox,
+  ChevronDownIcon,
   Container,
   Grid,
   GridItem,
@@ -24,7 +24,6 @@ import {
   useToast,
   useDisclosure,
   VStack,
-  CopyToClipboard,
 } from "components"
 import { AssetSelector } from "./asset-selector"
 import cubeImg from "assets/cube.png"
@@ -33,9 +32,8 @@ import { useAccountsStore } from "features/accounts"
 import { useBalances } from "features/balances"
 import { useSendToken } from "features/transactions"
 import { Contact, ContactSelector } from "features/contacts"
-
 import { Asset } from "features/balances"
-import { displayId } from "helper/common"
+import { amountFormatter, displayId, parseNumberToBigInt } from "helper/common"
 import { IdentityText } from "components/uikit/identity-text"
 
 const defaultFormState: {
@@ -80,10 +78,11 @@ export function SendAsset() {
 
   async function onSendTxn(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    const bigIntAmount = parseNumberToBigInt(parseFloat(formValues.amount!))
     sendToken(
       {
         to: formValues.to,
-        amount: BigInt(formValues.amount!),
+        amount: bigIntAmount,
         symbol: formValues.asset!.identity,
       },
       {
@@ -154,7 +153,7 @@ export function SendAsset() {
                           <Button
                             size="sm"
                             variant="link"
-                            rightIcon={<FiChevronDown />}
+                            rightIcon={<ChevronDownIcon boxSize={4} />}
                             onClick={onOpen}
                           >
                             Select a contact
@@ -180,7 +179,7 @@ export function SendAsset() {
                     variant="unstyled"
                     onChange={onChange}
                     value={formValues.to}
-                    placeholder="oaffbahksdwaqeenayy..."
+                    placeholder="maffbahksdwaqeenayy..."
                     pattern="^[a-z0-9]*$"
                     minLength={50}
                     maxLength={50}
@@ -207,7 +206,7 @@ export function SendAsset() {
                       {onOpen => (
                         <Button
                           size="sm"
-                          rightIcon={<FiChevronDown />}
+                          rightIcon={<ChevronDownIcon boxSize={4} />}
                           aria-label="select token"
                           onClick={onOpen}
                           variant="link"
@@ -228,7 +227,8 @@ export function SendAsset() {
                     value={formValues.amount ?? ""}
                     placeholder="0.0"
                     required
-                    pattern="^[0-9]*[.,]?[0-9]*$"
+                    pattern="^(\d?)+(?:\.\d{1,9})?$"
+                    title="Number with up to 9 decimal places"
                     fontFamily="monospace"
                     size="lg"
                   />
@@ -245,7 +245,7 @@ export function SendAsset() {
                         </HStack>
                         <HStack>
                           <Text whiteSpace="nowrap" fontSize="xs">
-                            Balance: {asset.balance.toLocaleString()}
+                            Balance: {amountFormatter(asset.balance)}
                           </Text>
                           <Button
                             variant="link"
@@ -254,7 +254,7 @@ export function SendAsset() {
                             onClick={() => {
                               setFormValues(s => ({
                                 ...s,
-                                amount: asset.balance.toString(),
+                                amount: amountFormatter(asset.balance),
                               }))
                             }}
                           >
@@ -364,13 +364,13 @@ function ConfirmTxnDialog({
             <GridItem mt={{ base: 6, md: 0 }}>
               <FormLabel m={0}>Amount</FormLabel>
             </GridItem>
-            <GridItem paddingInlineStart={{ base: 4, md: 0 }}>
+            <GridItem overflow="hidden" paddingInlineStart={{ base: 4, md: 0 }}>
               <HStack spacing={1}>
                 <Image src={cubeImg} borderRadius="full" boxSize={9} />
-                <Text fontSize="2xl" isTruncated>
+                <Text fontSize="lg" isTruncated>
                   {txnDetails.amount}
                 </Text>
-                <Text fontSize="2xl">{txnDetails.asset?.symbol}</Text>
+                <Text fontSize="lg">{txnDetails.asset?.symbol}</Text>
               </HStack>
             </GridItem>
           </Grid>
