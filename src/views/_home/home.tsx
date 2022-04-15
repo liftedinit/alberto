@@ -2,6 +2,7 @@ import React from "react"
 import {
   Box,
   Container,
+  Heading,
   Layout,
   SlideFade,
   Tab,
@@ -46,38 +47,42 @@ export function Home() {
   }, [account, network])
 
   return (
-    <>
-      <Layout.Main py={2}>
-        <Container
-          maxW={{ base: "full", md: "container.sm" }}
-          p={{ base: 0, md: 4 }}
-        >
+    <Layout.Main>
+      <SlideFade in>
+        <Container maxW={{ base: "full", md: "container.sm" }}>
+          <Heading size="lg" mb={3}>
+            Wallet
+          </Heading>
           <Box
             rounded="md"
-            shadow="base"
-            p={{ base: 2, md: 6 }}
+            shadow="md"
             bgColor="white"
             position="relative"
+            p={{ base: 2, md: 4 }}
           >
             {asset ? (
-              <AssetDetails
-                network={network}
-                asset={asset}
-                setAsset={setAsset}
-                accountPublicKey={accountPublicKey}
-              />
+              <Box>
+                <SlideFade in>
+                  <AssetDetails
+                    network={network}
+                    asset={asset}
+                    setAsset={setAsset}
+                    accountPublicKey={accountPublicKey}
+                  />
+                </SlideFade>
+              </Box>
             ) : (
-              <SlideFade in={true}>
+              <SlideFade in>
                 <Tabs
                   isFitted={isBase ? true : false}
                   colorScheme="brand.teal"
                   index={isTabActive(TabNames.assets) ? 0 : 1}
+                  mb={3}
                   onChange={index =>
                     setActiveTab(
                       index === 0 ? TabNames.assets : TabNames.activity,
                     )
                   }
-                  mb={3}
                 >
                   <TabList>
                     <Tab fontWeight="medium">Assets</Tab>
@@ -86,7 +91,7 @@ export function Home() {
                 </Tabs>
 
                 {isTabActive(TabNames.assets) && (
-                  <SlideFade in={true}>
+                  <SlideFade in>
                     <Symbols
                       onAssetClicked={onAssetClicked}
                       network={network}
@@ -95,7 +100,7 @@ export function Home() {
                   </SlideFade>
                 )}
                 {isTabActive(TabNames.activity) && (
-                  <SlideFade in={true}>
+                  <SlideFade in>
                     <TxnList
                       accountPublicKey={accountPublicKey}
                       network={network}
@@ -106,7 +111,7 @@ export function Home() {
             )}
           </Box>
         </Container>
-      </Layout.Main>
-    </>
+      </SlideFade>
+    </Layout.Main>
   )
 }

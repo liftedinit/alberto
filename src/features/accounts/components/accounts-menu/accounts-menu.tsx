@@ -1,7 +1,5 @@
 import React from "react"
-import { FaRegEdit } from "react-icons/fa"
 import { FiChevronDown } from "react-icons/fi"
-import { AiOutlineUser } from "react-icons/ai"
 import { useAccountsStore } from "features/accounts"
 import {
   Box,
@@ -9,6 +7,7 @@ import {
   Circle,
   Code,
   CopyToClipboard,
+  EditIcon,
   Flex,
   HStack,
   Icon,
@@ -22,12 +21,13 @@ import {
   SimpleGrid,
   Text,
   useDisclosure,
+  UserIcon,
   VStack,
 } from "components"
 import { AddAccountModal } from "./add-account-modal"
 import { EditAccountModal } from "./edit-account-modal"
 import { displayId } from "helper/common"
-import { Account, ANON_ID, AccountId } from "../../types"
+import { Account, AccountId } from "../../types"
 import { IdentityText } from "components/uikit/identity-text"
 
 export type AccountItemWithIdDisplayStrings = [
@@ -93,7 +93,7 @@ export function AccountsMenu() {
         <MenuButton
           as={Button}
           rightIcon={<FiChevronDown />}
-          leftIcon={<Icon as={AiOutlineUser} w={5} h={5} />}
+          leftIcon={<Icon as={UserIcon} w={5} h={5} />}
           size="md"
           aria-label="active account menu trigger"
         >
@@ -106,7 +106,7 @@ export function AccountsMenu() {
             {activeAccount?.name}
           </Text>
         </MenuButton>
-        <MenuList maxW="100vw">
+        <MenuList maxW="100vw" zIndex={2}>
           <MenuOptionGroup title="Accounts" />
           <Box overflow="auto" maxHeight="40vh">
             {activeAccount ? (
@@ -149,7 +149,7 @@ export function AccountsMenu() {
           </MenuItem>
         </MenuList>
       </Menu>
-      {idStrs && idStrs.short !== ANON_ID && (
+      {idStrs && idStrs.short !== "oaa" && (
         <HStack
           display={{ base: "none", md: "inline-flex" }}
           bgColor="gray.100"
@@ -226,8 +226,7 @@ function AccountMenuItem({
         <IconButton
           variant="ghost"
           aria-label="edit account"
-          icon={<FaRegEdit />}
-          size="lg"
+          icon={<EditIcon boxSize={5} />}
           onClick={() => onEditClick(account)}
         />
       )}

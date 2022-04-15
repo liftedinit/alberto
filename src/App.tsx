@@ -2,7 +2,7 @@ import React from "react"
 import { Outlet } from "react-router"
 import { Routes, Route } from "react-router-dom"
 import { Layout } from "components"
-import { SplashView, Home, SendAsset } from "./views"
+import { Contacts, Home, SendAsset, SplashView } from "./views"
 
 const ONE_SECOND = 1 * 1000
 
@@ -28,6 +28,7 @@ function App() {
       >
         <Route index element={<Home />} />
         <Route path="send" element={<SendAsset />} />
+        <Route path="contacts" element={<Contacts />} />
       </Route>
     </Routes>
   )

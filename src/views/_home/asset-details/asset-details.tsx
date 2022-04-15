@@ -1,12 +1,10 @@
 import { GrFormPrevious } from "react-icons/gr"
 import {
-  Box,
   Button,
   CopyToClipboard,
   Flex,
   Heading,
   Image,
-  SlideFade,
   Text,
   VStack,
 } from "components"
@@ -30,7 +28,7 @@ export function AssetDetails({
   accountPublicKey,
 }: Props) {
   return (
-    <SlideFade in={true}>
+    <>
       <Button
         leftIcon={<GrFormPrevious />}
         variant="link"
@@ -48,20 +46,16 @@ export function AssetDetails({
           <CopyToClipboard toCopy={asset.identity} />
         </Flex>
       </VStack>
-      <Box px={3} mt={4}>
-        <Heading size="md" mb={3}>
-          Activity
-        </Heading>
-        <Box pos="relative">
-          <TxnList
-            network={network}
-            filter={{
-              symbols: asset.identity,
-            }}
-            accountPublicKey={accountPublicKey}
-          />
-        </Box>
-      </Box>
-    </SlideFade>
+      <Heading size="md" mb={3}>
+        Activity
+      </Heading>
+      <TxnList
+        network={network}
+        filter={{
+          symbols: asset.identity,
+        }}
+        accountPublicKey={accountPublicKey}
+      />
+    </>
   )
 }

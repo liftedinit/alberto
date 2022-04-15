@@ -1,9 +1,8 @@
 import React from "react"
 import { useLedgerInfo } from "features/network"
-import { Network } from "many-js"
+import { Network, BoundType, OrderType } from "many-js"
 import type { ListFilterArgs, Transaction } from "many-js"
 import { useMutation, useQuery, useQueryClient } from "react-query"
-import { BoundType } from "many-js/dist/network/modules/ledger/ledger"
 
 export function useSendToken({ network }: { network?: Network }) {
   const queryClient = useQueryClient()
@@ -59,7 +58,11 @@ export function useTransactionsList({
   const q = useQuery({
     queryKey: ["transactions", "list", filters, accountPublicKey, network?.url],
     queryFn: async () =>
-      await network?.ledger?.list({ filters, count: reqCount }),
+      await network?.ledger?.list({
+        filters,
+        count: reqCount,
+        order: OrderType.descending,
+      }),
     enabled: !!network?.url && !!accountPublicKey,
     keepPreviousData: true,
   })

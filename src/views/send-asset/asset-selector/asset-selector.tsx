@@ -1,8 +1,6 @@
 import React from "react"
-import { FiChevronDown } from "react-icons/fi"
 import {
   Button,
-  ButtonProps,
   Box,
   Divider,
   HStack,
@@ -25,15 +23,15 @@ import { Asset } from "features/balances"
 export function AssetSelector({
   ownedAssets,
   allAssets,
-  onChange,
+  onAssetClicked,
   children,
-  ...props
-}: Omit<ButtonProps, "onChange"> & {
+}: {
   ownedAssets: { identity: string; balance: bigint; symbol: string }[]
   allAssets: { identity: string; balance: bigint; symbol: string }[]
-  onChange: (asset: Asset) => void
+  children: (onOpen: () => void) => React.ReactNode
+  onAssetClicked: (asset: Asset) => void
 }) {
-  const { isOpen, onClose, onToggle } = useDisclosure()
+  const { isOpen, onClose, onOpen } = useDisclosure()
   const [searchTerm, setSearchTerm] = React.useState("")
   const [tabIdx, setTabIdx] = React.useState(0)
   const debouncedSearchTerm = useDebounce(searchTerm)
@@ -64,7 +62,7 @@ export function AssetSelector({
               h="auto"
               p={2}
               onClick={() => {
-                onChange(asset)
+                onAssetClicked(asset)
                 onClose()
               }}
             >
@@ -93,23 +91,11 @@ export function AssetSelector({
         })}
       </List>
     )
-  }, [visibleAssets, onChange, onClose])
+  }, [visibleAssets, onAssetClicked, onClose])
 
   return (
     <>
-      <Button
-        rightIcon={<FiChevronDown />}
-        aria-label="select token"
-        onClick={onToggle}
-        lineHeight="normal"
-        px={2}
-        bgColor="white"
-        shadow="base"
-        fontSize="lg"
-        {...props}
-      >
-        {children}
-      </Button>
+      {children(onOpen)}
       <Modal
         header="Select an asset"
         isOpen={isOpen}
