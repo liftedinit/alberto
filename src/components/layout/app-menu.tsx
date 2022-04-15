@@ -75,7 +75,12 @@ export function AppMenu() {
         const isActive = pathname === location.pathname
         return (
           <Center {...centerProps} key={idx} p={3}>
-            <Link as={RouterLink} to={pathname} display="flex">
+            <Link
+              as={RouterLink}
+              to={pathname}
+              display="flex"
+              _focus={{ border: "none" }}
+            >
               <Icon
                 color={isActive ? "brand.teal.500" : undefined}
                 w={{ base: 8, md: 9 }}

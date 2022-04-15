@@ -78,7 +78,7 @@ function ContactListItem({
       px={4}
       py={3}
       onClick={() => onClick?.(contact)}
-      cursor="pointer"
+      cursor={onClick ? "pointer" : "inherit"}
       _hover={{ bgColor: "gray.50" }}
     >
       <UserIcon boxSize={7} color="blackAlpha.400" />

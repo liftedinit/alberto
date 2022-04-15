@@ -31,15 +31,13 @@ export function UpdateContact({
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const toast = useToast()
-  const { byId, createContact, updateContact, deleteContact } =
-    useContactsStore(
-      ({ byId, createContact, updateContact, deleteContact }) => ({
-        byId,
-        createContact,
-        updateContact,
-        deleteContact,
-      }),
-    )
+  const { byId, updateContact, deleteContact } = useContactsStore(
+    ({ byId, updateContact, deleteContact }) => ({
+      byId,
+      updateContact,
+      deleteContact,
+    }),
+  )
 
   function onSubmit(c: Contact) {
     if (contact) {
@@ -68,7 +66,7 @@ export function UpdateContact({
         description: "Address already exists",
       })
     }
-    createContact(c)
+    updateContact(c.identity, c)
     toast({
       status: "success",
       title: "Contact",
@@ -223,7 +221,7 @@ export function RemoveContactDialog({
       >
         <AlertDialog.Body>
           <Text>Remove this contact?</Text>
-          <Text fontSize="2xl" fontWeight="medium">
+          <Text fontSize="lg" fontWeight="medium">
             {contact!.name}
           </Text>
           <Text fontSize="md" fontFamily="monospace">

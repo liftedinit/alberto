@@ -5,7 +5,6 @@ import { replacer, reviver } from "helper/json"
 import { Contact } from "./types"
 
 interface Actions {
-  createContact: (a: Contact) => void
   deleteContact: (id: string) => void
   updateContact: (id: string, c: Contact) => void
 }
@@ -22,11 +21,6 @@ export const useContactsStore = create<ContactsState & Actions>(
   persist(
     set => ({
       ...initialState,
-      createContact: (c: Contact) =>
-        set(state => ({
-          ...state,
-          byId: new Map(state.byId).set(c.identity, c),
-        })),
       updateContact: (id: string, c: Contact) =>
         set(state => ({
           ...state,
@@ -80,7 +74,5 @@ export function useContactsList(searchName: string = "") {
     })
     .filter(c => c.children.length > 0)
 
-  const visibleContacts = groupsSorted.filter(c => c.children.length > 0)
-
-  return { contacts: visibleContacts, total: contacts.size }
+  return { contacts: groupsSorted, total: contacts.size }
 }
