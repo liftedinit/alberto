@@ -5,8 +5,9 @@ function setupParseNumberToBigInt(
   numStr: string,
   maxDigits?: number,
 ) {
-  const actual7 = parseNumberToBigInt(parseFloat(numStr), maxDigits)
-  expect(actual7).toEqual(expectedBigInt)
+  expect(parseNumberToBigInt(parseFloat(numStr), maxDigits)).toEqual(
+    expectedBigInt,
+  )
 }
 
 describe("parseNumberToBigInt", () => {
