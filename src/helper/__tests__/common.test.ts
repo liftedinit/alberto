@@ -1,37 +1,43 @@
 import { parseNumberToBigInt, amountFormatter } from "../common"
 
+function setupParseNumberToBigInt(
+  expectedBigInt: bigint,
+  numStr: string,
+  maxDigits?: number,
+) {
+  const actual7 = parseNumberToBigInt(parseFloat(numStr), maxDigits)
+  expect(actual7).toEqual(expectedBigInt)
+}
+
 describe("parseNumberToBigInt", () => {
   it("should output the correct bigint", () => {
-    const expected1 = BigInt(1000000000)
-    const actual1 = parseNumberToBigInt(parseFloat("1.0"))
-    expect(actual1).toEqual(expected1)
-
-    const expected2 = BigInt(1000005599)
-    const actual2 = parseNumberToBigInt(parseFloat("1.000005599"))
-    expect(actual2).toEqual(expected2)
-
-    const expected3 = BigInt(1000000)
-    const actual3 = parseNumberToBigInt(parseFloat(".001"))
-    expect(actual3).toEqual(expected3)
-
-    const expected4 = BigInt(1)
-    const actual4 = parseNumberToBigInt(parseFloat(".000000001"))
-    expect(actual4).toEqual(expected4)
+    setupParseNumberToBigInt(BigInt(1000000000), "1.0")
+    setupParseNumberToBigInt(BigInt(1000005599), "1.000005599")
+    setupParseNumberToBigInt(BigInt(1000000), ".001")
+    setupParseNumberToBigInt(BigInt(1), ".000000001")
+    setupParseNumberToBigInt(BigInt(1), ".00001", 5)
+    setupParseNumberToBigInt(BigInt(10000), ".1", 5)
+    setupParseNumberToBigInt(BigInt(1005490), "10.0549", 5)
   })
 })
 
+function setupAmountFormatter(
+  expectedStr: string,
+  bigIntToFormat: bigint,
+  minDigits?: number,
+  maxDigits?: number,
+) {
+  expect(amountFormatter(bigIntToFormat, minDigits, maxDigits)).toEqual(
+    expectedStr,
+  )
+}
 describe("amountFormatter", () => {
   it("should format the amount properly", () => {
-    const expected1 = "0.000000001"
-    const actual1 = amountFormatter(BigInt(1))
-    expect(actual1).toEqual(expected1)
-
-    const expected2 = "1"
-    const actual2 = amountFormatter(BigInt(1000000000))
-    expect(actual2).toEqual(expected2)
-
-    const expected3 = "120.000000005"
-    const actual3 = amountFormatter(BigInt(120000000005))
-    expect(actual3).toEqual(expected3)
+    setupAmountFormatter("0.000000001", BigInt(1))
+    setupAmountFormatter("1", BigInt(1000000000))
+    setupAmountFormatter("120.000000005", BigInt(120000000005))
+    setupAmountFormatter("1.5", BigInt(150000), undefined, 5)
+    setupAmountFormatter("155.55559", BigInt(15555559), undefined, 5)
+    setupAmountFormatter("9,155.55559", BigInt(915555559), undefined, 5)
   })
 })

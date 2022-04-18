@@ -1,6 +1,8 @@
 import { Identity, ANON_IDENTITY } from "many-js"
 import { Account } from "../store/accounts"
 
+const DEFAULT_MAX_DIGITS = 9
+
 export const parseIdentity = (key: any): string => {
   if (key === undefined) {
     return ANON_IDENTITY
@@ -27,14 +29,20 @@ export function displayId(account: Account): { full: string; short: string } {
   return { full: idString, short: makeShortId(idString) }
 }
 
-export const parseNumberToBigInt = (v: number) =>
-  BigInt(Math.round(v * 10 ** 9))
+export const parseNumberToBigInt = (
+  v: number,
+  maxDigits: number = DEFAULT_MAX_DIGITS,
+) => BigInt(Math.round(v * 10 ** maxDigits))
 
-export const amountFormatter = (amt: bigint, min?: number, max?: number) => {
-  const amount = parseFloat(amt.toString()) / 10 ** 9
+export const amountFormatter = (
+  amt: bigint,
+  minDigits: number = 0,
+  maxDigits: number = DEFAULT_MAX_DIGITS,
+) => {
+  const amount = parseFloat(amt.toString()) / 10 ** maxDigits
   const amountString = new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: min ?? 0,
-    maximumFractionDigits: max ?? 9,
+    minimumFractionDigits: minDigits,
+    maximumFractionDigits: maxDigits,
   }).format(amount)
 
   return amountString

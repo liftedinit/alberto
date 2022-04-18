@@ -115,14 +115,10 @@ describe("home page", () => {
     setupHome()
 
     expect(screen.getByText(/abc/i)).toBeInTheDocument()
-    expect(
-      screen.getByText(BigInt(1000000).toLocaleString()),
-    ).toBeInTheDocument()
+    expect(screen.getByText("0.001")).toBeInTheDocument()
 
     expect(screen.getByText(/ghi/i)).toBeInTheDocument()
-    expect(
-      screen.getByText(BigInt(5000000).toLocaleString()),
-    ).toBeInTheDocument()
+    expect(screen.getByText("0.005")).toBeInTheDocument()
   })
   it("should display an error message", async () => {
     useNetworkContext.mockImplementationOnce(() => {
@@ -173,7 +169,7 @@ describe("home page", () => {
     await waitFor(() => screen.findByText(/abc/i))
     const assets = await screen.findAllByLabelText(/asset list item/i)
     userEvent.click(assets[0])
-    expect(screen.getByText(/1,000,000 abc/i)).toBeInTheDocument()
+    expect(screen.getByText(/0.001 abc/i)).toBeInTheDocument()
     await waitFor(() =>
       expect(mockNetwork.ledger.list).toHaveBeenCalledTimes(1),
     )
@@ -183,16 +179,14 @@ describe("home page", () => {
     const firstTxn = within(rows[0])
     expect(firstTxn.getByText(/abc/i)).toBeInTheDocument()
     expect(firstTxn.getByText(/send/i)).toBeInTheDocument()
-    expect(firstTxn.getByText(/-1/i)).toBeInTheDocument()
+    expect(firstTxn.getByText(/-0.000000001/i)).toBeInTheDocument()
     expect(firstTxn.getByText(/4\/8\/2022, 8:03:00 AM/i)).toBeInTheDocument()
 
     const secondTxn = within(rows[1])
     expect(secondTxn.getByText(/abc/i)).toBeInTheDocument()
     expect(secondTxn.getByText(/receive/i)).toBeInTheDocument()
-    expect(secondTxn.getByText(/\+3/i)).toBeInTheDocument()
+    expect(secondTxn.getByText(/\+0.000000003/i)).toBeInTheDocument()
     expect(secondTxn.getByText(/4\/8\/2022, 8:01:00 AM/i)).toBeInTheDocument()
-
-    screen.debug(rows)
   })
   it("should show list of account transaction history", async () => {
     const { activityTab } = setupHome()
@@ -207,12 +201,12 @@ describe("home page", () => {
     expect(rows.length).toEqual(2)
     expect(screen.getByText(/send/i)).toBeInTheDocument()
     expect(screen.getByText(/4\/8\/2022, 8:03:00 AM/i)).toBeInTheDocument()
-    expect(screen.getByText(/-1/i)).toBeInTheDocument()
+    expect(screen.getByText(/-0.000000001/i)).toBeInTheDocument()
     expect(screen.getByText(/abc/i)).toBeInTheDocument()
 
     expect(screen.getByText(/receive/i)).toBeInTheDocument()
     expect(screen.getByText(/4\/8\/2022, 8:01:00 AM/i)).toBeInTheDocument()
-    expect(screen.getByText(/\+3/i)).toBeInTheDocument()
+    expect(screen.getByText(/\+0.000000003/i)).toBeInTheDocument()
     expect(screen.getByText(/ghi/i)).toBeInTheDocument()
   })
 })
