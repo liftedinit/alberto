@@ -54,17 +54,14 @@ describe("<SendAsset />", () => {
     userEvent.click(selectTokenBtn)
     const assets = screen.getAllByLabelText(/select asset/i)
     const firstAsset = assets[0]
-    const { symbol: selectedAssetSymbol, balance: selectedAssetBalance } =
-      ownedAssetsWithBalance[0]
+    const { symbol: selectedAssetSymbol } = ownedAssetsWithBalance[0]
     const form = screen.getByRole("form")
     userEvent.click(firstAsset)
     expect(
       within(form).getByText(new RegExp(selectedAssetSymbol, "i")),
     ).toBeInTheDocument()
     expect(
-      within(form).getByText(
-        new RegExp("balance: " + selectedAssetBalance.toLocaleString(), "i"),
-      ),
+      within(form).getByText(new RegExp("balance: 0.001", "i")),
     ).toBeInTheDocument()
 
     fireEvent.change(toInput, {

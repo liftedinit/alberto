@@ -12,7 +12,7 @@ import { TxnList } from "features/transactions"
 import cubeImg from "assets/cube.png"
 import { Asset } from "features/balances"
 import { Network } from "many-js"
-import { makeShortId } from "helper/common"
+import { amountFormatter, makeShortId } from "helper/common"
 
 type Props = {
   asset: Asset
@@ -39,7 +39,7 @@ export function AssetDetails({
       <VStack>
         <Image src={cubeImg} boxSize="14" />
         <Heading size="lg" fontWeight="normal">
-          {asset.balance.toLocaleString() || "0"} {asset.symbol}
+          {amountFormatter(asset.balance)} {asset.symbol}
         </Heading>
         <Flex alignItems="center" gap={1}>
           <Text>{makeShortId(asset.identity)}</Text>

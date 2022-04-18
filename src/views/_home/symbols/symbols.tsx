@@ -1,6 +1,5 @@
 import React from "react"
 import { Link as RouterLink } from "react-router-dom"
-import { GrSend } from "react-icons/gr"
 import { Network } from "many-js"
 import {
   Button,
@@ -8,6 +7,7 @@ import {
   HStack,
   Icon,
   Image,
+  SendOutlineIcon,
   Spinner,
   Stack,
   StackDivider,
@@ -16,6 +16,7 @@ import {
 } from "components"
 import { Asset, useBalances } from "features/balances"
 import cubeImg from "assets/cube.png"
+import { amountFormatter } from "helper/common"
 
 export function Symbols({
   network,
@@ -118,17 +119,17 @@ function AssetLlistItem({
           fontSize="xl"
           fontWeight="medium"
         >
-          {asset.balance.toLocaleString()}
+          {amountFormatter(asset.balance)}
         </Text>
         <Text fontSize="lg" casing="uppercase" lineHeight="normal">
           {asset.symbol}
         </Text>
       </HStack>
       <Button
-        leftIcon={<Icon as={GrSend} />}
+        leftIcon={<Icon as={SendOutlineIcon} />}
         display={{
-          base: "inline-flex",
-          md: showActions ? "inline-block" : "none",
+          base: "flex",
+          md: showActions ? "flex" : "none",
         }}
         variant="link"
         as={RouterLink}

@@ -20,6 +20,7 @@ import {
 } from "components"
 import { useTransactionsList } from "features/transactions/queries"
 import { IdentityText } from "components/uikit/identity-text"
+import { amountFormatter } from "helper/common"
 
 export function TxnList({
   accountPublicKey,
@@ -139,7 +140,7 @@ function SendTxnListItem({
   const TxnIcon = isSender ? SendOutlineIcon : ReceiveIcon
   const title = isSender ? "send" : "receive"
 
-  const displayAmount = `${isSender ? "-" : "+"}${amount}`
+  const displayAmount = `${isSender ? "-" : "+"}${amountFormatter(amount)}`
   const address = isSender ? to! : from!
 
   return (
