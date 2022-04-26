@@ -1,5 +1,4 @@
-import { AiOutlineCopy } from "react-icons/ai"
-import { Flex, Icon, useClipboard, Tooltip } from "components"
+import { Flex, CopyIcon, Icon, useClipboard, Tooltip } from "components"
 export function CopyToClipboard({
   toCopy,
   msg,
@@ -9,7 +8,7 @@ export function CopyToClipboard({
   toCopy: string
   msg?: string
   iconProps?: {}
-  children?: React.ReactNode
+  children?: React.ReactNode | (({ onCopy }: { onCopy: () => void }) => void)
 }) {
   const { hasCopied, onCopy } = useClipboard(toCopy)
   return (
@@ -18,8 +17,9 @@ export function CopyToClipboard({
         children({ onCopy })
       ) : (
         <Flex>
+          {children ?? null}
           <Icon
-            as={AiOutlineCopy}
+            as={CopyIcon}
             w={5}
             h={5}
             onClick={onCopy}

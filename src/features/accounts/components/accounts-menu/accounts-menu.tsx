@@ -1,5 +1,5 @@
 import React from "react"
-import { ANON_IDENTITY } from "many-js"
+import { ANON_IDENTITY, WebAuthnIdentity } from "many-js"
 import { useAccountsStore } from "features/accounts"
 import {
   Box,
@@ -24,6 +24,7 @@ import {
   useDisclosure,
   UserIcon,
   VStack,
+  UsbIcon,
 } from "components"
 import { AddAccountModal } from "./add-account-modal"
 import { EditAccountModal } from "./edit-account-modal"
@@ -95,7 +96,6 @@ export function AccountsMenu() {
           as={Button}
           rightIcon={<ChevronDownIcon />}
           leftIcon={<Icon as={UserIcon} w={5} h={5} />}
-          size="md"
           aria-label="active account menu trigger"
         >
           <Text
@@ -188,24 +188,27 @@ function AccountMenuItem({
 }) {
   const id = account[0]
   const accountData = account[1]
+  const isWebAuthnIdentity = accountData.identity instanceof WebAuthnIdentity
   return (
-    <MenuItem
-      justifyContent="space-between"
-      as={SimpleGrid}
-      columns={2}
-      borderTopWidth={1}
-      spacing={4}
-      py={4}
-    >
-      <VStack align="flex-start" spacing={1}>
+    <MenuItem as={SimpleGrid} columns={3} borderTopWidth={1} spacing={4} py={4}>
+      {activeId === id && <Circle bg="green.400" size="10px" />}
+      <VStack align="flex-start" spacing={1} flexGrow={1}>
         <HStack>
-          {activeId === id && <Circle bg="green.400" size="10px" />}
           {activeId === id ? (
-            <Text fontSize={{ base: "xl", md: "md" }} casing="uppercase">
-              {accountData.name}
-            </Text>
+            <HStack>
+              <Text fontSize={{ base: "xl", md: "md" }} casing="uppercase">
+                {accountData.name}
+              </Text>
+              {isWebAuthnIdentity && <UsbIcon boxSize={5} />}
+            </HStack>
           ) : (
-            <Button variant="link" onClick={() => setActiveId?.(id)}>
+            <Button
+              variant="link"
+              onClick={() => setActiveId?.(id)}
+              rightIcon={
+                isWebAuthnIdentity ? <UsbIcon boxSize={5} /> : undefined
+              }
+            >
               <Text fontSize={{ base: "xl", md: "md" }} casing="uppercase">
                 {accountData.name}
               </Text>
@@ -223,7 +226,7 @@ function AccountMenuItem({
           </HStack>
         )}
       </VStack>
-      {accountData.keys && activeId !== id && (
+      {activeId !== id && (
         <IconButton
           variant="ghost"
           aria-label="edit account"

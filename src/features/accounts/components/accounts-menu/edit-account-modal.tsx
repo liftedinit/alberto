@@ -23,6 +23,7 @@ export function EditAccountModal({
   onClose: () => void
   account: AccountItemWithIdDisplayStrings
 }) {
+  const accountData = account?.[1]
   const [name, setName] = React.useState("")
   const [publicKey, setPublicKey] = React.useState("")
   const toast = useToast()
@@ -37,7 +38,7 @@ export function EditAccountModal({
   function onSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!byId.has(account[0])) return
-    updateAccount(account[0], { name, keys: account[1].keys })
+    updateAccount(account[0], { name, keys: accountData?.keys })
     toast({
       title: "Update Account",
       description: "Account was updated",
@@ -58,10 +59,8 @@ export function EditAccountModal({
   }
 
   React.useEffect(() => {
-    if (account) {
-      setName(account[1].name)
-    }
-  }, [account])
+    accountData && setName(accountData?.name)
+  }, [accountData])
 
   React.useEffect(() => {
     if (!isOpen) {
@@ -69,10 +68,6 @@ export function EditAccountModal({
       setPublicKey("")
     }
   }, [isOpen])
-
-  if (!account) return null
-
-  const accountData = account[1]
 
   return (
     <Modal
@@ -108,10 +103,10 @@ export function EditAccountModal({
           <FormLabel mt={3}>Public Key</FormLabel>
           <HStack bgColor="gray.100" px={4} h="40px" rounded="md">
             <Code isTruncated fontWeight="normal" aria-label="full public key">
-              {account[1].idDisplayStrings.full}
+              {accountData?.idDisplayStrings.full}
             </Code>
             <CopyToClipboard
-              toCopy={account[1].idDisplayStrings.full as string}
+              toCopy={accountData?.idDisplayStrings.full as string}
             />
           </HStack>
         </form>

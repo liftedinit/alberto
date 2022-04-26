@@ -12,7 +12,7 @@ import { toast } from "components"
 import { KeyPair } from "many-js"
 import { AccountsMenu } from "../accounts-menu"
 import { displayId } from "helper/common"
-import { useAccountsStore } from "../../../store"
+import { useAccountsStore } from "features/accounts"
 
 jest.mock("helper/common", () => {
   const actualModule = jest.requireActual("helper/common")
@@ -58,22 +58,22 @@ describe("AccountsMenu", () => {
     ).toBeInTheDocument()
   })
 
-  it("should add an account via a new seed phrase", async () => {
+  it("should add an account via a new seed phrase", async function () {
     KeyPair.getMnemonic.mockImplementation(
       () => "one two three four five six seven eight nine ten eleven twelve",
     )
     KeyPair.fromMnemonic.mockImplementation(() => ({
-      privateKey: new Uint8Array(new ArrayBuffer(10)),
-      publicKey: new Uint8Array(new ArrayBuffer(12)),
+      privateKey: new Uint8Array(new ArrayBuffer(32)),
+      publicKey: new Uint8Array(new ArrayBuffer(32)),
     }))
 
     const { activeAccountMenuTriggerBtn, formContainer } =
       await setupAddAccount()
     const withinForm = within(formContainer)
-
-    expect(withinForm.getByText(/add account/i)).toBeInTheDocument()
-    const createNewBtn = screen.getByRole("button", { name: /create new/i })
-    fireEvent.click(createNewBtn)
+    const btn = withinForm.getByRole("button", { name: /create seed phrase/i })
+    // expect(withinForm.getByText(/add account/i)).toBeInTheDocument()
+    // const createNewBtn = screen.getByRole("button", { name: /create new/i })
+    fireEvent.click(btn)
 
     const saveBtn = screen.getByRole("button", { name: /save/i })
     expect(screen.getAllByTestId("seed-word")).toHaveLength(12)
@@ -85,10 +85,10 @@ describe("AccountsMenu", () => {
     ).toBeInTheDocument()
   })
 
-  it("should add an account via an existing seed phrase", async () => {
+  it("should add an account via importing with existing seed phrase", async () => {
     KeyPair.fromMnemonic.mockImplementation(() => ({
-      privateKey: new Uint8Array(new ArrayBuffer(10)),
-      publicKey: new Uint8Array(new ArrayBuffer(12)),
+      privateKey: new Uint8Array(new ArrayBuffer(32)),
+      publicKey: new Uint8Array(new ArrayBuffer(32)),
     }))
     const seedPhrase = `
         fault
@@ -104,11 +104,13 @@ describe("AccountsMenu", () => {
         basic
         permit
       `
-    const { activeAccountMenuTriggerBtn, formContainer } =
+    const { activeAccountMenuTriggerBtn, formContainer, tabs } =
       await setupAddAccount()
+    const importTab = within(tabs).getByText(/import/i)
+    userEvent.click(importTab)
     const withinForm = within(formContainer)
     const importSeedWordsBtn = screen.getByRole("button", {
-      name: /import seed/i,
+      name: /import seed phrase/i,
     })
 
     fireEvent.click(importSeedWordsBtn)
@@ -123,7 +125,7 @@ describe("AccountsMenu", () => {
     ).toBeInTheDocument()
   })
 
-  it("should add an account via PEM file", async () => {
+  it("should add an account via importing a PEM file", async () => {
     KeyPair.fromPem.mockImplementation(() => ({
       privateKey: new Uint8Array(new ArrayBuffer(10)),
       publicKey: new Uint8Array(new ArrayBuffer(12)),
@@ -133,8 +135,9 @@ describe("AccountsMenu", () => {
         MC4CAQAwBQYDK2VwBCIEIAGY5ZRRzlH/9MbLVyaGP/bWQsVUbFoubQ/yuLvswWul
         -----END PRIVATE KEY-----`
 
-    const { activeAccountMenuTriggerBtn, formContainer } =
+    const { activeAccountMenuTriggerBtn, formContainer, tabs } =
       await setupAddAccount()
+    userEvent.click(within(tabs).getByText(/import/i))
     const withinForm = within(formContainer)
 
     const importPemBtn = screen.getByRole("button", { name: /import pem/i })
@@ -197,7 +200,9 @@ async function setupAddAccount() {
   const addAccountBtn = await screen.findByText(/add account/i)
   fireEvent.click(addAccountBtn)
   const formContainer = screen.getByTestId("add-account-form-container")
+  const tabs = within(formContainer).getByRole("tablist")
   return {
+    tabs,
     formContainer,
     activeAccountMenuTriggerBtn: activeAccountMenuTriggerBtn,
   }

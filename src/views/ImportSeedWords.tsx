@@ -20,13 +20,7 @@ function ImportSeedWordsView() {
   };
 
   const handleMnemonic = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const mnemonic = event.target.value;
-    try {
-      const keys = KeyPair.fromMnemonic(mnemonic);
-      setAccount({ ...account, keys });
-    } catch (e) {
-      setAccount({ ...account, keys: undefined });
-    }
+
   };
 
   const handleSave = () => {

@@ -135,7 +135,7 @@ export function SendAsset() {
           <Heading size="lg" mb={3}>
             Send
           </Heading>
-          <Box shadow="base" rounded="md" py={8} px={6} bgColor="white">
+          <Box shadow="md" rounded="md" py={8} px={6} bgColor="white">
             <form onSubmit={onNext} aria-label="send form">
               <FormControl isRequired mb={4}>
                 <HStack justifyContent="space-between" alignItems="stretch">

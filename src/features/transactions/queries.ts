@@ -70,7 +70,7 @@ export function useTransactionsList({
   const transactionsWithSymbols = (q?.data?.transactions ?? []).map(
     (t: Transaction) => ({
       ...t,
-      symbol: ledgerInfo?.data?.symbols?.get(t.symbolIdentity) ?? "",
+      symbol: ledgerInfo?.data?.symbols?.get(t.symbolAddress) ?? "",
     }),
   )
   const respCount = transactionsWithSymbols.length

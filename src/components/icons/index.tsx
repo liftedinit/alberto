@@ -1,5 +1,7 @@
 import { Icon as BaseIcon, IconProps } from "components"
+
 import { BiDownload } from "react-icons/bi"
+import { AiOutlineCopy } from "react-icons/ai"
 import {
   IoWallet,
   IoWalletOutline,
@@ -14,6 +16,7 @@ import {
   FaRegPaperPlane,
   FaPaperPlane,
 } from "react-icons/fa"
+import { CgUsb } from "react-icons/cg"
 import { FiChevronDown, FiEdit, FiX } from "react-icons/fi"
 
 export function ReceiveIcon(props: IconProps) {
@@ -69,4 +72,12 @@ export function CloseIcon(props: IconProps) {
 
 export function SearchIcon(props: IconProps) {
   return <BaseIcon as={IoSearch} w={6} h={6} {...props} />
+}
+
+export function UsbIcon(props: IconProps) {
+  return <BaseIcon as={CgUsb} w={6} h={6} {...props} />
+}
+
+export function CopyIcon(props: IconProps) {
+  return <BaseIcon as={AiOutlineCopy} w={6} h={6} {...props} />
 }

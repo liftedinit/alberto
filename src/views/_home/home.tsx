@@ -1,6 +1,7 @@
 import React from "react"
 import {
   Box,
+  Button,
   Container,
   Heading,
   Layout,
@@ -10,7 +11,7 @@ import {
   TabList,
 } from "components"
 import { useIsBaseBreakpoint } from "hooks"
-import { useNetworkContext } from "features/network"
+import { useFetchLedgerInfo, useNetworkContext } from "features/network"
 import { useAccountsStore } from "features/accounts"
 import { Symbols } from "./symbols"
 import { AssetDetails } from "./asset-details"
@@ -18,6 +19,7 @@ import { AssetDetails } from "./asset-details"
 import { displayId } from "helper/common"
 import { Asset } from "features/balances"
 import { TxnList } from "features/transactions"
+import { arrayBufferToBase64 } from "helper/convert"
 
 enum TabNames {
   assets = "assets",
@@ -39,12 +41,30 @@ export function Home() {
     return tab === activeTab
   }
 
+  const { mutate } = useFetchLedgerInfo({ network })
+
   React.useEffect(() => {
     return () => {
       setActiveTab(TabNames.assets)
       setAsset(undefined)
     }
   }, [account, network])
+
+  // async function sign() {
+  //   const res = await account?.identity?.sign(new ArrayBuffer(32))
+  //   console.log({ res })
+  // }
+  // console.log(
+  //   "rawId base64",
+  //   // @ts-ignore
+  //   account?.identity?.rawId
+  //     ? // @ts-ignore
+  //       arrayBufferToBase64(account.identity.rawId)
+  //     : null,
+  // )
+  // console.log({ identity: account?.identity })
+
+  // console.log({ accountPublicKey })
 
   return (
     <Layout.Main>
@@ -60,6 +80,20 @@ export function Home() {
             position="relative"
             p={{ base: 2, md: 4 }}
           >
+            <Button
+              onClick={() =>
+                mutate(undefined, {
+                  onSuccess: data => {
+                    console.log("DATA >>>>>", data)
+                  },
+                  onError: err => {
+                    console.log("ERROR >>>>>>.", err)
+                  },
+                })
+              }
+            >
+              fetch
+            </Button>
             {asset ? (
               <Box>
                 <SlideFade in>
@@ -92,11 +126,11 @@ export function Home() {
 
                 {isTabActive(TabNames.assets) && (
                   <SlideFade in>
-                    <Symbols
+                    {/* <Symbols
                       onAssetClicked={onAssetClicked}
                       network={network}
                       accountPublicKey={accountPublicKey}
-                    />
+                    /> */}
                   </SlideFade>
                 )}
                 {isTabActive(TabNames.activity) && (

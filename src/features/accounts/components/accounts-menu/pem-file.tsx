@@ -9,8 +9,8 @@ import {
   useToast,
   ContainerWrapper,
 } from "components"
-import { useAccountsStore } from "../../store"
-import { KeyPair } from "many-js"
+import { useAccountsStore } from "features/accounts"
+import { Ed25519KeyPairIdentity, KeyPair } from "many-js"
 import { doesAccountExist } from "../../utils"
 import { AddAccountMethodProps } from "./add-account-modal"
 
@@ -49,7 +49,14 @@ export function PemFile({ setAddMethod, onSuccess }: AddAccountMethodProps) {
       })
     }
 
-    createAccount({ name, keys: keysFromPem })
+    // createAccount({ name, keys: keysFromPem })
+    createAccount({
+      name,
+      identity: new Ed25519KeyPairIdentity(
+        keysFromPem.publicKey,
+        keysFromPem.privateKey,
+      ),
+    })
     toast({
       title: toastTitle,
       status: "success",

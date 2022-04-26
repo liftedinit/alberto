@@ -3,7 +3,7 @@ const FIVE_SECONDS = 5000
 
 const defaultUseToastOptions: UseToastOptions = {
   duration: FIVE_SECONDS,
-  variant: "subtle",
+  variant: "left-accent",
   isClosable: true,
   position: "top",
 }

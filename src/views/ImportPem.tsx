@@ -19,15 +19,7 @@ function ImportPemView() {
     setAccount({ ...account, [name]: value });
   };
 
-  const handlePem = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const pem = event.target.value;
-    try {
-      const keys = KeyPair.fromPem(pem);
-      setAccount({ ...account, keys });
-    } catch (e) {
-      setAccount({ ...account, keys: undefined });
-    }
-  };
+  const handlePem = (event: React.ChangeEvent<HTMLTextAreaElement>) => {}
 
   const handleSave = () => {
     dispatch({ type: "ACCOUNTS.CREATE", payload: account });

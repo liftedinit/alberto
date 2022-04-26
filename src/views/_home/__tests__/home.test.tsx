@@ -12,6 +12,7 @@ import { useAccountsStore } from "features/accounts"
 import { displayId } from "helper/common"
 
 import { Home } from "views/_home"
+import { Ed25519KeyPairIdentity, Transaction } from "many-js"
 
 jest.mock("features/network/network-provider", () => {
   return {
@@ -37,9 +38,9 @@ const mockUseIsBaseBreakpoint = jest.spyOn(
 
 const mockLedgerInfo = {
   symbols: new Map([
-    ["oabc", "ABC"],
-    ["odef", "DEF"],
-    ["oghi", "GHI"],
+    ["mabc", "ABC"],
+    ["mdef", "DEF"],
+    ["mghi", "GHI"],
   ]),
 }
 
@@ -49,19 +50,19 @@ const mockListData = {
     {
       id: 1,
       type: "send",
-      from: "999",
-      to: "888",
+      from: "m111",
+      to: "m888",
       time: new Date("2022-04-08T08:03:00"),
-      symbolIdentity: "oabc",
+      symbolAddress: "mabc",
       amount: BigInt(1),
     },
     {
       id: 2,
       type: "send",
-      from: "888",
-      to: "999",
+      from: "m888",
+      to: "ma111",
       time: new Date("2022-04-08T08:01:00"),
-      symbolIdentity: "oghi",
+      symbolAddress: "mghi",
       amount: BigInt(3),
     },
   ],
@@ -69,8 +70,8 @@ const mockListData = {
 
 const mockBalanceData = {
   balances: new Map([
-    ["oabc", BigInt(1000000)],
-    ["oghi", BigInt(5000000)],
+    ["mabc", BigInt(1000000)],
+    ["mghi", BigInt(5000000)],
   ]),
 }
 
@@ -96,8 +97,8 @@ describe("home page", () => {
   beforeEach(() => {
     displayId.mockImplementation(() => {
       return {
-        short: "<999...999>",
-        full: "999",
+        short: "<m111>",
+        full: "m111",
       }
     })
     mockNetwork = getMockNetwork()
@@ -146,22 +147,22 @@ describe("home page", () => {
           {
             id: 1,
             type: "send",
-            from: "999",
-            to: "888",
+            from: "m111",
+            to: "m888",
             time: new Date("2022-04-08T08:03:00"),
-            symbolIdentity: "oabc",
+            symbolAddress: "mabc",
             amount: BigInt(1),
           },
           {
             id: 2,
             type: "send",
-            from: "888",
-            to: "999",
+            from: "m888",
+            to: "m111",
             time: new Date("2022-04-08T08:01:00"),
-            symbolIdentity: "oabc",
+            symbolAddress: "mabc",
             amount: BigInt(3),
           },
-        ],
+        ] as unknown as Transaction[],
       }
     })
 
@@ -214,23 +215,29 @@ describe("home page", () => {
 function setupHome() {
   render(<Home />)
   act(() =>
-    useAccountsStore.setState(s => ({
-      ...s,
-      activeId: 1,
-      byId: new Map([
-        [0, { name: "Anonymous" }],
-        [
-          1,
-          {
-            name: "test-account",
-            keys: {
-              privateKey: new Uint8Array(Buffer.from("privKey")),
-              publicKey: new Uint8Array(Buffer.from("pubKey")),
+    useAccountsStore.setState(s => {
+      return {
+        ...s,
+        activeId: 1,
+        byId: new Map([
+          ...Array.from(s.byId),
+          [
+            1,
+            {
+              name: "test-account",
+              identity: new Ed25519KeyPairIdentity(
+                new Uint8Array(Buffer.from("pubKey")),
+                new Uint8Array(Buffer.from("privateKey")),
+              ),
+              // keys: {
+              //   privateKey: new Uint8Array(Buffer.from("privKey")),
+              //   publicKey: new Uint8Array(Buffer.from("pubKey")),
+              // },
             },
-          },
-        ],
-      ]),
-    })),
+          ],
+        ]),
+      }
+    }),
   )
   const tabs = screen.getByRole("tablist")
   const assetsTab = within(tabs).getByText(/assets/i)

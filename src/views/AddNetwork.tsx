@@ -23,12 +23,12 @@ function AddNetworkView() {
   };
 
   const handleSave = async () => {
-    try {
-      const network = new Network(newNetwork.url);
-      await network.base.heartbeat();
-      dispatch({ type: "NETWORKS.CREATE", payload: network });
-      navigate("/networks");
-    } catch (e) {}
+    // try {
+    //   const network = new Network(newNetwork.url);
+    //   await network.base.heartbeat();
+    //   dispatch({ type: "NETWORKS.CREATE", payload: network });
+    //   navigate("/networks");
+    // } catch (e) {}
   };
 
   return (

@@ -121,8 +121,8 @@ export function AssetSelector({
             index={tabIdx}
           >
             <TabList mb={3}>
-              <Tab fontWeight="medium">Owned Assets</Tab>
-              <Tab fontWeight="medium">All Assets</Tab>
+              {ownedAssets && <Tab fontWeight="medium">Owned Assets</Tab>}
+              {allAssets && <Tab fontWeight="medium">All Assets</Tab>}
             </TabList>
             {AssetsList}
           </Tabs>

@@ -9,8 +9,8 @@ import {
   useToast,
   ContainerWrapper,
 } from "components"
-import { useAccountsStore } from "../../store"
-import { KeyPair } from "many-js"
+import { useAccountsStore } from "features/accounts"
+import { Ed25519KeyPairIdentity, KeyPair } from "many-js"
 import { doesAccountExist } from "features/accounts/utils"
 import { AddAccountMethodProps, toastTitle } from "./add-account-modal"
 
@@ -48,7 +48,14 @@ export function SeedWords({ setAddMethod, onSuccess }: AddAccountMethodProps) {
       })
     }
 
-    createAccount({ name: account.name, keys: keysFromMnemonic })
+    createAccount({
+      name: account.name,
+      identity: new Ed25519KeyPairIdentity(
+        keysFromMnemonic.publicKey,
+        keysFromMnemonic.privateKey,
+      ),
+    })
+    // createAccount({ name: account.name, keys: keysFromMnemonic })
     toast({
       title: toastTitle,
       status: "success",
