@@ -19,7 +19,7 @@ import { AssetDetails } from "./asset-details"
 import { displayId } from "helper/common"
 import { Asset } from "features/balances"
 import { TxnList } from "features/transactions"
-import { arrayBufferToBase64 } from "helper/convert"
+import { WebAuthnIdentity } from "many-js"
 
 enum TabNames {
   assets = "assets",
@@ -50,21 +50,17 @@ export function Home() {
     }
   }, [account, network])
 
+  console.log(
+    "account",
+    account?.identity instanceof WebAuthnIdentity
+      ? WebAuthnIdentity.decode(account?.identity?.cosePublicKey)
+      : account,
+  )
+
   // async function sign() {
   //   const res = await account?.identity?.sign(new ArrayBuffer(32))
   //   console.log({ res })
   // }
-  // console.log(
-  //   "rawId base64",
-  //   // @ts-ignore
-  //   account?.identity?.rawId
-  //     ? // @ts-ignore
-  //       arrayBufferToBase64(account.identity.rawId)
-  //     : null,
-  // )
-  // console.log({ identity: account?.identity })
-
-  // console.log({ accountPublicKey })
 
   return (
     <Layout.Main>

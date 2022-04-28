@@ -3,14 +3,14 @@ import { Address, ANON_IDENTITY } from "many-js"
 
 const DEFAULT_MAX_DIGITS = 9
 
-export const parseIdentity = (key: any): string => {
-  if (key === undefined) {
-    return ANON_IDENTITY
-  }
-  const identity = Address.fromPublicKey(key)
+// export const parseIdentity = (key: any): string => {
+//   if (key === undefined) {
+//     return ANON_IDENTITY
+//   }
+//   const identity = Address.fromPublicKey(key)
 
-  return `${identity.toString()}`
-}
+//   return `${identity.toString()}`
+// }
 
 export const getAddressFromHex = (hex: any): string => {
   const identity = Address.fromHex(hex)
@@ -20,18 +20,21 @@ export const getAddressFromHex = (hex: any): string => {
 export const makeShortId = (idString: string): string =>
   `${idString.slice(0, 4)}...${idString.slice(-4)}`
 
-export function displayId(account: Account): { full: string; short: string } {
-  if (account?.identity) {
-    const address = Address.fromPublicKey(account.identity.publicKey)
-    const idString = address.toString()
-    return { full: idString, short: makeShortId(idString) }
-  }
-  if (!account?.keys) {
-    return { full: "", short: ANON_IDENTITY }
-  }
-  const identity = Address.fromPublicKey(account.keys.publicKey)
-  const idString = identity.toString()
+export function displayId(account: Account): {
+  full: string
+  short: string
+} {
+  // if (account?.identity) {
+  const address = Address.fromIdentity(account.identity!)
+  const idString = address.toString()
   return { full: idString, short: makeShortId(idString) }
+  // }
+  // if (!account?.keys) {
+  //   return { full: "", short: ANON_IDENTITY }
+  // }
+  // const identity = Address.fromIdentity(account.keys.publicKey)
+  // const idString = identity.toString()
+  // return { full: idString, short: makeShortId(idString) }
 }
 
 export const parseNumberToBigInt = (

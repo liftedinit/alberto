@@ -73,7 +73,7 @@ export function HardwareAuthenticator({
     try {
       const identity = await WebAuthnIdentity.create()
       const base64CredId = arrayBufferToBase64(identity.rawId)
-      const publicKeyStr = Address.fromPublicKey(identity.publicKey).toString()
+      const publicKeyStr = Address.fromIdentity(identity).toString()
       const publicKeyBase64 = arrayBufferToBase64(identity.publicKey)
 
       setPublicAddress(publicKeyStr)

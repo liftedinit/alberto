@@ -30,7 +30,7 @@ export function reviver(key: string, value: any) {
       return new Map(value.value)
     } else if (value.dataType === WebAuthnIdentity.name) {
       return new WebAuthnIdentity(
-        value.value.publicKey,
+        value.value.cosePublicKey,
         base64ToArrayBuffer(value.value.rawId),
       )
     } else if (value.dataType === Ed25519KeyPairIdentity.name) {

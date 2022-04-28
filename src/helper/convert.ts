@@ -6,11 +6,17 @@ export const Hex2Base64 = (input: string) => {
   return Buffer.from(input, 'hex').toString('base64')
 }
 
-export const base64ToArrayBuffer = (str: string) =>
-  new Uint8Array(Buffer.from(str, "base64"))
+export const base64ToArrayBuffer = (str: string): ArrayBuffer => {
+  return Buffer.from(str, "base64").buffer
+  // const encoder = new TextEncoder()
+  // return encoder.encode(str).buffer
+}
 
-export const arrayBufferToBase64 = (buffer: ArrayBuffer) =>
-  Buffer.from(buffer).toString("base64")
+export const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
+  return Buffer.from(buffer).toString("base64")
+  // const decoder = new TextDecoder()
+  // return window.btoa(decoder.decode(buffer))
+}
 
 export const fromDateTime = (date: Date) => {
   const rft = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" })
