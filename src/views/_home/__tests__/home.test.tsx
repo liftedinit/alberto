@@ -103,7 +103,7 @@ describe("home page", () => {
     })
     mockNetwork = getMockNetwork()
     useNetworkContext.mockImplementation(() => {
-      return mockNetwork
+      return [mockNetwork]
     })
   })
   it("should render tabs for assets balance and transaction history", async () => {
@@ -122,17 +122,8 @@ describe("home page", () => {
     expect(screen.getByText("0.005")).toBeInTheDocument()
   })
   it("should display an error message", async () => {
-    useNetworkContext.mockImplementationOnce(() => {
-      const mock = getMockNetwork()
-      return {
-        url: mock.url,
-        ledger: {
-          ...mock.ledger,
-          balance: jest.fn().mockImplementation(async () => {
-            throw "an unexpected error occurred"
-          }),
-        },
-      }
+    mockNetwork.ledger.balance = jest.fn().mockImplementation(async arg => {
+      throw "an unexpected error occurred"
     })
     setupHome()
     expect(
@@ -229,10 +220,6 @@ function setupHome() {
                 new Uint8Array(Buffer.from("pubKey")),
                 new Uint8Array(Buffer.from("privateKey")),
               ),
-              // keys: {
-              //   privateKey: new Uint8Array(Buffer.from("privKey")),
-              //   publicKey: new Uint8Array(Buffer.from("pubKey")),
-              // },
             },
           ],
         ]),

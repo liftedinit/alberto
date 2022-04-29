@@ -71,8 +71,6 @@ describe("AccountsMenu", () => {
       await setupAddAccount()
     const withinForm = within(formContainer)
     const btn = withinForm.getByRole("button", { name: /create seed phrase/i })
-    // expect(withinForm.getByText(/add account/i)).toBeInTheDocument()
-    // const createNewBtn = screen.getByRole("button", { name: /create new/i })
     fireEvent.click(btn)
 
     const saveBtn = screen.getByRole("button", { name: /save/i })

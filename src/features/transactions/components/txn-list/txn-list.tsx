@@ -24,15 +24,12 @@ import { amountFormatter } from "helper/common"
 
 export function TxnList({
   accountPublicKey,
-  network,
   filter = {},
 }: {
   accountPublicKey: string
-  network?: Network
   filter?: ListFilterArgs
 }) {
   const queryData = useTransactionsList({
-    network,
     accountPublicKey,
     filter,
   })

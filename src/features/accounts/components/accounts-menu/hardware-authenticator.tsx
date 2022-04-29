@@ -29,7 +29,7 @@ import { arrayBufferToBase64, base64ToArrayBuffer } from "helper/convert"
 
 interface FormElements extends HTMLFormControlsCollection {
   name: HTMLInputElement
-  publicKey: HTMLInputElement
+  publicAddress: HTMLInputElement
 }
 
 export function HardwareAuthenticator({
@@ -73,11 +73,11 @@ export function HardwareAuthenticator({
     try {
       const identity = await WebAuthnIdentity.create()
       const base64CredId = arrayBufferToBase64(identity.rawId)
-      const publicKeyStr = Address.fromIdentity(identity).toString()
-      const publicKeyBase64 = arrayBufferToBase64(identity.publicKey)
+      const publicAddress = Address.fromIdentity(identity).toString()
 
-      setPublicAddress(publicKeyStr)
-      updateCredential(publicKeyStr, base64CredId, publicKeyBase64)
+      console.log({ base64CredId, publicAddress })
+      setPublicAddress(publicAddress)
+      updateCredential(publicAddress, base64CredId, identity.cosePublicKey)
       createAccount({ name, identity })
     } catch (e) {
       console.error("webauthn", e)
@@ -89,28 +89,37 @@ export function HardwareAuthenticator({
 
     const form = e.target as HTMLFormElement
 
-    const { name: nameInput, publicKey: publicKeyInput } = (
+    const { name: nameInput, publicAddress: publicAddressInput } = (
       e.target as HTMLFormElement
     ).elements as FormElements
 
     const name = nameInput.value.trim()
-    const publicKey = publicKeyInput.value.trim()
+    const publicAddress = publicAddressInput.value.trim()
 
-    if (!name || !publicKey) {
+    if (!name || !publicAddress) {
       if (!name) nameInput.value = ""
-      if (!publicKey) publicKeyInput.value = ""
+      if (!publicAddress) publicAddressInput.value = ""
       return form.reportValidity()
     }
 
     try {
       // todo: call api when k-v store is ready
-      const saved = byAddress.get(publicKey)
+      const saved = byAddress.get(publicAddress)
       if (!saved) {
-        return console.error("credential not found")
+        return toast({
+          status: "warning",
+          title: "Add Account",
+          description: "No account found with this address.",
+        })
       }
-      const { base64CredId, publicKeyBase64 } = saved
-      const publicKeyBytes = base64ToArrayBuffer(publicKeyBase64)
-      const accountExists = doesAccountExist(publicKeyBytes, accounts)
+      const { base64CredId, cosePublicKey } = saved
+      const rawId = base64ToArrayBuffer(base64CredId)
+      const webAuthnIdentity = new WebAuthnIdentity(cosePublicKey, rawId)
+      const accountExists = doesAccountExist(
+        webAuthnIdentity.publicKey,
+        accounts,
+      )
+      console.log({ cosePublicKey, base64CredId, rawId })
       if (accountExists) {
         return toast({
           status: "warning",
@@ -118,15 +127,10 @@ export function HardwareAuthenticator({
           description: "Account already exists",
         })
       }
-      const authenticated = await WebAuthnIdentity.getCredential(
-        Buffer.from(base64CredId, "base64"),
-      )
+      await WebAuthnIdentity.getCredential(Buffer.from(base64CredId, "base64"))
       createAccount({
         name,
-        identity: new WebAuthnIdentity(
-          Buffer.from(publicKeyBytes),
-          authenticated.rawId,
-        ),
+        identity: webAuthnIdentity,
       })
       toast({
         status: "success",
@@ -199,7 +203,7 @@ function Create({ publicAddress }: { publicAddress?: string }) {
       {publicAddress && (
         <Alert status="success" variant="left-accent" mb={3}>
           <AlertIcon />
-          Keep a copy of your public key to recover/import it later.
+          Keep a copy of your public key to recover/import this account later.
         </Alert>
       )}
       {publicAddress && (
@@ -235,8 +239,8 @@ function Import() {
         <Input autoFocus id="name" variant="filled" />
       </FormControl>
       <FormControl isRequired>
-        <FormLabel htmlFor="publicKey">Public Key</FormLabel>
-        <Input id="publicKey" variant="filled" maxLength={50} />
+        <FormLabel htmlFor="publicAddress">Public Address</FormLabel>
+        <Input id="publicAddress" variant="filled" maxLength={50} />
       </FormControl>
     </>
   )

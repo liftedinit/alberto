@@ -38,7 +38,7 @@ export function EditAccountModal({
   function onSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!byId.has(account[0])) return
-    updateAccount(account[0], { name, keys: accountData?.keys })
+    updateAccount(account[0], { name, identity: accountData.identity })
     toast({
       title: "Update Account",
       description: "Account was updated",

@@ -11,22 +11,15 @@ import {
 import { TxnList } from "features/transactions"
 import cubeImg from "assets/cube.png"
 import { Asset } from "features/balances"
-import { Network } from "many-js"
 import { amountFormatter, makeShortId } from "helper/common"
 
 type Props = {
   asset: Asset
   setAsset: React.Dispatch<Asset | undefined>
-  network?: Network
   accountPublicKey: string
 }
 
-export function AssetDetails({
-  asset,
-  setAsset,
-  network,
-  accountPublicKey,
-}: Props) {
+export function AssetDetails({ asset, setAsset, accountPublicKey }: Props) {
   return (
     <>
       <Button
@@ -50,7 +43,6 @@ export function AssetDetails({
         Activity
       </Heading>
       <TxnList
-        network={network}
         filter={{
           symbols: asset.identity,
         }}

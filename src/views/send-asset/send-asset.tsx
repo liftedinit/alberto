@@ -55,10 +55,10 @@ export function SendAsset() {
     onOpen: onShowConfirmAlert,
     onClose: onCloseConfirmDialog,
   } = useDisclosure()
-  const network = useNetworkContext()
+  const [network] = useNetworkContext()
   const account = useAccountsStore(s => s.byId.get(s.activeId))
   const { full: accountPublicKey } = displayId(account!)
-  const balances = useBalances({ network, accountPublicKey })
+  const balances = useBalances({ accountPublicKey })
 
   const [formValues, setFormValues] = React.useState<typeof defaultFormState>(
     () => ({
@@ -74,7 +74,7 @@ export function SendAsset() {
 
   const [contact, setContact] = React.useState<Contact | undefined>()
 
-  const { sendToken, isLoading } = useSendToken({ network })
+  const { sendToken, isLoading } = useSendToken()
 
   async function onSendTxn(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()

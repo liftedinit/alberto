@@ -19,7 +19,6 @@ import { AssetDetails } from "./asset-details"
 import { displayId } from "helper/common"
 import { Asset } from "features/balances"
 import { TxnList } from "features/transactions"
-import { WebAuthnIdentity } from "many-js"
 
 enum TabNames {
   assets = "assets",
@@ -28,7 +27,7 @@ enum TabNames {
 
 export function Home() {
   const isBase = useIsBaseBreakpoint()
-  const network = useNetworkContext()
+  const [network] = useNetworkContext()
   const account = useAccountsStore(s => s.byId.get(s.activeId))
   const { full: accountPublicKey } = displayId(account!)
   const [asset, setAsset] = React.useState<Asset | undefined>(undefined)
@@ -41,7 +40,7 @@ export function Home() {
     return tab === activeTab
   }
 
-  const { mutate } = useFetchLedgerInfo({ network })
+  const { mutate } = useFetchLedgerInfo()
 
   React.useEffect(() => {
     return () => {
@@ -49,18 +48,6 @@ export function Home() {
       setAsset(undefined)
     }
   }, [account, network])
-
-  console.log(
-    "account",
-    account?.identity instanceof WebAuthnIdentity
-      ? WebAuthnIdentity.decode(account?.identity?.cosePublicKey)
-      : account,
-  )
-
-  // async function sign() {
-  //   const res = await account?.identity?.sign(new ArrayBuffer(32))
-  //   console.log({ res })
-  // }
 
   return (
     <Layout.Main>
@@ -94,7 +81,6 @@ export function Home() {
               <Box>
                 <SlideFade in>
                   <AssetDetails
-                    network={network}
                     asset={asset}
                     setAsset={setAsset}
                     accountPublicKey={accountPublicKey}
@@ -122,19 +108,15 @@ export function Home() {
 
                 {isTabActive(TabNames.assets) && (
                   <SlideFade in>
-                    {/* <Symbols
+                    <Symbols
                       onAssetClicked={onAssetClicked}
-                      network={network}
                       accountPublicKey={accountPublicKey}
-                    /> */}
+                    />
                   </SlideFade>
                 )}
                 {isTabActive(TabNames.activity) && (
                   <SlideFade in>
-                    <TxnList
-                      accountPublicKey={accountPublicKey}
-                      network={network}
-                    />
+                    <TxnList accountPublicKey={accountPublicKey} />
                   </SlideFade>
                 )}
               </SlideFade>

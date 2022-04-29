@@ -4,11 +4,15 @@ import localforage from "localforage"
 import { replacer, reviver } from "helper/json"
 
 interface CredentialsStoreActions {
-  updateCredential(a: string, b: string, c: string): void
+  updateCredential(
+    address: string,
+    base64CredId: string,
+    cosePublicKey: ArrayBuffer,
+  ): void
 }
 
 const initialState: {
-  byAddress: Map<string, { base64CredId: string; publicKeyBase64: string }>
+  byAddress: Map<string, { base64CredId: string; cosePublicKey: ArrayBuffer }>
 } = {
   byAddress: new Map(),
 }
@@ -22,12 +26,12 @@ export const useCredentialsStore = create<
       updateCredential: (
         address: string,
         base64CredId: string,
-        publicKeyBase64: string,
+        cosePublicKey: ArrayBuffer,
       ) =>
         set(state => ({
           byAddress: state.byAddress.set(address, {
             base64CredId,
-            publicKeyBase64,
+            cosePublicKey,
           }),
         })),
     }),
