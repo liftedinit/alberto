@@ -7,7 +7,6 @@ import {
 import { base64ToArrayBuffer } from "./convert"
 
 export function replacer(key: string, value: any) {
-  // console.log("replacer value", value)
   if (value instanceof Map) {
     return {
       dataType: "Map",
@@ -24,7 +23,6 @@ export function replacer(key: string, value: any) {
 }
 
 export function reviver(key: string, value: any) {
-  // console.log("reviver value", value)
   if (typeof value === "object" && value !== null) {
     if (value.dataType === "Map") {
       return new Map(value.value)
