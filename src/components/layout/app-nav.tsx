@@ -1,4 +1,4 @@
-import { Box, Flex } from "components"
+import { Flex } from "components"
 import { NetworkMenu } from "features/network"
 import { AccountsMenu } from "features/accounts"
 

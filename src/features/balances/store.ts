@@ -23,42 +23,42 @@ type BalancesPayload = {
 };
 
 export const useBalancesStore = create<BalancesState>(
-  persist(
-    (set) => ({
-      ...initialState,
-      updateBalances: (payload: BalancesPayload) =>
-        set((state) => {
-          const { networkId, balances } = payload;
-          const byNetwork = new Map(state.byNetwork);
-          byNetwork.set(networkId, balances);
-          const symbolObj = Array.from(state.symbols.values()).reduce(
-            (balances: Balances, symbol: SymbolId) => {
-              const total = Array.from(byNetwork.values())
-                .map((balance) => balance[symbol] || BigInt(0))
-                .reduce((total, amount) => total + amount, BigInt(0));
-              return { ...balances, [symbol]: total };
-            },
-            {}
-          );
-          const bySymbol = new Map(Object.entries(symbolObj));
-          return {
-            ...state,
-            byNetwork,
-            bySymbol,
-          };
-        }),
-      updateSymbols: (payload: Set<SymbolId>) =>
-        set((state) => ({
+  // persist(
+  set => ({
+    ...initialState,
+    updateBalances: (payload: BalancesPayload) =>
+      set(state => {
+        const { networkId, balances } = payload
+        const byNetwork = new Map(state.byNetwork)
+        byNetwork.set(networkId, balances)
+        const symbolObj = Array.from(state.symbols.values()).reduce(
+          (balances: Balances, symbol: SymbolId) => {
+            const total = Array.from(byNetwork.values())
+              .map(balance => balance[symbol] || BigInt(0))
+              .reduce((total, amount) => total + amount, BigInt(0))
+            return { ...balances, [symbol]: total }
+          },
+          {},
+        )
+        const bySymbol = new Map(Object.entries(symbolObj))
+        return {
           ...state,
-          symbols: payload,
-        })),
-    }),
-    {
-      name: "ALBERT.BALANCES",
-      // @ts-ignore
-      getStorage: () => localforage,
-      serialize: (state) => JSON.stringify(state, replacer),
-      deserialize: (str) => JSON.parse(str, reviver),
-    }
-  )
-);
+          byNetwork,
+          bySymbol,
+        }
+      }),
+    updateSymbols: (payload: Set<SymbolId>) =>
+      set(state => ({
+        ...state,
+        symbols: payload,
+      })),
+  }),
+  //   {
+  //     name: "ALBERT.BALANCES",
+  //     // @ts-ignore
+  //     getStorage: () => localforage,
+  //     serialize: (state) => JSON.stringify(state, replacer),
+  //     deserialize: (str) => JSON.parse(str, reviver),
+  //   }
+  // )
+)

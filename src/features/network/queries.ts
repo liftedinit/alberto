@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "react-query"
 import { LedgerInfo } from "many-js"
-import { useNetworkContext } from "."
+import { useNetworkContext } from "./network-provider"
 
 export function useLedgerInfo({
   accountPublicKey,
@@ -19,7 +19,6 @@ export function useLedgerInfo({
 export function useFetchLedgerInfo() {
   const [, network] = useNetworkContext()
   return useMutation(async () => {
-    // todo: precision decimal places
-    return network?.ledger.info()
+    return await network?.ledger.info()
   })
 }

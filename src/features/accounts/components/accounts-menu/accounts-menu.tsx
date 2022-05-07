@@ -1,5 +1,5 @@
 import React from "react"
-import { ANON_IDENTITY, WebAuthnIdentity } from "many-js"
+import { AnonymousIdentity, WebAuthnIdentity } from "many-js"
 import { useAccountsStore } from "features/accounts"
 import {
   Box,
@@ -88,6 +88,7 @@ export function AccountsMenu() {
     }, [accounts])
 
   const idStrs = displayId(activeAccount!)
+  const isAnonymous = activeAccount?.identity instanceof AnonymousIdentity
 
   return (
     <Flex alignItems="center" minWidth="100px" mr={2}>
@@ -150,7 +151,7 @@ export function AccountsMenu() {
           </MenuItem>
         </MenuList>
       </Menu>
-      {idStrs && idStrs.short !== ANON_IDENTITY && (
+      {!isAnonymous && (
         <HStack
           display={{ base: "none", md: "inline-flex" }}
           bgColor="gray.100"
@@ -165,7 +166,6 @@ export function AccountsMenu() {
           <CopyToClipboard toCopy={idStrs.full as string} />
         </HStack>
       )}
-      <AddAccountModal isOpen={isAddModalOpen} onClose={onAddModalClose} />
       <EditAccountModal
         account={editAccount!}
         isOpen={isEditModalOpen}
@@ -187,14 +187,16 @@ function AccountMenuItem({
   onEditClick: (a: AccountItemWithIdDisplayStrings) => void
 }) {
   const id = account[0]
+  const isActive = activeId === id
   const accountData = account[1]
   const isWebAuthnIdentity = accountData.identity instanceof WebAuthnIdentity
+  const isAnonymous = accountData?.identity instanceof AnonymousIdentity
   return (
     <MenuItem as={SimpleGrid} columns={3} borderTopWidth={1} spacing={4} py={4}>
-      {activeId === id && <Circle bg="green.400" size="10px" />}
+      {isActive && <Circle bg="green.400" size="10px" />}
       <VStack align="flex-start" spacing={1} flexGrow={1}>
         <HStack>
-          {activeId === id ? (
+          {isActive ? (
             <HStack>
               <Text fontSize={{ base: "xl", md: "md" }} casing="uppercase">
                 {accountData.name}
@@ -209,13 +211,19 @@ function AccountMenuItem({
                 isWebAuthnIdentity ? <UsbIcon boxSize={5} /> : undefined
               }
             >
-              <Text fontSize={{ base: "xl", md: "md" }} casing="uppercase">
+              <Text
+                wordBreak="break-word"
+                whiteSpace="pre-wrap"
+                fontSize={{ base: "xl", md: "md" }}
+                textAlign="left"
+                casing="uppercase"
+              >
                 {accountData.name}
               </Text>
             </Button>
           )}
         </HStack>
-        {accountData.idDisplayStrings.full && (
+        {!isAnonymous && accountData.idDisplayStrings.full && (
           <HStack bgColor="gray.100" rounded="md" px={2} py={1}>
             <Code fontSize={{ base: "sm", md: "xs" }}>
               {accountData.idDisplayStrings.short}
@@ -226,7 +234,7 @@ function AccountMenuItem({
           </HStack>
         )}
       </VStack>
-      {activeId !== id && (
+      {!isActive && !isAnonymous && (
         <IconButton
           variant="ghost"
           aria-label="edit account"

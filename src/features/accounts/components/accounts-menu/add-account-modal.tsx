@@ -12,7 +12,6 @@ import {
   Tab,
   Tabs,
   TabList,
-  UsbIcon,
 } from "components"
 import { SeedWords } from "./seed-words"
 import { CreateAccount } from "./create-account"

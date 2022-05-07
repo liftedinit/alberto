@@ -9,6 +9,7 @@ import {
   Tab,
   Tabs,
   TabList,
+  useToast,
 } from "components"
 import { useIsBaseBreakpoint } from "hooks"
 import { useFetchLedgerInfo, useNetworkContext } from "features/network"
@@ -26,6 +27,7 @@ enum TabNames {
 }
 
 export function Home() {
+  const toast = useToast()
   const isBase = useIsBaseBreakpoint()
   const [network] = useNetworkContext()
   const account = useAccountsStore(s => s.byId.get(s.activeId))
@@ -70,6 +72,18 @@ export function Home() {
                     console.log("DATA >>>>>", data)
                   },
                   onError: err => {
+                    toast({
+                      status: "warning",
+                      title: "Fetch",
+                      description:
+                        typeof err === "string"
+                          ? err
+                          : // @ts-ignore
+                          err?.message
+                          ? // @ts-ignore
+                            err?.message
+                          : JSON.stringify(err),
+                    })
                     console.log("ERROR >>>>>>.", err)
                   },
                 })

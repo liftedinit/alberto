@@ -5,16 +5,16 @@ import { replacer, reviver } from "helper/json"
 
 interface CredentialsStoreActions {
   updateCredential(
-    address: string,
+    id: string,
     base64CredId: string,
     cosePublicKey: ArrayBuffer,
   ): void
 }
 
 const initialState: {
-  byAddress: Map<string, { base64CredId: string; cosePublicKey: ArrayBuffer }>
+  byId: Map<string, { base64CredId: string; cosePublicKey: ArrayBuffer }>
 } = {
-  byAddress: new Map(),
+  byId: new Map(),
 }
 
 export const useCredentialsStore = create<
@@ -24,12 +24,12 @@ export const useCredentialsStore = create<
     set => ({
       ...initialState,
       updateCredential: (
-        address: string,
+        id: string,
         base64CredId: string,
         cosePublicKey: ArrayBuffer,
       ) =>
         set(state => ({
-          byAddress: state.byAddress.set(address, {
+          byId: state.byId.set(id, {
             base64CredId,
             cosePublicKey,
           }),

@@ -3,7 +3,15 @@ import { persist } from "zustand/middleware"
 import localforage from "localforage"
 import { replacer, reviver } from "helper/json"
 import { Account, AccountId, AccountsState } from "../types"
-import { AnonymousIdentity } from "many-js"
+import { AnonymousIdentity, Ed25519KeyPairIdentity } from "many-js"
+import { base64ToArrayBuffer } from "helper/convert"
+
+const privKeyB64 =
+  "dyhNjZFhrjw7w40CB/ETD7XkwjKpJq3T9CnADVjGI8PVnjGlzRLgVLr0z4Ylqm2BDJO5HAsoEy/Amo83hcpFxg=="
+const pubKeyB64 = "1Z4xpc0S4FS69M+GJaptgQyTuRwLKBMvwJqPN4XKRcY="
+
+const privateKey = base64ToArrayBuffer(privKeyB64)
+const pubKey = base64ToArrayBuffer(pubKeyB64)
 
 interface AccountMethods {
   createAccount: (a: Account) => void
@@ -13,11 +21,18 @@ interface AccountMethods {
 }
 
 export const initialState: AccountsState = {
-  activeId: 0,
+  activeId: 1,
   byId: new Map([
     [0, { name: "Anonymous", identity: new AnonymousIdentity() }],
+    [
+      1,
+      {
+        name: "main",
+        identity: new Ed25519KeyPairIdentity(pubKey, privateKey),
+      },
+    ],
   ]),
-  nextId: 1,
+  nextId: 2,
 }
 
 export const useAccountsStore = create<AccountsState & AccountMethods>(

@@ -19,6 +19,7 @@ import {
 import cubeImg from "assets/cube.png"
 import { useDebounce } from "hooks"
 import { Asset } from "features/balances"
+import { amountFormatter } from "helper/common"
 
 export function AssetSelector({
   ownedAssets,
@@ -83,7 +84,7 @@ export function AssetSelector({
                   </VStack>
                 </HStack>
                 <Text whiteSpace="nowrap" overflow="hidden" isTruncated>
-                  {asset.balance?.toLocaleString() || "0"}
+                  {amountFormatter(asset.balance)}
                 </Text>
               </HStack>
             </ListItem>

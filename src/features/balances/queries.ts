@@ -9,14 +9,13 @@ type UseBalancesOpts = {
 
 export function useBalances({ accountPublicKey }: UseBalancesOpts) {
   const [network] = useNetworkContext()
+
   const ledgerInfoQuery = useLedgerInfo({ accountPublicKey })
   const ledgerInfoSymbols = ledgerInfoQuery?.data?.symbols ?? new Map()
 
   const balancesQuery = useQuery<Balances | undefined>({
     queryKey: ["balances", accountPublicKey, network?.url],
-    queryFn: async () => {
-      return await network?.ledger.balance(accountPublicKey)
-    },
+    queryFn: async () => await network?.ledger.balance(accountPublicKey),
     enabled: !!network?.url && !!accountPublicKey,
     retry: false,
   })

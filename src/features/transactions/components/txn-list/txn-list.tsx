@@ -21,6 +21,7 @@ import {
 import { useTransactionsList } from "features/transactions/queries"
 import { IdentityText } from "components/uikit/identity-text"
 import { amountFormatter } from "helper/common"
+import { useContactsStore } from "features/contacts"
 
 export function TxnList({
   accountPublicKey,
@@ -133,12 +134,14 @@ function SendTxnListItem({
   transaction: Transaction
   isSender: boolean
 }) {
+  const contacts = useContactsStore(s => s.byId)
   const { to, from, amount, symbol, time } = transaction
   const TxnIcon = isSender ? SendOutlineIcon : ReceiveIcon
   const title = isSender ? "send" : "receive"
 
   const displayAmount = `${isSender ? "-" : "+"}${amountFormatter(amount)}`
   const address = isSender ? to! : from!
+  const contactName = contacts.get(address)?.name
 
   return (
     <Tr aria-label="transaction list item">
@@ -155,23 +158,28 @@ function SendTxnListItem({
       </Td>
       <Td>
         <VStack alignItems="flex-start" spacing={0}>
-          <Text fontSize="sm">{isSender ? "To:" : "From:"} </Text>
+          <Text fontSize="sm" pb={1}>
+            {isSender ? "To:" : "From:"}{" "}
+          </Text>
+          {contactName && <Text fontWeight="medium">{contactName}</Text>}
           <Flex
             alignItems="center"
             rounded="md"
             px={2}
             py={1}
-            bgColor="gray.100"
             gap={1}
             as={Code}
           >
-            <IdentityText fullIdentity={address} />
-            <CopyToClipboard toCopy={isSender ? to! : from!} />
+            <IdentityText fontSize="xs" fullIdentity={address} />
+            <CopyToClipboard
+              iconProps={{ boxSize: 4 }}
+              toCopy={isSender ? to! : from!}
+            />
           </Flex>
         </VStack>
       </Td>
       <Td>
-        <Flex gap={2}>
+        <Flex gap={2} justifyContent="flex-end">
           <Text
             fontWeight="medium"
             color={isSender ? "red" : "green"}

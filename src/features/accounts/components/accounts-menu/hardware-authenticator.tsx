@@ -1,10 +1,11 @@
 import React from "react"
-import { Address, WebAuthnIdentity } from "many-js"
+import { WebAuthnIdentity } from "many-js"
+import { generateSlug } from "random-word-slugs"
 import {
   Alert,
-  AlertIcon,
   Button,
   Box,
+  Checkbox,
   CopyToClipboard,
   Container,
   Flex,
@@ -12,11 +13,10 @@ import {
   FormLabel,
   HStack,
   Input,
-  ListItem,
   Modal,
+  SimpleGrid,
   Text,
   useToast,
-  UnorderedList,
   UsbIcon,
 } from "components"
 import {
@@ -29,7 +29,7 @@ import { arrayBufferToBase64, base64ToArrayBuffer } from "helper/convert"
 
 interface FormElements extends HTMLFormControlsCollection {
   name: HTMLInputElement
-  publicAddress: HTMLInputElement
+  phrase: HTMLInputElement
 }
 
 export function HardwareAuthenticator({
@@ -41,7 +41,29 @@ export function HardwareAuthenticator({
   addMethod: AddAccountMethodTypes
   setShowDefaultFooter: (show: boolean) => void
 }) {
+  const { byId, updateCredential } = useCredentialsStore(
+    ({ byId, updateCredential }) => ({ byId, updateCredential }),
+  )
   const toast = useToast()
+  const [phrase, setPhrase] = React.useState("")
+  const [webAuthnIdentity, setWebAuthnIdentity] = React.useState<
+    WebAuthnIdentity | undefined
+  >(undefined)
+  const [isPhraseConfirmed, setPhraseConfirmed] = React.useState(false)
+
+  function makePhrase(): string {
+    const slug = generateSlug(2, { format: "lower" })
+    const joined = slug.replaceAll(" ", "")
+    if (byId.has(joined)) {
+      return makePhrase()
+    }
+    return slug
+  }
+
+  function onMakePhrase() {
+    const phrase = makePhrase()
+    setPhrase(phrase)
+  }
 
   const { accounts, createAccount } = useAccountsStore(
     ({ createAccount, byId }) => ({
@@ -50,19 +72,25 @@ export function HardwareAuthenticator({
     }),
   )
 
-  const { byAddress, updateCredential } = useCredentialsStore(
-    ({ byAddress, updateCredential }) => ({ byAddress, updateCredential }),
-  )
   const isCreate = addMethod === AddAccountMethodTypes.createAuthenticator
-
-  const [publicAddress, setPublicAddress] = React.useState("")
 
   async function onCreate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    const form = e.target as HTMLFormElement
-    if (publicAddress) {
-      return onSuccess()
+    if (phrase) {
+      return onDone(e)
     }
+    try {
+      const identity = await WebAuthnIdentity.create()
+      setWebAuthnIdentity(identity)
+      onMakePhrase()
+    } catch (e) {
+      console.error("webauthn", e)
+    }
+  }
+
+  async function onDone(e: React.FormEvent<HTMLFormElement>) {
+    if (webAuthnIdentity === undefined) return
+    const form = e.target as HTMLFormElement
     const { name: nameInput } = (e.target as HTMLFormElement)
       .elements as FormElements
     const name = nameInput.value.trim()
@@ -70,18 +98,10 @@ export function HardwareAuthenticator({
       nameInput.value = ""
       return form.reportValiditiy()
     }
-    try {
-      const identity = await WebAuthnIdentity.create()
-      const base64CredId = arrayBufferToBase64(identity.rawId)
-      const publicAddress = Address.fromIdentity(identity).toString()
-
-      console.log({ base64CredId, publicAddress })
-      setPublicAddress(publicAddress)
-      updateCredential(publicAddress, base64CredId, identity.cosePublicKey)
-      createAccount({ name, identity })
-    } catch (e) {
-      console.error("webauthn", e)
-    }
+    const base64CredId = arrayBufferToBase64(webAuthnIdentity.rawId)
+    updateCredential(phrase, base64CredId, webAuthnIdentity.cosePublicKey)
+    createAccount({ name, identity: webAuthnIdentity })
+    onSuccess()
   }
 
   async function onImport(e: React.FormEvent<HTMLFormElement>) {
@@ -89,27 +109,27 @@ export function HardwareAuthenticator({
 
     const form = e.target as HTMLFormElement
 
-    const { name: nameInput, publicAddress: publicAddressInput } = (
+    const { name: nameInput, phrase: phraseInput } = (
       e.target as HTMLFormElement
     ).elements as FormElements
 
     const name = nameInput.value.trim()
-    const publicAddress = publicAddressInput.value.trim()
+    const phraseText = phraseInput.value.trim()
 
-    if (!name || !publicAddress) {
+    if (!name || !phraseText) {
       if (!name) nameInput.value = ""
-      if (!publicAddress) publicAddressInput.value = ""
+      if (!phraseText) phraseInput.value = ""
       return form.reportValidity()
     }
 
     try {
       // todo: call api when k-v store is ready
-      const saved = byAddress.get(publicAddress)
+      const saved = byId.get(phraseText)
       if (!saved) {
         return toast({
           status: "warning",
           title: "Add Account",
-          description: "No account found with this address.",
+          description: "No account found with this phrase.",
         })
       }
       const { base64CredId, cosePublicKey } = saved
@@ -119,7 +139,6 @@ export function HardwareAuthenticator({
         webAuthnIdentity.publicKey,
         accounts,
       )
-      console.log({ cosePublicKey, base64CredId, rawId })
       if (accountExists) {
         return toast({
           status: "warning",
@@ -150,7 +169,10 @@ export function HardwareAuthenticator({
 
   React.useEffect(() => {
     setShowDefaultFooter(false)
-  }, [setShowDefaultFooter])
+    return () => {
+      setShowDefaultFooter(true)
+    }
+  }, [])
 
   return (
     <>
@@ -163,14 +185,22 @@ export function HardwareAuthenticator({
         </Button>
         <Container>
           <form id="add-account-form" onSubmit={isCreate ? onCreate : onImport}>
-            {isCreate ? <Create publicAddress={publicAddress} /> : <Import />}
+            {isCreate ? (
+              <Create phrase={phrase} setPhraseConfirmed={setPhraseConfirmed} />
+            ) : (
+              <Import />
+            )}
           </form>
         </Container>
       </Modal.Body>
       <Modal.Footer>
         <Container display="flex" justifyContent="flex-end">
-          <Button type="submit" form="add-account-form">
-            {publicAddress ? "Done" : isCreate ? "Create" : "Import"}
+          <Button
+            type="submit"
+            form="add-account-form"
+            disabled={!!phrase && !isPhraseConfirmed}
+          >
+            {phrase ? "Done" : isCreate ? "Authorize" : "Import"}
           </Button>
         </Container>
       </Modal.Footer>
@@ -178,50 +208,73 @@ export function HardwareAuthenticator({
   )
 }
 
-function Create({ publicAddress }: { publicAddress?: string }) {
+function Create({
+  phrase,
+  setPhraseConfirmed,
+}: {
+  phrase: string
+  setPhraseConfirmed: (b: boolean) => void
+}) {
   return (
     <>
-      {!publicAddress && (
+      {!phrase && (
+        <InfoAlert>
+          <Text>
+            Connect your hardware security module and authorize it to create a
+            new account.
+          </Text>
+          <Text mt={4}>
+            Click "Authorize" below and follow the instructions on the screen
+          </Text>
+        </InfoAlert>
+      )}
+      {phrase && (
         <>
-          <InfoAlert>
-            <UnorderedList>
-              <ListItem>
-                You must have a hardware authenticator available.
-              </ListItem>
-              <ListItem>
-                Enter a name and click the Create button to initiate the account
-                creation process.
-              </ListItem>
-            </UnorderedList>
-          </InfoAlert>
-          <FormControl mt={3} isRequired>
-            <FormLabel htmlFor="name">Name</FormLabel>
+          <FormControl mb={4} isRequired>
+            <FormLabel htmlFor="name">Account Name</FormLabel>
             <Input autoFocus id="name" maxLength={64} />
           </FormControl>
+
+          <SimpleGrid columns={{ base: 1, md: 2 }} gap={8}>
+            <Box>
+              <Flex
+                border="2px solid"
+                borderColor="gray.300"
+                alignItems="center"
+                justifyContent="center"
+                rounded="md"
+                p={6}
+                position="relative"
+              >
+                <Box position="absolute" top={1} right={1}>
+                  <CopyToClipboard toCopy={phrase} />
+                </Box>
+                <Text textAlign="center" fontSize="2xl">
+                  {phrase}
+                </Text>
+              </Flex>
+            </Box>
+            <Box>
+              <Box>
+                <Text>You will need this prase to access your account.</Text>
+
+                <Text mt={4}>
+                  If you lose this phrase, there's no way to recover your
+                  account so put it somewhere safe.
+                </Text>
+                <Checkbox
+                  mt={4}
+                  justifyContent="flex-end"
+                  colorScheme="brand.teal"
+                  aria-label="confirm phrase saved"
+                  onChange={e => setPhraseConfirmed(e.target.checked)}
+                >
+                  I have stored the phrase
+                </Checkbox>
+              </Box>
+            </Box>
+          </SimpleGrid>
         </>
-      )}
-      {publicAddress && (
-        <Alert status="success" variant="left-accent" mb={3}>
-          <AlertIcon />
-          Keep a copy of your public key to recover/import this account later.
-        </Alert>
-      )}
-      {publicAddress && (
-        <Box mb={3}>
-          <FormLabel>Public Key</FormLabel>
-          <Flex
-            bgColor="gray.100"
-            p={2}
-            w="auto"
-            display="inline-flex"
-            gap={2}
-            alignItems="center"
-            rounded="md"
-          >
-            <Text display="inline-flex">{publicAddress}</Text>
-            <CopyToClipboard toCopy={publicAddress} />
-          </Flex>
-        </Box>
       )}
     </>
   )
@@ -235,12 +288,17 @@ function Import() {
         account.
       </InfoAlert>
       <FormControl isRequired mb={3} mt={4}>
-        <FormLabel htmlFor="name">Name</FormLabel>
+        <FormLabel htmlFor="name">Account Name</FormLabel>
         <Input autoFocus id="name" variant="filled" />
       </FormControl>
       <FormControl isRequired>
-        <FormLabel htmlFor="publicAddress">Public Address</FormLabel>
-        <Input id="publicAddress" variant="filled" maxLength={50} />
+        <FormLabel htmlFor="phrase">Phrase</FormLabel>
+        <Input
+          autoCapitalize="none"
+          id="phrase"
+          variant="filled"
+          maxLength={50}
+        />
       </FormControl>
     </>
   )
