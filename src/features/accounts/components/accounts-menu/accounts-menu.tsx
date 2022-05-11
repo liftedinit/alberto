@@ -166,6 +166,7 @@ export function AccountsMenu() {
           <CopyToClipboard toCopy={idStrs.full as string} />
         </HStack>
       )}
+      <AddAccountModal isOpen={isAddModalOpen} onClose={onAddModalClose} />
       <EditAccountModal
         account={editAccount!}
         isOpen={isEditModalOpen}
