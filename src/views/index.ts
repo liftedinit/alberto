@@ -1,5 +1,5 @@
 import SplashView from "./Splash"
-import { Home } from "./_home"
+import { Home } from "./home"
 import { SendAsset } from "./send-asset"
 import { Contacts } from "./contacts"
 
