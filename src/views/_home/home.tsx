@@ -1,7 +1,6 @@
 import React from "react"
 import {
   Box,
-  Button,
   Container,
   Heading,
   Layout,
@@ -9,15 +8,13 @@ import {
   Tab,
   Tabs,
   TabList,
-  useToast,
+  useAddressText,
 } from "components"
 import { useIsBaseBreakpoint } from "hooks"
-import { useFetchLedgerInfo, useNetworkContext } from "features/network"
+import { useNetworkContext } from "features/network"
 import { useAccountsStore } from "features/accounts"
 import { Symbols } from "./symbols"
 import { AssetDetails } from "./asset-details"
-
-import { displayId } from "helper/common"
 import { Asset } from "features/balances"
 import { TxnList } from "features/transactions"
 
@@ -27,11 +24,10 @@ enum TabNames {
 }
 
 export function Home() {
-  const toast = useToast()
   const isBase = useIsBaseBreakpoint()
   const [network] = useNetworkContext()
   const account = useAccountsStore(s => s.byId.get(s.activeId))
-  const { full: accountPublicKey } = displayId(account!)
+  const address = useAddressText(account?.identity!)
   const [asset, setAsset] = React.useState<Asset | undefined>(undefined)
   function onAssetClicked(asset: Asset) {
     setAsset(asset)
@@ -41,8 +37,6 @@ export function Home() {
   function isTabActive(tab: TabNames) {
     return tab === activeTab
   }
-
-  const { mutate } = useFetchLedgerInfo()
 
   React.useEffect(() => {
     return () => {
@@ -65,39 +59,13 @@ export function Home() {
             position="relative"
             p={{ base: 2, md: 4 }}
           >
-            <Button
-              onClick={() =>
-                mutate(undefined, {
-                  onSuccess: data => {
-                    console.log("DATA >>>>>", data)
-                  },
-                  onError: err => {
-                    toast({
-                      status: "warning",
-                      title: "Fetch",
-                      description:
-                        typeof err === "string"
-                          ? err
-                          : // @ts-ignore
-                          err?.message
-                          ? // @ts-ignore
-                            err?.message
-                          : JSON.stringify(err),
-                    })
-                    console.log("ERROR >>>>>>.", err)
-                  },
-                })
-              }
-            >
-              fetch
-            </Button>
             {asset ? (
               <Box>
                 <SlideFade in>
                   <AssetDetails
                     asset={asset}
                     setAsset={setAsset}
-                    accountPublicKey={accountPublicKey}
+                    address={address}
                   />
                 </SlideFade>
               </Box>
@@ -124,13 +92,13 @@ export function Home() {
                   <SlideFade in>
                     <Symbols
                       onAssetClicked={onAssetClicked}
-                      accountPublicKey={accountPublicKey}
+                      address={address}
                     />
                   </SlideFade>
                 )}
                 {isTabActive(TabNames.activity) && (
                   <SlideFade in>
-                    <TxnList accountPublicKey={accountPublicKey} />
+                    <TxnList address={address} />
                   </SlideFade>
                 )}
               </SlideFade>

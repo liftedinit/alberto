@@ -1,6 +1,5 @@
 import React from "react"
 import { Link as RouterLink } from "react-router-dom"
-// import { Network } from "many-js"
 import {
   Button,
   Center,
@@ -19,14 +18,14 @@ import cubeImg from "assets/cube.png"
 import { amountFormatter } from "helper/common"
 
 export function Symbols({
-  accountPublicKey,
+  address,
   onAssetClicked,
 }: {
-  accountPublicKey: string
+  address: string
   onAssetClicked: (asset: Asset) => void
 }) {
   const { data, isError, isLoading, errors } = useBalances({
-    accountPublicKey,
+    address,
   })
 
   if (isError) {
@@ -91,6 +90,7 @@ function AssetLlistItem({
     md: () => setShowActions(s => !s),
   })
 
+  console.log({ asset })
   return (
     <HStack
       spacing={4}

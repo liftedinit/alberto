@@ -27,7 +27,7 @@ export function SeedWords({ setAddMethod, onSuccess }: AddAccountMethodProps) {
     mnemonic: string
   }>({ name: "", mnemonic: "" })
 
-  function onSave(e: React.FormEvent<HTMLFormElement>) {
+  async function onSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     let keysFromMnemonic: KeyPair | undefined
     try {
@@ -39,7 +39,11 @@ export function SeedWords({ setAddMethod, onSuccess }: AddAccountMethodProps) {
         description: "Invalid mnemonic",
       })
     }
-    const exists = doesAccountExist(keysFromMnemonic!.publicKey, accounts)
+    const identity = new Ed25519KeyPairIdentity(
+      keysFromMnemonic!.publicKey,
+      keysFromMnemonic!.privateKey,
+    )
+    const exists = await doesAccountExist(identity.publicKey, accounts)
     if (exists) {
       return toast({
         title: toastTitle,
@@ -55,7 +59,6 @@ export function SeedWords({ setAddMethod, onSuccess }: AddAccountMethodProps) {
         keysFromMnemonic.privateKey,
       ),
     })
-    // createAccount({ name: account.name, keys: keysFromMnemonic })
     toast({
       title: toastTitle,
       status: "success",

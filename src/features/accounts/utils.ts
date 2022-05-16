@@ -1,22 +1,15 @@
 import { Account } from "./types"
 
-export function doesAccountExist(
+export async function doesAccountExist(
   targetPublicKey: Uint8Array | ArrayBuffer,
   accounts: [id: number, account: Account][],
-): boolean {
+): Promise<boolean> {
   return accounts.some(a => {
-    const [, { keys, identity }] = a
-    if (keys) {
+    const [, { identity }] = a
+    if (identity && "publicKey" in identity) {
       return (
         Buffer.compare(
-          Buffer.from(keys.publicKey),
-          Buffer.from(targetPublicKey),
-        ) === 0
-      )
-    } else if (identity) {
-      return (
-        Buffer.compare(
-          Buffer.from(identity?.publicKey),
+          Buffer.from(identity.publicKey),
           Buffer.from(targetPublicKey),
         ) === 0
       )

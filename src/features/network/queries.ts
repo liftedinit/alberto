@@ -2,16 +2,12 @@ import { useQuery, useMutation } from "react-query"
 import { LedgerInfo } from "many-js"
 import { useNetworkContext } from "./network-provider"
 
-export function useLedgerInfo({
-  accountPublicKey,
-}: {
-  accountPublicKey: string
-}) {
+export function useLedgerInfo({ address }: { address: string }) {
   const [network] = useNetworkContext()
   return useQuery<LedgerInfo | undefined>({
-    queryKey: ["ledger.info", accountPublicKey, network?.url],
+    queryKey: ["ledger.info", address, network?.url],
     queryFn: async () => await network?.ledger.info(),
-    enabled: !!network?.url && !!accountPublicKey,
+    enabled: !!network?.url && !!address,
   })
 }
 

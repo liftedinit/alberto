@@ -17,7 +17,13 @@ import {
   FaPaperPlane,
 } from "react-icons/fa"
 import { CgUsb } from "react-icons/cg"
-import { FiChevronDown, FiEdit, FiX } from "react-icons/fi"
+import {
+  FiChevronDown,
+  FiEdit,
+  FiX,
+  FiChevronRight,
+  FiChevronLeft,
+} from "react-icons/fi"
 
 const Icon: typeof BaseIcon = (props: IconProps) => {
   return <BaseIcon boxSize={6} {...props} />
@@ -68,6 +74,12 @@ export function EditIcon(props: IconProps) {
 
 export function ChevronDownIcon(props: IconProps) {
   return <Icon as={FiChevronDown} {...props} />
+}
+export function ChevronLeftIcon(props: IconProps) {
+  return <Icon as={FiChevronLeft} {...props} />
+}
+export function ChevronRightIcon(props: IconProps) {
+  return <Icon as={FiChevronRight} {...props} />
 }
 
 export function CloseIcon(props: IconProps) {

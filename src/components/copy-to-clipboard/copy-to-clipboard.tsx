@@ -22,7 +22,10 @@ export function CopyToClipboard({
             as={CopyIcon}
             w={5}
             h={5}
-            onClick={onCopy}
+            onClick={e => {
+              e.stopPropagation()
+              onCopy()
+            }}
             cursor="pointer"
             aria-label="copy to clipboard button"
             {...iconProps}

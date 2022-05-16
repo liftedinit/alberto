@@ -1,8 +1,6 @@
 import React from "react"
 import {
   Button,
-  Code,
-  CopyToClipboard,
   FormHelperText,
   FormControl,
   FormLabel,
@@ -10,9 +8,10 @@ import {
   Input,
   Modal,
   useToast,
+  AddressText,
+  useAddressText,
 } from "components"
-import { useAccountsStore, AccountId } from "../../index"
-import { AccountItemWithIdDisplayStrings } from "../accounts-menu"
+import { useAccountsStore, AccountId, Account } from "../../index"
 
 export function EditAccountModal({
   isOpen,
@@ -21,12 +20,13 @@ export function EditAccountModal({
 }: {
   isOpen: boolean
   onClose: () => void
-  account: AccountItemWithIdDisplayStrings
+  account: [number, Account]
 }) {
   const accountData = account?.[1]
   const [name, setName] = React.useState("")
   const [publicKey, setPublicKey] = React.useState("")
   const toast = useToast()
+  const addressStr = useAddressText(accountData?.identity)
   const { updateAccount, deleteAccount, byId } = useAccountsStore(
     ({ updateAccount, deleteAccount, byId }) => ({
       updateAccount,
@@ -101,14 +101,9 @@ export function EditAccountModal({
             />
           </FormControl>
           <FormLabel mt={3}>Public Key</FormLabel>
-          <HStack bgColor="gray.100" px={4} h="40px" rounded="md">
-            <Code isTruncated fontWeight="normal" aria-label="full public key">
-              {accountData?.idDisplayStrings.full}
-            </Code>
-            <CopyToClipboard
-              toCopy={accountData?.idDisplayStrings.full as string}
-            />
-          </HStack>
+          <AddressText identity={accountData?.identity} px={4} h="40px">
+            {addressStr}
+          </AddressText>
         </form>
         <form id="remove-account-form">
           <FormControl mt={3} id="publicKey">
@@ -129,7 +124,7 @@ export function EditAccountModal({
                 borderTopLeftRadius={0}
                 borderBottomLeftRadius={0}
                 colorScheme="red"
-                disabled={publicKey !== accountData?.idDisplayStrings?.full}
+                disabled={!addressStr || publicKey !== addressStr}
                 onClick={() => onDelete(account[0])}
                 aria-label="remove account"
               >

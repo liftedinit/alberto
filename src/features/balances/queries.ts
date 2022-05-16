@@ -4,20 +4,19 @@ import { useLedgerInfo, useNetworkContext } from "features/network"
 import { Asset } from "./types"
 
 type UseBalancesOpts = {
-  accountPublicKey: string
+  address: string
 }
 
-export function useBalances({ accountPublicKey }: UseBalancesOpts) {
+export function useBalances({ address }: UseBalancesOpts) {
   const [network] = useNetworkContext()
 
-  const ledgerInfoQuery = useLedgerInfo({ accountPublicKey })
+  const ledgerInfoQuery = useLedgerInfo({ address })
   const ledgerInfoSymbols = ledgerInfoQuery?.data?.symbols ?? new Map()
 
   const balancesQuery = useQuery<Balances | undefined>({
-    queryKey: ["balances", accountPublicKey, network?.url],
-    queryFn: async () => await network?.ledger.balance(accountPublicKey),
-    enabled: !!network?.url && !!accountPublicKey,
-    retry: false,
+    queryKey: ["balances", address, network?.url],
+    queryFn: async () => await network?.ledger.balance(address),
+    enabled: !!network?.url && !!address,
   })
   const ownedAssetBalances = balancesQuery?.data?.balances ?? new Map()
 

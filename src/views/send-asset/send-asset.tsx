@@ -1,6 +1,7 @@
 import React from "react"
 import { useLocation } from "react-router-dom"
 import {
+  AddressText,
   AlertDialog,
   AlertDialogProps,
   Button,
@@ -24,6 +25,7 @@ import {
   useToast,
   useDisclosure,
   VStack,
+  useAddressText,
 } from "components"
 import { AssetSelector } from "./asset-selector"
 import cubeImg from "assets/cube.png"
@@ -33,8 +35,7 @@ import { useBalances } from "features/balances"
 import { useSendToken } from "features/transactions"
 import { Contact, ContactSelector } from "features/contacts"
 import { Asset } from "features/balances"
-import { amountFormatter, displayId, parseNumberToBigInt } from "helper/common"
-import { IdentityText } from "components/uikit/identity-text"
+import { amountFormatter, parseNumberToBigInt } from "helper/common"
 
 const defaultFormState: {
   to: string
@@ -57,14 +58,14 @@ export function SendAsset() {
   } = useDisclosure()
   const [network] = useNetworkContext()
   const account = useAccountsStore(s => s.byId.get(s.activeId))
-  const { full: accountPublicKey } = displayId(account!)
-  const balances = useBalances({ accountPublicKey })
+  const address = useAddressText(account!.identity)
+  const balances = useBalances({ address })
 
   const [formValues, setFormValues] = React.useState<typeof defaultFormState>(
     () => ({
       ...defaultFormState,
       asset: routeState?.assetIdentity
-        ? balances.data.ownedAssetsWithBalance.find(
+        ? balances.data.allAssetsWithBalance.find(
             asset => asset.identity === routeState.assetIdentity,
           )
         : undefined,
@@ -126,7 +127,7 @@ export function SendAsset() {
     return () => {
       setFormValues({ ...defaultFormState })
     }
-  }, [network, accountPublicKey])
+  }, [network, address])
 
   return (
     <Layout.Main>
@@ -350,16 +351,9 @@ function ConfirmTxnDialog({
             </GridItem>
             <GridItem overflow="hidden" paddingInlineStart={{ base: 4, md: 0 }}>
               {contact ? <Text fontSize="lg">{contact.name}</Text> : null}
-              <IdentityText
-                fullIdentity={txnDetails.to}
-                isTruncated
-                fontSize="lg"
-                title={txnDetails.to}
-                fontFamily="monospace"
-                whiteSpace="normal"
-              >
+              <AddressText identity={txnDetails.to}>
                 {txnDetails.to}
-              </IdentityText>
+              </AddressText>
             </GridItem>
             <GridItem mt={{ base: 6, md: 0 }}>
               <FormLabel m={0}>Amount</FormLabel>

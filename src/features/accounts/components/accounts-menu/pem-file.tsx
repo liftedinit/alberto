@@ -10,7 +10,7 @@ import {
   ContainerWrapper,
 } from "components"
 import { useAccountsStore } from "features/accounts"
-import { Ed25519KeyPairIdentity, KeyPair } from "many-js"
+import { Ed25519KeyPairIdentity, PublicKeyIdentity } from "many-js"
 import { doesAccountExist } from "../../utils"
 import { AddAccountMethodProps } from "./add-account-modal"
 
@@ -26,11 +26,11 @@ export function PemFile({ setAddMethod, onSuccess }: AddAccountMethodProps) {
   const [pem, setPem] = React.useState("")
   const [name, setName] = React.useState("")
 
-  function onSave(e: React.FormEvent<HTMLFormElement>) {
+  async function onSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    let keysFromPem: KeyPair | undefined
+    let identity: Ed25519KeyPairIdentity | undefined
     try {
-      keysFromPem = KeyPair.fromPem(pem)
+      identity = Ed25519KeyPairIdentity.fromPem(pem)
     } catch {
       return toast({
         title: toastTitle,
@@ -38,8 +38,7 @@ export function PemFile({ setAddMethod, onSuccess }: AddAccountMethodProps) {
         description: "Invalid PEM",
       })
     }
-
-    const exists = doesAccountExist(keysFromPem!.publicKey, accounts)
+    const exists = await doesAccountExist(identity.publicKey, accounts)
 
     if (exists) {
       return toast({
@@ -49,13 +48,9 @@ export function PemFile({ setAddMethod, onSuccess }: AddAccountMethodProps) {
       })
     }
 
-    // createAccount({ name, keys: keysFromPem })
     createAccount({
       name,
-      identity: new Ed25519KeyPairIdentity(
-        keysFromPem.publicKey,
-        keysFromPem.privateKey,
-      ),
+      identity,
     })
     toast({
       title: toastTitle,

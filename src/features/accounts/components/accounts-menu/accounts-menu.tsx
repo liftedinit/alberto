@@ -2,12 +2,11 @@ import React from "react"
 import { AnonymousIdentity, WebAuthnIdentity } from "many-js"
 import { useAccountsStore } from "features/accounts"
 import {
+  AddressText,
   Box,
   Button,
   Circle,
   ChevronDownIcon,
-  Code,
-  CopyToClipboard,
   EditIcon,
   Flex,
   HStack,
@@ -28,9 +27,7 @@ import {
 } from "components"
 import { AddAccountModal } from "./add-account-modal"
 import { EditAccountModal } from "./edit-account-modal"
-import { displayId } from "helper/common"
 import { Account, AccountId } from "../../types"
-import { IdentityText } from "components/uikit/identity-text"
 
 export type AccountItemWithIdDisplayStrings = [
   AccountId,
@@ -66,28 +63,14 @@ export function AccountsMenu() {
   )
 
   const [editAccount, setEditAccount] = React.useState<
-    AccountItemWithIdDisplayStrings | undefined
+    [number, Account] | undefined
   >()
 
-  function onEditClick(acct: AccountItemWithIdDisplayStrings) {
+  function onEditClick(acct: [number, Account]) {
     setEditAccount(acct)
     onEditModalOpen()
   }
 
-  const accountsWithIdDisplayStrings: AccountItemWithIdDisplayStrings[] =
-    React.useMemo(() => {
-      return accounts.map(item => {
-        const [id, account] = item
-        const idDisplayStrings = displayId(account)
-        const accountWithIdDisplayStrings = {
-          ...account,
-          idDisplayStrings,
-        }
-        return [id, accountWithIdDisplayStrings]
-      })
-    }, [accounts])
-
-  const idStrs = displayId(activeAccount!)
   const isAnonymous = activeAccount?.identity instanceof AnonymousIdentity
 
   return (
@@ -115,27 +98,23 @@ export function AccountsMenu() {
               <Box overflow="auto" maxHeight="40vh">
                 <AccountMenuItem
                   activeId={activeId}
-                  account={[
-                    activeId,
-                    { ...activeAccount, idDisplayStrings: idStrs! },
-                  ]}
+                  account={[activeId, activeAccount]}
                   setActiveId={id => setActiveId(id)}
                   onEditClick={onEditClick}
                 />
               </Box>
             ) : null}
 
-            {accountsWithIdDisplayStrings.map(
-              (acc: AccountItemWithIdDisplayStrings) =>
-                acc[0] === activeId ? null : (
-                  <AccountMenuItem
-                    key={String(acc[0])}
-                    activeId={activeId}
-                    account={acc}
-                    onEditClick={onEditClick}
-                    setActiveId={setActiveId}
-                  />
-                ),
+            {accounts.map(acc =>
+              acc[0] === activeId ? null : (
+                <AccountMenuItem
+                  key={String(acc[0])}
+                  activeId={activeId}
+                  account={acc}
+                  onEditClick={onEditClick}
+                  setActiveId={setActiveId}
+                />
+              ),
             )}
           </Box>
           <MenuDivider mt={0} />
@@ -151,21 +130,14 @@ export function AccountsMenu() {
           </MenuItem>
         </MenuList>
       </Menu>
-      {!isAnonymous && (
-        <HStack
+      {!isAnonymous && !!activeAccount && (
+        <AddressText
+          identity={activeAccount?.identity}
           display={{ base: "none", md: "inline-flex" }}
-          bgColor="gray.100"
-          ml={2}
-          px={2}
-          py={1}
-          rounded="md"
-        >
-          <Code fontWeight="md">
-            <IdentityText fullIdentity={idStrs.full} />
-          </Code>
-          <CopyToClipboard toCopy={idStrs.full as string} />
-        </HStack>
+          ms={2}
+        />
       )}
+
       <AddAccountModal isOpen={isAddModalOpen} onClose={onAddModalClose} />
       <EditAccountModal
         account={editAccount!}
@@ -183,9 +155,9 @@ function AccountMenuItem({
   onEditClick,
 }: {
   activeId: AccountId
-  account: AccountItemWithIdDisplayStrings
+  account: [number, Account]
   setActiveId: (id: number) => void
-  onEditClick: (a: AccountItemWithIdDisplayStrings) => void
+  onEditClick: (a: [number, Account]) => void
 }) {
   const id = account[0]
   const isActive = activeId === id
@@ -224,16 +196,7 @@ function AccountMenuItem({
             </Button>
           )}
         </HStack>
-        {!isAnonymous && accountData.idDisplayStrings.full && (
-          <HStack bgColor="gray.100" rounded="md" px={2} py={1}>
-            <Code fontSize={{ base: "sm", md: "xs" }}>
-              {accountData.idDisplayStrings.short}
-            </Code>
-            <CopyToClipboard
-              toCopy={accountData.idDisplayStrings.full as string}
-            />
-          </HStack>
-        )}
+        {!isAnonymous && <AddressText identity={accountData.identity} />}
       </VStack>
       {!isActive && !isAnonymous && (
         <IconButton

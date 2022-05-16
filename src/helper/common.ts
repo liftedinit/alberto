@@ -11,15 +11,6 @@ export const getAddressFromHex = (hex: any): string => {
 export const makeShortId = (idString: string): string =>
   `${idString.slice(0, 4)}...${idString.slice(-4)}`
 
-export function displayId(account: Account): {
-  full: string
-  short: string
-} {
-  const address = Address.fromIdentity(account.identity!)
-  const idString = address.toString()
-  return { full: idString, short: makeShortId(idString) }
-}
-
 export const parseNumberToBigInt = (
   v: number,
   maxDigits: number = DEFAULT_MAX_DIGITS,

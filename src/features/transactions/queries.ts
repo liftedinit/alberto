@@ -28,11 +28,11 @@ export function useSendToken() {
 }
 
 export function useTransactionsList({
-  accountPublicKey,
+  address,
   filter = {},
   count: reqCount = 11,
 }: {
-  accountPublicKey: string
+  address: string
   filter?: ListFilterArgs
   count?: number
 }) {
@@ -49,20 +49,20 @@ export function useTransactionsList({
           ],
         }
       : {}),
-    accounts: accountPublicKey,
+    accounts: address,
   }
 
-  const ledgerInfo = useLedgerInfo({ accountPublicKey })
+  const ledgerInfo = useLedgerInfo({ address })
 
   const q = useQuery({
-    queryKey: ["transactions", "list", filters, accountPublicKey, network?.url],
+    queryKey: ["transactions", "list", filters, address, network?.url],
     queryFn: async () =>
       await network?.ledger?.list({
         filters,
         count: reqCount,
         order: OrderType.descending,
       }),
-    enabled: !!network?.url && !!accountPublicKey,
+    enabled: !!network?.url && !!address,
     keepPreviousData: true,
   })
 

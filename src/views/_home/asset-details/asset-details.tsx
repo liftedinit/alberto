@@ -16,10 +16,10 @@ import { amountFormatter, makeShortId } from "helper/common"
 type Props = {
   asset: Asset
   setAsset: React.Dispatch<Asset | undefined>
-  accountPublicKey: string
+  address: string
 }
 
-export function AssetDetails({ asset, setAsset, accountPublicKey }: Props) {
+export function AssetDetails({ asset, setAsset, address }: Props) {
   return (
     <>
       <Button
@@ -46,7 +46,7 @@ export function AssetDetails({ asset, setAsset, accountPublicKey }: Props) {
         filter={{
           symbols: asset.identity,
         }}
-        accountPublicKey={accountPublicKey}
+        address={address}
       />
     </>
   )

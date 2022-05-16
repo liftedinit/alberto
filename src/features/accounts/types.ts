@@ -1,10 +1,14 @@
-import { Identity, KeyPair } from "many-js"
+import {
+  WebAuthnIdentity,
+  Ed25519KeyPairIdentity,
+  AnonymousIdentity,
+} from "many-js"
 
 export type AccountId = number
 export interface Account {
-  keys?: KeyPair | { publicKey: Uint8Array; privateKey: Uint8Array }
+  // keys?: KeyPair | { publicKey: Uint8Array; privateKey: Uint8Array }
   name: string
-  identity?: Identity
+  identity: WebAuthnIdentity | Ed25519KeyPairIdentity | AnonymousIdentity
 }
 
 export interface AccountsState {
@@ -16,4 +20,9 @@ export interface AccountsState {
 export type Credential = {
   base64Id: string
   address: string
+}
+
+export enum RecoverOptions {
+  "phrase" = "phrase",
+  "address" = "address",
 }

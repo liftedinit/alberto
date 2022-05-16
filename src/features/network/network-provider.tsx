@@ -1,5 +1,5 @@
 import React from "react";
-import { Network, Ledger, AnonymousIdentity } from "many-js"
+import { Network, Ledger, AnonymousIdentity, IdStore } from "many-js"
 import { useNetworkStore } from "./store"
 import { useAccountsStore } from "features/accounts"
 
@@ -19,7 +19,7 @@ export function NetworkProvider({ children }: React.PropsWithChildren<{}>) {
     const queryNetwork = new Network(url, new AnonymousIdentity())
     queryNetwork.apply([Ledger])
     const cmdNetwork = new Network(url, activeAccount.identity)
-    cmdNetwork.apply([Ledger])
+    cmdNetwork.apply([Ledger, IdStore])
     return [queryNetwork, cmdNetwork] as [Network, Network]
   }, [activeNetwork, activeAccount])
 

@@ -1,10 +1,8 @@
-import { ListFilterArgs, Network, TransactionType } from "many-js"
+import { ListFilterArgs, TransactionType } from "many-js"
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi"
 import type { Transaction } from "many-js"
 import {
   Button,
-  CopyToClipboard,
-  Code,
   Center,
   Flex,
   ReceiveIcon,
@@ -17,21 +15,21 @@ import {
   TableContainer,
   Text,
   VStack,
+  AddressText,
 } from "components"
 import { useTransactionsList } from "features/transactions/queries"
-import { IdentityText } from "components/uikit/identity-text"
 import { amountFormatter } from "helper/common"
 import { useContactsStore } from "features/contacts"
 
 export function TxnList({
-  accountPublicKey,
+  address,
   filter = {},
 }: {
-  accountPublicKey: string
+  address: string
   filter?: ListFilterArgs
 }) {
   const queryData = useTransactionsList({
-    accountPublicKey,
+    address,
     filter,
   })
   const {
@@ -80,7 +78,7 @@ export function TxnList({
                 <TxnListItem
                   transaction={t}
                   key={t.time.getTime()}
-                  accountPublicKey={accountPublicKey}
+                  address={address}
                 />
               )
             })}
@@ -115,13 +113,13 @@ export function TxnList({
 
 function TxnListItem({
   transaction,
-  accountPublicKey,
+  address,
 }: {
   transaction: Transaction
-  accountPublicKey: string
+  address: string
 }) {
   if (transaction.type === TransactionType.send) {
-    const isSender = accountPublicKey === transaction.from
+    const isSender = address === transaction.from
     return <SendTxnListItem transaction={transaction} isSender={isSender} />
   }
   return null
@@ -162,20 +160,13 @@ function SendTxnListItem({
             {isSender ? "To:" : "From:"}{" "}
           </Text>
           {contactName && <Text fontWeight="medium">{contactName}</Text>}
-          <Flex
-            alignItems="center"
-            rounded="md"
-            px={2}
-            py={1}
-            gap={1}
-            as={Code}
-          >
-            <IdentityText fontSize="xs" fullIdentity={address} />
-            <CopyToClipboard
-              iconProps={{ boxSize: 4 }}
-              toCopy={isSender ? to! : from!}
-            />
-          </Flex>
+          <AddressText
+            identity={address}
+            bgColor={undefined}
+            px={0}
+            py={0}
+            fontSize="md"
+          />
         </VStack>
       </Td>
       <Td>
