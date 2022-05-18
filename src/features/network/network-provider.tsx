@@ -15,10 +15,12 @@ export function NetworkProvider({ children }: React.PropsWithChildren<{}>) {
   )!
 
   const network = React.useMemo(() => {
+    const anonIdentity = new AnonymousIdentity()
+    const identity = activeAccount?.identity ?? anonIdentity
     const url = activeNetwork?.url || ""
-    const queryNetwork = new Network(url, new AnonymousIdentity())
-    queryNetwork.apply([Ledger])
-    const cmdNetwork = new Network(url, activeAccount.identity)
+    const queryNetwork = new Network(url, anonIdentity)
+    queryNetwork.apply([Ledger, IdStore])
+    const cmdNetwork = new Network(url, identity)
     cmdNetwork.apply([Ledger, IdStore])
     return [queryNetwork, cmdNetwork] as [Network, Network]
   }, [activeNetwork, activeAccount])

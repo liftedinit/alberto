@@ -4,11 +4,13 @@ export function CopyToClipboard({
   msg,
   iconProps = {},
   children,
+  containerProps = {},
 }: {
   toCopy: string
   msg?: string
   iconProps?: {}
   children?: React.ReactNode | (({ onCopy }: { onCopy: () => void }) => void)
+  containerProps?: {}
 }) {
   const { hasCopied, onCopy } = useClipboard(toCopy)
   return (
@@ -16,8 +18,8 @@ export function CopyToClipboard({
       {typeof children === "function" ? (
         children({ onCopy })
       ) : (
-        <Flex>
-          {children ?? null}
+        <Flex {...containerProps}>
+          {children}
           <Icon
             as={CopyIcon}
             w={5}

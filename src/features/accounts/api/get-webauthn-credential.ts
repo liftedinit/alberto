@@ -13,7 +13,8 @@ export function useGetWebauthnCredential() {
         getFrom === RecoverOptions.phrase
           ? queryNetwork?.idStore.getFromRecallPhrase
           : queryNetwork?.idStore.getFromAddress
-      return await getFn(value)
+      const res = await getFn(value)
+      return res
     },
   )
 }

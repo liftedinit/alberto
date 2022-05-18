@@ -1,7 +1,6 @@
 import React from "react"
 import {
   Button,
-  CopyIcon,
   CopyToClipboard,
   Container,
   Flex,
@@ -79,21 +78,21 @@ export function CreateAccount({
             </FormControl>
             <Flex mt={3} gap={4}>
               <FormLabel>Seed Words</FormLabel>
-              <CopyToClipboard toCopy={mnemonic.current}>
-                {({ onCopy }) => {
-                  return (
-                    <Button
-                      size="xs"
-                      onClick={onCopy}
-                      rightIcon={<CopyIcon boxSize={4} />}
-                    >
-                      Copy Seed Words
-                    </Button>
-                  )
-                }}
-              </CopyToClipboard>
             </Flex>
-            <SimpleGrid spacing={1} columns={{ base: 4 }} max-width="400px">
+            <SimpleGrid
+              spacing={1}
+              columns={{ base: 3, sm: 4 }}
+              max-width="400px"
+              borderWidth="1px"
+              textAlign="center"
+              p={4}
+              pos="relative"
+              rounded="md"
+            >
+              <CopyToClipboard
+                toCopy={mnemonic.current}
+                containerProps={{ position: "absolute", top: 1, right: 1 }}
+              />
               {mnemonic.current.split(" ").map(word => (
                 <Text data-testid="seed-word" key={word} fontSize="lg">
                   {word}

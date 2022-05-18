@@ -198,14 +198,14 @@ function AccountMenuItem({
         </HStack>
         {!isAnonymous && <AddressText identity={accountData.identity} />}
       </VStack>
-      {!isActive && !isAnonymous && (
+      {
         <IconButton
           variant="ghost"
           aria-label="edit account"
           icon={<EditIcon boxSize={5} />}
           onClick={() => onEditClick(account)}
         />
-      )}
+      }
     </MenuItem>
   )
 }

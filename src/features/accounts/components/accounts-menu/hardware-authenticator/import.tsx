@@ -24,16 +24,16 @@ import {
   useGetWebauthnCredential,
 } from "features/accounts"
 import { doesAccountExist } from "features/accounts/utils"
-import { arrayBufferToBase64, base64ToArrayBuffer } from "helper/convert"
+import { base64ToArrayBuffer } from "helper/convert"
 import { RecoverOptions } from "features/accounts/types"
 
 export function ImportFlow({ setAddMethod, onSuccess }: AddAccountMethodProps) {
   const toast = useToast()
 
-  const { mutate: doGetWebauthnCredential, isLoading } =
+  const { mutateAsync: doGetWebauthnCredentialAsync, isLoading } =
     useGetWebauthnCredential()
 
-  const byId = useCredentialsStore(s => s.byId)
+  const getCredential = useCredentialsStore(s => s.getCredential)
 
   const { accounts, createAccount } = useAccountsStore(
     ({ createAccount, byId }) => ({
@@ -47,85 +47,76 @@ export function ImportFlow({ setAddMethod, onSuccess }: AddAccountMethodProps) {
     RecoverOptions.phrase,
   )
 
+  async function fetchCredentialData(phraseOrAddress: string) {
+    const credLocalStorage = getCredential(phraseOrAddress)
+    if (credLocalStorage) {
+      return {
+        credentialId: base64ToArrayBuffer(credLocalStorage.base64CredentialId),
+        cosePublicKey: credLocalStorage.cosePublicKey,
+      }
+    }
+    try {
+      return await doGetWebauthnCredentialAsync({
+        getFrom: importMethod,
+        value: phraseOrAddress,
+      })
+    } catch (err) {
+      throw err
+    }
+  }
+
   async function onImportClick(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const form = e.target as HTMLFormElement
     const name = nameInputRef?.current?.value?.trim()
-    const phraseOrAddress = phraseOrAddressInputRef?.current?.value?.trim()
+
+    let phraseOrAddress = phraseOrAddressInputRef?.current?.value?.trim()
+
     if (!name || !phraseOrAddress) {
       if (!name) nameInputRef!.current!.value = ""
       if (!phraseOrAddress) phraseOrAddressInputRef!.current!.value = ""
       return form.reportValidity()
     }
-    doGetWebauthnCredential(
-      { getFrom: importMethod, value: phraseOrAddress },
-      {
-        onSuccess: async ({ credentialId }) => {
-          // prompt user to authenticate
-          // get public key and check if account already exists
-          const credential = await WebAuthnIdentity.getCredential(credentialId)
 
-          const cosePublicKey = WebAuthnIdentity.getCosePublicKey(credential)
-          const identity = new WebAuthnIdentity(cosePublicKey, credential.rawId)
-          const accountExists = await doesAccountExist(
-            identity.publicKey,
-            accounts,
-          )
-          if (accountExists) {
-            return toast({
-              status: "warning",
-              title: "Add Account",
-              description: "Account already exists",
-            })
-          }
-          createAccount({
-            name,
-            identity,
-          })
-          toast({
-            status: "success",
-            title: "Add Account",
-            description: "Account was imported",
-          })
-          onSuccess()
-        },
-        onError: () => {},
-      },
-    )
-    // const credentialExists = byId.get(phraseOrAddress)
-    // if (!credentialExists) {
-    //   return toast({
-    //     title: "Add Account",
-    //     description: "Credential does not exists",
-    //     status: "warning",
-    //   })
-    // }
-    // const { base64CredId, cosePublicKey } = credentialExists
-    // const rawId = base64ToArrayBuffer(base64CredId)
-    // const webAuthnIdentity = new WebAuthnIdentity(cosePublicKey, rawId)
-    // const accountExists = await doesAccountExist(
-    //   webAuthnIdentity.publicKey,
-    //   accounts,
-    // )
-    // if (accountExists) {
-    //   return toast({
-    //     status: "warning",
-    //     title: "Add Account",
-    //     description: "Account already exists",
-    //   })
-    // }
-    // await WebAuthnIdentity.getCredential(Buffer.from(base64CredId, "base64"))
-    // createAccount({
-    //   name,
-    //   identity: webAuthnIdentity,
-    // })
-    // toast({
-    //   status: "success",
-    //   title: "Add Account",
-    //   description: "Account was imported",
-    // })
-    // onSuccess()
+    try {
+      const credentialData = await fetchCredentialData(phraseOrAddress)
+      if (!credentialData?.cosePublicKey && !credentialData?.credentialId) {
+        throw new Error("An unexpected error occurred")
+      }
+      const { cosePublicKey, credentialId } = credentialData
+      const webAuthnIdentity = new WebAuthnIdentity(cosePublicKey, credentialId)
+      const accountExists = await doesAccountExist(
+        webAuthnIdentity.publicKey,
+        accounts,
+      )
+      if (accountExists) {
+        return toast({
+          status: "warning",
+          title: "Add Account",
+          description: "Account already exists",
+        })
+      }
+      await WebAuthnIdentity.getCredential(credentialId)
+      createAccount({
+        name,
+        identity: webAuthnIdentity,
+      })
+      toast({
+        status: "success",
+        title: "Add Account",
+        description: "Account was imported",
+      })
+      onSuccess()
+    } catch (err) {
+      toast({
+        status: "warning",
+        title: "Add Account",
+        description:
+          err instanceof Error ? err.message : "An unexpected error occurred.",
+      })
+    }
   }
+
   return (
     <>
       <Modal.Header>Import From Hardware Authenticator</Modal.Header>
@@ -153,7 +144,6 @@ export function ImportFlow({ setAddMethod, onSuccess }: AddAccountMethodProps) {
           </Alert>
           <RadioGroup
             onChange={nextVal => {
-              console.log("nextVal", nextVal)
               setImportMethod(nextVal as unknown as RecoverOptions)
             }}
             value={importMethod}
@@ -193,6 +183,7 @@ export function ImportFlow({ setAddMethod, onSuccess }: AddAccountMethodProps) {
             type="submit"
             form="import-form"
             w={{ base: "full", md: "auto" }}
+            isLoading={isLoading}
           >
             Import
           </Button>

@@ -58,6 +58,8 @@ export function AddAccountModal({
       onClose={onClose}
       size="4xl"
       data-testid="add-account-form-container"
+      closeOnOverlayClick={addMethod ? false : true}
+      closeOnEsc={addMethod ? false : true}
     >
       {addMethod === "" && (
         <ScaleFade in={true} initialScale={0.9}>

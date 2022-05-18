@@ -1,19 +1,25 @@
 import { useMutation } from "react-query"
-import { Network, WebAuthnIdentity } from "many-js"
 import { useNetworkContext } from "features/network"
+import { IdStore, Network, WebAuthnIdentity } from "many-js"
 
-/**
- * save webauthn account data to k-v store during creation
- */
 export function useSaveWebauthnCredential() {
-  const [currentNetwork] = useNetworkContext()
+  const [network] = useNetworkContext()
   return useMutation(
-    async (variables: { webauthnIdentity: WebAuthnIdentity }) => {
-      const { webauthnIdentity } = variables
-      const network = new Network(currentNetwork?.url ?? "", webauthnIdentity)
-      return new Promise(resolve => {
-        setTimeout(() => resolve({ phrase: "some phrase" }), 3000)
-      })
+    async ({
+      address,
+      credentialId,
+      cosePublicKey,
+      identity,
+    }: {
+      address: string
+      credentialId: ArrayBuffer
+      cosePublicKey: ArrayBuffer
+      identity: WebAuthnIdentity
+    }) => {
+      const n = new Network(network?.url ?? "", identity)
+      n.apply([IdStore])
+      const res = await n?.idStore.store(address, credentialId, cosePublicKey)
+      return res
     },
   )
 }

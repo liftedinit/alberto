@@ -1,6 +1,5 @@
 import React from "react"
 import { WebAuthnIdentity } from "many-js"
-import { generateSlug } from "random-word-slugs"
 import {
   Alert,
   Button,
@@ -14,7 +13,6 @@ import {
   Input,
   Modal,
   SimpleGrid,
-  Stack,
   Text,
   VStack,
   useToast,
@@ -37,14 +35,13 @@ const enum CreateSteps {
 
 const stepMap = {
   [CreateSteps.first]: Authorize,
-  [CreateSteps.second]: StorePhrase,
-  [CreateSteps.third]: PersistCredential,
+  [CreateSteps.second]: CreatePhrase,
+  [CreateSteps.third]: Finished,
 }
 
 export function CreateFlow({ setAddMethod, onSuccess }: AddAccountMethodProps) {
   const [{ step }] = useCreateContext()
   const StepComponent = stepMap[step]
-  console.log({ step, StepComponent })
 
   return (
     <>
@@ -66,7 +63,7 @@ function Authorize({ setAddMethod }: AddAccountMethodProps) {
         step: CreateSteps.second,
       })
     } catch (e) {
-      console.error("webauthn", e)
+      console.error("authorize step", e)
     }
   }
 
@@ -95,9 +92,12 @@ function Authorize({ setAddMethod }: AddAccountMethodProps) {
   )
 }
 
-function StorePhrase() {
+function CreatePhrase() {
   const [{ identity }, setState] = useCreateContext()
   const { mutate: doSaveCredential, isLoading } = useSaveWebauthnCredential()
+  const updateCredential = useCredentialsStore(s => s.updateCredential)
+  const createAccount = useAccountsStore(s => s.createAccount)
+  const toast = useToast()
 
   const nameInputRef = React.useRef<HTMLInputElement>(null)
 
@@ -109,17 +109,42 @@ function StorePhrase() {
       nameInputRef!.current!.value = ""
       return form.reportValidity()
     }
-    const cred = await WebAuthnIdentity.getCredential(identity?.rawId!)
+    const address = (await identity!.getAddress()).toString()
     doSaveCredential(
-      { webauthnIdentity: identity! },
       {
-        onSuccess: data => {
-          console.log("onSuccess data >>>>>>>>>>", data)
-          // setState({
-          //   phrase: data.phrase ?? "some phrase",
-          //   name,
-          //   step: CreateSteps.third,
-          // })
+        address,
+        credentialId: identity!.rawId,
+        cosePublicKey: identity!.cosePublicKey,
+        identity: identity!,
+      },
+      {
+        onSuccess(data) {
+          if (data?.phrase) {
+            updateCredential(
+              data.phrase,
+              arrayBufferToBase64(identity!.rawId),
+              identity!.cosePublicKey,
+              address,
+            )
+            createAccount({ name, identity: identity! })
+            toast({
+              status: "success",
+              title: "Add Account",
+              description: "Account was created",
+            })
+            setState({
+              phrase: data.phrase,
+              name,
+              step: CreateSteps.third,
+            })
+          }
+        },
+        onError(err) {
+          toast({
+            status: "warning",
+            title: "Add Account",
+            description: "An unexpected error occurred",
+          })
         },
       },
     )
@@ -157,58 +182,11 @@ function StorePhrase() {
   )
 }
 
-function PersistCredential({ onSuccess }: AddAccountMethodProps) {
-  const toast = useToast()
-  const byId = useCredentialsStore(s => s.byId)
-  const [phrase, setPhrase] = React.useState("")
-  const [{ name, identity }, setState] = useCreateContext()
-
-  const updateCredential = useCredentialsStore(s => s.updateCredential)
-
-  const createAccount = useAccountsStore(s => s.createAccount)
-
-  function onSaveClick(e: React.FormEvent<HTMLButtonElement>) {
-    e.preventDefault()
-    const base64CredId = arrayBufferToBase64(identity!.rawId)
-    console.log({ phrase, name, identity })
-    updateCredential(phrase!, base64CredId, identity!.cosePublicKey)
-    createAccount({ name: name!, identity: identity! })
-    onSuccess()
-    toast({
-      status: "success",
-      title: "Add Account",
-      description: "Account was created",
-    })
-  }
-  React.useEffect(() => {
-    setPhrase(makePhrase())
-    function makePhrase(): string {
-      const slug = generateSlug(2, { format: "lower" })
-      if (byId.has(slug)) {
-        return makePhrase()
-      }
-      return slug
-    }
-  }, [])
+function Finished({ onSuccess }: AddAccountMethodProps) {
+  const [{ phrase }] = useCreateContext()
 
   return (
-    <CreateLayout
-      onBackClick={() => setState({ step: CreateSteps.second })}
-      footer={<Button onClick={onSaveClick}>Done</Button>}
-    >
-      <Stack
-        spacing={{ base: 0, md: 2 }}
-        direction={{ base: "column", md: "row" }}
-        alignItems="center"
-        justifyContent="center"
-        mb={{ base: 4, md: 0 }}
-      >
-        <Box fontSize="6xl">🎉</Box>
-        <Text fontSize={{ base: "2xl", md: "3xl" }}>
-          Your credential was saved!
-        </Text>
-      </Stack>
-
+    <CreateLayout footer={<Button onClick={onSuccess}>Done</Button>}>
       <SimpleGrid columns={{ base: 1, md: 2 }} gap={{ base: 4, md: 8 }}>
         <Box>
           <Flex
@@ -230,11 +208,8 @@ function PersistCredential({ onSuccess }: AddAccountMethodProps) {
         </Box>
         <Box>
           <Box>
-            <Text>You will need this phrase to access your account.</Text>
-
-            <Text mt={4}>
-              If you lose this phrase, there's no way to recover your account so
-              put it somewhere safe.
+            <Text>
+              You can recover your account using this phrase or public address.
             </Text>
           </Box>
         </Box>
@@ -288,18 +263,20 @@ function CreateLayout({
   children,
 }: React.PropsWithChildren<{
   footer: React.ReactNode
-  onBackClick: () => void
+  onBackClick?: () => void
 }>) {
   return (
     <>
       <Modal.Body>
-        <Button
-          variant="link"
-          onClick={onBackClick}
-          leftIcon={<ChevronLeftIcon />}
-        >
-          Back
-        </Button>
+        {onBackClick && (
+          <Button
+            variant="link"
+            onClick={onBackClick}
+            leftIcon={<ChevronLeftIcon />}
+          >
+            Back
+          </Button>
+        )}
         <Container>{children}</Container>
       </Modal.Body>
       <Modal.Footer>

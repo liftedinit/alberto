@@ -90,7 +90,6 @@ function AssetLlistItem({
     md: () => setShowActions(s => !s),
   })
 
-  console.log({ asset })
   return (
     <HStack
       spacing={4}

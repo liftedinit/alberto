@@ -12,6 +12,7 @@ import {
   useAddressText,
 } from "components"
 import { useAccountsStore, AccountId, Account } from "../../index"
+import { AnonymousIdentity } from "many-js"
 
 export function EditAccountModal({
   isOpen,
@@ -27,6 +28,7 @@ export function EditAccountModal({
   const [publicKey, setPublicKey] = React.useState("")
   const toast = useToast()
   const addressStr = useAddressText(accountData?.identity)
+  const isAnonymous = accountData?.identity instanceof AnonymousIdentity
   const { updateAccount, deleteAccount, byId } = useAccountsStore(
     ({ updateAccount, deleteAccount, byId }) => ({
       updateAccount,
@@ -100,43 +102,49 @@ export function EditAccountModal({
               value={name}
             />
           </FormControl>
-          <FormLabel mt={3}>Public Key</FormLabel>
-          <AddressText identity={accountData?.identity} px={4} h="40px">
-            {addressStr}
-          </AddressText>
+          {isAnonymous ? null : (
+            <>
+              <FormLabel mt={3}>Public Key</FormLabel>
+              <AddressText identity={accountData?.identity} px={4} h="40px">
+                {addressStr}
+              </AddressText>
+            </>
+          )}
         </form>
-        <form id="remove-account-form">
-          <FormControl mt={3} id="publicKey">
-            <FormLabel color="red">Remove Account</FormLabel>
-            <HStack spacing={0}>
-              <Input
-                name="publicKey"
-                data-testid="public key input"
-                required
-                // id="publicKey"
-                variant="filled"
-                onChange={e => setPublicKey(e.currentTarget.value)}
-                value={publicKey}
-                borderTopRightRadius={0}
-                borderBottomRightRadius={0}
-              />
-              <Button
-                borderTopLeftRadius={0}
-                borderBottomLeftRadius={0}
-                colorScheme="red"
-                disabled={!addressStr || publicKey !== addressStr}
-                onClick={() => onDelete(account[0])}
-                aria-label="remove account"
-              >
-                Remove
-              </Button>
-            </HStack>
-            <FormHelperText color="red">
-              Enter the full public key from above and click remove to remove
-              this account.
-            </FormHelperText>
-          </FormControl>
-        </form>
+        {isAnonymous ? null : (
+          <form id="remove-account-form">
+            <FormControl mt={3} id="publicKey">
+              <FormLabel color="red">Remove Account</FormLabel>
+              <HStack spacing={0}>
+                <Input
+                  name="publicKey"
+                  data-testid="public key input"
+                  required
+                  // id="publicKey"
+                  variant="filled"
+                  onChange={e => setPublicKey(e.currentTarget.value)}
+                  value={publicKey}
+                  borderTopRightRadius={0}
+                  borderBottomRightRadius={0}
+                />
+                <Button
+                  borderTopLeftRadius={0}
+                  borderBottomLeftRadius={0}
+                  colorScheme="red"
+                  disabled={!addressStr || publicKey !== addressStr}
+                  onClick={() => onDelete(account[0])}
+                  aria-label="remove account"
+                >
+                  Remove
+                </Button>
+              </HStack>
+              <FormHelperText color="red">
+                Enter the full public key from above and click remove to remove
+                this account.
+              </FormHelperText>
+            </FormControl>
+          </form>
+        )}
       </Modal.Body>
     </Modal>
   )

@@ -26,3 +26,8 @@ export enum RecoverOptions {
   "phrase" = "phrase",
   "address" = "address",
 }
+
+export type CredentialData = {
+  base64CredentialId: string
+  cosePublicKey: ArrayBuffer
+}

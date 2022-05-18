@@ -11,11 +11,13 @@ import { makeShortId } from "helper/common"
 export function AddressText({
   identity,
   addressText,
+  isFull = false,
   children,
   ...props
 }: React.PropsWithChildren<
   {
     addressText?: string
+    isFull?: boolean
     identity:
       | WebAuthnIdentity
       | Ed25519KeyPairIdentity
@@ -43,7 +45,7 @@ export function AddressText({
           e.preventDefault()
         }}
       >
-        {children ? children : makeShortId(text)}
+        {children ? children : isFull ? text : makeShortId(text)}
       </Text>
       <CopyToClipboard toCopy={text} />
     </HStack>
@@ -59,7 +61,8 @@ export function useAddressText(
       if (i && typeof i !== "string") {
         return (await i.getAddress()).toString()
       }
-      return ""
+
+      return i ?? ""
     },
   })
   return q?.data ?? ""
