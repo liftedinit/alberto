@@ -24,7 +24,6 @@
     "idb-keyval": "^6.1.0",
     "localforage": "^1.10.0",
     "many-js": "tantommy/many-js#9bcd0ec01015f17d497610b7338230f4cdb51205",
-    "random-word-slugs": "^0.1.6",
     "react": "^17.0.2",
     "react-app-rewired": "^2.2.1",
     "react-dom": "^17.0.2",
