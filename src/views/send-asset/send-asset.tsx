@@ -144,7 +144,7 @@ export function SendAsset() {
                   <Box>
                     <ContactSelector
                       onContactClicked={(onClose, c) => {
-                        setFormValues(s => ({ ...s, to: c.identity }))
+                        setFormValues(s => ({ ...s, to: c.address }))
                         setContact(c)
                         onClose()
                       }}
@@ -321,6 +321,7 @@ function ConfirmTxnDialog({
         <ButtonGroup w="full" justifyContent="flex-end">
           <Button
             width={{ base: "full", md: "auto" }}
+            disabled={isLoading}
             onClick={onClose}
             ref={cancelTxnRef}
             type="submit"

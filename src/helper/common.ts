@@ -1,4 +1,3 @@
-import { Account } from "features/accounts"
 import { Address } from "many-js"
 
 const DEFAULT_MAX_DIGITS = 9
@@ -8,8 +7,11 @@ export const getAddressFromHex = (hex: any): string => {
   return identity.toString()
 }
 
-export const makeShortId = (idString: string): string =>
-  `${idString.slice(0, 4)}...${idString.slice(-4)}`
+export const makeShortId = (idString: string): string => {
+  return typeof idString === "string"
+    ? `${idString.slice(0, 4)}...${idString.slice(-4)}`
+    : ""
+}
 
 export const parseNumberToBigInt = (
   v: number,

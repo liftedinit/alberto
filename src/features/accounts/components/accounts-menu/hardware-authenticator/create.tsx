@@ -143,7 +143,9 @@ function CreatePhrase() {
           toast({
             status: "warning",
             title: "Add Account",
-            description: "An unexpected error occurred",
+            description: err?.message
+              ? err.message
+              : "An unexpected error occurred",
           })
         },
       },

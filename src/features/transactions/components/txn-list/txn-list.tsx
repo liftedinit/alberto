@@ -20,6 +20,7 @@ import {
 import { useTransactionsList } from "features/transactions/queries"
 import { amountFormatter } from "helper/common"
 import { useContactsStore } from "features/contacts"
+import { useAccountsStore } from "features/accounts"
 
 export function TxnList({
   address,
@@ -133,13 +134,16 @@ function SendTxnListItem({
   isSender: boolean
 }) {
   const contacts = useContactsStore(s => s.byId)
+  const accounts = useAccountsStore(s => Array.from(s.byId).map(a => a[1]))
   const { to, from, amount, symbol, time } = transaction
   const TxnIcon = isSender ? SendOutlineIcon : ReceiveIcon
   const title = isSender ? "send" : "receive"
 
   const displayAmount = `${isSender ? "-" : "+"}${amountFormatter(amount)}`
   const address = isSender ? to! : from!
-  const contactName = contacts.get(address)?.name
+  const contactName =
+    contacts.get(address)?.name ??
+    accounts.find(acc => acc.address === address)?.name
 
   return (
     <Tr aria-label="transaction list item">

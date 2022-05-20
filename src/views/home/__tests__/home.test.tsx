@@ -8,11 +8,11 @@ import {
 } from "test/test-utils"
 import * as useIsBaseBreakpoint from "hooks/useIsBaseBreakpoint"
 import { useNetworkContext } from "features/network/network-provider"
+import { useAddressText } from "components/address-text"
 import { useAccountsStore } from "features/accounts"
-import { displayId } from "helper/common"
-
-import { Home } from "views/_home"
-import { Ed25519KeyPairIdentity, Transaction } from "many-js"
+import { Home } from "views/home"
+import { AnonymousIdentity, Ed25519KeyPairIdentity, Transaction } from "many-js"
+import { base64ToArrayBuffer } from "helper/convert"
 
 jest.mock("features/network/network-provider", () => {
   return {
@@ -21,15 +21,12 @@ jest.mock("features/network/network-provider", () => {
   }
 })
 
-jest.mock("helper/common", () => {
-  const actual = jest.requireActual("helper/common")
+jest.mock("components/address-text", () => {
   return {
-    ...actual,
-    displayId: jest.fn(),
+    ...jest.requireActual("components/address-text"),
+    useAddressText: jest.fn(),
   }
 })
-
-jest.mock("helper/common")
 
 const mockUseIsBaseBreakpoint = jest.spyOn(
   useIsBaseBreakpoint,
@@ -95,11 +92,8 @@ function getMockNetwork() {
 let mockNetwork = getMockNetwork()
 describe("home page", () => {
   beforeEach(() => {
-    displayId.mockImplementation(() => {
-      return {
-        short: "<m111>",
-        full: "m111",
-      }
+    useAddressText.mockImplementation(val => {
+      return "m111"
     })
     mockNetwork = getMockNetwork()
     useNetworkContext.mockImplementation(() => {
@@ -203,6 +197,12 @@ describe("home page", () => {
   })
 })
 
+const privKeyB64 =
+  "dyhNjZFhrjw7w40CB/ETD7XkwjKpJq3T9CnADVjGI8PVnjGlzRLgVLr0z4Ylqm2BDJO5HAsoEy/Amo83hcpFxg=="
+const pubKeyB64 = "1Z4xpc0S4FS69M+GJaptgQyTuRwLKBMvwJqPN4XKRcY="
+
+const privateKey = base64ToArrayBuffer(privKeyB64)
+const pubKey = base64ToArrayBuffer(pubKeyB64)
 function setupHome() {
   render(<Home />)
   act(() =>
@@ -211,15 +211,12 @@ function setupHome() {
         ...s,
         activeId: 1,
         byId: new Map([
-          ...Array.from(s.byId),
+          [0, { name: "anon", identity: new AnonymousIdentity() }],
           [
             1,
             {
-              name: "test-account",
-              identity: new Ed25519KeyPairIdentity(
-                new Uint8Array(Buffer.from("pubKey")),
-                new Uint8Array(Buffer.from("privateKey")),
-              ),
+              name: "test",
+              identity: new Ed25519KeyPairIdentity(pubKey, privateKey),
             },
           ],
         ]),

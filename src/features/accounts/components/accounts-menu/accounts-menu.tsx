@@ -196,7 +196,9 @@ function AccountMenuItem({
             </Button>
           )}
         </HStack>
-        {!isAnonymous && <AddressText identity={accountData.identity} />}
+        {!isAnonymous && (
+          <AddressText identity={accountData.identity} bgColor={undefined} />
+        )}
       </VStack>
       {
         <IconButton

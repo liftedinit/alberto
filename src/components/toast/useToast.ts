@@ -1,8 +1,8 @@
 import { useToast as actualUseToast, UseToastOptions } from "@chakra-ui/react"
-const FIVE_SECONDS = 5000
+const THREE_SECONDS = 3000
 
 const defaultUseToastOptions: UseToastOptions = {
-  duration: FIVE_SECONDS,
+  duration: THREE_SECONDS,
   variant: "left-accent",
   isClosable: true,
   position: "top",

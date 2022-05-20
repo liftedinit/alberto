@@ -3,15 +3,7 @@ import { persist } from "zustand/middleware"
 import localforage from "localforage"
 import { replacer, reviver } from "helper/json"
 import { Account, AccountId, AccountsState } from "../types"
-import { AnonymousIdentity, Ed25519KeyPairIdentity } from "many-js"
-import { base64ToArrayBuffer } from "helper/convert"
-
-const privKeyB64 =
-  "dyhNjZFhrjw7w40CB/ETD7XkwjKpJq3T9CnADVjGI8PVnjGlzRLgVLr0z4Ylqm2BDJO5HAsoEy/Amo83hcpFxg=="
-const pubKeyB64 = "1Z4xpc0S4FS69M+GJaptgQyTuRwLKBMvwJqPN4XKRcY="
-
-const privateKey = base64ToArrayBuffer(privKeyB64)
-const pubKey = base64ToArrayBuffer(pubKeyB64)
+import { AnonymousIdentity } from "many-js"
 
 interface AccountMethods {
   createAccount: (a: Account) => void
@@ -21,25 +13,24 @@ interface AccountMethods {
 }
 
 export const initialState: AccountsState = {
-  activeId: 1,
+  activeId: 0,
   byId: new Map([
     [0, { name: "Anonymous", identity: new AnonymousIdentity() }],
-    [
-      1,
-      {
-        name: "main",
-        identity: new Ed25519KeyPairIdentity(pubKey, privateKey),
-      },
-    ],
   ]),
-  nextId: 2,
+  nextId: 1,
 }
 
 export const useAccountsStore = create<AccountsState & AccountMethods>(
   persist(
     set => ({
       ...initialState,
-      createAccount: (account: Account) =>
+      createAccount: async (account: Account) => {
+        try {
+          const address = (await account.identity.getAddress()).toString()
+          account.address = address
+        } catch (error) {
+          console.error("createAccount", error)
+        }
         set(state => {
           const id = state.nextId
           return {
@@ -47,26 +38,23 @@ export const useAccountsStore = create<AccountsState & AccountMethods>(
             activeId: id,
             byId: new Map(state.byId).set(id, account),
           }
-        }),
+        })
+      },
       updateAccount: (id: AccountId, account: Account) =>
-        set(state => ({
-          ...state,
-          byId: new Map(state.byId).set(id, account),
+        set(s => ({
+          byId: new Map(s.byId).set(id, { ...s.byId.get(id), ...account }),
         })),
       deleteAccount: (id: AccountId) =>
-        set(state => {
-          const map = new Map(state.byId)
-          map.delete(id)
+        set(s => {
+          s.byId.delete(id)
           return {
-            ...state,
-            byId: map,
+            byId: s.byId,
           }
         }),
       setActiveId: (id: AccountId) =>
-        set(state => ({
-          ...state,
+        set({
           activeId: id,
-        })),
+        }),
     }),
     {
       name: "ALBERT.ACCOUNT",

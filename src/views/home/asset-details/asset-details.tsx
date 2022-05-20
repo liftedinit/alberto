@@ -1,13 +1,5 @@
 import { GrFormPrevious } from "react-icons/gr"
-import {
-  Button,
-  CopyToClipboard,
-  Flex,
-  Heading,
-  Image,
-  Text,
-  VStack,
-} from "components"
+import { AddressText, Button, Heading, Image, VStack } from "components"
 import { TxnList } from "features/transactions"
 import cubeImg from "assets/cube.png"
 import { Asset } from "features/balances"
@@ -34,10 +26,7 @@ export function AssetDetails({ asset, setAsset, address }: Props) {
         <Heading size="lg" fontWeight="normal">
           {amountFormatter(asset.balance)} {asset.symbol}
         </Heading>
-        <Flex alignItems="center" gap={1}>
-          <Text>{makeShortId(asset.identity)}</Text>
-          <CopyToClipboard toCopy={asset.identity} />
-        </Flex>
+        <AddressText identity={asset.identity} bgColor={undefined} />
       </VStack>
       <Heading size="md" mb={3}>
         Activity

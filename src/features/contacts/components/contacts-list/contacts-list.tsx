@@ -49,7 +49,7 @@ export function ContactsList({ contacts, onContactClicked }: Props) {
                 return (
                   <ContactListItem
                     onClick={onContactClicked}
-                    key={c.identity}
+                    key={c.address}
                     contact={c}
                   />
                 )
@@ -85,7 +85,7 @@ function ContactListItem({
           {contact.name}
         </Text>
         <AddressText
-          identity={contact?.identity}
+          identity={contact?.address}
           bgColor={undefined}
           px={0}
           py={0}

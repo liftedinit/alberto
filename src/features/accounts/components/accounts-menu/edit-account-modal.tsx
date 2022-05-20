@@ -25,7 +25,7 @@ export function EditAccountModal({
 }) {
   const accountData = account?.[1]
   const [name, setName] = React.useState("")
-  const [publicKey, setPublicKey] = React.useState("")
+  const [address, setAddress] = React.useState("")
   const toast = useToast()
   const addressStr = useAddressText(accountData?.identity)
   const isAnonymous = accountData?.identity instanceof AnonymousIdentity
@@ -67,7 +67,7 @@ export function EditAccountModal({
   React.useEffect(() => {
     if (!isOpen) {
       setName("")
-      setPublicKey("")
+      setAddress("")
     }
   }, [isOpen])
 
@@ -104,7 +104,7 @@ export function EditAccountModal({
           </FormControl>
           {isAnonymous ? null : (
             <>
-              <FormLabel mt={3}>Public Key</FormLabel>
+              <FormLabel mt={3}>Address</FormLabel>
               <AddressText identity={accountData?.identity} px={4} h="40px">
                 {addressStr}
               </AddressText>
@@ -113,17 +113,17 @@ export function EditAccountModal({
         </form>
         {isAnonymous ? null : (
           <form id="remove-account-form">
-            <FormControl mt={3} id="publicKey">
-              <FormLabel color="red">Remove Account</FormLabel>
+            <FormControl mt={3} id="addressInput">
+              <FormLabel htmlFor="addressInput" color="red">
+                Remove Account
+              </FormLabel>
               <HStack spacing={0}>
                 <Input
-                  name="publicKey"
-                  data-testid="public key input"
+                  name="addressInput"
                   required
-                  // id="publicKey"
                   variant="filled"
-                  onChange={e => setPublicKey(e.currentTarget.value)}
-                  value={publicKey}
+                  onChange={e => setAddress(e.currentTarget.value)}
+                  value={address}
                   borderTopRightRadius={0}
                   borderBottomRightRadius={0}
                 />
@@ -131,7 +131,7 @@ export function EditAccountModal({
                   borderTopLeftRadius={0}
                   borderBottomLeftRadius={0}
                   colorScheme="red"
-                  disabled={!addressStr || publicKey !== addressStr}
+                  disabled={!addressStr || address !== addressStr}
                   onClick={() => onDelete(account[0])}
                   aria-label="remove account"
                 >
@@ -139,7 +139,7 @@ export function EditAccountModal({
                 </Button>
               </HStack>
               <FormHelperText color="red">
-                Enter the full public key from above and click remove to remove
+                Enter the full address from above and click remove to remove
                 this account.
               </FormHelperText>
             </FormControl>

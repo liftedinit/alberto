@@ -30,7 +30,7 @@ import { RecoverOptions } from "features/accounts/types"
 export function ImportFlow({ setAddMethod, onSuccess }: AddAccountMethodProps) {
   const toast = useToast()
 
-  const { mutateAsync: doGetWebauthnCredentialAsync, isLoading } =
+  const { mutateAsync: doGetWebauthnCredential, isLoading } =
     useGetWebauthnCredential()
 
   const getCredential = useCredentialsStore(s => s.getCredential)
@@ -55,14 +55,10 @@ export function ImportFlow({ setAddMethod, onSuccess }: AddAccountMethodProps) {
         cosePublicKey: credLocalStorage.cosePublicKey,
       }
     }
-    try {
-      return await doGetWebauthnCredentialAsync({
-        getFrom: importMethod,
-        value: phraseOrAddress,
-      })
-    } catch (err) {
-      throw err
-    }
+    return await doGetWebauthnCredential({
+      getFrom: importMethod,
+      value: phraseOrAddress,
+    })
   }
 
   async function onImportClick(e: React.FormEvent<HTMLFormElement>) {

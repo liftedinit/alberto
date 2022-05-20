@@ -1,11 +1,7 @@
 import React from "react"
 import { useQuery } from "react-query"
 import { BoxProps, CopyToClipboard, HStack, Text } from "components"
-import {
-  AnonymousIdentity,
-  Ed25519KeyPairIdentity,
-  WebAuthnIdentity,
-} from "many-js"
+import { Identity } from "many-js"
 import { makeShortId } from "helper/common"
 
 export function AddressText({
@@ -18,11 +14,7 @@ export function AddressText({
   {
     addressText?: string
     isFull?: boolean
-    identity:
-      | WebAuthnIdentity
-      | Ed25519KeyPairIdentity
-      | AnonymousIdentity
-      | string
+    identity: Identity | string
   } & BoxProps
 >) {
   const text = useAddressText(identity)
@@ -52,17 +44,14 @@ export function AddressText({
   )
 }
 
-export function useAddressText(
-  i: WebAuthnIdentity | Ed25519KeyPairIdentity | AnonymousIdentity | string,
-) {
+export function useAddressText(i: Identity | string) {
   const q = useQuery({
     queryKey: ["address", i],
     queryFn: async () => {
-      if (i && typeof i !== "string") {
+      if (i instanceof Identity) {
         return (await i.getAddress()).toString()
       }
-
-      return i ?? ""
+      return typeof i === "string" ? i : ""
     },
   })
   return q?.data ?? ""

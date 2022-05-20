@@ -5,33 +5,21 @@ import {
   screen,
   userEvent,
   within,
+  waitFor,
   waitForElementToBeRemoved,
 } from "test/test-utils"
 import { toast } from "components"
-
-import { KeyPair } from "many-js"
+import { useAddressText } from "components/address-text"
+import { AnonymousIdentity, Ed25519KeyPairIdentity } from "many-js"
 import { AccountsMenu } from "../accounts-menu"
-import { displayId } from "helper/common"
 import { useAccountsStore } from "features/accounts"
 
-jest.mock("helper/common", () => {
-  const actualModule = jest.requireActual("helper/common")
-  return {
-    ...actualModule,
-    displayId: jest.fn(),
-  }
-})
+jest.mock("many-js")
 
-jest.mock("many-js", () => {
-  const orig = jest.requireActual("many-js")
+jest.mock("components/address-text", () => {
   return {
-    ...orig,
-    KeyPair: {
-      __esModule: true,
-      getMnemonic: jest.fn(),
-      fromMnemonic: jest.fn(),
-      fromPem: jest.fn(),
-    },
+    ...jest.requireActual("components/address-text"),
+    useAddressText: jest.fn(),
   }
 })
 
@@ -40,15 +28,23 @@ describe("AccountsMenu", () => {
     toast.closeAll()
     const toasts = screen.queryAllByRole("listitem")
     await Promise.all(toasts.map(toasts => waitForElementToBeRemoved(toasts)))
-  })
-  beforeEach(() => {
-    displayId.mockImplementation(() => ({
-      full: "oqbfbahksdwaqeenayy2gxke32hgb7aq4ao4wt745lsfs6wiaaaaqnz",
-      short: "<oqbf...aqnz>",
-    }))
+
+    useAddressText.mockImplementation(val => {
+      return typeof val === "string" ? val : "m111"
+    })
+
+    Ed25519KeyPairIdentity.getMnemonic.mockImplementation(
+      () => "one two three four five six seven eight nine ten eleven twelve",
+    )
+    Ed25519KeyPairIdentity.fromMnemonic.mockImplementation(() => {
+      return new Ed25519KeyPairIdentity(new ArrayBuffer(0), new ArrayBuffer(0))
+    })
+    Ed25519KeyPairIdentity.fromPem.mockImplementation(() => {
+      return new Ed25519KeyPairIdentity(new ArrayBuffer(0), new ArrayBuffer(0))
+    })
   })
 
-  it("should render with an active account as anonymous", async () => {
+  it("should render with an active account as anonymous", async function () {
     renderAccountsMenu()
     const activeAccountMenuTriggerBtn = screen.getByRole("button", {
       name: /active account menu trigger/i,
@@ -59,14 +55,6 @@ describe("AccountsMenu", () => {
   })
 
   it("should add an account via a new seed phrase", async function () {
-    KeyPair.getMnemonic.mockImplementation(
-      () => "one two three four five six seven eight nine ten eleven twelve",
-    )
-    KeyPair.fromMnemonic.mockImplementation(() => ({
-      privateKey: new Uint8Array(new ArrayBuffer(32)),
-      publicKey: new Uint8Array(new ArrayBuffer(32)),
-    }))
-
     const { activeAccountMenuTriggerBtn, formContainer } =
       await setupAddAccount()
     const withinForm = within(formContainer)
@@ -74,20 +62,18 @@ describe("AccountsMenu", () => {
     fireEvent.click(btn)
 
     const saveBtn = screen.getByRole("button", { name: /save/i })
-    expect(screen.getAllByTestId("seed-word")).toHaveLength(12)
+    expect(screen.getAllByLabelText("seed-word")).toHaveLength(12)
     const nameInput = screen.getByLabelText(/name/i)
     userEvent.type(nameInput, "new-account")
     fireEvent.click(saveBtn)
-    expect(
-      within(activeAccountMenuTriggerBtn).getByText("new-account"),
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        within(activeAccountMenuTriggerBtn).getByText("new-account"),
+      ).toBeInTheDocument()
+    })
   })
 
-  it("should add an account via importing with existing seed phrase", async () => {
-    KeyPair.fromMnemonic.mockImplementation(() => ({
-      privateKey: new Uint8Array(new ArrayBuffer(32)),
-      publicKey: new Uint8Array(new ArrayBuffer(32)),
-    }))
+  it("should add an account via importing with existing seed phrase", async function () {
     const seedPhrase = `
         fault
         light
@@ -118,16 +104,14 @@ describe("AccountsMenu", () => {
     userEvent.type(seedPhraseInput, seedPhrase)
     const saveBtn = screen.getByRole("button", { name: /save/i })
     fireEvent.click(saveBtn)
-    expect(
-      within(activeAccountMenuTriggerBtn).getByText(/seed-account/i),
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        within(activeAccountMenuTriggerBtn).getByText(/seed-account/i),
+      ).toBeInTheDocument()
+    })
   })
 
   it("should add an account via importing a PEM file", async () => {
-    KeyPair.fromPem.mockImplementation(() => ({
-      privateKey: new Uint8Array(new ArrayBuffer(10)),
-      publicKey: new Uint8Array(new ArrayBuffer(12)),
-    }))
     const pemFile = `
         -----BEGIN PRIVATE KEY-----
         MC4CAQAwBQYDK2VwBCIEIAGY5ZRRzlH/9MbLVyaGP/bWQsVUbFoubQ/yuLvswWul
@@ -146,22 +130,24 @@ describe("AccountsMenu", () => {
     userEvent.type(nameInput, "pem-account")
     userEvent.type(pemInput, pemFile)
     fireEvent.click(saveBtn)
-    expect(
-      within(activeAccountMenuTriggerBtn).getByText(/pem-account/i),
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        within(activeAccountMenuTriggerBtn).getByText(/pem-account/i),
+      ).toBeInTheDocument()
+    })
   })
 
-  it("should remove an account", async () => {
+  it("should remove an account", async function () {
     await setupEditAccount("to-be-removed")
-
+    const container = screen.getByTestId("update-account-container")
+    const addressToCopy =
+      within(container).getByLabelText(/public address/i).textContent
     const removeBtn = screen.getByRole("button", { name: /remove account/i })
-    const removePublicKeyInput = screen.getByRole("textbox", {
+    const addressInput = within(container).getByRole("textbox", {
       name: /remove account/i,
     })
-    const publicKeyToCopy = screen.getByLabelText(/full public key/i)
-    const pubKeyText = publicKeyToCopy.textContent
     expect(removeBtn).toBeDisabled()
-    userEvent.type(removePublicKeyInput, pubKeyText as string)
+    userEvent.type(addressInput, addressToCopy as string)
     expect(removeBtn).not.toBeDisabled()
     userEvent.click(removeBtn)
     expect(screen.queryByText(/to-be-removed/i)).not.toBeInTheDocument()
@@ -209,26 +195,31 @@ async function setupAddAccount() {
 async function setupEditAccount(accountName: string) {
   renderAccountsMenu()
   act(() =>
-    useAccountsStore.setState(s => ({
-      ...s,
-      activeId: 0,
-      byId: new Map([
-        [0, { name: "Anonymous" }],
-        [
-          1,
-          {
-            name: accountName,
-            keys: {
-              privateKey: new Uint8Array(new ArrayBuffer(10)),
-              publicKey: new Uint8Array(new ArrayBuffer(12)),
+    useAccountsStore.setState(s => {
+      return {
+        ...s,
+        activeId: 0,
+        nextId: 1,
+        byId: new Map([
+          [0, { name: "Anonymous", identity: new AnonymousIdentity() }],
+          [
+            1,
+            {
+              name: accountName,
+              identity: new Ed25519KeyPairIdentity(
+                new ArrayBuffer(0),
+                new ArrayBuffer(0),
+              ),
             },
-          },
-        ],
-      ]),
-    })),
+          ],
+        ]),
+      }
+    }),
   )
   expect(screen.getByText(accountName)).toBeInTheDocument()
   openAccountsMenu()
-  const editBtn = await screen.findByRole("button", { name: /edit account/i })
-  fireEvent.click(editBtn)
+  const editBtn = await screen.findAllByRole("button", {
+    name: /edit account/i,
+  })
+  userEvent.click(editBtn[1])
 }

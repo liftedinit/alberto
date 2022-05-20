@@ -6,8 +6,8 @@ import {
 
 export type AccountId = number
 export interface Account {
-  // keys?: KeyPair | { publicKey: Uint8Array; privateKey: Uint8Array }
   name: string
+  address?: string
   identity: WebAuthnIdentity | Ed25519KeyPairIdentity | AnonymousIdentity
 }
 

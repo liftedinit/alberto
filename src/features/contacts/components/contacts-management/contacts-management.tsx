@@ -1,7 +1,6 @@
 import React from "react"
 import {
   AddressBookIcon,
-  Box,
   Button,
   Center,
   HStack,

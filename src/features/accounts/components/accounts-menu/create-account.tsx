@@ -13,7 +13,7 @@ import {
   useToast,
 } from "components"
 import { useAccountsStore } from "features/accounts"
-import { Ed25519KeyPairIdentity, KeyPair } from "many-js"
+import { Ed25519KeyPairIdentity } from "many-js"
 import { AddAccountMethodProps } from "./add-account-modal"
 
 interface FormElements extends HTMLFormControlsCollection {
@@ -24,15 +24,17 @@ export function CreateAccount({
   setAddMethod,
   onSuccess,
 }: AddAccountMethodProps) {
-  const mnemonic = React.useRef(KeyPair.getMnemonic())
-  const keys = React.useRef(KeyPair.fromMnemonic(mnemonic.current))
+  const mnemonic = React.useRef(Ed25519KeyPairIdentity.getMnemonic())
+  const [identity] = React.useState<Ed25519KeyPairIdentity>(
+    Ed25519KeyPairIdentity.fromMnemonic(mnemonic.current),
+  )
 
   const toast = useToast()
   const { createAccount } = useAccountsStore(({ createAccount }) => ({
     createAccount,
   }))
 
-  function onSave(e: React.FormEvent<HTMLFormElement>) {
+  async function onSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const form = e.target as HTMLFormElement
     const { name: nameInput } = form.elements as FormElements
@@ -44,10 +46,7 @@ export function CreateAccount({
     }
     createAccount({
       name,
-      identity: new Ed25519KeyPairIdentity(
-        keys.current.publicKey,
-        keys.current.privateKey,
-      ),
+      identity,
     })
     toast({
       title: "Create Account",
@@ -94,7 +93,7 @@ export function CreateAccount({
                 containerProps={{ position: "absolute", top: 1, right: 1 }}
               />
               {mnemonic.current.split(" ").map(word => (
-                <Text data-testid="seed-word" key={word} fontSize="lg">
+                <Text aria-label="seed-word" key={word} fontSize="lg">
                   {word}
                 </Text>
               ))}
