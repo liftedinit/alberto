@@ -1,26 +1,23 @@
-import create from "zustand";
-import { persist } from "zustand/middleware";
-import localforage from "localforage";
-import { replacer, reviver } from "helper/json";
-import { NetworkId } from "features/network";
-import { Amount, Balances, SymbolId } from "./types";
+import create from "zustand"
+import { NetworkId } from "features/network"
+import { Amount, Balances, SymbolId } from "./types"
 
 interface BalancesState {
-  byNetwork: Map<NetworkId, Balances>;
-  bySymbol: Map<SymbolId, Amount>;
-  symbols: Set<SymbolId>;
+  byNetwork: Map<NetworkId, Balances>
+  bySymbol: Map<SymbolId, Amount>
+  symbols: Set<SymbolId>
 }
 
 const initialState = {
   byNetwork: new Map<NetworkId, Balances>(),
   bySymbol: new Map<SymbolId, Amount>(),
   symbols: new Set<SymbolId>(),
-};
+}
 
 type BalancesPayload = {
-  networkId: NetworkId;
-  balances: Balances;
-};
+  networkId: NetworkId
+  balances: Balances
+}
 
 export const useBalancesStore = create<BalancesState>(
   // persist(

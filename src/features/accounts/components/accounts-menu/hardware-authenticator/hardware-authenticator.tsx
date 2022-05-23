@@ -22,7 +22,7 @@ export function HardwareAuthenticator({
     return () => {
       setShowDefaultFooter(true)
     }
-  }, [])
+  }, [setShowDefaultFooter])
 
   return isCreate ? (
     <CreateContextProvider>

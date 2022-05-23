@@ -3,7 +3,7 @@ import { AddressText, Button, Heading, Image, VStack } from "components"
 import { TxnList } from "features/transactions"
 import cubeImg from "assets/cube.png"
 import { Asset } from "features/balances"
-import { amountFormatter, makeShortId } from "helper/common"
+import { amountFormatter } from "helper/common"
 
 type Props = {
   asset: Asset
