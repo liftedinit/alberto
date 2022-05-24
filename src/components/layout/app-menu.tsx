@@ -9,8 +9,6 @@ import {
   Link,
   SendIcon,
   SendOutlineIcon,
-  SettingsIcon,
-  SettingsOutlineIcon,
   Stack,
   Show,
   StackProps,
