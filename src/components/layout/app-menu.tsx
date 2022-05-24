@@ -40,11 +40,11 @@ export function AppMenu() {
       icon: AddressBookOutlineIcon,
     },
 
-    {
-      pathname: "/settings",
-      activeIcon: SettingsIcon,
-      icon: SettingsOutlineIcon,
-    },
+    // {
+    //   pathname: "/settings",
+    //   activeIcon: SettingsIcon,
+    //   icon: SettingsOutlineIcon,
+    // },
   ])
   const stackProps: StackProps = isBase
     ? {
