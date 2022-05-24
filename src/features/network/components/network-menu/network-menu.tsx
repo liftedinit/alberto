@@ -63,6 +63,8 @@ export function NetworkMenu() {
           size="md"
           minWidth="100px"
           data-testid="active-network-menu-trigger"
+          colorScheme="brand.black"
+          variant="outline"
           leftIcon={
             activeNetwork ? <Circle bg="green.400" size="10px" /> : null
           }

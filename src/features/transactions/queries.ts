@@ -82,7 +82,7 @@ export function useTransactionsList({
     isPreviousData: q.isPreviousData,
     error: q.error,
     isError: q.isError,
-    isLoading: q.isLoading || q.isFetching,
+    isLoading: q.isFetching,
     hasNextPage,
     currPageCount: txnIds.length,
     prevBtnProps: {

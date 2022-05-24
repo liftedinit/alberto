@@ -81,6 +81,9 @@ export function AccountsMenu() {
           rightIcon={<ChevronDownIcon />}
           leftIcon={<Icon as={UserIcon} w={5} h={5} />}
           aria-label="active account menu trigger"
+          variant="outline"
+          colorScheme="brand.black"
+          fontWeight="semibold"
         >
           <Text
             casing="uppercase"

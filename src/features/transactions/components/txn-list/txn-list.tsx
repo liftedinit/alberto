@@ -68,7 +68,7 @@ export function TxnList({
     <>
       {isLoading ? (
         <Center position="absolute" left={0} right={0}>
-          <Spinner />
+          <Spinner size="lg" />
         </Center>
       ) : null}
       <TableContainer>
