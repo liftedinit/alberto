@@ -83,7 +83,6 @@ export function AccountsMenu() {
           aria-label="active account menu trigger"
           variant="outline"
           colorScheme="brand.black"
-          fontWeight="semibold"
         >
           <Text
             casing="uppercase"
