@@ -9,8 +9,8 @@ import {
   useToast,
   ContainerWrapper,
 } from "components"
-import { useAccountsStore } from "../../store"
-import { KeyPair } from "many-js"
+import { useAccountsStore } from "features/accounts"
+import { Ed25519KeyPairIdentity } from "many-js"
 import { doesAccountExist } from "features/accounts/utils"
 import { AddAccountMethodProps, toastTitle } from "./add-account-modal"
 
@@ -27,11 +27,11 @@ export function SeedWords({ setAddMethod, onSuccess }: AddAccountMethodProps) {
     mnemonic: string
   }>({ name: "", mnemonic: "" })
 
-  function onSave(e: React.FormEvent<HTMLFormElement>) {
+  async function onSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    let keysFromMnemonic: KeyPair | undefined
+    let identity: Ed25519KeyPairIdentity | undefined
     try {
-      keysFromMnemonic = KeyPair.fromMnemonic(account.mnemonic)
+      identity = Ed25519KeyPairIdentity.fromMnemonic(account.mnemonic)
     } catch {
       return toast({
         title: toastTitle,
@@ -39,7 +39,7 @@ export function SeedWords({ setAddMethod, onSuccess }: AddAccountMethodProps) {
         description: "Invalid mnemonic",
       })
     }
-    const exists = doesAccountExist(keysFromMnemonic!.publicKey, accounts)
+    const exists = await doesAccountExist(identity.publicKey, accounts)
     if (exists) {
       return toast({
         title: toastTitle,
@@ -48,7 +48,10 @@ export function SeedWords({ setAddMethod, onSuccess }: AddAccountMethodProps) {
       })
     }
 
-    createAccount({ name: account.name, keys: keysFromMnemonic })
+    createAccount({
+      name: account.name,
+      identity,
+    })
     toast({
       title: toastTitle,
       status: "success",

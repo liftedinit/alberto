@@ -9,15 +9,21 @@ import {
   ScaleFade,
   SimpleGrid,
   Text,
+  Tab,
+  Tabs,
+  TabList,
 } from "components"
 import { SeedWords } from "./seed-words"
 import { CreateAccount } from "./create-account"
 import { PemFile } from "./pem-file"
+import { HardwareAuthenticator } from "./hardware-authenticator"
 
-enum AddAccountMethodTypes {
-  create = "create",
-  seed = "seed",
-  pem = "pem",
+export enum AddAccountMethodTypes {
+  createSeed,
+  createAuthenticator,
+  importSeed,
+  importPem,
+  importAuthenticator,
 }
 
 export const toastTitle = "Add Account"
@@ -35,6 +41,8 @@ export function AddAccountModal({
   onClose: () => void
 }) {
   const [addMethod, setAddMethod] = React.useState<AddMethodState>("")
+  const [showDefaultFooter, setShowDefaultFooter] =
+    React.useState<boolean>(true)
 
   function onSuccess() {
     onClose()
@@ -50,6 +58,8 @@ export function AddAccountModal({
       onClose={onClose}
       size="4xl"
       data-testid="add-account-form-container"
+      closeOnOverlayClick={addMethod ? false : true}
+      closeOnEsc={addMethod ? false : true}
     >
       {addMethod === "" && (
         <ScaleFade in={true} initialScale={0.9}>
@@ -62,28 +72,44 @@ export function AddAccountModal({
       )}
       {addMethod !== "" && (
         <ScaleFade in={true} initialScale={0.9}>
-          {addMethod === AddAccountMethodTypes.create && (
+          {addMethod === AddAccountMethodTypes.createSeed && (
             <CreateAccount setAddMethod={setAddMethod} onSuccess={onSuccess} />
           )}
-          {addMethod === AddAccountMethodTypes.seed && (
+          {addMethod === AddAccountMethodTypes.importSeed && (
             <SeedWords setAddMethod={setAddMethod} onSuccess={onSuccess} />
           )}
-          {addMethod === AddAccountMethodTypes.pem && (
+          {addMethod === AddAccountMethodTypes.importPem && (
             <PemFile setAddMethod={setAddMethod} onSuccess={onSuccess} />
           )}
-          <Modal.Footer>
-            <ContainerWrapper>
-              <Flex justifyContent="flex-end">
-                <Button type="submit" form="add-account-form">
-                  Save
-                </Button>
-              </Flex>
-            </ContainerWrapper>
-          </Modal.Footer>
+          {(addMethod === AddAccountMethodTypes.importAuthenticator ||
+            addMethod === AddAccountMethodTypes.createAuthenticator) && (
+            <HardwareAuthenticator
+              addMethod={addMethod}
+              setAddMethod={setAddMethod}
+              onSuccess={onSuccess}
+              setShowDefaultFooter={setShowDefaultFooter}
+            />
+          )}
+          {showDefaultFooter && (
+            <Modal.Footer>
+              <ContainerWrapper>
+                <Flex justifyContent="flex-end">
+                  <Button type="submit" form="add-account-form">
+                    Save
+                  </Button>
+                </Flex>
+              </ContainerWrapper>
+            </Modal.Footer>
+          )}
         </ScaleFade>
       )}
     </Modal>
   )
+}
+
+enum TabNames {
+  create,
+  import,
 }
 
 function AddAccountMethods({
@@ -91,70 +117,160 @@ function AddAccountMethods({
 }: {
   onAddMethodClick: (method: AddAccountMethodTypes) => void
 }) {
+  const [activeTab, setActiveTab] = React.useState(TabNames.create)
+  const tabs = ["Create New", "Import"]
   return (
     <>
       <Modal.Header>Add Account</Modal.Header>
       <Modal.Body>
-        <SimpleGrid
-          columns={{ base: 1, md: 3 }}
-          spacing={4}
-          transition="ease-in-out"
-          transitionProperty="all"
-          transitionDuration="3s"
+        <Tabs
+          colorScheme="brand.teal"
+          mb={3}
+          onChange={index =>
+            setActiveTab(index === 0 ? TabNames.create : TabNames.import)
+          }
         >
-          <Box
-            shadow="md"
-            p={4}
-            transition="ease-in-out"
-            transitionProperty="all"
-            transitionDuration="1s"
-          >
-            <Heading mb={3} size="md">
-              Create A New Account
-            </Heading>
-            <Text>Some description of how this works maybe?</Text>
-            <Button
-              mt={4}
-              isFullWidth
-              textTransform="uppercase"
-              onClick={() => onAddMethodClick(AddAccountMethodTypes.create)}
-            >
-              create new
-            </Button>
-          </Box>
-          <Box shadow="md" p={4}>
-            <Heading mb={3} size="md">
-              Import Seed Words
-            </Heading>
-            <Text>Some description of how this works maybe?</Text>
-            <Button
-              mt={4}
-              aria-label="import seed"
-              isFullWidth
-              textTransform="uppercase"
-              onClick={() => onAddMethodClick(AddAccountMethodTypes.seed)}
-            >
-              import
-            </Button>
-          </Box>
-          <Box shadow="md" p={4}>
-            <Heading mb={3} size="md">
-              Import PEM File
-            </Heading>
-            <Text>Some description of how this works maybe?</Text>
-            <Button
-              mt={4}
-              isFullWidth
-              aria-label="import pem"
-              textTransform="uppercase"
-              onClick={() => onAddMethodClick(AddAccountMethodTypes.pem)}
-            >
-              import
-            </Button>
-          </Box>
-        </SimpleGrid>
+          <TabList>
+            {tabs.map(name => (
+              <Tab
+                key={name}
+                w={{ base: "full", md: "auto" }}
+                fontWeight="medium"
+              >
+                {name}
+              </Tab>
+            ))}
+          </TabList>
+        </Tabs>
+
+        {activeTab === TabNames.create && (
+          <CreateAccountOptions onAddMethodClick={onAddMethodClick} />
+        )}
+        {activeTab === TabNames.import && (
+          <ImportAcountOptions onAddMethodClick={onAddMethodClick} />
+        )}
       </Modal.Body>
       <Modal.Footer />
     </>
+  )
+}
+
+const createCards = [
+  {
+    title: "Seed Phrase",
+    onClickArg: AddAccountMethodTypes.createSeed,
+    label: "create seed phrase",
+  },
+  {
+    title: "Hardware Authenticator",
+    label: "create hardware authenticator",
+    onClickArg: AddAccountMethodTypes.createAuthenticator,
+  },
+]
+
+function CreateAccountOptions({
+  onAddMethodClick,
+}: {
+  onAddMethodClick: (method: AddAccountMethodTypes) => void
+}) {
+  return (
+    <SimpleGrid
+      columns={{ base: 1, md: 3 }}
+      spacing={4}
+      transition="ease-in-out"
+      transitionProperty="all"
+      transitionDuration="3s"
+    >
+      {createCards.map((c, idx) => {
+        return (
+          <AddAccountCard
+            key={idx}
+            title={c.title}
+            label={c.label}
+            description="Some description of how this works maybe?"
+            ctaText="create"
+            onClick={() => onAddMethodClick(c.onClickArg)}
+          />
+        )
+      })}
+    </SimpleGrid>
+  )
+}
+
+const importCards = [
+  {
+    title: "Seed Phrase",
+    onClickArg: AddAccountMethodTypes.importSeed,
+    label: "import seed phrase",
+  },
+  {
+    title: "PEM File",
+    onClickArg: AddAccountMethodTypes.importPem,
+    label: "import pem file",
+  },
+  {
+    title: "Hardware Authenticator",
+    onClickArg: AddAccountMethodTypes.importAuthenticator,
+    label: "import hardware authenticator",
+  },
+]
+function ImportAcountOptions({
+  onAddMethodClick,
+}: {
+  onAddMethodClick: (method: AddAccountMethodTypes) => void
+}) {
+  return (
+    <SimpleGrid
+      columns={{ base: 1, md: 3 }}
+      spacing={4}
+      transition="ease-in-out"
+      transitionProperty="all"
+      transitionDuration="3s"
+    >
+      {importCards.map((c, idx) => {
+        return (
+          <AddAccountCard
+            key={idx}
+            title={c.title}
+            label={c.label}
+            description="Some description of how this works maybe?"
+            ctaText="import"
+            onClick={() => onAddMethodClick(c.onClickArg)}
+          />
+        )
+      })}
+    </SimpleGrid>
+  )
+}
+
+function AddAccountCard({
+  title,
+  label,
+  description,
+  onClick,
+  ctaText,
+}: {
+  title: string | React.ReactNode
+  label: string
+  description: string
+  onClick: () => void
+  ctaText: string
+}) {
+  return (
+    <Box shadow="md" p={4}>
+      <Heading mb={3} size="md">
+        {title}
+      </Heading>
+      <Text>{description}</Text>
+      <Button
+        mt={4}
+        aria-label={label}
+        isFullWidth
+        textTransform="uppercase"
+        onClick={onClick}
+      >
+        {ctaText}
+      </Button>
+    </Box>
   )
 }

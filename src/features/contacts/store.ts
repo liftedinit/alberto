@@ -1,8 +1,11 @@
+import React from "react"
 import create from "zustand"
 import { persist } from "zustand/middleware"
 import localforage from "localforage"
 import { replacer, reviver } from "helper/json"
 import { Contact } from "./types"
+import { useAccountsStore } from "features/accounts"
+import { AnonymousIdentity } from "many-js"
 
 interface Actions {
   deleteContact: (id: string) => void
@@ -47,15 +50,33 @@ export const useContactsStore = create<ContactsState & Actions>(
 )
 
 export function useContactsList(searchName: string = "") {
-  const contacts = useContactsStore(s => s.byId)
+  const accounts = useAccountsStore(s => Array.from(s.byId)).reduce(
+    (acc, [, { name, identity, address }]) => {
+      if (!(identity instanceof AnonymousIdentity) && address) {
+        acc.push({ name, address })
+      }
+      return acc
+    },
+    [] as { name: string; address: string }[],
+  )
+  const contacts = useContactsStore(s => Array.from(s.byId)).map(c => c[1])
 
-  const groups = Array.from(contacts).reduce((acc, [, contact]) => {
-    const { name } = contact
-    const letter = name[0]
-    if (!acc[letter]) acc[letter] = [contact]
-    else acc[letter].push(contact)
-    return acc
-  }, {} as { [k: string]: Contact[] })
+  const { groups, count } = React.useMemo(() => {
+    const count = new Map()
+    return {
+      groups: [...contacts, ...accounts].reduce((acc, item) => {
+        const { name, address } = item
+        if (address && !count.has(address)) {
+          count.set(address, true)
+          const letter = name.charAt(0).toLowerCase()
+          if (!acc[letter]) acc[letter] = [item]
+          else acc[letter].push(item)
+        }
+        return acc
+      }, {} as { [k: string]: { name: string; address: string }[] }),
+      count: count.size,
+    }
+  }, [accounts, contacts])
 
   const groupsSorted = Object.entries(groups)
     .sort(([a], [b]) => a.localeCompare(b))
@@ -74,5 +95,5 @@ export function useContactsList(searchName: string = "") {
     })
     .filter(c => c.children.length > 0)
 
-  return { contacts: groupsSorted, total: contacts.size }
+  return { contacts: groupsSorted, total: count }
 }

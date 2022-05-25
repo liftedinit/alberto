@@ -1,13 +1,12 @@
 import React from "react"
-import { ANON_IDENTITY } from "many-js"
+import { AnonymousIdentity, WebAuthnIdentity } from "many-js"
 import { useAccountsStore } from "features/accounts"
 import {
+  AddressText,
   Box,
   Button,
   Circle,
   ChevronDownIcon,
-  Code,
-  CopyToClipboard,
   EditIcon,
   Flex,
   HStack,
@@ -24,12 +23,11 @@ import {
   useDisclosure,
   UserIcon,
   VStack,
+  UsbIcon,
 } from "components"
 import { AddAccountModal } from "./add-account-modal"
 import { EditAccountModal } from "./edit-account-modal"
-import { displayId } from "helper/common"
 import { Account, AccountId } from "../../types"
-import { IdentityText } from "components/uikit/identity-text"
 
 export type AccountItemWithIdDisplayStrings = [
   AccountId,
@@ -65,28 +63,15 @@ export function AccountsMenu() {
   )
 
   const [editAccount, setEditAccount] = React.useState<
-    AccountItemWithIdDisplayStrings | undefined
+    [number, Account] | undefined
   >()
 
-  function onEditClick(acct: AccountItemWithIdDisplayStrings) {
+  function onEditClick(acct: [number, Account]) {
     setEditAccount(acct)
     onEditModalOpen()
   }
 
-  const accountsWithIdDisplayStrings: AccountItemWithIdDisplayStrings[] =
-    React.useMemo(() => {
-      return accounts.map(item => {
-        const [id, account] = item
-        const idDisplayStrings = displayId(account)
-        const accountWithIdDisplayStrings = {
-          ...account,
-          idDisplayStrings,
-        }
-        return [id, accountWithIdDisplayStrings]
-      })
-    }, [accounts])
-
-  const idStrs = displayId(activeAccount!)
+  const isAnonymous = activeAccount?.identity instanceof AnonymousIdentity
 
   return (
     <Flex alignItems="center" minWidth="100px" mr={2}>
@@ -95,8 +80,9 @@ export function AccountsMenu() {
           as={Button}
           rightIcon={<ChevronDownIcon />}
           leftIcon={<Icon as={UserIcon} w={5} h={5} />}
-          size="md"
           aria-label="active account menu trigger"
+          variant="outline"
+          colorScheme="brand.black"
         >
           <Text
             casing="uppercase"
@@ -114,27 +100,23 @@ export function AccountsMenu() {
               <Box overflow="auto" maxHeight="40vh">
                 <AccountMenuItem
                   activeId={activeId}
-                  account={[
-                    activeId,
-                    { ...activeAccount, idDisplayStrings: idStrs! },
-                  ]}
+                  account={[activeId, activeAccount]}
                   setActiveId={id => setActiveId(id)}
                   onEditClick={onEditClick}
                 />
               </Box>
             ) : null}
 
-            {accountsWithIdDisplayStrings.map(
-              (acc: AccountItemWithIdDisplayStrings) =>
-                acc[0] === activeId ? null : (
-                  <AccountMenuItem
-                    key={String(acc[0])}
-                    activeId={activeId}
-                    account={acc}
-                    onEditClick={onEditClick}
-                    setActiveId={setActiveId}
-                  />
-                ),
+            {accounts.map(acc =>
+              acc[0] === activeId ? null : (
+                <AccountMenuItem
+                  key={String(acc[0])}
+                  activeId={activeId}
+                  account={acc}
+                  onEditClick={onEditClick}
+                  setActiveId={setActiveId}
+                />
+              ),
             )}
           </Box>
           <MenuDivider mt={0} />
@@ -150,21 +132,14 @@ export function AccountsMenu() {
           </MenuItem>
         </MenuList>
       </Menu>
-      {idStrs && idStrs.short !== ANON_IDENTITY && (
-        <HStack
+      {!isAnonymous && !!activeAccount && (
+        <AddressText
+          identity={activeAccount?.identity}
           display={{ base: "none", md: "inline-flex" }}
-          bgColor="gray.100"
-          ml={2}
-          px={2}
-          py={1}
-          rounded="md"
-        >
-          <Code fontWeight="md">
-            <IdentityText fullIdentity={idStrs.full} />
-          </Code>
-          <CopyToClipboard toCopy={idStrs.full as string} />
-        </HStack>
+          ms={2}
+        />
       )}
+
       <AddAccountModal isOpen={isAddModalOpen} onClose={onAddModalClose} />
       <EditAccountModal
         account={editAccount!}
@@ -182,55 +157,59 @@ function AccountMenuItem({
   onEditClick,
 }: {
   activeId: AccountId
-  account: AccountItemWithIdDisplayStrings
+  account: [number, Account]
   setActiveId: (id: number) => void
-  onEditClick: (a: AccountItemWithIdDisplayStrings) => void
+  onEditClick: (a: [number, Account]) => void
 }) {
   const id = account[0]
+  const isActive = activeId === id
   const accountData = account[1]
+  const isWebAuthnIdentity = accountData.identity instanceof WebAuthnIdentity
+  const isAnonymous = accountData?.identity instanceof AnonymousIdentity
   return (
-    <MenuItem
-      justifyContent="space-between"
-      as={SimpleGrid}
-      columns={2}
-      borderTopWidth={1}
-      spacing={4}
-      py={4}
-    >
-      <VStack align="flex-start" spacing={1}>
+    <MenuItem as={SimpleGrid} columns={3} borderTopWidth={1} spacing={4} py={4}>
+      {isActive && <Circle bg="green.400" size="10px" />}
+      <VStack align="flex-start" spacing={1} flexGrow={1}>
         <HStack>
-          {activeId === id && <Circle bg="green.400" size="10px" />}
-          {activeId === id ? (
-            <Text fontSize={{ base: "xl", md: "md" }} casing="uppercase">
-              {accountData.name}
-            </Text>
-          ) : (
-            <Button variant="link" onClick={() => setActiveId?.(id)}>
+          {isActive ? (
+            <HStack>
               <Text fontSize={{ base: "xl", md: "md" }} casing="uppercase">
+                {accountData.name}
+              </Text>
+              {isWebAuthnIdentity && <UsbIcon boxSize={5} />}
+            </HStack>
+          ) : (
+            <Button
+              variant="link"
+              onClick={() => setActiveId?.(id)}
+              rightIcon={
+                isWebAuthnIdentity ? <UsbIcon boxSize={5} /> : undefined
+              }
+            >
+              <Text
+                wordBreak="break-word"
+                whiteSpace="pre-wrap"
+                fontSize={{ base: "xl", md: "md" }}
+                textAlign="left"
+                casing="uppercase"
+              >
                 {accountData.name}
               </Text>
             </Button>
           )}
         </HStack>
-        {accountData.idDisplayStrings.full && (
-          <HStack bgColor="gray.100" rounded="md" px={2} py={1}>
-            <Code fontSize={{ base: "sm", md: "xs" }}>
-              {accountData.idDisplayStrings.short}
-            </Code>
-            <CopyToClipboard
-              toCopy={accountData.idDisplayStrings.full as string}
-            />
-          </HStack>
+        {!isAnonymous && (
+          <AddressText identity={accountData.identity} bgColor={undefined} />
         )}
       </VStack>
-      {accountData.keys && activeId !== id && (
+      {
         <IconButton
           variant="ghost"
           aria-label="edit account"
           icon={<EditIcon boxSize={5} />}
           onClick={() => onEditClick(account)}
         />
-      )}
+      }
     </MenuItem>
   )
 }

@@ -1,9 +1,7 @@
 import {
   Box,
   CloseIcon,
-  CopyToClipboard,
   EditIcon,
-  Flex,
   HStack,
   Heading,
   IconButton,
@@ -13,8 +11,8 @@ import {
   StackDivider,
   UserIcon,
   VStack,
+  AddressText,
 } from "components"
-import { IdentityText } from "components/uikit/identity-text"
 import { Contact } from "../../types"
 import { RemoveContactDialog, UpdateContact } from "../update-contact"
 
@@ -51,7 +49,7 @@ export function ContactsList({ contacts, onContactClicked }: Props) {
                 return (
                   <ContactListItem
                     onClick={onContactClicked}
-                    key={c.identity}
+                    key={c.address}
                     contact={c}
                   />
                 )
@@ -86,14 +84,14 @@ function ContactListItem({
         <Text fontWeight="medium" wordBreak="break-word">
           {contact.name}
         </Text>
-        <Flex alignItems="center" gap={1}>
-          <IdentityText
-            fullIdentity={contact.identity}
-            fontFamily="monospace"
-            fontSize="sm"
-          />
-          <CopyToClipboard toCopy={contact.identity} />
-        </Flex>
+        <AddressText
+          identity={contact?.address}
+          bgColor={undefined}
+          px={0}
+          py={0}
+          fontFamily="monospace"
+          fontSize="md"
+        />
       </VStack>
       <HStack>
         <UpdateContact contact={contact} header="Update Contact">

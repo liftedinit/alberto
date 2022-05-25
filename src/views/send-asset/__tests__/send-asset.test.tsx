@@ -1,23 +1,37 @@
-import { render, screen, within, fireEvent, userEvent } from "test/test-utils"
+import {
+  render,
+  screen,
+  within,
+  waitForElementToBeRemoved,
+  fireEvent,
+  userEvent,
+} from "test/test-utils"
+import { toast } from "components"
 import { useBalances } from "features/balances/queries"
 import { useSendToken } from "features/transactions/queries"
+import { useAddressText } from "components/address-text"
 import { SendAsset } from "views"
+import { amountFormatter } from "helper/common"
 
-jest.mock("features/balances/queries", () => ({
-  useBalances: jest.fn(),
-}))
-
-jest.mock("features/transactions/queries", () => ({
-  useSendToken: jest.fn(),
-}))
+jest.mock("components/address-text", () => {
+  return {
+    ...jest.requireActual("components/address-text"),
+    useAddressText: jest.fn(),
+  }
+})
+jest.mock("features/balances/queries")
+jest.mock("features/transactions/queries")
 
 const ownedAssetsWithBalance = [
-  { symbol: "ABC", balance: BigInt(1000000), identity: "oabc" },
-  { symbol: "DEF", balance: BigInt(2000000), identity: "odef" },
-  { symbol: "GHI", balance: BigInt(3000000), identity: "oghi" },
+  { symbol: "ABC", balance: BigInt(1000000), identity: "mabc" },
+  { symbol: "DEF", balance: BigInt(2000000), identity: "mdef" },
+  { symbol: "GHI", balance: BigInt(3000000), identity: "mghi" },
 ]
 describe("<SendAsset />", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    toast.closeAll()
+    const toasts = screen.queryAllByRole("listitem")
+    await Promise.all(toasts.map(toasts => waitForElementToBeRemoved(toasts)))
     useBalances.mockImplementation(() => ({
       isFetching: false,
       isError: false,
@@ -29,6 +43,9 @@ describe("<SendAsset />", () => {
         opts?.onSuccess()
       }),
     }))
+    useAddressText.mockImplementation(val => {
+      return "m111"
+    })
   })
   it("should show a list of owned tokens and balance when selecting a token", () => {
     setupSendAsset()
@@ -41,7 +58,7 @@ describe("<SendAsset />", () => {
         screen.getByText(new RegExp(asset.symbol, "i")),
       ).toBeInTheDocument()
       expect(
-        screen.getByText(new RegExp(asset.balance.toLocaleString(), "i")),
+        screen.getByText(amountFormatter(asset.balance)),
       ).toBeInTheDocument()
     })
   })

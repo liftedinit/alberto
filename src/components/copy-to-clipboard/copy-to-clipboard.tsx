@@ -1,15 +1,16 @@
-import { AiOutlineCopy } from "react-icons/ai"
-import { Flex, Icon, useClipboard, Tooltip } from "components"
+import { Flex, CopyIcon, Icon, useClipboard, Tooltip } from "components"
 export function CopyToClipboard({
   toCopy,
   msg,
   iconProps = {},
   children,
+  containerProps = {},
 }: {
   toCopy: string
   msg?: string
   iconProps?: {}
-  children?: React.ReactNode
+  children?: React.ReactNode | (({ onCopy }: { onCopy: () => void }) => void)
+  containerProps?: {}
 }) {
   const { hasCopied, onCopy } = useClipboard(toCopy)
   return (
@@ -17,12 +18,16 @@ export function CopyToClipboard({
       {typeof children === "function" ? (
         children({ onCopy })
       ) : (
-        <Flex>
+        <Flex {...containerProps}>
+          {children}
           <Icon
-            as={AiOutlineCopy}
+            as={CopyIcon}
             w={5}
             h={5}
-            onClick={onCopy}
+            onClick={e => {
+              e.stopPropagation()
+              onCopy()
+            }}
             cursor="pointer"
             aria-label="copy to clipboard button"
             {...iconProps}

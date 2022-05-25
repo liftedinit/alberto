@@ -1,11 +1,11 @@
 import React from "react"
-import { FaRegEdit } from "react-icons/fa"
 import { useNetworkStore } from "../../store"
 import {
   Box,
   Button,
   Circle,
   ChevronDownIcon,
+  EditIcon,
   Flex,
   FormControl,
   FormLabel,
@@ -63,6 +63,8 @@ export function NetworkMenu() {
           size="md"
           minWidth="100px"
           data-testid="active-network-menu-trigger"
+          colorScheme="brand.black"
+          variant="outline"
           leftIcon={
             activeNetwork ? <Circle bg="green.400" size="10px" /> : null
           }
@@ -169,8 +171,7 @@ function NetworkMenuItem({
         variant="ghost"
         color="brand.black"
         aria-label="edit network"
-        icon={<FaRegEdit />}
-        size="lg"
+        icon={<EditIcon boxSize={5} />}
         onClick={() => onEditNetwork([id, network])}
       />
     </MenuItem>

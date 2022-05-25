@@ -17,7 +17,7 @@ import { Contact } from "features/contacts/types"
 
 interface FormElements extends HTMLFormControlsCollection {
   name: HTMLInputElement
-  identity: HTMLInputElement
+  address: HTMLInputElement
 }
 
 export function UpdateContact({
@@ -41,17 +41,17 @@ export function UpdateContact({
 
   function onSubmit(c: Contact) {
     if (contact) {
-      if (c.identity !== contact.identity) {
-        if (byId.has(c.identity)) {
+      if (c.address !== contact.address) {
+        if (byId.has(c.address)) {
           return toast({
             status: "warning",
             title: "Contact",
             description: "Contact with this address already exists",
           })
         }
-        deleteContact(contact.identity)
+        deleteContact(contact.address)
       }
-      updateContact(c.identity, c)
+      updateContact(c.address, c)
       toast({
         status: "success",
         title: "Contact",
@@ -59,14 +59,14 @@ export function UpdateContact({
       })
       return onClose()
     }
-    if (byId.has(c.identity)) {
+    if (byId.has(c.address)) {
       return toast({
         status: "warning",
         title: "Create Contact",
         description: "Address already exists",
       })
     }
-    updateContact(c.identity, c)
+    updateContact(c.address, c)
     toast({
       status: "success",
       title: "Contact",
@@ -105,22 +105,22 @@ export function ContactFormModal({
   onSubmit: (c: Contact) => void
 }) {
   const formRef = React.useRef<HTMLFormElement>(null)
-  const [formValues, setFormValues] = React.useState({ name: "", identity: "" })
+  const [formValues, setFormValues] = React.useState({ name: "", address: "" })
 
   function _onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     e.stopPropagation()
 
-    const { name: nameInput, identity: identityInput } = (
+    const { name: nameInput, address: addressInput } = (
       e.target as HTMLFormElement
     ).elements as FormElements
 
     const name = nameInput.value.trim()
-    const identity = identityInput.value.trim()
+    const address = addressInput.value.trim()
 
-    if (!name || !identity) return
+    if (!name || !address) return
 
-    onSubmit({ name, identity })
+    onSubmit({ name, address })
   }
 
   function handleChange(e: React.FormEvent<HTMLInputElement>) {
@@ -131,7 +131,7 @@ export function ContactFormModal({
   React.useEffect(() => {
     isOpen && contact && setFormValues({ ...contact })
 
-    !isOpen && setFormValues({ name: "", identity: "" })
+    !isOpen && setFormValues({ name: "", address: "" })
   }, [isOpen, contact])
 
   return (
@@ -167,12 +167,12 @@ export function ContactFormModal({
                   onChange={handleChange}
                 />
               </FormControl>
-              <FormControl isRequired id="identity">
-                <FormLabel>Identity</FormLabel>
+              <FormControl isRequired id="address">
+                <FormLabel>Address</FormLabel>
                 <Input
-                  name="identity"
+                  name="address"
                   variant="filled"
-                  value={formValues.identity}
+                  value={formValues.address}
                   maxLength={50}
                   minLength={50}
                   onChange={handleChange}
@@ -202,7 +202,7 @@ export function RemoveContactDialog({
 
   function onRemove(e: React.FormEvent<HTMLButtonElement>) {
     e.stopPropagation()
-    deleteContact(contact!.identity)
+    deleteContact(contact!.address)
     toast({
       status: "success",
       title: "Contact",
@@ -225,7 +225,7 @@ export function RemoveContactDialog({
             {contact!.name}
           </Text>
           <Text fontSize="md" fontFamily="monospace">
-            {contact!.identity}
+            {contact!.address}
           </Text>
         </AlertDialog.Body>
         <AlertDialog.Footer>

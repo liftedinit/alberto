@@ -1,23 +1,28 @@
 import React from "react";
-import { Network, Ledger } from "many-js"
+import { Network, Ledger, AnonymousIdentity, IdStore } from "many-js"
 import { useNetworkStore } from "./store"
 import { useAccountsStore } from "features/accounts"
 
-const NetworkContext = React.createContext<Network | undefined>(undefined)
+const NetworkContext = React.createContext<[Network?, Network?]>([
+  undefined,
+  undefined,
+])
 
 export function NetworkProvider({ children }: React.PropsWithChildren<{}>) {
   const activeNetwork = useNetworkStore(state => state.byId.get(state.activeId))
   const activeAccount = useAccountsStore(state =>
     state.byId.get(state.activeId),
-  )
+  )!
 
   const network = React.useMemo(() => {
-    const instance = new Network(
-      activeNetwork?.url || "",
-      activeAccount?.keys || undefined,
-    )
-    instance.apply([Ledger])
-    return instance
+    const anonIdentity = new AnonymousIdentity()
+    const identity = activeAccount?.identity ?? anonIdentity
+    const url = activeNetwork?.url || ""
+    const queryNetwork = new Network(url, anonIdentity)
+    queryNetwork.apply([Ledger, IdStore])
+    const cmdNetwork = new Network(url, identity)
+    cmdNetwork.apply([Ledger, IdStore])
+    return [queryNetwork, cmdNetwork] as [Network, Network]
   }, [activeNetwork, activeAccount])
 
   return (
@@ -28,5 +33,5 @@ export function NetworkProvider({ children }: React.PropsWithChildren<{}>) {
 }
 
 export function useNetworkContext() {
-  return React.useContext(NetworkContext);
+  return React.useContext(NetworkContext)
 }

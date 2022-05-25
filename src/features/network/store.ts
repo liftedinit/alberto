@@ -7,7 +7,7 @@ import { NetworkId, NetworkParams, NetworksState } from "./types"
 const initialState = {
   activeId: 0,
   nextId: 1,
-  byId: new Map([[0, { name: "Localhost", url: "/api" }]]),
+  byId: new Map([[0, { name: "Manifest", url: "/api" }]]),
 }
 
 interface NetworkActions {

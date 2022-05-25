@@ -1,4 +1,6 @@
 import { Icon as BaseIcon, IconProps } from "components"
+import { MdContentCopy } from "react-icons/md"
+import { HiOutlineRefresh } from "react-icons/hi"
 import { BiDownload } from "react-icons/bi"
 import {
   IoWallet,
@@ -14,59 +16,88 @@ import {
   FaRegPaperPlane,
   FaPaperPlane,
 } from "react-icons/fa"
-import { FiChevronDown, FiEdit, FiX } from "react-icons/fi"
+import { CgUsb } from "react-icons/cg"
+import {
+  FiChevronDown,
+  FiEdit,
+  FiX,
+  FiChevronRight,
+  FiChevronLeft,
+} from "react-icons/fi"
+
+const Icon: typeof BaseIcon = (props: IconProps) => {
+  return <BaseIcon boxSize={6} {...props} />
+}
 
 export function ReceiveIcon(props: IconProps) {
-  return <BaseIcon as={BiDownload} w={6} h={6} {...props} />
+  return <Icon as={BiDownload} {...props} />
 }
 
 export function SendIcon(props: IconProps) {
-  return <BaseIcon as={FaPaperPlane} w={6} h={6} {...props} />
+  return <Icon as={FaPaperPlane} {...props} />
 }
 
 export function SendOutlineIcon(props: IconProps) {
-  return <BaseIcon as={FaRegPaperPlane} w={6} h={6} {...props} />
+  return <Icon as={FaRegPaperPlane} {...props} />
 }
 
 export function SettingsIcon(props: IconProps) {
-  return <BaseIcon as={IoSettingsSharp} w={6} h={6} {...props} />
+  return <Icon as={IoSettingsSharp} {...props} />
 }
 
 export function SettingsOutlineIcon(props: IconProps) {
-  return <BaseIcon as={IoSettingsOutline} w={6} h={6} {...props} />
+  return <Icon as={IoSettingsOutline} {...props} />
 }
 
 export function WalletIcon(props: IconProps) {
-  return <BaseIcon as={IoWallet} w={6} h={6} {...props} />
+  return <Icon as={IoWallet} {...props} />
 }
 
 export function WalletOutlineIcon(props: IconProps) {
-  return <BaseIcon as={IoWalletOutline} w={6} h={6} {...props} />
+  return <Icon as={IoWalletOutline} {...props} />
 }
 
 export function AddressBookIcon(props: IconProps) {
-  return <BaseIcon as={FaAddressBook} w={6} h={6} {...props} />
+  return <Icon as={FaAddressBook} {...props} />
 }
 export function AddressBookOutlineIcon(props: IconProps) {
-  return <BaseIcon as={FaRegAddressBook} w={6} h={6} {...props} />
+  return <Icon as={FaRegAddressBook} {...props} />
 }
 
 export function UserIcon(props: IconProps) {
-  return <BaseIcon as={FaUserCircle} w={6} h={6} {...props} />
+  return <Icon as={FaUserCircle} {...props} />
 }
 
 export function EditIcon(props: IconProps) {
-  return <BaseIcon as={FiEdit} w={6} h={6} {...props} />
+  return <Icon as={FiEdit} {...props} />
 }
 
 export function ChevronDownIcon(props: IconProps) {
-  return <BaseIcon as={FiChevronDown} w={6} h={6} {...props} />
+  return <Icon as={FiChevronDown} {...props} />
+}
+export function ChevronLeftIcon(props: IconProps) {
+  return <Icon as={FiChevronLeft} {...props} />
+}
+export function ChevronRightIcon(props: IconProps) {
+  return <Icon as={FiChevronRight} {...props} />
 }
 
 export function CloseIcon(props: IconProps) {
-  return <BaseIcon as={FiX} w={6} h={6} {...props} />
+  return <Icon as={FiX} {...props} />
 }
 
 export function SearchIcon(props: IconProps) {
-  return <BaseIcon as={IoSearch} w={6} h={6} {...props} />
+  return <Icon as={IoSearch} {...props} />
+}
+
+export function UsbIcon(props: IconProps) {
+  return <Icon as={CgUsb} {...props} />
+}
+
+export function CopyIcon(props: IconProps) {
+  return <Icon as={MdContentCopy} {...props} />
+}
+
+export function RefreshIcon(props: IconProps) {
+  return <BaseIcon as={HiOutlineRefresh} {...props} />
 }
