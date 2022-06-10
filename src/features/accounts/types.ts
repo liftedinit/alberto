@@ -7,7 +7,7 @@ import {
 export type AccountId = number
 export interface Account {
   name: string
-  address?: string
+  address: string
   identity: WebAuthnIdentity | Ed25519KeyPairIdentity | AnonymousIdentity
 }
 
