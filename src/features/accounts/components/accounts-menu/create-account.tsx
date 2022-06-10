@@ -2,7 +2,7 @@ import React from "react"
 import {
   Button,
   CopyToClipboard,
-  Container,
+  ChevronLeftIcon,
   Flex,
   FormControl,
   FormLabel,
@@ -60,46 +60,48 @@ export function CreateAccount({
     <>
       <Modal.Header>Create An Account</Modal.Header>
       <Modal.Body>
-        <Button variant="link" onClick={() => setAddMethod("")}>
+        <Button
+          variant="link"
+          onClick={() => setAddMethod("")}
+          leftIcon={<ChevronLeftIcon />}
+        >
           Back
         </Button>
-        <Container>
-          <form id="add-account-form" onSubmit={onSave}>
-            <FormControl isRequired>
-              <FormLabel htmlFor="name">Name</FormLabel>
-              <Input
-                autoFocus
-                name="name"
-                id="name"
-                variant="filled"
-                maxLength={75}
-              />
-            </FormControl>
-            <Flex mt={3} gap={4}>
-              <FormLabel>Seed Words</FormLabel>
-            </Flex>
-            <SimpleGrid
-              spacing={1}
-              columns={{ base: 3, sm: 4 }}
-              max-width="400px"
-              borderWidth="1px"
-              textAlign="center"
-              p={4}
-              pos="relative"
-              rounded="md"
-            >
-              <CopyToClipboard
-                toCopy={mnemonic.current}
-                containerProps={{ position: "absolute", top: 1, right: 1 }}
-              />
-              {mnemonic.current.split(" ").map(word => (
-                <Text aria-label="seed-word" key={word} fontSize="lg">
-                  {word}
-                </Text>
-              ))}
-            </SimpleGrid>
-          </form>
-        </Container>
+        <form id="add-account-form" onSubmit={onSave}>
+          <FormControl isRequired>
+            <FormLabel htmlFor="name">Name</FormLabel>
+            <Input
+              autoFocus
+              name="name"
+              id="name"
+              variant="filled"
+              maxLength={75}
+            />
+          </FormControl>
+          <Flex mt={3} gap={4}>
+            <FormLabel>Seed Words</FormLabel>
+          </Flex>
+          <SimpleGrid
+            spacing={1}
+            columns={{ base: 3, sm: 4 }}
+            max-width="400px"
+            borderWidth="1px"
+            textAlign="center"
+            p={4}
+            pos="relative"
+            rounded="md"
+          >
+            <CopyToClipboard
+              toCopy={mnemonic.current}
+              containerProps={{ position: "absolute", top: 1, right: 1 }}
+            />
+            {mnemonic.current.split(" ").map((word, idx) => (
+              <Text aria-label="seed-word" key={word + idx} fontSize="lg">
+                {word}
+              </Text>
+            ))}
+          </SimpleGrid>
+        </form>
       </Modal.Body>
     </>
   )

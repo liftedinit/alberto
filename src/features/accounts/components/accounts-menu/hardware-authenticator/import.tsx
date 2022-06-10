@@ -81,10 +81,8 @@ export function ImportFlow({ setAddMethod, onSuccess }: AddAccountMethodProps) {
       }
       const { cosePublicKey, credentialId } = credentialData
       const webAuthnIdentity = new WebAuthnIdentity(cosePublicKey, credentialId)
-      const accountExists = await doesAccountExist(
-        webAuthnIdentity.publicKey,
-        accounts,
-      )
+      const address = (await webAuthnIdentity.getAddress()).toString()
+      const accountExists = await doesAccountExist(address, accounts)
       if (accountExists) {
         return toast({
           status: "warning",

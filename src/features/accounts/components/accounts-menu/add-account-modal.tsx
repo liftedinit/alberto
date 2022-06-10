@@ -2,16 +2,15 @@ import React from "react"
 import {
   Box,
   Button,
-  ContainerWrapper,
+  ChevronRightIcon,
   Flex,
-  Heading,
   Modal,
   ScaleFade,
-  SimpleGrid,
   Text,
   Tab,
   Tabs,
   TabList,
+  VStack,
 } from "components"
 import { SeedWords } from "./seed-words"
 import { CreateAccount } from "./create-account"
@@ -24,6 +23,7 @@ export enum AddAccountMethodTypes {
   importSeed,
   importPem,
   importAuthenticator,
+  importAccountAddress,
 }
 
 export const toastTitle = "Add Account"
@@ -48,6 +48,8 @@ export function AddAccountModal({
     onClose()
   }
 
+  const hasAddMethod = typeof addMethod === "number"
+
   React.useEffect(() => {
     setAddMethod("")
   }, [isOpen])
@@ -56,12 +58,12 @@ export function AddAccountModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size="4xl"
+      size={hasAddMethod ? "xl" : "md"}
       data-testid="add-account-form-container"
-      closeOnOverlayClick={addMethod ? false : true}
-      closeOnEsc={addMethod ? false : true}
+      closeOnOverlayClick={hasAddMethod ? false : true}
+      closeOnEsc={hasAddMethod ? false : true}
     >
-      {addMethod === "" && (
+      {!hasAddMethod && (
         <ScaleFade in={true} initialScale={0.9}>
           <AddAccountMethods
             onAddMethodClick={methodType => {
@@ -70,7 +72,7 @@ export function AddAccountModal({
           />
         </ScaleFade>
       )}
-      {addMethod !== "" && (
+      {hasAddMethod && (
         <ScaleFade in={true} initialScale={0.9}>
           {addMethod === AddAccountMethodTypes.createSeed && (
             <CreateAccount setAddMethod={setAddMethod} onSuccess={onSuccess} />
@@ -92,13 +94,11 @@ export function AddAccountModal({
           )}
           {showDefaultFooter && (
             <Modal.Footer>
-              <ContainerWrapper>
-                <Flex justifyContent="flex-end">
-                  <Button type="submit" form="add-account-form">
-                    Save
-                  </Button>
-                </Flex>
-              </ContainerWrapper>
+              <Flex justifyContent="flex-end">
+                <Button type="submit" form="add-account-form">
+                  Save
+                </Button>
+              </Flex>
             </Modal.Footer>
           )}
         </ScaleFade>
@@ -124,19 +124,14 @@ function AddAccountMethods({
       <Modal.Header>Add Account</Modal.Header>
       <Modal.Body>
         <Tabs
-          colorScheme="brand.teal"
-          mb={3}
+          mb={4}
           onChange={index =>
             setActiveTab(index === 0 ? TabNames.create : TabNames.import)
           }
         >
           <TabList>
             {tabs.map(name => (
-              <Tab
-                key={name}
-                w={{ base: "full", md: "auto" }}
-                fontWeight="medium"
-              >
+              <Tab key={name} w={{ base: "full", md: "auto" }}>
                 {name}
               </Tab>
             ))}
@@ -159,11 +154,9 @@ const createCards = [
   {
     title: "Seed Phrase",
     onClickArg: AddAccountMethodTypes.createSeed,
-    label: "create seed phrase",
   },
   {
     title: "Hardware Authenticator",
-    label: "create hardware authenticator",
     onClickArg: AddAccountMethodTypes.createAuthenticator,
   },
 ]
@@ -174,26 +167,17 @@ function CreateAccountOptions({
   onAddMethodClick: (method: AddAccountMethodTypes) => void
 }) {
   return (
-    <SimpleGrid
-      columns={{ base: 1, md: 3 }}
-      spacing={4}
-      transition="ease-in-out"
-      transitionProperty="all"
-      transitionDuration="3s"
-    >
+    <VStack alignItems="flex-start" w="full">
       {createCards.map((c, idx) => {
         return (
           <AddAccountCard
             key={idx}
             title={c.title}
-            label={c.label}
-            description="Some description of how this works maybe?"
-            ctaText="create"
             onClick={() => onAddMethodClick(c.onClickArg)}
           />
         )
       })}
-    </SimpleGrid>
+    </VStack>
   )
 }
 
@@ -201,17 +185,14 @@ const importCards = [
   {
     title: "Seed Phrase",
     onClickArg: AddAccountMethodTypes.importSeed,
-    label: "import seed phrase",
   },
   {
     title: "PEM File",
     onClickArg: AddAccountMethodTypes.importPem,
-    label: "import pem file",
   },
   {
     title: "Hardware Authenticator",
     onClickArg: AddAccountMethodTypes.importAuthenticator,
-    label: "import hardware authenticator",
   },
 ]
 function ImportAcountOptions({
@@ -220,57 +201,42 @@ function ImportAcountOptions({
   onAddMethodClick: (method: AddAccountMethodTypes) => void
 }) {
   return (
-    <SimpleGrid
-      columns={{ base: 1, md: 3 }}
-      spacing={4}
-      transition="ease-in-out"
-      transitionProperty="all"
-      transitionDuration="3s"
-    >
+    <VStack alignItems="flex-start" w="full">
       {importCards.map((c, idx) => {
         return (
           <AddAccountCard
             key={idx}
             title={c.title}
-            label={c.label}
-            description="Some description of how this works maybe?"
-            ctaText="import"
             onClick={() => onAddMethodClick(c.onClickArg)}
           />
         )
       })}
-    </SimpleGrid>
+    </VStack>
   )
 }
 
 function AddAccountCard({
   title,
-  label,
-  description,
   onClick,
-  ctaText,
 }: {
   title: string | React.ReactNode
-  label: string
-  description: string
   onClick: () => void
-  ctaText: string
 }) {
   return (
-    <Box shadow="md" p={4}>
-      <Heading mb={3} size="md">
-        {title}
-      </Heading>
-      <Text>{description}</Text>
-      <Button
-        mt={4}
-        aria-label={label}
-        isFullWidth
-        textTransform="uppercase"
-        onClick={onClick}
-      >
-        {ctaText}
-      </Button>
-    </Box>
+    <Flex
+      shadow="md"
+      alignItems="center"
+      w="full"
+      px={3}
+      py={2}
+      onClick={onClick}
+      cursor="pointer"
+      justifyContent="space-between"
+    >
+      <Text fontWeight="medium">{title}</Text>
+      <Box>
+        <ChevronRightIcon />
+      </Box>
+    </Flex>
   )
 }

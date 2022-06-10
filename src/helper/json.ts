@@ -1,3 +1,5 @@
+import { AnonymousIdentity, WebAuthnIdentity } from "many-js"
+
 export function replacer(key: string, value: any) {
   if (value instanceof Map) {
     return {
@@ -10,7 +12,7 @@ export function replacer(key: string, value: any) {
 
 export function reviver(key: string, value: any) {
   if (typeof value === "object" && value !== null) {
-    if (value.dataType === "Map") {
+    if (value.dataType === Map.name) {
       return new Map(value.value)
     } else if (
       value instanceof Object &&
@@ -18,6 +20,10 @@ export function reviver(key: string, value: any) {
       value.data
     ) {
       return Buffer.from(value.data)
+    } else if (value.dataType === AnonymousIdentity.name) {
+      return new AnonymousIdentity()
+    } else if (value.dataType === WebAuthnIdentity.name) {
+      return new WebAuthnIdentity(value.cosePublicKey, value.rawId)
     }
   }
   return value

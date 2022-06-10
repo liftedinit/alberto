@@ -9,7 +9,6 @@ import {
   Modal,
   useToast,
   AddressText,
-  useAddressText,
 } from "components"
 import { useAccountsStore, AccountId, Account } from "../../index"
 import { AnonymousIdentity } from "many-js"
@@ -24,10 +23,11 @@ export function EditAccountModal({
   account: [number, Account]
 }) {
   const accountData = account?.[1]
+  console.log("accountData", accountData)
   const [name, setName] = React.useState("")
   const [address, setAddress] = React.useState("")
   const toast = useToast()
-  const addressStr = useAddressText(accountData?.identity)
+  const addressStr = accountData?.address ?? ""
   const isAnonymous = accountData?.identity instanceof AnonymousIdentity
   const { updateAccount, deleteAccount, byId } = useAccountsStore(
     ({ updateAccount, deleteAccount, byId }) => ({
@@ -40,7 +40,10 @@ export function EditAccountModal({
   function onSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!byId.has(account[0])) return
-    updateAccount(account[0], { name, identity: accountData.identity })
+    updateAccount(account[0], {
+      name,
+      identity: accountData.identity,
+    })
     toast({
       title: "Update Account",
       description: "Account was updated",
@@ -61,15 +64,13 @@ export function EditAccountModal({
   }
 
   React.useEffect(() => {
-    accountData && setName(accountData?.name)
-  }, [accountData])
-
-  React.useEffect(() => {
     if (!isOpen) {
       setName("")
       setAddress("")
+    } else {
+      accountData && setName(accountData?.name)
     }
-  }, [isOpen])
+  }, [isOpen, accountData])
 
   return (
     <Modal
@@ -105,7 +106,11 @@ export function EditAccountModal({
           {isAnonymous ? null : (
             <>
               <FormLabel mt={3}>Address</FormLabel>
-              <AddressText identity={accountData?.identity} px={4} h="40px">
+              <AddressText
+                addressText={accountData?.address ?? ""}
+                px={4}
+                h="40px"
+              >
                 {addressStr}
               </AddressText>
             </>

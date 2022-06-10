@@ -1,13 +1,13 @@
 import React from "react"
 import {
   Button,
+  ChevronLeftIcon,
   FormControl,
   FormLabel,
   Input,
   Modal,
   Textarea,
   useToast,
-  ContainerWrapper,
 } from "components"
 import { useAccountsStore } from "features/accounts"
 import { Ed25519KeyPairIdentity } from "many-js"
@@ -39,7 +39,8 @@ export function SeedWords({ setAddMethod, onSuccess }: AddAccountMethodProps) {
         description: "Invalid mnemonic",
       })
     }
-    const exists = await doesAccountExist(identity.publicKey, accounts)
+    const address = (await identity.getAddress()).toString()
+    const exists = await doesAccountExist(address, accounts)
     if (exists) {
       return toast({
         title: toastTitle,
@@ -63,40 +64,40 @@ export function SeedWords({ setAddMethod, onSuccess }: AddAccountMethodProps) {
     <>
       <Modal.Header>Import From Seed Words</Modal.Header>
       <Modal.Body>
-        <Button variant="link" onClick={() => setAddMethod("")}>
+        <Button
+          variant="link"
+          onClick={() => setAddMethod("")}
+          leftIcon={<ChevronLeftIcon />}
+        >
           Back
         </Button>
-        <ContainerWrapper>
-          <form id="add-account-form" onSubmit={onSave}>
-            <FormControl isRequired>
-              <FormLabel htmlFor="name">Name</FormLabel>
-              <Input
-                autoFocus
-                name="name"
-                id="name"
-                variant="filled"
-                onChange={e =>
-                  setAccount(s => ({ ...s, name: e.target.value }))
-                }
-                value={account.name ?? ""}
-              />
-            </FormControl>
-            <FormControl isRequired>
-              <FormLabel mt={6}>Seed Words</FormLabel>
-              <Textarea
-                value={account.mnemonic}
-                variant="filled"
-                onChange={e => {
-                  const val = e.target.value
-                  setAccount(s => ({
-                    ...s,
-                    mnemonic: val,
-                  }))
-                }}
-              />
-            </FormControl>
-          </form>
-        </ContainerWrapper>
+        <form id="add-account-form" onSubmit={onSave}>
+          <FormControl isRequired>
+            <FormLabel htmlFor="name">Name</FormLabel>
+            <Input
+              autoFocus
+              name="name"
+              id="name"
+              variant="filled"
+              onChange={e => setAccount(s => ({ ...s, name: e.target.value }))}
+              value={account.name ?? ""}
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel mt={6}>Seed Words</FormLabel>
+            <Textarea
+              value={account.mnemonic}
+              variant="filled"
+              onChange={e => {
+                const val = e.target.value
+                setAccount(s => ({
+                  ...s,
+                  mnemonic: val,
+                }))
+              }}
+            />
+          </FormControl>
+        </form>
       </Modal.Body>
     </>
   )
