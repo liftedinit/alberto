@@ -1,30 +1,33 @@
 import React from "react"
-import { useLedgerInfo, useNetworkContext } from "features/network"
+import { useNetworkContext } from "features/network"
 import { BoundType, OrderType } from "many-js"
-import type { ListFilterArgs, Transaction } from "many-js"
+import { ListFilterArgs, Transaction } from "many-js"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 
-export function useSendToken() {
+export function useCreateSendTxn() {
   const [, network] = useNetworkContext()
   const queryClient = useQueryClient()
-  const m = useMutation(
-    async (variables: { to: string; amount: bigint; symbol: string }) => {
-      const { to, amount, symbol } = variables
-      return network?.ledger.send(to, amount, symbol)
+  return useMutation<
+    unknown,
+    Error,
+    { to: string; amount: bigint; symbol: string }
+  >(
+    async (vars: {
+      from?: string
+      to: string
+      amount: bigint
+      symbol: string
+    }) => {
+      const res = network?.ledger.send(vars)
+      return res
     },
     {
-      onSuccess: () => {
+      onSuccess: data => {
         queryClient.invalidateQueries(["balances"])
         queryClient.invalidateQueries(["transactions", "list"])
       },
     },
   )
-  return {
-    isSuccess: m.isSuccess,
-    isLoading: m.isLoading,
-    isError: m.isError,
-    sendToken: m.mutate,
-  }
 }
 
 export function useTransactionsList({
@@ -52,10 +55,8 @@ export function useTransactionsList({
     accounts: address,
   }
 
-  const ledgerInfo = useLedgerInfo({ address })
-
   const q = useQuery({
-    queryKey: ["transactions", "list", filters, address, network?.url],
+    queryKey: ["transactions", "list", address, network?.url, filters],
     queryFn: async () =>
       await network?.ledger?.list({
         filters,
@@ -69,7 +70,7 @@ export function useTransactionsList({
   const transactionsWithSymbols = (q?.data?.transactions ?? []).map(
     (t: Transaction) => ({
       ...t,
-      symbol: ledgerInfo?.data?.symbols?.get(t.symbolAddress) ?? "",
+      _id: Buffer.from(t.id).toString("base64"),
     }),
   )
   const respCount = transactionsWithSymbols.length
@@ -77,7 +78,6 @@ export function useTransactionsList({
   const visibleTransactionsWithSymbols = hasNextPage
     ? transactionsWithSymbols.slice(0, respCount - 1)
     : transactionsWithSymbols
-
   return {
     isPreviousData: q.isPreviousData,
     error: q.error,
@@ -100,7 +100,7 @@ export function useTransactionsList({
     },
     data: {
       count: q?.data?.count ?? 0,
-      transactions: visibleTransactionsWithSymbols,
+      transactions: visibleTransactionsWithSymbols ?? [],
     },
   }
 }
