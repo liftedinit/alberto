@@ -1,6 +1,6 @@
 import { useQuery } from "react-query"
 import { useNetworkContext } from "features/network"
-import { GetAccountInfoResponse } from "many-js"
+import type { GetAccountInfoResponse } from "many-js"
 
 export function useGetAccountInfo(address?: string) {
   const [n] = useNetworkContext()
