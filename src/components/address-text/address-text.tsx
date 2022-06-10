@@ -5,41 +5,46 @@ import { Identity } from "many-js"
 import { makeShortId } from "helper/common"
 
 export function AddressText({
-  identity,
   addressText,
-  isFull = false,
+  isFullText = false,
   children,
+  textProps,
+  iconProps,
   ...props
 }: React.PropsWithChildren<
   {
-    addressText?: string
-    isFull?: boolean
-    identity: Identity | string
+    addressText: string
+    isFullText?: boolean
+    textProps?: Record<string, any>
+    iconProps?: Record<string, any>
   } & BoxProps
 >) {
-  const text = useAddressText(identity)
-
   return (
     <HStack
       bgColor="gray.100"
       rounded="md"
       px={2}
       py={1}
-      fontFamily="monospace"
       fontSize="md"
       {...props}
     >
       <Text
+        fontFamily="monospace"
         aria-label="public address"
         isTruncated
         onCopy={e => {
-          e.clipboardData.setData("text/plain", text)
+          e.clipboardData.setData("text/plain", addressText)
           e.preventDefault()
         }}
+        {...textProps}
       >
-        {children ? children : isFull ? text : makeShortId(text)}
+        {children
+          ? children
+          : isFullText
+          ? addressText
+          : makeShortId(addressText)}
       </Text>
-      <CopyToClipboard toCopy={text} />
+      <CopyToClipboard toCopy={addressText} iconProps={iconProps} />
     </HStack>
   )
 }
