@@ -85,7 +85,7 @@ function ContactListItem({
           {contact.name}
         </Text>
         <AddressText
-          identity={contact?.address}
+          addressText={contact?.address}
           bgColor={undefined}
           px={0}
           py={0}
