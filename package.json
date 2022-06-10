@@ -23,7 +23,7 @@
     "framer-motion": "^6.2.8",
     "idb-keyval": "^6.1.0",
     "localforage": "^1.10.0",
-    "many-js": "liftedinit/many-js#main",
+    "many-js": "tantommy/many-js#01ede7ff2cb46f2db99264df288a166c5887ae89",
     "react": "^17.0.2",
     "react-app-rewired": "^2.2.1",
     "react-dom": "^17.0.2",
