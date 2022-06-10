@@ -23,7 +23,6 @@ export function EditAccountModal({
   account: [number, Account]
 }) {
   const accountData = account?.[1]
-  console.log("accountData", accountData)
   const [name, setName] = React.useState("")
   const [address, setAddress] = React.useState("")
   const toast = useToast()

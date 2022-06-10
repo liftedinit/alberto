@@ -1,27 +1,20 @@
-import { ListFilterArgs, TransactionType } from "many-js"
-import { FiChevronRight, FiChevronLeft } from "react-icons/fi"
+import React from "react"
+import { ListFilterArgs } from "many-js"
 import type { Transaction } from "many-js"
 import {
   Button,
+  ChevronRightIcon,
+  ChevronLeftIcon,
   Center,
   Flex,
-  ReceiveIcon,
-  SendOutlineIcon,
   Spinner,
   Table,
-  Td,
-  Tr,
   Tbody,
   TableContainer,
   Text,
-  VStack,
-  AddressText,
 } from "components"
 import { useTransactionsList } from "features/transactions/queries"
-import { amountFormatter } from "helper/common"
-import { useContactsStore } from "features/contacts"
-import { useAccountsStore } from "features/accounts"
-
+import { TxnListItem } from "./txn-list-item"
 export function TxnList({
   address,
   filter = {},
@@ -74,11 +67,11 @@ export function TxnList({
       <TableContainer>
         <Table size="sm">
           <Tbody>
-            {transactions.map((t: Transaction) => {
+            {transactions.map((t: Transaction & { _id: string }) => {
               return (
                 <TxnListItem
                   transaction={t}
-                  key={t.time.getTime()}
+                  key={t._id + t.time.getTime()}
                   address={address}
                 />
               )
@@ -89,7 +82,7 @@ export function TxnList({
       {(currPageCount > 0 || hasNextPage) && (
         <Flex mt={2} gap={2} justifyContent="flex-end">
           <Button
-            leftIcon={<FiChevronLeft />}
+            leftIcon={<ChevronLeftIcon boxSize={5} />}
             lineHeight="normal"
             size="sm"
             w={{ base: "full", md: "auto" }}
@@ -98,7 +91,7 @@ export function TxnList({
             Prev
           </Button>
           <Button
-            rightIcon={<FiChevronRight />}
+            rightIcon={<ChevronRightIcon boxSize={5} />}
             lineHeight="normal"
             size="sm"
             w={{ base: "full", md: "auto" }}
@@ -109,82 +102,5 @@ export function TxnList({
         </Flex>
       )}
     </>
-  )
-}
-
-function TxnListItem({
-  transaction,
-  address,
-}: {
-  transaction: Transaction
-  address: string
-}) {
-  if (transaction.type === TransactionType.send) {
-    const isSender = address === transaction.from
-    return <SendTxnListItem transaction={transaction} isSender={isSender} />
-  }
-  return null
-}
-
-function SendTxnListItem({
-  transaction,
-  isSender,
-}: {
-  transaction: Transaction
-  isSender: boolean
-}) {
-  const contacts = useContactsStore(s => s.byId)
-  const accounts = useAccountsStore(s => Array.from(s.byId).map(a => a[1]))
-  const { to, from, amount, symbol, time } = transaction
-  const TxnIcon = isSender ? SendOutlineIcon : ReceiveIcon
-  const title = isSender ? "send" : "receive"
-
-  const displayAmount = `${isSender ? "-" : "+"}${amountFormatter(amount)}`
-  const address = isSender ? to! : from!
-  const contactName =
-    contacts.get(address)?.name ??
-    accounts.find(acc => acc.address === address)?.name
-
-  return (
-    <Tr aria-label="transaction list item">
-      <Td>
-        <TxnIcon />
-      </Td>
-      <Td>
-        <VStack alignItems="flex-start" spacing={0} flexGrow={1}>
-          <Text lineHeight="normal" casing="capitalize">
-            {title}
-          </Text>
-          <Text fontSize="xs">{time?.toLocaleString()}</Text>
-        </VStack>
-      </Td>
-      <Td>
-        <VStack alignItems="flex-start" spacing={0}>
-          <Text fontSize="sm" pb={1}>
-            {isSender ? "To:" : "From:"}{" "}
-          </Text>
-          {contactName && <Text fontWeight="medium">{contactName}</Text>}
-          <AddressText
-            identity={address}
-            bgColor={undefined}
-            px={0}
-            py={0}
-            fontSize="md"
-          />
-        </VStack>
-      </Td>
-      <Td>
-        <Flex gap={2} justifyContent="flex-end">
-          <Text
-            fontWeight="medium"
-            color={isSender ? "red" : "green"}
-            justifySelf="flex-end"
-          >
-            {displayAmount}
-          </Text>
-          <Text>{symbol}</Text>
-        </Flex>
-      </Td>
-    </Tr>
   )
 }

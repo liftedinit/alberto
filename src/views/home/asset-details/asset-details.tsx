@@ -26,7 +26,7 @@ export function AssetDetails({ asset, setAsset, address }: Props) {
         <Heading size="lg" fontWeight="normal">
           {amountFormatter(asset.balance)} {asset.symbol}
         </Heading>
-        <AddressText identity={asset.identity} bgColor={undefined} />
+        <AddressText bgColor={undefined} addressText={asset.identity} />
       </VStack>
       <Heading size="md" mb={3}>
         Activity

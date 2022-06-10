@@ -5,8 +5,8 @@ function SplashView() {
   return (
     <div className="Splash" data-testid="splash-screen">
       <img src={cube} alt="Albert Logo" />
-      <h1>Albert</h1>
-      <h2>L1 Labs</h2>
+      <h1>Alberto</h1>
+      <h2>Lifted Initiative</h2>
     </div>
   )
 }

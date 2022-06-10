@@ -45,7 +45,7 @@ const mockListData = {
   count: 4,
   transactions: [
     {
-      id: 1,
+      id: Buffer.from("1"),
       type: "send",
       from: "m111",
       to: "m888",
@@ -54,7 +54,7 @@ const mockListData = {
       amount: BigInt(1),
     },
     {
-      id: 2,
+      id: Buffer.from("2"),
       type: "send",
       from: "m888",
       to: "ma111",
@@ -130,7 +130,7 @@ describe("home page", () => {
         count: 2,
         transactions: [
           {
-            id: 1,
+            id: Buffer.from("1"),
             type: "send",
             from: "m111",
             to: "m888",
@@ -139,7 +139,7 @@ describe("home page", () => {
             amount: BigInt(1),
           },
           {
-            id: 2,
+            id: Buffer.from("2"),
             type: "send",
             from: "m888",
             to: "m111",

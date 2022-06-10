@@ -25,13 +25,15 @@ import {
   VStack,
 } from "components"
 import cubeImg from "assets/cube.png"
-import { useAccountsStore } from "features/accounts"
+import {
+  useAccountsStore,
+} from "features/accounts"
 import { useBalances } from "features/balances"
 import { useCreateSendTxn } from "features/transactions"
 import { Contact, ContactSelector } from "features/contacts"
 import { Asset } from "features/balances"
 import { amountFormatter, parseNumberToBigInt } from "helper/common"
-import { useSubmitMultisigTxn } from "features/accounts/api/create-multisig-submit-txn"
+import { useMultisigSubmit } from "features/accounts"
 import { ANON_IDENTITY } from "many-js"
 
 const defaultFormState: {
@@ -51,20 +53,16 @@ export function SendAssetModal({
   onClose,
   address,
   assetAddress,
-  isAccount,
   onSuccess,
-  showMemo = false,
+  accountAddress,
 }: {
   isOpen: boolean
   onClose: () => void
   address: string
   assetAddress: string
-  isAccount?: boolean
   onSuccess?: () => void
-  showMemo?: boolean
+  accountAddress?: string
 }) {
-  const activeIdentity = useAccountsStore(s => s.byId.get(s.activeId))
-
   return (
     <Modal
       isOpen={isOpen}
@@ -75,39 +73,12 @@ export function SendAssetModal({
       footer={<></>}
     >
       <Modal.Body>
-        {isAccount && activeIdentity && (
-          <Alert status="warning" mb={6} rounded="md">
-            <Box fontSize="sm" textAlign="center" w="full">
-              You are submitting a transaction as:
-              <Text fontWeight="medium" as="div">
-                {activeIdentity.name}&nbsp;
-                {activeIdentity.address !== ANON_IDENTITY && (
-                  <Text as="span">
-                    (
-                    <AddressText
-                      display="inline-flex"
-                      addressText={activeIdentity.address}
-                      fontFamily="monospace"
-                      as="span"
-                      p={0}
-                      bgColor={undefined}
-                      textProps={{ fontWeight: "semibold", fontSize: "sm" }}
-                      iconProps={{ boxSize: 4 }}
-                    />
-                    )
-                  </Text>
-                )}
-              </Text>
-              <Text>If this is not intended, please switch Identities.</Text>
-            </Box>
-          </Alert>
-        )}
+        <EligibleIdentityWarning accountAddress={accountAddress} />
         <SendAssetForm
           address={address}
           assetAddress={assetAddress}
-          isAccount={isAccount}
+          accountAddress={accountAddress}
           onSuccess={onSuccess}
-          showMemo={showMemo}
         />
       </Modal.Body>
     </Modal>
@@ -117,15 +88,13 @@ export function SendAssetModal({
 export function SendAssetForm({
   address,
   assetAddress,
-  isAccount = false,
-  showMemo = false,
+  accountAddress,
   formId = "send-asset-form",
   onSuccess,
 }: {
   address: string
   assetAddress: string
-  isAccount?: boolean
-  showMemo?: boolean
+  accountAddress?: string
   formId?: string
   onSuccess?: () => void
 }) {
@@ -154,9 +123,9 @@ export function SendAssetForm({
 
   const { mutate: doCreateSendTxn, isLoading } = useCreateSendTxn()
   const {
-    mutate: createMultisigSubmitTxn,
+    mutate: doCreateMultisigSubmitTxn,
     isLoading: isCreateMultisigSubmitTxnLoading,
-  } = useSubmitMultisigTxn()
+  } = useMultisigSubmit()
 
   function onSendSuccess() {
     setFormValues({ ...defaultFormState })
@@ -173,8 +142,8 @@ export function SendAssetForm({
   async function onSendTxn(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const bigIntAmount = parseNumberToBigInt(parseFloat(formValues.amount!))
-    if (isAccount) {
-      createMultisigSubmitTxn(
+    if (accountAddress) {
+      doCreateMultisigSubmitTxn(
         {
           from: address,
           to: formValues.to,
@@ -183,8 +152,7 @@ export function SendAssetForm({
           memo: formValues?.memo?.trim(),
         },
         {
-          onSuccess: res => {
-            console.log("createMultisigSubmitTxn res", res)
+          onSuccess: () => {
             onSendSuccess()
           },
           onError: err => {
@@ -206,15 +174,14 @@ export function SendAssetForm({
         symbol: formValues.asset!.identity,
       },
       {
-        onSuccess: res => {
-          console.log("sendToken onSuccess res", res)
+        onSuccess: () => {
           onSendSuccess()
         },
         onError: e => {
           toast({
             status: "warning",
             title: "Send",
-            description: String(e),
+            description: e?.message ?? String(e),
           })
         },
       },
@@ -361,7 +328,7 @@ export function SendAssetForm({
             </VStack>
           </HStack>
         </FormControl>
-        {showMemo && (
+        {accountAddress && (
           <FormControl mt={4}>
             <FormLabel htmlFor="memo">Memo</FormLabel>
             <Input
@@ -486,5 +453,43 @@ function ConfirmTxnDialog({
         </form>
       </AlertDialog.Body>
     </AlertDialog>
+  )
+}
+
+function EligibleIdentityWarning({
+  accountAddress,
+}: {
+  accountAddress?: string
+}) {
+  const activeIdentity = useAccountsStore(s => s.byId.get(s.activeId))
+
+  if (!activeIdentity || !accountAddress) return null
+
+  return (
+    <Alert status="warning" mb={6} rounded="md">
+      <Box fontSize="sm" textAlign="center" w="full">
+        You are submitting a transaction as:
+        <Text fontWeight="medium" as="div">
+          {activeIdentity.name}&nbsp;
+          {activeIdentity.address !== ANON_IDENTITY && (
+            <Text as="span">
+              (
+              <AddressText
+                display="inline-flex"
+                addressText={activeIdentity.address}
+                fontFamily="monospace"
+                as="span"
+                p={0}
+                bgColor={undefined}
+                textProps={{ fontWeight: "semibold", fontSize: "sm" }}
+                iconProps={{ boxSize: 4 }}
+              />
+              )
+            </Text>
+          )}
+        </Text>
+        <Text>If this is not intended, please switch Identities.</Text>
+      </Box>
+    </Alert>
   )
 }

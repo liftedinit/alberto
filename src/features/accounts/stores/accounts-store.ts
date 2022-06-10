@@ -73,7 +73,7 @@ export const useAccountsStore = create<AccountsState & AccountMethods>(
         }),
     }),
     {
-      name: "ALBERT.IDENTITIES",
+      name: "ALBERTO.IDENTITIES",
       // @ts-ignore
       getStorage: () => localforage,
       serialize: state =>

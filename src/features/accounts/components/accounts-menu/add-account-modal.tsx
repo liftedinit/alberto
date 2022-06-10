@@ -6,7 +6,6 @@ import {
   Flex,
   Modal,
   ScaleFade,
-  Text,
   Tab,
   Tabs,
   TabList,
@@ -152,11 +151,13 @@ function AddAccountMethods({
 
 const createCards = [
   {
-    title: "Seed Phrase",
+    label: "Seed Phrase",
+    title: "create new seed phrase",
     onClickArg: AddAccountMethodTypes.createSeed,
   },
   {
-    title: "Hardware Authenticator",
+    label: "Hardware Authenticator",
+    title: "create new with hardware authenticator",
     onClickArg: AddAccountMethodTypes.createAuthenticator,
   },
 ]
@@ -172,6 +173,7 @@ function CreateAccountOptions({
         return (
           <AddAccountCard
             key={idx}
+            label={c.label}
             title={c.title}
             onClick={() => onAddMethodClick(c.onClickArg)}
           />
@@ -183,15 +185,18 @@ function CreateAccountOptions({
 
 const importCards = [
   {
-    title: "Seed Phrase",
+    label: "Seed Phrase",
     onClickArg: AddAccountMethodTypes.importSeed,
+    title: "import with seed phrase",
   },
   {
-    title: "PEM File",
+    label: "PEM File",
     onClickArg: AddAccountMethodTypes.importPem,
+    title: "import with pem file",
   },
   {
-    title: "Hardware Authenticator",
+    label: "Hardware Authenticator",
+    title: "import with hardware authenticator",
     onClickArg: AddAccountMethodTypes.importAuthenticator,
   },
 ]
@@ -206,6 +211,7 @@ function ImportAcountOptions({
         return (
           <AddAccountCard
             key={idx}
+            label={c.label}
             title={c.title}
             onClick={() => onAddMethodClick(c.onClickArg)}
           />
@@ -216,10 +222,12 @@ function ImportAcountOptions({
 }
 
 function AddAccountCard({
+  label,
   title,
   onClick,
 }: {
-  title: string | React.ReactNode
+  label: string | React.ReactNode
+  title?: string
   onClick: () => void
 }) {
   return (
@@ -230,10 +238,12 @@ function AddAccountCard({
       px={3}
       py={2}
       onClick={onClick}
-      cursor="pointer"
       justifyContent="space-between"
+      as="button"
+      title={title}
+      fontWeight="medium"
     >
-      <Text fontWeight="medium">{title}</Text>
+      {label}
       <Box>
         <ChevronRightIcon />
       </Box>

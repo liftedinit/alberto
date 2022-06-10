@@ -1,4 +1,5 @@
 import { AnonymousIdentity, WebAuthnIdentity } from "many-js"
+import { base64ToArrayBuffer } from "./convert"
 
 export function replacer(key: string, value: any) {
   if (value instanceof Map) {
@@ -23,7 +24,10 @@ export function reviver(key: string, value: any) {
     } else if (value.dataType === AnonymousIdentity.name) {
       return new AnonymousIdentity()
     } else if (value.dataType === WebAuthnIdentity.name) {
-      return new WebAuthnIdentity(value.cosePublicKey, value.rawId)
+      return new WebAuthnIdentity(
+        value.cosePublicKey,
+        base64ToArrayBuffer(value.rawId),
+      )
     }
   }
   return value

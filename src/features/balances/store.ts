@@ -51,7 +51,7 @@ export const useBalancesStore = create<BalancesState>(
       })),
   }),
   //   {
-  //     name: "ALBERT.BALANCES",
+  //     name: "ALBERTO.BALANCES",
   //     // @ts-ignore
   //     getStorage: () => localforage,
   //     serialize: (state) => JSON.stringify(state, replacer),

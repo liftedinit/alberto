@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "react-query"
 import { useNetworkContext } from "features/network"
 
-export function useMultisigRevoke(token: ArrayBuffer) {
+export function useMultisigWithdraw(token: ArrayBuffer) {
   const queryClient = useQueryClient()
   const [, n] = useNetworkContext()
   return useMutation<undefined, Error>(
     async () => {
-      return await n?.account.multisigRevoke(token)
+      return await n?.account.multisigWithdraw(token)
     },
     {
       onSuccess() {
