@@ -38,7 +38,7 @@ export function PemFile({ setAddMethod, onSuccess }: AddAccountMethodProps) {
         description: "Invalid PEM",
       })
     }
-    const address = await(await identity.getAddress()).toString()
+    const address = (await identity.getAddress()).toString()
     const exists = await doesAccountExist(address, accounts)
 
     if (exists) {

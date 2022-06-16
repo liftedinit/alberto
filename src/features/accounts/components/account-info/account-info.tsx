@@ -1,4 +1,4 @@
-import { AccountInfoData, AccountRole } from "many-js"
+import { AccountInfoData } from "many-js"
 import {
   AddressText,
   Box,

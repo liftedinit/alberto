@@ -22,7 +22,7 @@ export function useCreateSendTxn() {
       return res
     },
     {
-      onSuccess: data => {
+      onSuccess: () => {
         queryClient.invalidateQueries(["balances"])
         queryClient.invalidateQueries(["transactions", "list"])
       },
@@ -56,7 +56,7 @@ export function useTransactionsList({
   }
 
   const q = useQuery({
-    queryKey: ["transactions", "list", address, network?.url, filters],
+    queryKey: ["transactions", "list", address, filters, network?.url],
     queryFn: async () =>
       await network?.ledger?.list({
         filters,
@@ -67,17 +67,15 @@ export function useTransactionsList({
     keepPreviousData: true,
   })
 
-  const transactionsWithSymbols = (q?.data?.transactions ?? []).map(
-    (t: Transaction) => ({
-      ...t,
-      _id: Buffer.from(t.id).toString("base64"),
-    }),
-  )
-  const respCount = transactionsWithSymbols.length
+  const txnsWithId = (q?.data?.transactions ?? []).map((t: Transaction) => ({
+    ...t,
+    _id: Buffer.from(t.id).toString("base64"),
+  }))
+  const respCount = txnsWithId.length
   const hasNextPage = respCount === reqCount
-  const visibleTransactionsWithSymbols = hasNextPage
-    ? transactionsWithSymbols.slice(0, respCount - 1)
-    : transactionsWithSymbols
+  const visibleTxnsWithId = hasNextPage
+    ? txnsWithId.slice(0, respCount - 1)
+    : txnsWithId
   return {
     isPreviousData: q.isPreviousData,
     error: q.error,
@@ -94,13 +92,13 @@ export function useTransactionsList({
     nextBtnProps: {
       disabled: !hasNextPage,
       onClick: () => {
-        const lastTxn = transactionsWithSymbols[reqCount - 1]
+        const lastTxn = txnsWithId[reqCount - 1]
         setTxnIds(s => [lastTxn.id, ...s])
       },
     },
     data: {
       count: q?.data?.count ?? 0,
-      transactions: visibleTransactionsWithSymbols ?? [],
+      transactions: visibleTxnsWithId ?? [],
     },
   }
 }
