@@ -19,7 +19,6 @@ export function TxnListItem({
       <SendTxnListItem txn={transaction as SendTransaction} address={address} />
     )
   } else if (txnTypeName === LedgerTransactionType.accountCreate) {
-    console.log("accountCreate", transaction)
     return (
       <CreateAccountTxnListItem
         txnData={transaction as CreateAccountTransaction}
