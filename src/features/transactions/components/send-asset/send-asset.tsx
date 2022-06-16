@@ -25,9 +25,7 @@ import {
   VStack,
 } from "components"
 import cubeImg from "assets/cube.png"
-import {
-  useAccountsStore,
-} from "features/accounts"
+import { useAccountsStore } from "features/accounts"
 import { useBalances } from "features/balances"
 import { useCreateSendTxn } from "features/transactions"
 import { Contact, ContactSelector } from "features/contacts"
@@ -63,6 +61,20 @@ export function SendAssetModal({
   onSuccess?: () => void
   accountAddress?: string
 }) {
+  const useSendAssetData = useSendAsset({
+    address,
+    assetAddress,
+    accountAddress,
+    onSuccess,
+  })
+
+  const {
+    formValues,
+    asset,
+    isCreateMultisigSubmitTxnLoading,
+    isCreateSendTxnLoading,
+  } = useSendAssetData
+
   return (
     <Modal
       isOpen={isOpen}
@@ -70,33 +82,46 @@ export function SendAssetModal({
       header="Send Asset"
       closeOnEsc={false}
       closeOnOverlayClick={false}
-      footer={<></>}
+      footer={
+        <Flex justifyContent="flex-end" w="full">
+          <Button
+            width={{ base: "full", md: "auto" }}
+            isLoading={
+              isCreateSendTxnLoading || isCreateMultisigSubmitTxnLoading
+            }
+            colorScheme="brand.teal"
+            disabled={!asset || !formValues.amount || !formValues.to}
+            type="submit"
+            form="send-asset-form"
+          >
+            Next
+          </Button>
+        </Flex>
+      }
     >
       <Modal.Body>
         <EligibleIdentityWarning accountAddress={accountAddress} />
         <SendAssetForm
-          address={address}
-          assetAddress={assetAddress}
+          hideNextBtn={true}
           accountAddress={accountAddress}
           onSuccess={onSuccess}
+          useSendAssetData={useSendAssetData}
         />
       </Modal.Body>
     </Modal>
   )
 }
 
-export function SendAssetForm({
+export function useSendAsset({
   address,
   assetAddress,
-  accountAddress,
-  formId = "send-asset-form",
   onSuccess,
+  accountAddress,
 }: {
   address: string
-  assetAddress: string
   accountAddress?: string
-  formId?: string
   onSuccess?: () => void
+  assetAddress?: string
 }) {
   const toast = useToast()
   const {
@@ -121,7 +146,8 @@ export function SendAssetForm({
 
   const [contact, setContact] = React.useState<Contact | undefined>()
 
-  const { mutate: doCreateSendTxn, isLoading } = useCreateSendTxn()
+  const { mutate: doCreateSendTxn, isLoading: isCreateSendTxnLoading } =
+    useCreateSendTxn()
   const {
     mutate: doCreateMultisigSubmitTxn,
     isLoading: isCreateMultisigSubmitTxnLoading,
@@ -130,13 +156,12 @@ export function SendAssetForm({
   function onSendSuccess() {
     setFormValues({ ...defaultFormState })
     contact && setContact(undefined)
-    onSuccess?.()
-    onCloseConfirmDialog()
     toast({
       status: "success",
       title: "Send",
       description: "Transaction was sent",
     })
+    onCloseConfirmDialog()
   }
 
   async function onSendTxn(e: React.FormEvent<HTMLFormElement>) {
@@ -154,6 +179,7 @@ export function SendAssetForm({
         {
           onSuccess: () => {
             onSendSuccess()
+            onSuccess?.()
           },
           onError: err => {
             toast({
@@ -176,6 +202,7 @@ export function SendAssetForm({
       {
         onSuccess: () => {
           onSendSuccess()
+          onSuccess?.()
         },
         onError: e => {
           toast({
@@ -202,6 +229,53 @@ export function SendAssetForm({
     name === "to" && contact && setContact(undefined)
     setFormValues(s => ({ ...s, [name]: value }))
   }
+
+  return {
+    balances,
+    contact,
+    setContact,
+    onChange,
+    onNext,
+    onSendTxn,
+    doCreateMultisigSubmitTxn,
+    isCreateMultisigSubmitTxnLoading,
+    doCreateSendTxn,
+    isCreateSendTxnLoading,
+    asset,
+    isShowConfirmDialog,
+    formValues,
+    setFormValues,
+    onCloseConfirmDialog,
+  }
+}
+
+export function SendAssetForm({
+  accountAddress,
+  formId = "send-asset-form",
+  useSendAssetData,
+  hideNextBtn,
+}: {
+  accountAddress?: string
+  useSendAssetData: ReturnType<typeof useSendAsset>
+  formId?: string
+  onSuccess?: () => void
+  hideNextBtn?: boolean
+}) {
+  const {
+    balances,
+    contact,
+    setContact,
+    onChange,
+    onNext,
+    onSendTxn,
+    isCreateMultisigSubmitTxnLoading,
+    isCreateSendTxnLoading,
+    asset,
+    isShowConfirmDialog,
+    formValues,
+    setFormValues,
+    onCloseConfirmDialog,
+  } = useSendAssetData
 
   return (
     <>
@@ -341,24 +415,28 @@ export function SendAssetForm({
             />
           </FormControl>
         )}
-        <Flex justifyContent="flex-end" w="full" mt={4}>
-          <Button
-            width={{ base: "full", md: "auto" }}
-            isLoading={isLoading || isCreateMultisigSubmitTxnLoading}
-            colorScheme="brand.teal"
-            disabled={!asset || !formValues.amount || !formValues.to}
-            type="submit"
-          >
-            Next
-          </Button>
-        </Flex>
+        {!hideNextBtn && (
+          <Flex justifyContent="flex-end" w="full" mt={4}>
+            <Button
+              width={{ base: "full", md: "auto" }}
+              isLoading={
+                isCreateSendTxnLoading || isCreateMultisigSubmitTxnLoading
+              }
+              colorScheme="brand.teal"
+              disabled={!asset || !formValues.amount || !formValues.to}
+              type="submit"
+            >
+              Next
+            </Button>
+          </Flex>
+        )}
       </form>
       <ConfirmTxnDialog
         isOpen={isShowConfirmDialog}
         onClose={onCloseConfirmDialog}
         onSendTxn={onSendTxn}
         txnDetails={formValues}
-        isLoading={isLoading || isCreateMultisigSubmitTxnLoading}
+        isLoading={isCreateSendTxnLoading || isCreateMultisigSubmitTxnLoading}
         contact={contact}
       />
     </>

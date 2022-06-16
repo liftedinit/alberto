@@ -1,4 +1,4 @@
-import { AccountInfoData } from "many-js"
+import { AccountInfoData, AccountRole } from "many-js"
 import {
   AddressText,
   Box,
@@ -26,7 +26,9 @@ export function AccountInfo({
           Name
         </Heading>
         <Text fontWeight="medium">{accountInfo?.name ?? ""}</Text>
-        {address && <AddressText addressText={address} />}
+        {address && (
+          <AddressText p={0} bgColor={undefined} addressText={address} />
+        )}
       </Box>
 
       <Box w="full">
@@ -62,10 +64,12 @@ function AccountRoles({ roles }: { roles: AccountInfoData["roles"] }) {
             return (
               <Box w="full" key={address} px={4}>
                 {contactName ? (
-                  <Text fontWeight="medium">{contactName}</Text>
+                  <Text fontWeight="medium" casing="capitalize">
+                    {contactName}
+                  </Text>
                 ) : null}
                 <AddressText
-                  bgColor="transparent"
+                  bgColor={undefined}
                   p={0}
                   isFullText
                   addressText={address}

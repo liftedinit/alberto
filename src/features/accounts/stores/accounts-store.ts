@@ -64,6 +64,7 @@ export const useAccountsStore = create<AccountsState & AccountMethods>(
         set(s => {
           s.byId.delete(id)
           return {
+            activeId: s.activeId === id ? 0 : s.activeId,
             byId: s.byId,
           }
         }),

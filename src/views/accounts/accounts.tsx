@@ -18,7 +18,7 @@ export function Accounts() {
             <Box my={4}>
               <AccountsHeader />
             </Box>
-            <Box rounded="md" shadow="md" bgColor="white" p={6}>
+            <Box rounded="md" shadow="md" bgColor="white" p={4}>
               <Outlet />
             </Box>
           </PageContainer>

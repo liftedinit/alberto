@@ -8,7 +8,6 @@ import {
 } from "test/test-utils"
 import * as useIsBaseBreakpoint from "hooks/useIsBaseBreakpoint"
 import { useNetworkContext } from "features/network/network-provider"
-import { useAddressText } from "components/address-text"
 import { useAccountsStore } from "features/accounts"
 import { Home } from "views/home"
 import { AnonymousIdentity, Ed25519KeyPairIdentity, Transaction } from "many-js"
@@ -92,9 +91,6 @@ function getMockNetwork() {
 let mockNetwork = getMockNetwork()
 describe("home page", () => {
   beforeEach(() => {
-    useAddressText.mockImplementation(val => {
-      return "m111"
-    })
     mockNetwork = getMockNetwork()
     useNetworkContext.mockImplementation(() => {
       return [mockNetwork]
@@ -216,6 +212,7 @@ function setupHome() {
             1,
             {
               name: "test",
+              address: "m111",
               identity: new Ed25519KeyPairIdentity(pubKey, privateKey),
             },
           ],

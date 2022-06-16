@@ -1,8 +1,8 @@
 import { Icon as BaseIcon, IconProps } from "components"
 import { MdContentCopy } from "react-icons/md"
 import { HiOutlineRefresh } from "react-icons/hi"
-import { BiDownload } from "react-icons/bi"
-import { IoIosPaperPlane, IoMdPaperPlane } from "react-icons/io"
+import { BiDownload, BiPlusCircle, BiMinusCircle } from "react-icons/bi"
+import { IoIosPaperPlane, IoMdPaperPlane, IoMdUndo } from "react-icons/io"
 import {
   IoWallet,
   IoWalletOutline,
@@ -16,11 +16,9 @@ import {
   FaRegAddressBook,
   FaCheckCircle,
   FaUserCircle,
-  FaUndo,
   FaTimes,
   FaTimesCircle,
-  FaPlayCircle,
-  FaMinusCircle,
+  FaRegPlayCircle,
   FaAddressCard,
   FaRegAddressCard,
 } from "react-icons/fa"
@@ -137,13 +135,17 @@ export function CheckCircleIcon(props: IconProps) {
 }
 
 export function UndoIcon(props: IconProps) {
-  return <Icon as={FaUndo} {...props} />
+  return <Icon as={IoMdUndo} {...props} />
 }
 
 export function ExecuteIcon(props: IconProps) {
-  return <Icon as={FaPlayCircle} {...props} />
+  return <Icon as={FaRegPlayCircle} {...props} />
 }
 
 export function MinusCircleIcon(props: IconProps) {
-  return <Icon as={FaMinusCircle} {...props} />
+  return <Icon as={BiMinusCircle} {...props} />
+}
+
+export function PlusCircleIcon(props: IconProps) {
+  return <Icon as={BiPlusCircle} {...props} />
 }

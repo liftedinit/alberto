@@ -8,7 +8,6 @@ import {
   Tab,
   Tabs,
   TabList,
-  useAddressText,
 } from "components"
 import { useIsBaseBreakpoint } from "hooks"
 import { useNetworkContext } from "features/network"
@@ -25,7 +24,7 @@ export function Home() {
   const isBase = useIsBaseBreakpoint()
   const [network] = useNetworkContext()
   const account = useAccountsStore(s => s.byId.get(s.activeId))
-  const address = useAddressText(account?.identity!)
+  const address = account?.address ?? ""
   const [activeTab, setActiveTab] = React.useState<TabNames>(TabNames.assets)
 
   function isTabActive(tab: TabNames) {

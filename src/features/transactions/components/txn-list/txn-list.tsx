@@ -1,4 +1,3 @@
-import React from "react"
 import { ListFilterArgs } from "many-js"
 import type { Transaction } from "many-js"
 import {
@@ -15,6 +14,7 @@ import {
 } from "components"
 import { useTransactionsList } from "features/transactions/queries"
 import { TxnListItem } from "./txn-list-item"
+
 export function TxnList({
   address,
   filter = {},
@@ -42,9 +42,7 @@ export function TxnList({
   if (isError && error) {
     return (
       <Center>
-        <Text colorScheme="red" fontSize="lg">
-          {JSON.stringify(error)}
-        </Text>
+        <Text fontSize="lg">{JSON.stringify(error)}</Text>
       </Center>
     )
   }

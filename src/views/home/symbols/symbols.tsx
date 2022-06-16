@@ -60,7 +60,7 @@ export function Symbols({
   if (data.ownedAssetsWithBalance.length === 0 && !isLoading) {
     return (
       <Center>
-        <Text fontSize="lg">There are no asset available.</Text>
+        <Text fontSize="lg">There are no assets available.</Text>
       </Center>
     )
   }
@@ -91,14 +91,16 @@ export function Symbols({
           )
         })}
       </Stack>
-      <SendAssetModal
-        isOpen={isSendAssetModalOpen}
-        onClose={onClose}
-        address={address}
-        assetAddress={assetAddress}
-        accountAddress={accountAddress}
-        onSuccess={onClose}
-      />
+      {isSendAssetModalOpen && (
+        <SendAssetModal
+          isOpen={isSendAssetModalOpen}
+          onClose={onClose}
+          address={address}
+          assetAddress={assetAddress}
+          accountAddress={accountAddress}
+          onSuccess={onClose}
+        />
+      )}
     </>
   )
 }

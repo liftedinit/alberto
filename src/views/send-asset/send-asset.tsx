@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom"
 import { Breadcrumb, Box, Container, Layout, SlideFade } from "components"
 import { useAccountsStore } from "features/accounts"
-import { SendAssetForm } from "features/transactions"
+import { SendAssetForm, useSendAsset } from "features/transactions"
 
 export function SendAsset() {
   const location = useLocation()
@@ -9,6 +9,10 @@ export function SendAsset() {
   const account = useAccountsStore(s => s.byId.get(s.activeId))
   const address = account!.address as string
 
+  const useSendAssetData = useSendAsset({
+    address,
+    assetAddress: routeState?.assetIdentity,
+  })
   return (
     <Layout.Main>
       <SlideFade in>
@@ -21,10 +25,7 @@ export function SendAsset() {
             </Breadcrumb.BreadcrumbItem>
           </Breadcrumb>
           <Box shadow="md" rounded="md" py={8} px={6} bgColor="white">
-            <SendAssetForm
-              address={address}
-              assetAddress={routeState?.assetIdentity}
-            />
+            <SendAssetForm useSendAssetData={useSendAssetData} />
           </Box>
         </Container>
       </SlideFade>

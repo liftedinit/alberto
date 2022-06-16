@@ -17,6 +17,7 @@ import {
   Input,
   Modal,
   PlusIcon,
+  Spinner,
   Tab,
   Tabs,
   TabList,
@@ -74,7 +75,7 @@ export function AccountsList() {
           </Flex>
         </HStack>
       </FormControl>
-      <Box mt={4}>
+      <Box mt={6}>
         <AccountList />
       </Box>
     </>
@@ -151,7 +152,8 @@ function AddAccountModal({
 }) {
   const [accountAddress, setAccountAddress] = React.useState("")
   const debouncedAcctAddress = useDebounce(accountAddress)
-  const { data } = useGetAccountInfo(debouncedAcctAddress)
+  const { data, isLoading, isFetching } =
+    useGetAccountInfo(debouncedAcctAddress)
 
   function onImportClick() {
     data?.accountInfo &&
@@ -198,6 +200,16 @@ function AddAccountModal({
             placeholder="Account address"
           />
         </FormControl>
+        {isFetching && (
+          <Center mt={4}>
+            <Spinner size="lg" justifySelf="center" alignSelf="center" />
+          </Center>
+        )}
+        {!isFetching && !isLoading && !data && (
+          <Center mt={4}>
+            <Text>No account was found.</Text>
+          </Center>
+        )}
         <AccountInfo accountInfo={data?.accountInfo} />
       </Modal.Body>
     </Modal>
@@ -220,7 +232,9 @@ function AccountList() {
           >
             <Box w="full" overflow="hidden">
               <RouterLink to={address}>
-                <Text isTruncated>{name as string}</Text>
+                <Text fontWeight="medium" isTruncated>
+                  {name as string}
+                </Text>
               </RouterLink>
               <AddressText bgColor={undefined} p={0} addressText={address} />
             </Box>

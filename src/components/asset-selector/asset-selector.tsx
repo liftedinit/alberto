@@ -78,9 +78,6 @@ export function AssetSelector({
                     <Text fontSize="lg" lineHeight="normal">
                       {asset.symbol}
                     </Text>
-                    <Text fontSize="xs" lineHeight="normal" fontWeight="light">
-                      Asset Full Name
-                    </Text>
                   </VStack>
                 </HStack>
                 <Text whiteSpace="nowrap" overflow="hidden" isTruncated>
