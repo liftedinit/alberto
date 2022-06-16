@@ -1,15 +1,26 @@
-import type { CreateAccountTransaction } from "many-js"
+import type {
+  AccountInfoData,
+  CreateAccountTransaction,
+  GetAccountInfoResponse,
+} from "many-js"
 import { Modal, PlusCircleIcon, HStack, Text } from "components"
 import { BaseTxnListItem } from "./base-txn-list-item"
 import { BaseTxnDetails } from "./base-txn-details"
-import { AccountInfo, useGetAccountInfo } from "features/accounts"
+import { AccountInfo } from "features/accounts"
 
 export function CreateAccountTxnListItem({
   txnData,
 }: {
   txnData: CreateAccountTransaction
 }) {
-  const { time, account } = txnData
+  console.log({ txnData })
+  const { time, account, roles, name } = txnData
+  const data = {
+    accountInfo: {
+      name,
+      roles,
+    } as AccountInfoData,
+  }
   return (
     <BaseTxnListItem
       icon={<PlusCircleIcon />}
@@ -21,6 +32,7 @@ export function CreateAccountTxnListItem({
             <CreateAccountTxnDetailsModal
               isOpen={isOpen}
               onClose={onClose}
+              accountInfo={data}
               accountAddress={account}
             />
           )}
@@ -34,13 +46,13 @@ function CreateAccountTxnDetailsModal({
   onClose,
   isOpen,
   accountAddress,
+  accountInfo,
 }: {
   onClose: () => void
   isOpen: boolean
   accountAddress?: string
+  accountInfo?: GetAccountInfoResponse
 }) {
-  const { data } = useGetAccountInfo(accountAddress)
-
   return (
     <Modal
       header="Transaction Details"
@@ -53,7 +65,10 @@ function CreateAccountTxnDetailsModal({
           <PlusCircleIcon boxSize={8} />
           <Text>Create Account</Text>
         </HStack>
-        <AccountInfo accountInfo={data?.accountInfo} />
+        <AccountInfo
+          address={accountAddress}
+          accountInfo={accountInfo?.accountInfo}
+        />
       </Modal.Body>
     </Modal>
   )

@@ -32,6 +32,7 @@ export function AddressText({
         fontFamily="monospace"
         aria-label="public address"
         isTruncated
+        title={addressText}
         onCopy={e => {
           e.clipboardData.setData("text/plain", addressText)
           e.preventDefault()

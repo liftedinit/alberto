@@ -68,12 +68,7 @@ function AccountRoles({ roles }: { roles: AccountInfoData["roles"] }) {
                     {contactName}
                   </Text>
                 ) : null}
-                <AddressText
-                  bgColor={undefined}
-                  p={0}
-                  isFullText
-                  addressText={address}
-                />
+                <AddressText bgColor={undefined} p={0} addressText={address} />
                 <Flex gap={2} mt={1}>
                   {rolesList
                     ? rolesList.map((roleName: string) => {
