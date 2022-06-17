@@ -37,7 +37,8 @@ import { useDebounce } from "hooks"
 
 export function AccountsList() {
   const [, setContainerProps] = usePageContainerProvider()
-  const inputRef = React.useRef<HTMLInputElement>(null)
+  const [name, setName] = React.useState("")
+  const debouncedName = useDebounce(name)
   const { update, count: accountCount } = useAccountStore(s => ({
     update: s.update,
     count: s.byId.size,
@@ -59,7 +60,7 @@ export function AccountsList() {
             id="account"
             size="sm"
             variant="filled"
-            ref={inputRef}
+            onChange={e => setName(e.target.value)}
             maxLength={75}
             placeholder="Filter by name..."
           />
@@ -76,7 +77,7 @@ export function AccountsList() {
         </HStack>
       </FormControl>
       <Box mt={6}>
-        <AccountList />
+        <AccountList searchTerm={debouncedName} />
       </Box>
     </>
   )
@@ -216,44 +217,52 @@ function AddAccountModal({
   )
 }
 
-function AccountList() {
+function AccountList({ searchTerm }: { searchTerm: string }) {
   const accounts = useAccountStore(s => Array.from(s.byId))
   return (
     <VStack alignItems="flex-start" divider={<Divider />}>
       {accounts.map(acc => {
         const [address, { name }] = acc
-        return (
-          <Flex
-            alignItems="center"
-            justifyContent="space-between"
-            key={address}
-            w="full"
-            gap={4}
-          >
-            <Box w="full" overflow="hidden">
-              <RouterLink to={address}>
-                <Text fontWeight="medium" isTruncated>
-                  {name as string}
-                </Text>
-              </RouterLink>
-              <AddressText bgColor={undefined} p={0} addressText={address} />
-            </Box>
-            <RemoveAccountDialog address={address}>
-              {onOpen => (
-                <IconButton
-                  size="sm"
-                  rounded="full"
-                  aria-label="remove contact"
-                  onClick={e => {
-                    e.stopPropagation()
-                    onOpen()
-                  }}
-                  icon={<CloseIcon color="red" boxSize={5} />}
-                />
-              )}
-            </RemoveAccountDialog>
-          </Flex>
+        if (
+          !searchTerm ||
+          (searchTerm &&
+            (name as string)
+              .toLocaleLowerCase()
+              .includes(searchTerm.toLocaleLowerCase()))
         )
+          return (
+            <Flex
+              alignItems="center"
+              justifyContent="space-between"
+              key={address}
+              w="full"
+              gap={4}
+            >
+              <Box w="full" overflow="hidden">
+                <RouterLink to={address}>
+                  <Text fontWeight="medium" isTruncated>
+                    {name as string}
+                  </Text>
+                </RouterLink>
+                <AddressText bgColor={undefined} p={0} addressText={address} />
+              </Box>
+              <RemoveAccountDialog address={address}>
+                {onOpen => (
+                  <IconButton
+                    size="sm"
+                    rounded="full"
+                    aria-label="remove contact"
+                    onClick={e => {
+                      e.stopPropagation()
+                      onOpen()
+                    }}
+                    icon={<CloseIcon color="red" boxSize={5} />}
+                  />
+                )}
+              </RemoveAccountDialog>
+            </Flex>
+          )
+        return null
       })}
     </VStack>
   )
