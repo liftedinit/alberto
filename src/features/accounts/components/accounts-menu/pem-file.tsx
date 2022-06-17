@@ -1,13 +1,13 @@
 import React from "react"
 import {
   Button,
+  ChevronLeftIcon,
   FormControl,
   FormLabel,
   Input,
   Modal,
   Textarea,
   useToast,
-  ContainerWrapper,
 } from "components"
 import { useAccountsStore } from "features/accounts"
 import { Ed25519KeyPairIdentity } from "many-js"
@@ -38,7 +38,8 @@ export function PemFile({ setAddMethod, onSuccess }: AddAccountMethodProps) {
         description: "Invalid PEM",
       })
     }
-    const exists = await doesAccountExist(identity.publicKey, accounts)
+    const address = (await identity.getAddress()).toString()
+    const exists = await doesAccountExist(address, accounts)
 
     if (exists) {
       return toast({
@@ -63,36 +64,38 @@ export function PemFile({ setAddMethod, onSuccess }: AddAccountMethodProps) {
     <>
       <Modal.Header>Import From PEM File</Modal.Header>
       <Modal.Body>
-        <Button variant="link" onClick={() => setAddMethod("")}>
+        <Button
+          variant="link"
+          onClick={() => setAddMethod("")}
+          leftIcon={<ChevronLeftIcon />}
+        >
           Back
         </Button>
-        <ContainerWrapper>
-          <form id="add-account-form" onSubmit={onSave}>
-            <FormControl isRequired>
-              <FormLabel htmlFor="name">Name</FormLabel>
-              <Input
-                autoFocus
-                name="name"
-                id="name"
-                variant="filled"
-                onChange={e => setName(e.target.value)}
-                value={name}
-              />
-            </FormControl>
-            <FormControl isRequired>
-              <FormLabel htmlFor="pem" mt={6}>
-                PEM File
-              </FormLabel>
-              <Textarea
-                value={pem}
-                name="pem"
-                id="pem"
-                variant="filled"
-                onChange={e => setPem(e.target.value)}
-              />
-            </FormControl>
-          </form>
-        </ContainerWrapper>
+        <form id="add-account-form" onSubmit={onSave}>
+          <FormControl isRequired>
+            <FormLabel htmlFor="name">Name</FormLabel>
+            <Input
+              autoFocus
+              name="name"
+              id="name"
+              variant="filled"
+              onChange={e => setName(e.target.value)}
+              value={name}
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel htmlFor="pem" mt={6}>
+              PEM File
+            </FormLabel>
+            <Textarea
+              value={pem}
+              name="pem"
+              id="pem"
+              variant="filled"
+              onChange={e => setPem(e.target.value)}
+            />
+          </FormControl>
+        </form>
       </Modal.Body>
     </>
   )

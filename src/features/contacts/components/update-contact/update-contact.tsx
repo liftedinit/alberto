@@ -173,7 +173,7 @@ export function ContactFormModal({
                   name="address"
                   variant="filled"
                   value={formValues.address}
-                  maxLength={50}
+                  maxLength={100}
                   minLength={50}
                   onChange={handleChange}
                   isTruncated

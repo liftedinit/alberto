@@ -1,6 +1,8 @@
 import React from "react"
 import { useLocation, Link as RouterLink } from "react-router-dom"
 import {
+  AccountsIcon,
+  AccountsOutlineIcon,
   AddressBookIcon,
   AddressBookOutlineIcon,
   Center,
@@ -37,6 +39,13 @@ export function AppMenu() {
       activeIcon: AddressBookIcon,
       icon: AddressBookOutlineIcon,
     },
+    {
+      pathname: "/accounts",
+      activeIcon: AccountsIcon,
+      icon: AccountsOutlineIcon,
+      matcher: (pathname: string, currentPathname: string) =>
+        pathname.startsWith(currentPathname),
+    },
 
     // {
     //   pathname: "/settings",
@@ -51,7 +60,7 @@ export function AppMenu() {
         justifyContent: "space-evenly",
       }
     : {
-        spacing: 10,
+        spacing: 8,
         direction: "column",
         justifyContent: "flex-start",
         shadow: "lg",
@@ -69,8 +78,10 @@ export function AppMenu() {
       <Show above="md">
         <Image src={cubeImg} />
       </Show>
-      {iconsRef.current.map(({ icon, activeIcon, pathname }, idx) => {
-        const isActive = pathname === location.pathname
+      {iconsRef.current.map(({ icon, activeIcon, pathname, matcher }, idx) => {
+        const isActive = matcher
+          ? matcher(location.pathname, pathname)
+          : pathname === location.pathname
         return (
           <Center {...centerProps} key={idx} p={2} rounded="full">
             <Link
@@ -83,8 +94,7 @@ export function AppMenu() {
             >
               <Icon
                 color={isActive ? "brand.teal.500" : undefined}
-                w={{ base: 8, md: 9 }}
-                h={{ base: 8, md: 9 }}
+                boxSize={isBase ? 8 : 9}
                 as={isActive ? activeIcon : icon}
               />
             </Link>

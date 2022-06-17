@@ -2,7 +2,15 @@ import React from "react"
 import { Outlet } from "react-router"
 import { Routes, Route } from "react-router-dom"
 import { Layout } from "components"
-import { Contacts, Home, SendAsset, SplashView } from "./views"
+import {
+  Accounts,
+  AccountDetails,
+  AccountsList,
+  Contacts,
+  Home,
+  SendAsset,
+  SplashView,
+} from "./views"
 
 const ONE_SECOND = 1 * 1000
 
@@ -27,8 +35,12 @@ function App() {
         }
       >
         <Route index element={<Home />} />
-        <Route path="send" element={<SendAsset />} />
+        <Route path="accounts" element={<Accounts />}>
+          <Route index element={<AccountsList />} />
+          <Route path=":accountAddress" element={<AccountDetails />} />
+        </Route>
         <Route path="contacts" element={<Contacts />} />
+        <Route path="send" element={<SendAsset />} />
       </Route>
     </Routes>
   )

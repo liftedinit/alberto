@@ -8,17 +8,10 @@ import {
 } from "test/test-utils"
 import { toast } from "components"
 import { useBalances } from "features/balances/queries"
-import { useSendToken } from "features/transactions/queries"
-import { useAddressText } from "components/address-text"
+import { useCreateSendTxn } from "features/transactions/queries"
 import { SendAsset } from "views"
 import { amountFormatter } from "helper/common"
 
-jest.mock("components/address-text", () => {
-  return {
-    ...jest.requireActual("components/address-text"),
-    useAddressText: jest.fn(),
-  }
-})
 jest.mock("features/balances/queries")
 jest.mock("features/transactions/queries")
 
@@ -38,14 +31,11 @@ describe("<SendAsset />", () => {
       errors: [],
       data: { ownedAssetsWithBalance },
     }))
-    useSendToken.mockImplementation(() => ({
-      sendToken: jest.fn((_, opts) => {
+    useCreateSendTxn.mockImplementation(() => ({
+      mutate: jest.fn((_, opts) => {
         opts?.onSuccess()
       }),
     }))
-    useAddressText.mockImplementation(val => {
-      return "m111"
-    })
   })
   it("should show a list of owned tokens and balance when selecting a token", () => {
     setupSendAsset()
@@ -62,7 +52,7 @@ describe("<SendAsset />", () => {
       ).toBeInTheDocument()
     })
   })
-  it("should be able to send tokens", async () => {
+  it("should have a form to send tokens", async function () {
     setupSendAsset()
     const toInput = screen.getByRole("textbox", { name: /to/i })
     const nextBtn = screen.getByRole("button", { name: /next/i })
@@ -96,7 +86,6 @@ describe("<SendAsset />", () => {
     userEvent.click(confirmCheckbox)
     expect(sendBtn).not.toBeDisabled()
     userEvent.click(sendBtn)
-    expect(await screen.findByText(/next/i)).toBeInTheDocument()
     expect(toInput).toHaveValue("")
     expect(amountInput).toHaveValue("")
     expect(selectTokenBtn).toBeInTheDocument()

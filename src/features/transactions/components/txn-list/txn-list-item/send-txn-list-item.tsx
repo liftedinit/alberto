@@ -1,0 +1,46 @@
+import { SendTransaction } from "many-js"
+import { Flex, Text } from "components"
+import { useSendTxn } from "./hooks"
+import { BaseTxnListItem } from "./base-txn-list-item"
+
+export function SendTxnListItem({
+  txn,
+  address,
+}: {
+  txn: SendTransaction
+  address: string
+}) {
+  const time = txn.time
+  const {
+    TxnIcon,
+    iconColor,
+    title,
+    toOrFromLabel,
+    contactName,
+    toOrFromAddress,
+    displayAmount,
+    symbol,
+  } = useSendTxn({
+    address,
+    txn: txn as SendTransaction,
+  })
+
+  return (
+    <BaseTxnListItem
+      icon={<TxnIcon />}
+      txnTypeName={title}
+      txnTime={time?.toLocaleString()}
+      actionLabel={toOrFromLabel}
+      actorName={contactName}
+      actorAddress={toOrFromAddress}
+      txnDetails={
+        <Flex gap={2} justifyContent="flex-end">
+          <Text fontWeight="medium" color={iconColor} justifySelf="flex-end">
+            {displayAmount}
+          </Text>
+          <Text>{symbol}</Text>
+        </Flex>
+      }
+    />
+  )
+}

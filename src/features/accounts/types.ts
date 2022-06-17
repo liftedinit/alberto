@@ -2,12 +2,14 @@ import {
   WebAuthnIdentity,
   Ed25519KeyPairIdentity,
   AnonymousIdentity,
+  AccountRole,
+  LedgerTransactionType,
 } from "many-js"
 
 export type AccountId = number
 export interface Account {
   name: string
-  address?: string
+  address: string
   identity: WebAuthnIdentity | Ed25519KeyPairIdentity | AnonymousIdentity
 }
 
@@ -31,3 +33,23 @@ export type CredentialData = {
   base64CredentialId: string
   cosePublicKey: ArrayBuffer
 }
+
+export const submitterRoles = [
+  AccountRole[AccountRole.canLedgerTransact],
+  AccountRole[AccountRole.canMultisigSubmit],
+  AccountRole[AccountRole.owner],
+]
+
+export const approverRoles = [
+  AccountRole[AccountRole.canMultisigApprove],
+  AccountRole[AccountRole.canMultisigSubmit],
+  AccountRole[AccountRole.owner],
+]
+
+export const multisigTxnTypes = [
+  LedgerTransactionType.accountMultisigApprove,
+  LedgerTransactionType.accountMultisigSubmit,
+  LedgerTransactionType.accountMultisigExecute,
+  LedgerTransactionType.accountMultisigRevoke,
+  LedgerTransactionType.accountMultisigWithdraw,
+]

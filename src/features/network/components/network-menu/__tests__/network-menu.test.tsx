@@ -9,9 +9,9 @@ import {
 import { NetworkMenu } from "../network-menu"
 
 describe("NetworkMenu", () => {
-  it("should render with default localhost network", () => {
+  it("should render with default manifest network", () => {
     render(<NetworkMenu />)
-    expect(screen.getAllByText(/localhost/i).length).toBe(2)
+    expect(screen.getAllByText(/manifest/i).length).toBe(2)
   })
   it("should create a new network", async () => {
     const activeNetwork = setupNetworkMenu()
@@ -56,11 +56,11 @@ describe("NetworkMenu", () => {
     userEvent.type(nameInput, "-edited")
     userEvent.type(urlInput, "-edited")
 
-    expect(nameInput).toHaveValue("Localhost-edited")
+    expect(nameInput).toHaveValue("Manifest-edited")
     expect(urlInput).toHaveValue("/api-edited")
     userEvent.click(saveBtn)
     expect(
-      within(activeNetwork).getByText(/localhost-edited/i),
+      within(activeNetwork).getByText(/manifest-edited/i),
     ).toBeInTheDocument()
   })
 })

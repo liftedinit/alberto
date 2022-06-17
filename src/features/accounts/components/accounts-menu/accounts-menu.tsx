@@ -1,5 +1,5 @@
 import React from "react"
-import { AnonymousIdentity, WebAuthnIdentity } from "many-js"
+import { AnonymousIdentity, ANON_IDENTITY, WebAuthnIdentity } from "many-js"
 import { useAccountsStore } from "features/accounts"
 import {
   AddressText,
@@ -71,7 +71,7 @@ export function AccountsMenu() {
     onEditModalOpen()
   }
 
-  const isAnonymous = activeAccount?.identity instanceof AnonymousIdentity
+  const isAnonymous = activeAccount?.address === ANON_IDENTITY
 
   return (
     <Flex alignItems="center" minWidth="100px" mr={2}>
@@ -134,7 +134,7 @@ export function AccountsMenu() {
       </Menu>
       {!isAnonymous && !!activeAccount && (
         <AddressText
-          identity={activeAccount?.identity}
+          addressText={activeAccount.address!}
           display={{ base: "none", md: "inline-flex" }}
           ms={2}
         />
@@ -164,7 +164,7 @@ function AccountMenuItem({
   const id = account[0]
   const isActive = activeId === id
   const accountData = account[1]
-  const isWebAuthnIdentity = accountData.identity instanceof WebAuthnIdentity
+  const isWebAuthnIdentity = accountData?.identity instanceof WebAuthnIdentity
   const isAnonymous = accountData?.identity instanceof AnonymousIdentity
   return (
     <MenuItem as={SimpleGrid} columns={3} borderTopWidth={1} spacing={4} py={4}>
@@ -199,7 +199,11 @@ function AccountMenuItem({
           )}
         </HStack>
         {!isAnonymous && (
-          <AddressText identity={accountData.identity} bgColor={undefined} />
+          <AddressText
+            addressText={accountData.address!}
+            bgColor={undefined}
+            p={0}
+          />
         )}
       </VStack>
       {

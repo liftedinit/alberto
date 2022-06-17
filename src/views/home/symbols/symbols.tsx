@@ -1,5 +1,4 @@
 import React from "react"
-import { Link as RouterLink } from "react-router-dom"
 import {
   Button,
   Center,
@@ -11,22 +10,34 @@ import {
   Stack,
   StackDivider,
   Text,
+  useDisclosure,
   useBreakpointValue,
 } from "components"
 import { Asset, useBalances } from "features/balances"
+import { SendAssetModal } from "features/transactions"
 import cubeImg from "assets/cube.png"
 import { amountFormatter } from "helper/common"
 
 export function Symbols({
   address,
   onAssetClicked,
+  accountAddress,
+  renderAssetListItem,
 }: {
   address: string
   onAssetClicked: (asset: Asset) => void
+  accountAddress?: string
+  renderAssetListItem?: () => React.ReactNode
 }) {
+  const { isOpen: isSendAssetModalOpen, onOpen, onClose } = useDisclosure()
   const { data, isError, isLoading, errors } = useBalances({
     address,
   })
+  const [assetAddress, setAssetAddress] = React.useState("")
+
+  React.useEffect(() => {
+    !isSendAssetModalOpen && setAssetAddress("")
+  }, [isSendAssetModalOpen])
 
   if (isError) {
     return (
@@ -49,7 +60,7 @@ export function Symbols({
   if (data.ownedAssetsWithBalance.length === 0 && !isLoading) {
     return (
       <Center>
-        <Text fontSize="lg">There are no tokens for this account.</Text>
+        <Text fontSize="lg">There are no assets available.</Text>
       </Center>
     )
   }
@@ -64,30 +75,50 @@ export function Symbols({
 
       <Stack spacing={0} divider={<StackDivider />}>
         {data.ownedAssetsWithBalance.map(asset => {
-          return (
-            <AssetLlistItem
+          return renderAssetListItem ? (
+            renderAssetListItem()
+          ) : (
+            <AssetListItem
               key={asset.identity}
               asset={asset}
+              address={address}
               onAssetClicked={onAssetClicked}
+              onSendClicked={(address: string) => {
+                setAssetAddress(address)
+                onOpen()
+              }}
             />
           )
         })}
       </Stack>
+      {isSendAssetModalOpen && (
+        <SendAssetModal
+          isOpen={isSendAssetModalOpen}
+          onClose={onClose}
+          address={address}
+          assetAddress={assetAddress}
+          accountAddress={accountAddress}
+          onSuccess={onClose}
+        />
+      )}
     </>
   )
 }
 
-function AssetLlistItem({
+function AssetListItem({
   asset,
   onAssetClicked,
+  onSendClicked,
 }: {
   asset: Asset
+  address: string
   onAssetClicked: (asset: Asset) => void
+  onSendClicked?: (assetAddress: string) => void
 }) {
   const [showActions, setShowActions] = React.useState(false)
   const toggleShowSend = useBreakpointValue({
     base: undefined,
-    md: () => setShowActions(s => !s),
+    md: (show: boolean) => setShowActions(show),
   })
 
   return (
@@ -95,8 +126,8 @@ function AssetLlistItem({
       spacing={4}
       overflow="hidden"
       alignItems="center"
-      onMouseEnter={toggleShowSend}
-      onMouseLeave={toggleShowSend}
+      onMouseEnter={() => toggleShowSend?.(true)}
+      onMouseLeave={() => toggleShowSend?.(false)}
       cursor="pointer"
       aria-label="asset list item"
       onClick={() => onAssetClicked(asset)}
@@ -128,11 +159,11 @@ function AssetLlistItem({
           md: showActions ? "flex" : "none",
         }}
         variant="link"
-        as={RouterLink}
-        to="send"
         justifySelf="flex-end"
-        onClick={e => e.stopPropagation()}
-        state={{ assetIdentity: asset.identity }}
+        onClick={e => {
+          e.stopPropagation()
+          onSendClicked?.(asset.identity)
+        }}
       >
         Send
       </Button>

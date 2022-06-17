@@ -1,5 +1,5 @@
 import { extendTheme } from "@chakra-ui/react"
-import { Button, Heading, Text } from "./components"
+import { Button, Heading, Text, Tabs } from "./components"
 
 export const theme = extendTheme({
   styles: {
@@ -19,6 +19,7 @@ export const theme = extendTheme({
     Button,
     Heading,
     Text,
+    Tabs,
   },
   colors: {
     "brand.black": "#452E33",

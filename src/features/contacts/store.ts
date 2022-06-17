@@ -40,7 +40,7 @@ export const useContactsStore = create<ContactsState & Actions>(
         }),
     }),
     {
-      name: "ALBERT.CONTACTS",
+      name: "ALBERTO.CONTACTS",
       // @ts-ignore
       getStorage: () => localforage,
       serialize: state => JSON.stringify(state, replacer),
@@ -51,10 +51,10 @@ export const useContactsStore = create<ContactsState & Actions>(
 
 export function useContactsList(searchName: string = "") {
   const accounts = useAccountsStore(s => Array.from(s.byId)).reduce(
-    (acc, [, { name, identity, address }]) => {
-      if (!(identity instanceof AnonymousIdentity) && address) {
-        acc.push({ name, address })
-      }
+    (acc, [, account]) => {
+      const { name, address } = account
+      if (account?.identity instanceof AnonymousIdentity) return acc
+      name && address && acc.push({ name, address })
       return acc
     },
     [] as { name: string; address: string }[],

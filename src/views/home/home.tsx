@@ -1,21 +1,18 @@
 import React from "react"
 import {
   Box,
+  Breadcrumb,
   Container,
-  Heading,
   Layout,
   SlideFade,
   Tab,
   Tabs,
   TabList,
-  useAddressText,
 } from "components"
 import { useIsBaseBreakpoint } from "hooks"
 import { useNetworkContext } from "features/network"
 import { useAccountsStore } from "features/accounts"
-import { Symbols } from "./symbols"
-import { AssetDetails } from "./asset-details"
-import { Asset } from "features/balances"
+import { Assets } from "./assets"
 import { TxnList } from "features/transactions"
 
 enum TabNames {
@@ -27,11 +24,7 @@ export function Home() {
   const isBase = useIsBaseBreakpoint()
   const [network] = useNetworkContext()
   const account = useAccountsStore(s => s.byId.get(s.activeId))
-  const address = useAddressText(account?.identity!)
-  const [asset, setAsset] = React.useState<Asset | undefined>(undefined)
-  function onAssetClicked(asset: Asset) {
-    setAsset(asset)
-  }
+  const address = account?.address ?? ""
   const [activeTab, setActiveTab] = React.useState<TabNames>(TabNames.assets)
 
   function isTabActive(tab: TabNames) {
@@ -41,17 +34,20 @@ export function Home() {
   React.useEffect(() => {
     return () => {
       setActiveTab(TabNames.assets)
-      setAsset(undefined)
     }
   }, [account, network])
 
   return (
     <Layout.Main>
       <SlideFade in>
-        <Container maxW={{ base: "full", md: "container.sm" }}>
-          <Heading size="lg" mb={3}>
-            Wallet
-          </Heading>
+        <Container maxW={{ base: "auto", md: "container.sm" }}>
+          <Breadcrumb my={4}>
+            <Breadcrumb.BreadcrumbItem>
+              <Breadcrumb.BreadcrumbLink to="/" isCurrentPage={true}>
+                Wallet
+              </Breadcrumb.BreadcrumbLink>
+            </Breadcrumb.BreadcrumbItem>
+          </Breadcrumb>
           <Box
             rounded="md"
             shadow="md"
@@ -59,48 +55,24 @@ export function Home() {
             position="relative"
             p={{ base: 2, md: 4 }}
           >
-            {asset ? (
-              <Box>
-                <SlideFade in>
-                  <AssetDetails
-                    asset={asset}
-                    setAsset={setAsset}
-                    address={address}
-                  />
-                </SlideFade>
-              </Box>
-            ) : (
-              <SlideFade in>
-                <Tabs
-                  isFitted={isBase ? true : false}
-                  colorScheme="brand.teal"
-                  index={isTabActive(TabNames.assets) ? 0 : 1}
-                  mb={3}
-                  onChange={index =>
-                    setActiveTab(
-                      index === 0 ? TabNames.assets : TabNames.activity,
-                    )
-                  }
-                >
-                  <TabList>
-                    <Tab fontWeight="medium">Assets</Tab>
-                    <Tab fontWeight="medium">Activity</Tab>
-                  </TabList>
-                </Tabs>
+            <Tabs
+              isFitted={isBase ? true : false}
+              index={isTabActive(TabNames.assets) ? 0 : 1}
+              mb={3}
+              onChange={index =>
+                setActiveTab(index === 0 ? TabNames.assets : TabNames.activity)
+              }
+            >
+              <TabList>
+                <Tab>{TabNames.assets}</Tab>
+                <Tab>{TabNames.activity}</Tab>
+              </TabList>
+            </Tabs>
 
-                {isTabActive(TabNames.assets) && (
-                  <SlideFade in>
-                    <Symbols
-                      onAssetClicked={onAssetClicked}
-                      address={address}
-                    />
-                  </SlideFade>
-                )}
-                {isTabActive(TabNames.activity) && (
-                  <SlideFade in>
-                    <TxnList address={address} />
-                  </SlideFade>
-                )}
+            {isTabActive(TabNames.assets) && <Assets address={address} />}
+            {isTabActive(TabNames.activity) && (
+              <SlideFade in>
+                <TxnList address={address} />
               </SlideFade>
             )}
           </Box>

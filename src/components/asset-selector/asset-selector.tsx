@@ -78,9 +78,6 @@ export function AssetSelector({
                     <Text fontSize="lg" lineHeight="normal">
                       {asset.symbol}
                     </Text>
-                    <Text fontSize="xs" lineHeight="normal" fontWeight="light">
-                      Asset Full Name
-                    </Text>
                   </VStack>
                 </HStack>
                 <Text whiteSpace="nowrap" overflow="hidden" isTruncated>
@@ -115,15 +112,10 @@ export function AssetSelector({
             />
           </Box>
           <Divider mt={4} mb={3} />
-          <Tabs
-            colorScheme="brand.teal"
-            isFitted
-            onChange={idx => setTabIdx(idx)}
-            index={tabIdx}
-          >
+          <Tabs isFitted onChange={idx => setTabIdx(idx)} index={tabIdx}>
             <TabList mb={3}>
-              {ownedAssets && <Tab fontWeight="medium">Owned Assets</Tab>}
-              {allAssets && <Tab fontWeight="medium">All Assets</Tab>}
+              {ownedAssets && <Tab>Owned Assets</Tab>}
+              {allAssets && <Tab>All Assets</Tab>}
             </TabList>
             {AssetsList}
           </Tabs>

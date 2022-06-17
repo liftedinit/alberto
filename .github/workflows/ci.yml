@@ -12,6 +12,7 @@ jobs:
         with:
           node-version: '16.14.0'
       - run: npm install
+      - run: npm update many-js
       - run: npm run build
       - name: 'Upload build'
         uses: actions/upload-artifact@v3

@@ -22,8 +22,7 @@ export function CopyToClipboard({
           {children}
           <Icon
             as={CopyIcon}
-            w={5}
-            h={5}
+            boxSize={5}
             onClick={e => {
               e.stopPropagation()
               onCopy()

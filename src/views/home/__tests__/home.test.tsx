@@ -8,7 +8,6 @@ import {
 } from "test/test-utils"
 import * as useIsBaseBreakpoint from "hooks/useIsBaseBreakpoint"
 import { useNetworkContext } from "features/network/network-provider"
-import { useAddressText } from "components/address-text"
 import { useAccountsStore } from "features/accounts"
 import { Home } from "views/home"
 import { AnonymousIdentity, Ed25519KeyPairIdentity, Transaction } from "many-js"
@@ -45,7 +44,7 @@ const mockListData = {
   count: 4,
   transactions: [
     {
-      id: 1,
+      id: Buffer.from("1"),
       type: "send",
       from: "m111",
       to: "m888",
@@ -54,7 +53,7 @@ const mockListData = {
       amount: BigInt(1),
     },
     {
-      id: 2,
+      id: Buffer.from("2"),
       type: "send",
       from: "m888",
       to: "ma111",
@@ -92,9 +91,6 @@ function getMockNetwork() {
 let mockNetwork = getMockNetwork()
 describe("home page", () => {
   beforeEach(() => {
-    useAddressText.mockImplementation(val => {
-      return "m111"
-    })
     mockNetwork = getMockNetwork()
     useNetworkContext.mockImplementation(() => {
       return [mockNetwork]
@@ -130,7 +126,7 @@ describe("home page", () => {
         count: 2,
         transactions: [
           {
-            id: 1,
+            id: Buffer.from("1"),
             type: "send",
             from: "m111",
             to: "m888",
@@ -139,7 +135,7 @@ describe("home page", () => {
             amount: BigInt(1),
           },
           {
-            id: 2,
+            id: Buffer.from("2"),
             type: "send",
             from: "m888",
             to: "m111",
@@ -216,6 +212,7 @@ function setupHome() {
             1,
             {
               name: "test",
+              address: "m111",
               identity: new Ed25519KeyPairIdentity(pubKey, privateKey),
             },
           ],
