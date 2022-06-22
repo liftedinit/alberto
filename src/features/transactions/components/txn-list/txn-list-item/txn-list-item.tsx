@@ -1,7 +1,11 @@
-import { LedgerTransactionType, SendTransaction } from "many-js"
-import type { Transaction, CreateAccountTransaction } from "many-js"
+import {
+  EventType,
+  Event,
+  CreateAccountEvent,
+  MultisigEvent,
+  SendEvent,
+} from "many-js"
 import { multisigTxnTypes } from "features/accounts"
-import { MultisigTransaction } from "many-js/dist/network/modules/ledger/ledger"
 import { MultisigTxnListItem } from "./multisig-txn-list-item"
 import { CreateAccountTxnListItem } from "./create-account-txn-list-item"
 import { SendTxnListItem } from "./send-txn-list-item"
@@ -10,27 +14,23 @@ export function TxnListItem({
   transaction,
   address,
 }: {
-  transaction: Transaction
+  transaction: Event
   address: string
 }) {
-  const txnTypeName = transaction.type as LedgerTransactionType
-  if (txnTypeName === LedgerTransactionType.send) {
+  const txnTypeName = transaction.type as EventType
+  if (txnTypeName === EventType.send) {
+    return <SendTxnListItem txn={transaction as SendEvent} address={address} />
+  } else if (txnTypeName === EventType.accountCreate) {
     return (
-      <SendTxnListItem txn={transaction as SendTransaction} address={address} />
-    )
-  } else if (txnTypeName === LedgerTransactionType.accountCreate) {
-    return (
-      <CreateAccountTxnListItem
-        txnData={transaction as CreateAccountTransaction}
-      />
+      <CreateAccountTxnListItem txnData={transaction as CreateAccountEvent} />
     )
   } else if (isMultisigTxnType(transaction.type)) {
-    return <MultisigTxnListItem txn={transaction as MultisigTransaction} />
+    return <MultisigTxnListItem txn={transaction as MultisigEvent} />
   }
   console.error("txn list item not implemented:", transaction.type)
   return null
 }
 
-function isMultisigTxnType(type: LedgerTransactionType) {
+function isMultisigTxnType(type: EventType) {
   return multisigTxnTypes.some(t => t === type)
 }

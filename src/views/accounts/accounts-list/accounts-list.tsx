@@ -220,7 +220,7 @@ function AddAccountModal({
 function AccountList({ searchTerm }: { searchTerm: string }) {
   const accounts = useAccountStore(s => Array.from(s.byId))
   return (
-    <VStack alignItems="flex-start" divider={<Divider />}>
+    <VStack alignItems="flex-start" divider={<Divider />} spacing={4}>
       {accounts.map(acc => {
         const [address, { name }] = acc
         if (

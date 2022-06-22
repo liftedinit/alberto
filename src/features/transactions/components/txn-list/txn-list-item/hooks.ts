@@ -1,10 +1,15 @@
+import React from "react"
 import {
-  LedgerTransactionType,
-  MultisigSubmitTransaction,
-  SendTransaction,
   AccountRole,
+  EventType,
+  MultisigSubmitEvent,
+  MultisigApproveEvent,
+  SendEvent,
+  MultisigEvent,
+  MultisigRevokeEvent,
+  MultisigExecuteEvent,
+  MultisigWithdrawEvent,
 } from "many-js"
-import type { MultisigApproveTransaction } from "many-js"
 import {
   CheckCircleIcon,
   MinusCircleIcon,
@@ -24,28 +29,15 @@ import {
   useMultisigRevoke,
   useMultisigWithdraw,
 } from "features/accounts"
-import React from "react"
-import {
-  MultisigTransaction,
-  MultisigRevokeTransaction,
-  MultisigExecuteTransaction,
-  MultisigWithdrawTransaction,
-} from "many-js/dist/network/modules/ledger/ledger"
 import { useLedgerInfo } from "features/network"
 import { useGetContactName } from "features/contacts/hooks"
 
-export function useSendTxn({
-  address,
-  txn,
-}: {
-  address: string
-  txn: SendTransaction
-}) {
+export function useSendTxn({ address, txn }: { address: string; txn: SendEvent }) {
   const { data } = useLedgerInfo({ address })
   const symbols = data!.symbols
 
   const isSender = address === txn.from
-  const { to, from, amount, symbolAddress } = txn as SendTransaction
+  const { to, from, amount, symbolAddress } = txn as SendEvent
   const TxnIcon = isSender ? SendOutlineIcon : ReceiveIcon
   const iconColor = isSender ? "red" : "green.500"
   const title = isSender ? "send" : "receive"
@@ -67,7 +59,7 @@ export function useSendTxn({
   }
 }
 
-export function useMultisigTxn(txn: MultisigTransaction) {
+export function useMultisigTxn(txn: MultisigEvent) {
   let data: {
     actionLabel: string
     actorAddress: string
@@ -82,10 +74,10 @@ export function useMultisigTxn(txn: MultisigTransaction) {
     iconProps: {},
   }
   switch (txn.type) {
-    case LedgerTransactionType.accountMultisigApprove:
+    case EventType.accountMultisigApprove:
       data = {
         actionLabel: "Approved By:",
-        actorAddress: (txn as MultisigApproveTransaction).approver,
+        actorAddress: (txn as MultisigApproveEvent).approver,
         txnLabel: "Multisig - Approve",
         TxnIcon: CheckCircleIcon,
         iconProps: {
@@ -93,35 +85,35 @@ export function useMultisigTxn(txn: MultisigTransaction) {
         },
       }
       break
-    case LedgerTransactionType.accountMultisigExecute:
+    case EventType.accountMultisigExecute:
       data = {
         actionLabel: "Executed By:",
-        actorAddress: (txn as MultisigExecuteTransaction).executor,
+        actorAddress: (txn as MultisigExecuteEvent).executor,
         txnLabel: "Multisig - Execute",
         TxnIcon: ExecuteIcon,
       }
       break
-    case LedgerTransactionType.accountMultisigRevoke:
+    case EventType.accountMultisigRevoke:
       data = {
         actionLabel: "Revoked By:",
-        actorAddress: (txn as MultisigRevokeTransaction).revoker,
+        actorAddress: (txn as MultisigRevokeEvent).revoker,
         txnLabel: "Multisig - Revoke",
         TxnIcon: UndoIcon,
       }
       break
-    case LedgerTransactionType.accountMultisigSubmit:
+    case EventType.accountMultisigSubmit:
       data = {
         actionLabel: "Submitted By:",
-        actorAddress: (txn as MultisigSubmitTransaction).submitter,
+        actorAddress: (txn as MultisigSubmitEvent).submitter,
         txnLabel: "Multisig - Submit",
         TxnIcon: PendingIcon,
         iconProps: { color: "orange" },
       }
       break
-    case LedgerTransactionType.accountMultisigWithdraw:
+    case EventType.accountMultisigWithdraw:
       data = {
         actionLabel: "Withdrawn By:",
-        actorAddress: (txn as MultisigWithdrawTransaction).withdrawer,
+        actorAddress: (txn as MultisigWithdrawEvent).withdrawer,
         txnLabel: "Multisig - Withdraw",
         TxnIcon: MinusCircleIcon,
       }

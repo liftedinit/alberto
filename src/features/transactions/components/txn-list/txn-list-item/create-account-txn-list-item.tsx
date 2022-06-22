@@ -1,6 +1,6 @@
-import type {
+import {
   AccountInfoData,
-  CreateAccountTransaction,
+  CreateAccountEvent,
   GetAccountInfoResponse,
 } from "many-js"
 import { Modal, PlusCircleIcon, HStack, Text } from "components"
@@ -11,13 +11,13 @@ import { AccountInfo } from "features/accounts"
 export function CreateAccountTxnListItem({
   txnData,
 }: {
-  txnData: CreateAccountTransaction
+  txnData: CreateAccountEvent
 }) {
   console.log({ txnData })
-  const { time, account, roles, name } = txnData
+  const { time, account, roles, description } = txnData
   const data = {
     accountInfo: {
-      name,
+      description,
       roles,
     } as AccountInfoData,
   }

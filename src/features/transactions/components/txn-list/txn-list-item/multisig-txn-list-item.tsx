@@ -1,9 +1,10 @@
 import {
-  LedgerTransactionType,
-  MultisigSubmitTransaction,
-  SendTransaction,
+  EventType,
+  MultisigSubmitEvent,
+  SendEvent,
+  Event,
+  MultisigEvent,
 } from "many-js"
-import type { Transaction } from "many-js"
 import {
   AddressText,
   Button,
@@ -26,13 +27,12 @@ import {
   useGetMultisigTxnInfo,
 } from "features/accounts"
 import React from "react"
-import { MultisigTransaction } from "many-js/dist/network/modules/ledger/ledger"
 import { useMultisigActions, useMultisigTxn, useSendTxn } from "./hooks"
 import { BaseTxnListItem } from "./base-txn-list-item"
 import { BaseTxnDetails } from "./base-txn-details"
 import { TxnDetailsDataItem } from "./txn-details-data-item"
 
-export function MultisigTxnListItem({ txn }: { txn: MultisigTransaction }) {
+export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
   const { time, token } = txn
   const { actionLabel, actorAddress, txnLabel, TxnIcon, iconProps } =
     useMultisigTxn(txn)
@@ -59,11 +59,7 @@ export function MultisigTxnListItem({ txn }: { txn: MultisigTransaction }) {
   )
 }
 
-function MultisigTxnDetails({
-  multisigTxn,
-}: {
-  multisigTxn: MultisigTransaction
-}) {
+function MultisigTxnDetails({ multisigTxn }: { multisigTxn: MultisigEvent }) {
   return (
     <BaseTxnDetails>
       {({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => (
@@ -82,7 +78,7 @@ function MultisigTxnDetailsModal({
   isOpen,
   onClose,
 }: {
-  multisigTxn: MultisigTransaction
+  multisigTxn: MultisigEvent
   isOpen: boolean
   onClose: () => void
 }) {
@@ -100,7 +96,7 @@ function MultisigTxnDetailsModal({
   const { data: multisigTxnInfoData } = useGetMultisigTxnInfo(token)
 
   const { memo, execute_automatically, threshold, transaction, submitter } =
-    (multisigTxnInfoData?.info ?? {}) as MultisigSubmitTransaction
+    (multisigTxnInfoData?.info ?? {}) as MultisigSubmitEvent
 
   const submitterContactName = getContactName(submitter)
 
@@ -335,13 +331,13 @@ function SubmittedTxnData({
   transaction,
 }: {
   address: string
-  transaction: Omit<Transaction, "id" | "time"> | undefined
+  transaction: Omit<Event, "id" | "time"> | undefined
 }) {
-  if (transaction?.type === LedgerTransactionType.send) {
+  if (transaction?.type === EventType.send) {
     return (
       <SubmittedSendTxn
         address={address}
-        transaction={transaction as SendTransaction}
+        transaction={transaction as SendEvent}
       />
     )
   }
@@ -353,7 +349,7 @@ function SubmittedSendTxn({
   transaction,
 }: {
   address: string
-  transaction: SendTransaction
+  transaction: SendEvent
 }) {
   const {
     title,
