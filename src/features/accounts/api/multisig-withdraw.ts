@@ -11,7 +11,7 @@ export function useMultisigWithdraw(token: ArrayBuffer) {
     {
       onSuccess() {
         queryClient.invalidateQueries(["multisigTxnInfo", token])
-        queryClient.invalidateQueries(["transactions", "list"])
+        queryClient.invalidateQueries(["events", "list"])
       },
     },
   )

@@ -25,7 +25,7 @@ export function AccountInfo({
         <Heading size="sm" opacity={0.6} mb={2}>
           Name
         </Heading>
-        <Text fontWeight="medium">{accountInfo?.name ?? ""}</Text>
+        <Text fontWeight="medium">{accountInfo?.description ?? ""}</Text>
         {address && (
           <AddressText p={0} bgColor={undefined} addressText={address} />
         )}

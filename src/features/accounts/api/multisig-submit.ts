@@ -1,6 +1,6 @@
 import { useMutation } from "react-query"
 import { useNetworkContext } from "features/network"
-import { LedgerTransactionType } from "many-js"
+import { EventType } from "many-js"
 
 export function useMultisigSubmit() {
   const [, n] = useNetworkContext()
@@ -22,10 +22,7 @@ export function useMultisigSubmit() {
       symbol: string
       memo?: string
     }) => {
-      const res = await n?.account.submitMultisigTxn(
-        LedgerTransactionType.send,
-        vars,
-      )
+      const res = await n?.account.submitMultisigTxn(EventType.send, vars)
       return res
     },
   )

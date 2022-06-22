@@ -10,7 +10,7 @@ import * as useIsBaseBreakpoint from "hooks/useIsBaseBreakpoint"
 import { useNetworkContext } from "features/network/network-provider"
 import { useAccountsStore } from "features/accounts"
 import { Home } from "views/home"
-import { AnonymousIdentity, Ed25519KeyPairIdentity, Transaction } from "many-js"
+import { AnonymousIdentity, Ed25519KeyPairIdentity, Event } from "many-js"
 import { base64ToArrayBuffer } from "helper/convert"
 
 jest.mock("features/network/network-provider", () => {
@@ -42,7 +42,7 @@ const mockLedgerInfo = {
 
 const mockListData = {
   count: 4,
-  transactions: [
+  events: [
     {
       id: Buffer.from("1"),
       type: "send",
@@ -74,13 +74,16 @@ const mockBalanceData = {
 function getMockNetwork() {
   return {
     url: "mock/api",
+    events: {
+      list: jest.fn().mockImplementation(async () => {
+        return mockListData
+      }),
+    },
     ledger: {
       info: jest.fn().mockImplementation(async () => {
         return mockLedgerInfo
       }),
-      list: jest.fn().mockImplementation(async () => {
-        return mockListData
-      }),
+
       balance: jest.fn().mockImplementation(async () => {
         return mockBalanceData
       }),
@@ -121,10 +124,10 @@ describe("home page", () => {
     ).toBeInTheDocument()
   })
   it("should show asset details and transactions", async () => {
-    mockNetwork.ledger.list = jest.fn().mockImplementationOnce(async () => {
+    mockNetwork.events.list = jest.fn().mockImplementationOnce(async () => {
       return {
         count: 2,
-        transactions: [
+        events: [
           {
             id: Buffer.from("1"),
             type: "send",
@@ -143,7 +146,7 @@ describe("home page", () => {
             symbolAddress: "mabc",
             amount: BigInt(3),
           },
-        ] as unknown as Transaction[],
+        ] as unknown as Event[],
       }
     })
 
@@ -153,7 +156,7 @@ describe("home page", () => {
     userEvent.click(assets[0])
     expect(screen.getByText(/0.001 abc/i)).toBeInTheDocument()
     await waitFor(() =>
-      expect(mockNetwork.ledger.list).toHaveBeenCalledTimes(1),
+      expect(mockNetwork.events.list).toHaveBeenCalledTimes(1),
     )
     const rows = await screen.findAllByRole("row")
     expect(rows.length).toBe(2)
@@ -175,7 +178,7 @@ describe("home page", () => {
     userEvent.click(activityTab)
 
     await waitFor(() =>
-      expect(mockNetwork.ledger.list).toHaveBeenCalledTimes(1),
+      expect(mockNetwork.events.list).toHaveBeenCalledTimes(1),
     )
 
     const rows = screen.getAllByRole("row")

@@ -1,7 +1,7 @@
 import React from "react"
 import { useNetworkContext } from "features/network"
-import { BoundType, OrderType } from "many-js"
-import { ListFilterArgs, Transaction } from "many-js"
+import { BoundType, EventsListResponse, OrderType } from "many-js"
+import { ListFilterArgs, Event } from "many-js"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 
 export function useCreateSendTxn() {
@@ -24,7 +24,7 @@ export function useCreateSendTxn() {
     {
       onSuccess: () => {
         queryClient.invalidateQueries(["balances"])
-        queryClient.invalidateQueries(["transactions", "list"])
+        queryClient.invalidateQueries(["events", "list"])
       },
     },
   )
@@ -40,7 +40,7 @@ export function useTransactionsList({
   count?: number
 }) {
   const [network] = useNetworkContext()
-  const [txnIds, setTxnIds] = React.useState<Uint8Array[]>([])
+  const [txnIds, setTxnIds] = React.useState<ArrayBuffer[]>([])
 
   const filters = {
     ...filter,
@@ -55,10 +55,10 @@ export function useTransactionsList({
     accounts: address,
   }
 
-  const q = useQuery({
-    queryKey: ["transactions", "list", address, filters, network?.url],
+  const q = useQuery<EventsListResponse, Error>({
+    queryKey: ["events", "list", address, filters, network?.url],
     queryFn: async () =>
-      await network?.ledger?.list({
+      await network?.events?.list({
         filters,
         count: reqCount,
         order: OrderType.descending,
@@ -67,7 +67,7 @@ export function useTransactionsList({
     keepPreviousData: true,
   })
 
-  const txnsWithId = (q?.data?.transactions ?? []).map((t: Transaction) => ({
+  const txnsWithId = (q?.data?.events ?? []).map((t: Event) => ({
     ...t,
     _id: Buffer.from(t.id).toString("base64"),
   }))
@@ -78,7 +78,7 @@ export function useTransactionsList({
     : txnsWithId
   return {
     isPreviousData: q.isPreviousData,
-    error: q.error,
+    error: q?.error?.message,
     isError: q.isError,
     isLoading: q.isFetching,
     hasNextPage,

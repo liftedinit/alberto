@@ -3,7 +3,7 @@ import {
   Ed25519KeyPairIdentity,
   AnonymousIdentity,
   AccountRole,
-  LedgerTransactionType,
+  EventType,
 } from "many-js"
 
 export type AccountId = number
@@ -47,9 +47,9 @@ export const approverRoles = [
 ]
 
 export const multisigTxnTypes = [
-  LedgerTransactionType.accountMultisigApprove,
-  LedgerTransactionType.accountMultisigSubmit,
-  LedgerTransactionType.accountMultisigExecute,
-  LedgerTransactionType.accountMultisigRevoke,
-  LedgerTransactionType.accountMultisigWithdraw,
+  EventType.accountMultisigApprove,
+  EventType.accountMultisigSubmit,
+  EventType.accountMultisigExecute,
+  EventType.accountMultisigRevoke,
+  EventType.accountMultisigWithdraw,
 ]

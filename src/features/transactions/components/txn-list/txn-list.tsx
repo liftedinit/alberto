@@ -1,5 +1,4 @@
-import { ListFilterArgs } from "many-js"
-import type { Transaction } from "many-js"
+import { ListFilterArgs, Event } from "many-js"
 import {
   Button,
   ChevronRightIcon,
@@ -42,7 +41,7 @@ export function TxnList({
   if (isError && error) {
     return (
       <Center>
-        <Text fontSize="lg">{JSON.stringify(error)}</Text>
+        <Text fontSize="lg">{error}</Text>
       </Center>
     )
   }
@@ -65,7 +64,7 @@ export function TxnList({
       <TableContainer>
         <Table size="sm">
           <Tbody>
-            {transactions.map((t: Transaction & { _id: string }) => {
+            {transactions.map((t: Event & { _id: string }) => {
               return (
                 <TxnListItem
                   transaction={t}

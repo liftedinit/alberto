@@ -43,10 +43,10 @@ function AccountsHeader() {
         </Breadcrumb.BreadcrumbLink>
       </Breadcrumb.BreadcrumbItem>
 
-      {data?.accountInfo?.name && (
+      {data?.accountInfo?.description && (
         <Breadcrumb.BreadcrumbItem isCurrentPage={!!accountAddress}>
           <Breadcrumb.BreadcrumbLink to={`${accountAddress}`}>
-            {data.accountInfo.name}
+            {data.accountInfo.description}
           </Breadcrumb.BreadcrumbLink>
         </Breadcrumb.BreadcrumbItem>
       )}

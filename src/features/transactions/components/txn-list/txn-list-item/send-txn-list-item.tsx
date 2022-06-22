@@ -1,4 +1,4 @@
-import { SendTransaction } from "many-js"
+import { SendEvent } from "many-js"
 import { Flex, Text } from "components"
 import { useSendTxn } from "./hooks"
 import { BaseTxnListItem } from "./base-txn-list-item"
@@ -7,7 +7,7 @@ export function SendTxnListItem({
   txn,
   address,
 }: {
-  txn: SendTransaction
+  txn: SendEvent
   address: string
 }) {
   const time = txn.time
@@ -22,7 +22,7 @@ export function SendTxnListItem({
     symbol,
   } = useSendTxn({
     address,
-    txn: txn as SendTransaction,
+    txn: txn as SendEvent,
   })
 
   return (
