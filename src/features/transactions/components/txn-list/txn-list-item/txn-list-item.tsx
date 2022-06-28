@@ -21,13 +21,11 @@ export function TxnListItem({
   if (txnTypeName === EventType.send) {
     return <SendTxnListItem txn={transaction as SendEvent} address={address} />
   } else if (txnTypeName === EventType.accountCreate) {
-    return (
-      <CreateAccountTxnListItem txnData={transaction as CreateAccountEvent} />
-    )
+    return <CreateAccountTxnListItem txn={transaction as CreateAccountEvent} />
   } else if (isMultisigTxnType(transaction.type)) {
     return <MultisigTxnListItem txn={transaction as MultisigEvent} />
   }
-  console.error("txn list item not implemented:", transaction.type)
+  console.error("txn list item not implemented:", transaction.type, transaction)
   return null
 }
 
