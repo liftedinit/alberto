@@ -44,30 +44,32 @@ export function AccountDetails() {
           })}
         </TabList>
       </Tabs>
-      <SlideFade in key={activeTabName}>
-        {activeTabName === TabNames.assets && (
-          <Assets
-            address={accountAddress as string}
-            accountAddress={accountAddress}
-          />
-        )}
-        {activeTabName === TabNames.activity && (
-          <TxnList address={accountAddress as string} />
-        )}
+      <Box position="relative">
+        <SlideFade in key={activeTabName}>
+          {activeTabName === TabNames.assets && (
+            <Assets
+              address={accountAddress as string}
+              accountAddress={accountAddress}
+            />
+          )}
+          {activeTabName === TabNames.activity && (
+            <TxnList address={accountAddress as string} />
+          )}
 
-        {activeTabName === TabNames.multisigSettings && (
-          <MultisigSettings
-            accountInfo={data?.accountInfo}
-            accountAddress={accountAddress}
-          />
-        )}
-        {activeTabName === TabNames.accountSettings && (
-          <AccountInfo
-            accountInfo={data?.accountInfo}
-            address={accountAddress}
-          />
-        )}
-      </SlideFade>
+          {activeTabName === TabNames.multisigSettings && (
+            <MultisigSettings
+              accountInfo={data?.accountInfo}
+              accountAddress={accountAddress}
+            />
+          )}
+          {activeTabName === TabNames.accountSettings && (
+            <AccountInfo
+              accountInfo={data?.accountInfo}
+              address={accountAddress}
+            />
+          )}
+        </SlideFade>
+      </Box>
     </Box>
   )
 }
