@@ -52,4 +52,5 @@ export const multisigTxnTypes = [
   EventType.accountMultisigExecute,
   EventType.accountMultisigRevoke,
   EventType.accountMultisigWithdraw,
+  EventType.accountMultisigSetDefaults,
 ]

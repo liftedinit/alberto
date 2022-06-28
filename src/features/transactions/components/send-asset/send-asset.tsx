@@ -61,7 +61,7 @@ export function SendAssetModal({
   onSuccess?: () => void
   accountAddress?: string
 }) {
-  const useSendAssetData = useSendAsset({
+  const sendAssetState = useSendAsset({
     address,
     assetAddress,
     accountAddress,
@@ -73,7 +73,7 @@ export function SendAssetModal({
     asset,
     isCreateMultisigSubmitTxnLoading,
     isCreateSendTxnLoading,
-  } = useSendAssetData
+  } = sendAssetState
 
   return (
     <Modal
@@ -86,11 +86,14 @@ export function SendAssetModal({
         <Flex justifyContent="flex-end" w="full">
           <Button
             width={{ base: "full", md: "auto" }}
-            isLoading={
-              isCreateSendTxnLoading || isCreateMultisigSubmitTxnLoading
-            }
             colorScheme="brand.teal"
-            disabled={!asset || !formValues.amount || !formValues.to}
+            disabled={
+              !asset ||
+              !formValues.amount ||
+              !formValues.to ||
+              isCreateMultisigSubmitTxnLoading ||
+              isCreateSendTxnLoading
+            }
             type="submit"
             form="send-asset-form"
           >
@@ -105,7 +108,7 @@ export function SendAssetModal({
           hideNextBtn={true}
           accountAddress={accountAddress}
           onSuccess={onSuccess}
-          useSendAssetData={useSendAssetData}
+          sendAssetState={sendAssetState}
         />
       </Modal.Body>
     </Modal>
@@ -252,11 +255,11 @@ export function useSendAsset({
 export function SendAssetForm({
   accountAddress,
   formId = "send-asset-form",
-  useSendAssetData,
+  sendAssetState,
   hideNextBtn,
 }: {
   accountAddress?: string
-  useSendAssetData: ReturnType<typeof useSendAsset>
+  sendAssetState: ReturnType<typeof useSendAsset>
   formId?: string
   onSuccess?: () => void
   hideNextBtn?: boolean
@@ -275,7 +278,7 @@ export function SendAssetForm({
     formValues,
     setFormValues,
     onCloseConfirmDialog,
-  } = useSendAssetData
+  } = sendAssetState
 
   return (
     <>

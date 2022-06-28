@@ -11,10 +11,12 @@ import {
 import { Assets } from "views/home/assets"
 import { TxnList } from "features/transactions"
 import { AccountInfo, useGetAccountInfo } from "features/accounts"
+import { MultisigSettings } from "../multisig-settings/multisig-settings"
 
 enum TabNames {
   assets = "assets",
   activity = "activity",
+  multisigSettings = "multisig settings",
   accountSettings = "account settings",
 }
 const tabs = Object.values(TabNames)
@@ -42,25 +44,30 @@ export function AccountDetails() {
           })}
         </TabList>
       </Tabs>
-      {activeTabName === TabNames.assets && (
-        <Assets
-          address={accountAddress as string}
-          accountAddress={accountAddress}
-        />
-      )}
-      {activeTabName === TabNames.activity && (
-        <SlideFade in>
+      <SlideFade in key={activeTabName}>
+        {activeTabName === TabNames.assets && (
+          <Assets
+            address={accountAddress as string}
+            accountAddress={accountAddress}
+          />
+        )}
+        {activeTabName === TabNames.activity && (
           <TxnList address={accountAddress as string} />
-        </SlideFade>
-      )}
-      {activeTabName === TabNames.accountSettings && (
-        <SlideFade in>
+        )}
+
+        {activeTabName === TabNames.multisigSettings && (
+          <MultisigSettings
+            accountInfo={data?.accountInfo}
+            accountAddress={accountAddress}
+          />
+        )}
+        {activeTabName === TabNames.accountSettings && (
           <AccountInfo
             accountInfo={data?.accountInfo}
             address={accountAddress}
           />
-        </SlideFade>
-      )}
+        )}
+      </SlideFade>
     </Box>
   )
 }

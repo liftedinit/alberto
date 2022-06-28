@@ -4,6 +4,7 @@ import {
   SendEvent,
   Event,
   MultisigEvent,
+  MultisigSetDefaultsEvent,
 } from "many-js"
 import {
   AddressText,
@@ -18,6 +19,7 @@ import {
   Text,
   useToast,
   VStack,
+  SettingsOutlineIcon,
 } from "components"
 import { useGetContactName } from "features/contacts"
 import {
@@ -31,6 +33,7 @@ import { useMultisigActions, useMultisigTxn, useSendTxn } from "./hooks"
 import { BaseTxnListItem } from "./base-txn-list-item"
 import { BaseTxnDetails } from "./base-txn-details"
 import { TxnDetailsDataItem } from "./txn-details-data-item"
+import { getHoursMinutesSecondsFromSeconds } from "helper/convert"
 
 export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
   const { time, token } = txn
@@ -49,7 +52,7 @@ export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
       actorName={contactName}
       actorAddress={actorAddress}
       txnDetails={
-        token ? (
+        token || txn.type === EventType.accountMultisigSetDefaults ? (
           <Flex justifyContent="flex-end">
             <MultisigTxnDetails multisigTxn={txn} />
           </Flex>
@@ -60,6 +63,19 @@ export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
 }
 
 function MultisigTxnDetails({ multisigTxn }: { multisigTxn: MultisigEvent }) {
+  if (multisigTxn.type === EventType.accountMultisigSetDefaults) {
+    return (
+      <BaseTxnDetails>
+        {({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => (
+          <MultisigSetDefaultsTxnDetailsModal
+            isOpen={isOpen}
+            onClose={onClose}
+            multisigTxn={multisigTxn as MultisigSetDefaultsEvent}
+          />
+        )}
+      </BaseTxnDetails>
+    )
+  }
   return (
     <BaseTxnDetails>
       {({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => (
@@ -70,6 +86,62 @@ function MultisigTxnDetails({ multisigTxn }: { multisigTxn: MultisigEvent }) {
         />
       )}
     </BaseTxnDetails>
+  )
+}
+
+function MultisigSetDefaultsTxnDetailsModal({
+  multisigTxn,
+  isOpen,
+  onClose,
+}: {
+  multisigTxn: MultisigSetDefaultsEvent
+  isOpen: boolean
+  onClose: () => void
+}) {
+  const { hours, minutes, seconds } = getHoursMinutesSecondsFromSeconds(
+    multisigTxn.expireInSecs,
+  )
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      header="Transaction Details"
+      footer={<></>}
+    >
+      <Modal.Body>
+        <HStack alignItems="center" mb={4}>
+          <SettingsOutlineIcon boxSize={8} />
+          <Text casing="capitalize">Set Defaults</Text>
+        </HStack>
+        <TxnDetailsDataItem
+          label="Required Approvers"
+          value={multisigTxn.threshold}
+        />
+        <TxnDetailsDataItem label="Expire">
+          <HStack>
+            {hours ? (
+              <Text as="span" fontWeight="medium">
+                {hours}h
+              </Text>
+            ) : null}
+            {minutes ? (
+              <Text as="span" fontWeight="medium">
+                {minutes}m
+              </Text>
+            ) : null}
+            {seconds ? (
+              <Text as="span" fontWeight="medium">
+                {seconds}s
+              </Text>
+            ) : null}
+          </HStack>
+        </TxnDetailsDataItem>
+        <TxnDetailsDataItem
+          label="Execute Automatically"
+          value={multisigTxn.executeAutomatically === true ? "Yes" : "No"}
+        />
+      </Modal.Body>
+    </Modal>
   )
 }
 
@@ -95,7 +167,7 @@ function MultisigTxnDetailsModal({
 
   const { data: multisigTxnInfoData } = useGetMultisigTxnInfo(token)
 
-  const { memo, execute_automatically, threshold, transaction, submitter } =
+  const { memo, executeAutomatically, threshold, transaction, submitter } =
     (multisigTxnInfoData?.info ?? {}) as MultisigSubmitEvent
 
   const submitterContactName = getContactName(submitter)
@@ -153,7 +225,7 @@ function MultisigTxnDetailsModal({
   } = useMultisigActions({
     identityAddress: activeIdentityAddress!,
     accountAddress: multisigTxn.account,
-    txnToken: token,
+    txnToken: token!,
   })
 
   function onActionDone(
@@ -291,8 +363,8 @@ function MultisigTxnDetailsModal({
         <TxnDetailsDataItem
           label="Expire"
           value={
-            multisigTxnInfoData?.info?.timeout
-              ? new Date(multisigTxnInfoData?.info.timeout).toLocaleString()
+            multisigTxnInfoData?.info?.expireDate
+              ? new Date(multisigTxnInfoData?.info.expireDate).toLocaleString()
               : ""
           }
         />
@@ -319,7 +391,7 @@ function MultisigTxnDetailsModal({
 
         <TxnDetailsDataItem
           label="Execute Automatically"
-          value={execute_automatically === true ? "Yes" : "No"}
+          value={executeAutomatically === true ? "Yes" : "No"}
         />
       </Modal.Body>
     </Modal>

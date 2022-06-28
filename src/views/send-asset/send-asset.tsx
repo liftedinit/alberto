@@ -9,7 +9,7 @@ export function SendAsset() {
   const account = useAccountsStore(s => s.byId.get(s.activeId))
   const address = account!.address as string
 
-  const useSendAssetData = useSendAsset({
+  const sendAssetState = useSendAsset({
     address,
     assetAddress: routeState?.assetIdentity,
   })
@@ -25,7 +25,7 @@ export function SendAsset() {
             </Breadcrumb.BreadcrumbItem>
           </Breadcrumb>
           <Box shadow="md" rounded="md" py={8} px={6} bgColor="white">
-            <SendAssetForm useSendAssetData={useSendAssetData} />
+            <SendAssetForm sendAssetState={sendAssetState} />
           </Box>
         </Container>
       </SlideFade>

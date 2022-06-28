@@ -9,6 +9,7 @@ import {
   MultisigRevokeEvent,
   MultisigExecuteEvent,
   MultisigWithdrawEvent,
+  MultisigSetDefaultsEvent,
 } from "many-js"
 import {
   CheckCircleIcon,
@@ -18,6 +19,7 @@ import {
   SendOutlineIcon,
   UndoIcon,
   ExecuteIcon,
+  SettingsOutlineIcon,
 } from "components"
 import { amountFormatter } from "helper/common"
 import {
@@ -32,7 +34,13 @@ import {
 import { useLedgerInfo } from "features/network"
 import { useGetContactName } from "features/contacts/hooks"
 
-export function useSendTxn({ address, txn }: { address: string; txn: SendEvent }) {
+export function useSendTxn({
+  address,
+  txn,
+}: {
+  address: string
+  txn: SendEvent
+}) {
   const { data } = useLedgerInfo({ address })
   const symbols = data!.symbols
 
@@ -87,7 +95,9 @@ export function useMultisigTxn(txn: MultisigEvent) {
       break
     case EventType.accountMultisigExecute:
       data = {
-        actionLabel: "Executed By:",
+        actionLabel: (txn as MultisigExecuteEvent).executor
+          ? "Executed By:"
+          : "Executed Automatically",
         actorAddress: (txn as MultisigExecuteEvent).executor,
         txnLabel: "Multisig - Execute",
         TxnIcon: ExecuteIcon,
@@ -116,6 +126,14 @@ export function useMultisigTxn(txn: MultisigEvent) {
         actorAddress: (txn as MultisigWithdrawEvent).withdrawer,
         txnLabel: "Multisig - Withdraw",
         TxnIcon: MinusCircleIcon,
+      }
+      break
+    case EventType.accountMultisigSetDefaults:
+      data = {
+        actionLabel: "Submitted By:",
+        actorAddress: (txn as MultisigSetDefaultsEvent).submitter,
+        txnLabel: "Multisig - Set Defaults",
+        TxnIcon: SettingsOutlineIcon,
       }
       break
     default:

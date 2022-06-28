@@ -8,13 +8,8 @@ import { BaseTxnListItem } from "./base-txn-list-item"
 import { BaseTxnDetails } from "./base-txn-details"
 import { AccountInfo } from "features/accounts"
 
-export function CreateAccountTxnListItem({
-  txnData,
-}: {
-  txnData: CreateAccountEvent
-}) {
-  console.log({ txnData })
-  const { time, account, roles, description } = txnData
+export function CreateAccountTxnListItem({ txn }: { txn: CreateAccountEvent }) {
+  const { time, account, roles, description } = txn
   const data = {
     accountInfo: {
       description,

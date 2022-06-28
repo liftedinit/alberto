@@ -69,12 +69,10 @@ export function Home() {
               </TabList>
             </Tabs>
 
-            {isTabActive(TabNames.assets) && <Assets address={address} />}
-            {isTabActive(TabNames.activity) && (
-              <SlideFade in>
-                <TxnList address={address} />
-              </SlideFade>
-            )}
+            <SlideFade in key={activeTab}>
+              {isTabActive(TabNames.assets) && <Assets address={address} />}
+              {isTabActive(TabNames.activity) && <TxnList address={address} />}
+            </SlideFade>
           </Box>
         </Container>
       </SlideFade>

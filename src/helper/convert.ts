@@ -47,3 +47,12 @@ export const fromDateTime = (date: Date) => {
     }
   }
 }
+
+const ONE_HOUR_IN_SECS = 3600
+const SIXTY = 60
+export function getHoursMinutesSecondsFromSeconds(_seconds: number) {
+  const hours = Math.floor(_seconds / ONE_HOUR_IN_SECS)
+  const minutes = Math.floor((_seconds % ONE_HOUR_IN_SECS) / SIXTY)
+  const seconds = _seconds % SIXTY
+  return { hours, minutes, seconds }
+}

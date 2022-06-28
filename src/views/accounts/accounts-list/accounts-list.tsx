@@ -59,7 +59,6 @@ export function AccountsList() {
             name="account"
             id="account"
             size="sm"
-            variant="filled"
             onChange={e => setName(e.target.value)}
             maxLength={75}
             placeholder="Filter by name..."
@@ -222,11 +221,11 @@ function AccountList({ searchTerm }: { searchTerm: string }) {
   return (
     <VStack alignItems="flex-start" divider={<Divider />} spacing={4}>
       {accounts.map(acc => {
-        const [address, { name }] = acc
+        const [address, { description }] = acc
         if (
           !searchTerm ||
           (searchTerm &&
-            (name as string)
+            (description as string)
               .toLocaleLowerCase()
               .includes(searchTerm.toLocaleLowerCase()))
         )
@@ -241,7 +240,7 @@ function AccountList({ searchTerm }: { searchTerm: string }) {
               <Box w="full" overflow="hidden">
                 <RouterLink to={address}>
                   <Text fontWeight="medium" isTruncated>
-                    {name as string}
+                    {description as string}
                   </Text>
                 </RouterLink>
                 <AddressText bgColor={undefined} p={0} addressText={address} />
