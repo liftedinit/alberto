@@ -191,14 +191,12 @@ export function MultisigSettings({
             Execute transactions automatically when threshold has been reached.
           </FormHelperText>
         </FormControl>
-        {error && (
+        {error?.message ? (
           <Alert status="warning" variant="left-accent">
             <AlertIcon />
-            <AlertDescription>
-              {error?.message ?? "An unexpected error occurred."}
-            </AlertDescription>
+            <AlertDescription>{error.message}</AlertDescription>
           </Alert>
-        )}
+        ) : null}
         {isSuccess && (
           <Alert status="success" variant="left-accent">
             <AlertIcon />

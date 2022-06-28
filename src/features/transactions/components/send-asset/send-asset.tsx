@@ -2,6 +2,8 @@ import React from "react"
 import {
   AddressText,
   Alert,
+  AlertIcon,
+  AlertDescription,
   AlertDialog,
   AlertDialogProps,
   AssetSelector,
@@ -149,11 +151,15 @@ export function useSendAsset({
 
   const [contact, setContact] = React.useState<Contact | undefined>()
 
-  const { mutate: doCreateSendTxn, isLoading: isCreateSendTxnLoading } =
-    useCreateSendTxn()
+  const {
+    mutate: doCreateSendTxn,
+    isLoading: isCreateSendTxnLoading,
+    error: createSendTxnError,
+  } = useCreateSendTxn()
   const {
     mutate: doCreateMultisigSubmitTxn,
     isLoading: isCreateMultisigSubmitTxnLoading,
+    error: createMultisigSubmitTxnError,
   } = useMultisigSubmit()
 
   function onSendSuccess() {
@@ -184,14 +190,6 @@ export function useSendAsset({
             onSendSuccess()
             onSuccess?.()
           },
-          onError: err => {
-            toast({
-              status: "warning",
-              title: "Send",
-              //@ts-ignore
-              description: err?.message ?? "An unexpected error occurred",
-            })
-          },
         },
       )
       return
@@ -206,13 +204,6 @@ export function useSendAsset({
         onSuccess: () => {
           onSendSuccess()
           onSuccess?.()
-        },
-        onError: e => {
-          toast({
-            status: "warning",
-            title: "Send",
-            description: e?.message ?? String(e),
-          })
         },
       },
     )
@@ -241,6 +232,7 @@ export function useSendAsset({
     onNext,
     onSendTxn,
     doCreateMultisigSubmitTxn,
+    error: createMultisigSubmitTxnError?.message || createSendTxnError?.message,
     isCreateMultisigSubmitTxnLoading,
     doCreateSendTxn,
     isCreateSendTxnLoading,
@@ -278,6 +270,7 @@ export function SendAssetForm({
     formValues,
     setFormValues,
     onCloseConfirmDialog,
+    error,
   } = sendAssetState
 
   return (
@@ -440,6 +433,7 @@ export function SendAssetForm({
         onSendTxn={onSendTxn}
         txnDetails={formValues}
         isLoading={isCreateSendTxnLoading || isCreateMultisigSubmitTxnLoading}
+        error={error}
         contact={contact}
       />
     </>
@@ -453,11 +447,13 @@ function ConfirmTxnDialog({
   txnDetails,
   isLoading,
   contact,
+  error,
 }: Omit<AlertDialogProps, "children" | "leastDestructiveRef"> & {
   onSendTxn: (e: React.FormEvent<HTMLFormElement>) => void
   txnDetails: typeof defaultFormState
   isLoading: boolean
   contact?: Contact
+  error?: string
 }) {
   const cancelTxnRef = React.useRef(null)
   const [isConfirmed, setIsConfirmed] = React.useState(false)
@@ -531,6 +527,12 @@ function ConfirmTxnDialog({
           >
             Approve this transaction
           </Checkbox>
+          {error && (
+            <Alert status="warning" variant="left-accent" mt={4}>
+              <AlertIcon />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
         </form>
       </AlertDialog.Body>
     </AlertDialog>
