@@ -111,7 +111,7 @@ function MultisigSetDefaultsTxnDetailsModal({
       <Modal.Body>
         <HStack alignItems="center" mb={4}>
           <SettingsOutlineIcon boxSize={8} />
-          <Text casing="capitalize">Set Defaults</Text>
+          <Text casing="capitalize">Multisig - Set Defaults</Text>
         </HStack>
         <TxnDetailsDataItem
           label="Required Approvers"
