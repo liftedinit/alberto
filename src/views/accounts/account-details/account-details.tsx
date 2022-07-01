@@ -57,10 +57,7 @@ export function AccountDetails() {
           )}
 
           {activeTabName === TabNames.multisigSettings && (
-            <MultisigSettings
-              accountInfo={data?.accountInfo}
-              accountAddress={accountAddress}
-            />
+            <MultisigSettings accountAddress={accountAddress} />
           )}
           {activeTabName === TabNames.accountSettings && (
             <AccountInfo

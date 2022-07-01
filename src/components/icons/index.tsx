@@ -28,6 +28,7 @@ import {
   FiEdit,
   FiChevronRight,
   FiChevronLeft,
+  FiChevronUp,
   FiPlus,
 } from "react-icons/fi"
 
@@ -80,6 +81,10 @@ export function EditIcon(props: IconProps) {
 
 export function ChevronDownIcon(props: IconProps) {
   return <Icon as={FiChevronDown} {...props} />
+}
+
+export function ChevronUpIcon(props: IconProps) {
+  return <Icon as={FiChevronUp} {...props} />
 }
 
 export function ChevronLeftIcon(props: IconProps) {

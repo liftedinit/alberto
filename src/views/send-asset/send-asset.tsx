@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom"
 import { Breadcrumb, Box, Container, Layout, SlideFade } from "components"
 import { useAccountsStore } from "features/accounts"
-import { SendAssetForm, useSendAsset } from "features/transactions"
+import { SendAssetForm, useSendAssetForm } from "features/transactions"
 
 export function SendAsset() {
   const location = useLocation()
@@ -9,7 +9,7 @@ export function SendAsset() {
   const account = useAccountsStore(s => s.byId.get(s.activeId))
   const address = account!.address as string
 
-  const sendAssetState = useSendAsset({
+  const sendAssetState = useSendAssetForm({
     address,
     assetAddress: routeState?.assetIdentity,
   })
