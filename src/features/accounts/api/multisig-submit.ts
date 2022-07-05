@@ -13,14 +13,20 @@ export function useMultisigSubmit() {
       amount: bigint
       symbol: string
       memo?: string
+      threshold?: number
+      executeAutomatically?: boolean
+      expireInSecs?: number
     }
   >(
     async (vars: {
       from: string
       to: string
-      amount: bigint
-      symbol: string
+      amount?: bigint
+      symbol?: string
       memo?: string
+      threshold?: number
+      executeAutomatically?: boolean
+      expireInSecs?: number
     }) => {
       const res = await n?.account.submitMultisigTxn(EventType.send, vars)
       return res

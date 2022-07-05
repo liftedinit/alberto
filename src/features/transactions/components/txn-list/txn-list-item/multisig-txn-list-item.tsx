@@ -11,6 +11,7 @@ import {
   Button,
   Box,
   CheckCircleIcon,
+  DataField,
   Flex,
   HStack,
   Modal,
@@ -20,6 +21,7 @@ import {
   useToast,
   VStack,
   SettingsOutlineIcon,
+  TxnExpireText,
 } from "components"
 import { useGetContactName } from "features/contacts"
 import {
@@ -32,7 +34,6 @@ import React from "react"
 import { useMultisigActions, useMultisigTxn, useSendTxn } from "./hooks"
 import { BaseTxnListItem } from "./base-txn-list-item"
 import { BaseTxnDetails } from "./base-txn-details"
-import { TxnDetailsDataItem } from "./txn-details-data-item"
 import { getHoursMinutesSecondsFromSeconds } from "helper/convert"
 
 export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
@@ -113,30 +114,11 @@ function MultisigSetDefaultsTxnDetailsModal({
           <SettingsOutlineIcon boxSize={8} />
           <Text casing="capitalize">Multisig - Set Defaults</Text>
         </HStack>
-        <TxnDetailsDataItem
-          label="Required Approvers"
-          value={multisigTxn.threshold}
-        />
-        <TxnDetailsDataItem label="Expire">
-          <HStack>
-            {hours ? (
-              <Text as="span" fontWeight="medium">
-                {hours}h
-              </Text>
-            ) : null}
-            {minutes ? (
-              <Text as="span" fontWeight="medium">
-                {minutes}m
-              </Text>
-            ) : null}
-            {seconds ? (
-              <Text as="span" fontWeight="medium">
-                {seconds}s
-              </Text>
-            ) : null}
-          </HStack>
-        </TxnDetailsDataItem>
-        <TxnDetailsDataItem
+        <DataField label="Required Approvers" value={multisigTxn.threshold} />
+        <DataField label="Expire">
+          <TxnExpireText hours={hours} minutes={minutes} seconds={seconds} />
+        </DataField>
+        <DataField
           label="Execute Automatically"
           value={multisigTxn.executeAutomatically === true ? "Yes" : "No"}
         />
@@ -355,12 +337,9 @@ function MultisigTxnDetailsModal({
           transaction={transaction}
         />
 
-        <TxnDetailsDataItem
-          label="Date"
-          value={new Date(time).toLocaleString()}
-        />
+        <DataField label="Date" value={new Date(time).toLocaleString()} />
 
-        <TxnDetailsDataItem
+        <DataField
           label="Expire"
           value={
             multisigTxnInfoData?.info?.expireDate
@@ -369,7 +348,7 @@ function MultisigTxnDetailsModal({
           }
         />
 
-        <TxnDetailsDataItem label="Submitted By">
+        <DataField label="Submitted By">
           {submitterContactName && (
             <Text fontWeight="medium">{submitterContactName}</Text>
           )}
@@ -379,17 +358,17 @@ function MultisigTxnDetailsModal({
             p={0}
             textProps={{ fontWeight: "semibold" }}
           />
-        </TxnDetailsDataItem>
+        </DataField>
 
-        <TxnDetailsDataItem label="Approvers">
+        <DataField label="Approvers">
           <ApproversList approvers={approvers} />
-        </TxnDetailsDataItem>
+        </DataField>
 
-        <TxnDetailsDataItem label="Required Approvers" value={threshold} />
+        <DataField label="Required Approvers" value={threshold} />
 
-        <TxnDetailsDataItem label="Memo" value={memo} />
+        <DataField label="Memo" value={memo} />
 
-        <TxnDetailsDataItem
+        <DataField
           label="Execute Automatically"
           value={executeAutomatically === true ? "Yes" : "No"}
         />
@@ -442,7 +421,7 @@ function SubmittedSendTxn({
         <TxnIcon boxSize={8} />
         <Text casing="capitalize">{title}</Text>
       </HStack>
-      <TxnDetailsDataItem label="Amount">
+      <DataField label="Amount">
         <Flex mb={4}>
           <Text fontWeight="medium" color={iconColor}>
             {displayAmount}
@@ -450,9 +429,9 @@ function SubmittedSendTxn({
           &nbsp;
           <Text fontWeight="medium">{symbol}</Text>
         </Flex>
-      </TxnDetailsDataItem>
+      </DataField>
 
-      <TxnDetailsDataItem label="To">
+      <DataField label="To">
         {contactName && <Text fontWeight="medium">{contactName}</Text>}
         <AddressText
           mb={4}
@@ -461,7 +440,7 @@ function SubmittedSendTxn({
           textProps={{ fontWeight: "semibold" }}
           addressText={toOrFromAddress}
         />
-      </TxnDetailsDataItem>
+      </DataField>
     </>
   )
 }
