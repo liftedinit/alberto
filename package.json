@@ -27,6 +27,7 @@
     "react": "^17.0.2",
     "react-app-rewired": "^2.2.1",
     "react-dom": "^17.0.2",
+    "react-hook-form": "^7.33.1",
     "react-icons": "^4.3.1",
     "react-query": "^4.0.0-alpha.20",
     "react-router": "^6.2.0",
