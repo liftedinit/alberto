@@ -1,4 +1,5 @@
 import React from "react"
+import { useForm, FormProvider } from "react-hook-form"
 import { Alert, AlertIcon, AlertDescription, Button, VStack } from "components"
 import {
   MultisigSettingsFields,
@@ -10,7 +11,15 @@ export function MultisigSettings({
 }: {
   accountAddress: string | undefined
 }) {
-  const formRef = React.useRef<HTMLFormElement>(null)
+  const formMethods = useForm({
+    defaultValues: {
+      threshold: 0,
+      expireInSecs: 0,
+      hours: 0,
+      minutes: 0,
+      executeAutomatically: "0",
+    },
+  })
 
   const {
     mutate: doSetMultisigDefaults,
@@ -19,48 +28,51 @@ export function MultisigSettings({
     error,
   } = useMultisigSetDefaults(accountAddress!)
 
-  function onSave(e: React.SyntheticEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const form = e.currentTarget
-    const formData = new FormData(form)
-    const threshold = Number(formData.get("threshold"))
-    const executeAutomatically = formData.get("executeAutomatically") === "1"
-    const expireInSecs = Number(formData.get("expireInSecs"))
-
+  function onSave({
+    expireInSecs,
+    threshold,
+    executeAutomatically,
+  }: {
+    expireInSecs: number
+    threshold: number
+    executeAutomatically: string
+  }) {
     doSetMultisigDefaults({
       expireInSecs,
       threshold,
-      executeAutomatically,
+      executeAutomatically: executeAutomatically === "1",
     })
   }
 
   return (
-    <form onSubmit={onSave} ref={formRef}>
-      <VStack alignItems="flex-start" spacing={6}>
-        <MultisigSettingsFields accountAddress={accountAddress!} />
+    <FormProvider {...formMethods}>
+      <form onSubmit={formMethods.handleSubmit(onSave)}>
+        <VStack alignItems="flex-start" spacing={6}>
+          <MultisigSettingsFields accountAddress={accountAddress!} />
 
-        {error?.message ? (
-          <Alert status="warning" variant="left-accent">
-            <AlertIcon />
-            <AlertDescription>{error.message}</AlertDescription>
-          </Alert>
-        ) : null}
-        {isSuccess && (
-          <Alert status="success" variant="left-accent">
-            <AlertIcon />
-            <AlertDescription>Settings saved</AlertDescription>
-          </Alert>
-        )}
-        <Button
-          type="submit"
-          colorScheme="brand.teal"
-          isLoading={isSaving}
-          loadingText="Saving"
-          w={{ base: "full", md: "auto" }}
-        >
-          Save
-        </Button>
-      </VStack>
-    </form>
+          {error?.message ? (
+            <Alert status="warning" variant="left-accent">
+              <AlertIcon />
+              <AlertDescription>{error.message}</AlertDescription>
+            </Alert>
+          ) : null}
+          {isSuccess && (
+            <Alert status="success" variant="left-accent">
+              <AlertIcon />
+              <AlertDescription>Settings saved</AlertDescription>
+            </Alert>
+          )}
+          <Button
+            type="submit"
+            colorScheme="brand.teal"
+            isLoading={isSaving}
+            loadingText="Saving"
+            w={{ base: "full", md: "auto" }}
+          >
+            Save
+          </Button>
+        </VStack>
+      </form>
+    </FormProvider>
   )
 }
