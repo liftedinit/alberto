@@ -95,6 +95,7 @@ export function MultisigSettingsFields({
         )
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [multisigFeature],
   )
 
@@ -115,6 +116,7 @@ export function MultisigSettingsFields({
       seconds || 0,
     )
     setValue(expireInSecsFieldName, expireInSecs)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hours, minutes, seconds])
 
   return (
