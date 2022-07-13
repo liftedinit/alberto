@@ -42,7 +42,7 @@ import {
   AddressBookIcon,
   useToast,
 } from "components"
-import { AccountRole } from "many-js"
+import { AccountFeatureTypes, AccountRole, NetworkAttributes } from "many-js"
 import { ContactSelector, useGetContactName } from "features/contacts"
 import { MultisigSettingsFields } from "../../multisig-settings-fields"
 import { AccountInfo } from "../../account-info"
@@ -54,6 +54,7 @@ import {
   useAccountsStore,
   useAccountStore,
 } from "features/accounts"
+import { useNetworkStatus } from "features/network"
 
 const steps = [
   { label: "Select Features", content: SelectFeatures },
@@ -111,31 +112,60 @@ function SelectFeatures() {
   const { nextStep } = useStepsContext()
   const { register } = useFormContext()
 
+  const { getAttribute, getFeatures } = useNetworkStatus()
+  const accountAttribute = getAttribute(NetworkAttributes.account)
+  const {
+    [AccountFeatureTypes.accountLedger]: hasLedger,
+    [AccountFeatureTypes.accountMultisig]: hasMultisig,
+  } = getFeatures(accountAttribute, [
+    AccountFeatureTypes.accountLedger,
+    AccountFeatureTypes.accountMultisig,
+  ])
+
+  const featureOptions = []
+  hasLedger &&
+    featureOptions.push({
+      label: "Ledger",
+      description:
+        'Allows any identity with the "canLedgerTransact" role perform regular ledger transactions.',
+      name: `features.${accountLedgerFeature}`,
+      ariaLabel: "account ledger feature",
+    })
+
+  hasMultisig &&
+    featureOptions.push({
+      label: "Multisig",
+      description: "Enables transactions requiring multiple signatures.",
+      name: `features.${accountMultisigFeature}`,
+      ariaLabel: "account multisig feature",
+    })
+
   return (
     <>
+      {featureOptions.length === 0 && (
+        <Alert status="info" rounded="md">
+          <AlertIcon />
+          <Text>There are no account features</Text>
+        </Alert>
+      )}
       <VStack alignItems="flex-start">
-        <OptionCard
-          label="Ledger"
-          description="Adds “canLedgerTransact” role for selection which allows any identity with this role to perform regular ledger transactions."
-        >
-          <Checkbox
-            colorScheme="brand.teal"
-            aria-label="account ledger feature"
-            {...register(`features.${accountLedgerFeature}`)}
-          />
-        </OptionCard>
-        <OptionCard
-          label="Multisig"
-          description="Enables transactions using multiple signatures."
-        >
-          <Checkbox
-            colorScheme="brand.teal"
-            aria-label="account multisig feature"
-            {...register(`features.${accountMultisigFeature}`)}
-          />
-        </OptionCard>
+        {featureOptions.map(opt => {
+          return (
+            <OptionCard
+              key={opt.label}
+              label={opt.label}
+              description={opt.description}
+            >
+              <Checkbox
+                colorScheme="brand.teal"
+                aria-label="account ledger feature"
+                {...register(opt.name)}
+              />
+            </OptionCard>
+          )
+        })}
       </VStack>
-      <Button size="sm" colorScheme="brand.teal" mt={4} onClick={nextStep}>
+      <Button size="sm" colorScheme="brand.teal" mt={8} onClick={nextStep}>
         Next
       </Button>
     </>
@@ -149,7 +179,6 @@ function AccountSettings() {
   const {
     register,
     handleSubmit,
-    getValues,
     setFocus,
     formState: { errors },
   } = useFormContext()
@@ -467,7 +496,7 @@ function FeatureSettings() {
   const ownersCount = isIdentityInOwners ? owners.length : owners.length + 1
   return (
     <>
-      {showMultisigSettings && (
+      {showMultisigSettings ? (
         <>
           <Heading size="md" mb={2}>
             Multisig Settings
@@ -479,8 +508,13 @@ function FeatureSettings() {
             />
           </VStack>
         </>
+      ) : (
+        <Alert status="info" rounded="md">
+          <AlertIcon />
+          <Text>Features that require configuration were not selected.</Text>
+        </Alert>
       )}
-      <Flex gap={2} mt={4}>
+      <Flex gap={2} mt={8}>
         <Button size="sm" onClick={prevStep}>
           Prev
         </Button>
