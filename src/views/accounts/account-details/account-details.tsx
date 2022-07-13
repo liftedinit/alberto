@@ -60,10 +60,12 @@ export function AccountDetails() {
             <MultisigSettings accountAddress={accountAddress} />
           )}
           {activeTabName === TabNames.accountSettings && (
-            <AccountInfo
-              accountInfo={data?.accountInfo}
-              address={accountAddress}
-            />
+            <Box mt={4}>
+              <AccountInfo
+                accountInfo={data?.accountInfo}
+                address={accountAddress}
+              />
+            </Box>
           )}
         </SlideFade>
       </Box>

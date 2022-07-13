@@ -14,10 +14,12 @@ import {
 import {
   FaAddressBook,
   FaRegAddressBook,
+  FaCheck,
   FaCheckCircle,
   FaUserCircle,
   FaTimes,
   FaTimesCircle,
+  FaMinus,
   FaRegPlayCircle,
   FaAddressCard,
   FaRegAddressCard,
@@ -131,12 +133,20 @@ export function PlusIcon(props: IconProps) {
   return <Icon as={FiPlus} {...props} />
 }
 
+export function MinusIcon(props: IconProps) {
+  return <Icon as={FaMinus} {...props} />
+}
+
 export function PendingIcon(props: IconProps) {
   return <Icon as={IoTimeOutline} {...props} />
 }
 
 export function CheckCircleIcon(props: IconProps) {
   return <Icon as={FaCheckCircle} {...props} />
+}
+
+export function CheckIcon(props: IconProps) {
+  return <Icon as={FaCheck} {...props} />
 }
 
 export function UndoIcon(props: IconProps) {
