@@ -1,4 +1,5 @@
 import React from "react"
+import { useForm, FormProvider } from "react-hook-form"
 import { ANON_IDENTITY } from "many-js"
 import {
   AddressText,
@@ -15,7 +16,7 @@ import {
   ChevronUpIcon,
   Collapse,
   DataField,
-  FormControl,
+  FieldWrapper,
   FormLabel,
   Flex,
   HStack,
@@ -36,23 +37,9 @@ import {
 } from "features/accounts"
 import { useBalances } from "features/balances"
 import { useCreateSendTxn } from "features/transactions"
-import { Contact, ContactSelector } from "features/contacts"
-import { Asset } from "features/balances"
+import { ContactSelector, useGetContactName } from "features/contacts"
 import { amountFormatter, parseNumberToBigInt } from "helper/common"
 import { useMultisigSubmit } from "features/accounts"
-import { getHoursMinutesSecondsFromSeconds } from "helper/convert"
-
-const defaultFormState: {
-  to: string
-  amount: undefined | string
-  asset: Asset | undefined
-  memo: string | undefined
-} = {
-  to: "",
-  amount: undefined,
-  asset: undefined,
-  memo: "",
-}
 
 export function SendAssetModal({
   isOpen,
@@ -90,6 +77,9 @@ export function SendAssetModal({
             colorScheme="brand.teal"
             type="submit"
             form="send-asset-form"
+            onClick={sendAssetState.formMethods.handleSubmit(
+              sendAssetState.onNext,
+            )}
           >
             Next
           </Button>
@@ -120,14 +110,39 @@ export function useSendAssetForm({
   onSuccess?: () => void
   assetAddress?: string
 }) {
+  const balances = useBalances({ address })
+  const [asset, setAsset] = React.useState(() =>
+    assetAddress
+      ? balances?.data?.allAssetsWithBalance?.find(
+          asset => asset.identity === assetAddress,
+        )
+      : undefined,
+  )
   const toast = useToast()
+
+  const defaultValues = {
+    to: "",
+    amount: "",
+    memo: "",
+    multisigSettings: {
+      threshold: 1,
+      expireInSecs: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      executeAutomatically: "0",
+    },
+  }
+
+  const formMethods = useForm({
+    defaultValues,
+  })
+  const { getValues } = formMethods
 
   const {
     onToggle: onToggleShowMultisigSettings,
     isOpen: isMultisigSettingsExpanded,
   } = useDisclosure()
-
-  const sendFormRef = React.useRef<HTMLFormElement>(null)
 
   const { data: accountInfoData } = useGetAccountInfo(accountAddress)
   const showMultisigSettings = !!accountInfoData?.hasMultisigFeature
@@ -141,22 +156,6 @@ export function useSendAssetForm({
     onClose: onCloseConfirmDialog,
   } = useDisclosure()
 
-  const balances = useBalances({ address })
-
-  const [formValues, setFormValues] = React.useState<typeof defaultFormState>(
-    () => ({
-      ...defaultFormState,
-      asset: assetAddress
-        ? balances.data.allAssetsWithBalance.find(
-            asset => asset.identity === assetAddress,
-          )
-        : undefined,
-    }),
-  )
-  const asset = formValues.asset
-
-  const [contact, setContact] = React.useState<Contact | undefined>()
-
   const {
     mutate: doCreateSendTxn,
     isLoading: isCreateSendTxnLoading,
@@ -169,8 +168,8 @@ export function useSendAssetForm({
   } = useMultisigSubmit()
 
   function onSendSuccess() {
-    setFormValues({ ...defaultFormState })
-    contact && setContact(undefined)
+    formMethods.reset(defaultValues)
+    setAsset(undefined)
     toast({
       status: "success",
       title: "Send",
@@ -181,23 +180,20 @@ export function useSendAssetForm({
 
   async function onSendTxn(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    const bigIntAmount = parseNumberToBigInt(parseFloat(formValues.amount!))
+    const formValues = getValues()
+    const bigIntAmount = parseNumberToBigInt(parseFloat(formValues.amount))
     if (accountAddress) {
-      const sendForm = sendFormRef.current!
-      const formData = new FormData(sendForm)
-      const threshold = Number(formData.get("threshold"))
-      const executeAutomatically = formData.get("executeAutomatically") === "1"
-      const expireInSecs = Number(formData.get("expireInSecs"))
       doCreateMultisigSubmitTxn(
         {
           from: address,
           to: formValues.to,
           amount: bigIntAmount,
-          symbol: formValues.asset!.identity,
+          symbol: asset!.identity,
           memo: formValues?.memo?.trim(),
-          expireInSecs,
-          executeAutomatically,
-          threshold,
+          expireInSecs: formValues.multisigSettings.expireInSecs,
+          executeAutomatically:
+            formValues.multisigSettings.executeAutomatically === "1",
+          threshold: formValues.multisigSettings.threshold,
         },
         {
           onSuccess: () => {
@@ -212,7 +208,7 @@ export function useSendAssetForm({
       {
         to: formValues.to,
         amount: bigIntAmount,
-        symbol: formValues.asset!.identity,
+        symbol: asset!.identity,
       },
       {
         onSuccess: () => {
@@ -223,26 +219,13 @@ export function useSendAssetForm({
     )
   }
 
-  async function onNext(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+  async function onNext() {
     onShowConfirmAlert()
     return
   }
 
-  function onChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) {
-    e.preventDefault()
-    const { name, value } = e.target
-    name === "to" && contact && setContact(undefined)
-    setFormValues(s => ({ ...s, [name]: value }))
-  }
-
   return {
     balances,
-    contact,
-    setContact,
-    onChange,
     onNext,
     onSendTxn,
     doCreateMultisigSubmitTxn,
@@ -251,15 +234,14 @@ export function useSendAssetForm({
     doCreateSendTxn,
     isCreateSendTxnLoading,
     asset,
+    setAsset,
     isShowConfirmDialog,
-    formValues,
-    setFormValues,
     onCloseConfirmDialog,
-    sendFormRef,
     showMultisigSettings,
     canEditMultisigSettings,
     onToggleShowMultisigSettings,
     isMultisigSettingsExpanded,
+    formMethods,
   }
 }
 
@@ -275,70 +257,84 @@ export function SendAssetForm({
   onSuccess?: () => void
   showNextBtn?: boolean
 }) {
+  const getContactName = useGetContactName()
   const {
     balances,
-    contact,
-    setContact,
-    onChange,
     onNext,
     onSendTxn,
     isCreateMultisigSubmitTxnLoading,
     isCreateSendTxnLoading,
     asset,
+    setAsset,
     isShowConfirmDialog,
-    formValues,
-    setFormValues,
     onCloseConfirmDialog,
     error,
-    sendFormRef,
     showMultisigSettings,
     canEditMultisigSettings,
     onToggleShowMultisigSettings,
     isMultisigSettingsExpanded,
+    formMethods,
   } = sendAssetState
 
-  const formData = sendFormRef?.current
-    ? new FormData(sendFormRef.current)
-    : new Map()
-  const { hours, minutes, seconds } = formData
-    ? getHoursMinutesSecondsFromSeconds(Number(formData.get("expireInSecs")))
-    : { hours: 0, minutes: 0, seconds: 0 }
+  const {
+    formState: { errors },
+  } = formMethods
+
+  const watchTo = formMethods.watch("to")
+  const {
+    to,
+    amount,
+    memo,
+    multisigSettings: {
+      hours,
+      minutes,
+      seconds,
+      executeAutomatically,
+      threshold,
+    },
+  } = formMethods.getValues()
+  const contactName = getContactName(watchTo)
 
   return (
-    <>
+    <FormProvider {...formMethods}>
       <form
-        onSubmit={onNext}
+        onSubmit={formMethods.handleSubmit(onNext)}
         aria-label="send form"
         id={formId}
-        ref={sendFormRef}
       >
         <VStack alignItems="flex-start" spacing={5}>
-          <FormControl isRequired>
-            <HStack justifyContent="space-between" alignItems="stretch">
-              <FormLabel htmlFor="to">To</FormLabel>
-              <Box>
-                <ContactSelector
-                  onContactClicked={(onClose, c) => {
-                    setFormValues(s => ({ ...s, to: c.address }))
-                    setContact(c)
-                    onClose()
-                  }}
-                >
-                  {onOpen => {
-                    return (
-                      <Button
-                        size="sm"
-                        variant="link"
-                        rightIcon={<ChevronDownIcon boxSize={4} />}
-                        onClick={onOpen}
-                      >
-                        Select a contact
-                      </Button>
-                    )
-                  }}
-                </ContactSelector>
-              </Box>
-            </HStack>
+          <FieldWrapper
+            isRequired
+            error={errors?.to?.message}
+            label={() => {
+              return (
+                <HStack justifyContent="space-between" alignItems="stretch">
+                  <FormLabel htmlFor="to">To</FormLabel>
+                  <Box>
+                    <ContactSelector
+                      onContactClicked={(onClose, c) => {
+                        formMethods.setValue("to", c.address)
+                        onClose()
+                      }}
+                    >
+                      {onOpen => {
+                        return (
+                          <Button
+                            size="sm"
+                            variant="link"
+                            rightIcon={<ChevronDownIcon boxSize={4} />}
+                            onClick={onOpen}
+                          >
+                            Select a contact
+                          </Button>
+                        )
+                      }}
+                    </ContactSelector>
+                  </Box>
+                </HStack>
+              )
+            }}
+          >
             <VStack
               bgColor="gray.100"
               px={4}
@@ -346,64 +342,83 @@ export function SendAssetForm({
               rounded="md"
               spacing={0}
               alignItems="flex-start"
+              borderColor={errors?.to ? "red.500" : undefined}
+              borderWidth={errors?.to ? "2px" : undefined}
             >
-              {contact ? <Text fontSize="lg">{contact.name}</Text> : null}
+              {contactName ? (
+                <Text fontWeight="medium" fontSize="lg">
+                  {contactName}
+                </Text>
+              ) : null}
               <Input
                 autoFocus
-                name="to"
-                id="to"
                 variant="unstyled"
-                onChange={onChange}
-                value={formValues.to}
                 placeholder="maffbahksdwaqeenayy..."
-                pattern="^[a-z0-9]*$"
-                minLength={1}
                 fontFamily="monospace"
                 isTruncated
+                {...formMethods.register("to", {
+                  required: "This field is required",
+                  pattern: {
+                    value: /^[a-z0-9]*$/,
+                    message: "Only a-z and 0-9 characters are allowed",
+                  },
+                })}
               />
             </VStack>
-          </FormControl>
-          <FormControl isRequired>
-            <Flex alignItems="stretch" justifyContent="space-between">
-              <FormLabel htmlFor="amount">Amount</FormLabel>
-              <Box>
-                <AssetSelector
-                  ownedAssets={balances.data.ownedAssetsWithBalance}
-                  allAssets={balances.data.allAssetsWithBalance}
-                  onAssetClicked={asset => {
-                    setFormValues(s => ({
-                      ...s,
-                      asset,
-                    }))
-                  }}
-                >
-                  {onOpen => (
-                    <Button
-                      size="sm"
-                      rightIcon={<ChevronDownIcon boxSize={4} />}
-                      aria-label="select token"
-                      onClick={onOpen}
-                      variant="link"
+          </FieldWrapper>
+
+          <FieldWrapper
+            isRequired
+            error={errors?.amount?.message}
+            label={() => {
+              return (
+                <Flex alignItems="stretch" justifyContent="space-between">
+                  <FormLabel htmlFor="amount">Amount</FormLabel>
+                  <Box>
+                    <AssetSelector
+                      ownedAssets={balances.data.ownedAssetsWithBalance}
+                      allAssets={balances.data.allAssetsWithBalance}
+                      onAssetClicked={asset => {
+                        setAsset(asset)
+                      }}
                     >
-                      Select an asset
-                    </Button>
-                  )}
-                </AssetSelector>
-              </Box>
-            </Flex>
-            <HStack bgColor="gray.100" px={4} py={2} rounded="md">
+                      {onOpen => (
+                        <Button
+                          size="sm"
+                          rightIcon={<ChevronDownIcon boxSize={4} />}
+                          aria-label="select token"
+                          onClick={onOpen}
+                          variant="link"
+                        >
+                          Select an asset
+                        </Button>
+                      )}
+                    </AssetSelector>
+                  </Box>
+                </Flex>
+              )
+            }}
+          >
+            <HStack
+              bgColor="gray.100"
+              px={4}
+              py={2}
+              rounded="md"
+              borderColor={errors?.amount ? "red.500" : undefined}
+              borderWidth={errors?.amount ? "2px" : undefined}
+            >
               <Input
                 alignSelf="flex-start"
-                name="amount"
-                id="amount"
                 variant="unstyled"
-                onChange={onChange}
-                value={formValues.amount ?? ""}
                 placeholder="0.0"
-                required
-                pattern="^(\d?)+(?:\.\d{1,9})?$"
-                title="Number with up to 9 decimal places"
                 fontFamily="monospace"
+                {...formMethods.register("amount", {
+                  required: "This field is required",
+                  pattern: {
+                    value: /^(\d?)+(?:\.\d{1,9})?$/,
+                    message: "Number with up to 9 decimal places",
+                  },
+                })}
               />
               <VStack alignItems="flex-end" spacing={0}>
                 {asset ? (
@@ -421,10 +436,10 @@ export function SendAssetForm({
                         colorScheme="red"
                         size="xs"
                         onClick={() => {
-                          setFormValues(s => ({
-                            ...s,
-                            amount: amountFormatter(asset.balance),
-                          }))
+                          formMethods.setValue(
+                            "amount",
+                            amountFormatter(asset.balance),
+                          )
                         }}
                       >
                         Max
@@ -434,19 +449,22 @@ export function SendAssetForm({
                 ) : null}
               </VStack>
             </HStack>
-          </FormControl>
+          </FieldWrapper>
           {accountAddress && (
-            <FormControl>
-              <FormLabel htmlFor="memo">Memo</FormLabel>
+            <FieldWrapper
+              label="Memo"
+              description="Add a short memo"
+              error={errors?.memo?.message}
+            >
               <Input
-                variant="filled"
-                id="memo"
-                name="memo"
-                placeholder="Add a short memo"
-                value={formValues.memo ?? ""}
-                onChange={onChange}
+                {...formMethods.register("memo", {
+                  maxLength: {
+                    value: 512,
+                    message: "Max 512 characters allowed",
+                  },
+                })}
               />
-            </FormControl>
+            </FieldWrapper>
           )}
           {showMultisigSettings ? (
             <Box>
@@ -465,10 +483,11 @@ export function SendAssetForm({
                 Multisig Settings
               </Button>
               <Collapse in={isMultisigSettingsExpanded} animateOpacity>
-                <VStack alignItems="flex-start" spacing={5} mt={2}>
+                <VStack alignItems="flex-start" spacing={4} mt={2}>
                   <MultisigSettingsFields
                     accountAddress={accountAddress!}
                     canEdit={canEditMultisigSettings}
+                    name="multisigSettings."
                   />
                 </VStack>
               </Collapse>
@@ -491,18 +510,21 @@ export function SendAssetForm({
         isOpen={isShowConfirmDialog}
         onClose={onCloseConfirmDialog}
         onSendTxn={onSendTxn}
-        txnDetails={formValues}
+        to={to}
+        assetSymbol={asset?.symbol}
+        amount={amount}
+        memo={memo}
         isLoading={isCreateSendTxnLoading || isCreateMultisigSubmitTxnLoading}
         error={error}
-        contact={contact}
+        contactName={contactName}
         expireHours={hours}
         expireMinutes={minutes}
         expireSeconds={seconds}
-        executeAutomatically={formData.get("executeAutomatically") === "1"}
-        threshold={formData.get("threshold")}
+        executeAutomatically={executeAutomatically === "1"}
+        threshold={threshold}
         showMultisigSettings={showMultisigSettings}
       />
-    </>
+    </FormProvider>
   )
 }
 
@@ -510,27 +532,33 @@ function ConfirmTxnDialog({
   isOpen,
   onClose,
   onSendTxn,
-  txnDetails,
+  to,
+  amount,
+  assetSymbol,
   isLoading,
-  contact,
+  contactName,
   error,
   showMultisigSettings,
   expireHours,
   expireMinutes,
   expireSeconds,
   threshold,
+  memo,
   executeAutomatically,
 }: Omit<AlertDialogProps, "children" | "leastDestructiveRef"> & {
   onSendTxn: (e: React.FormEvent<HTMLFormElement>) => void
-  txnDetails: typeof defaultFormState
+  to: string
+  amount: string
+  assetSymbol?: string
   isLoading: boolean
-  contact?: Contact
+  contactName?: string
   error?: string
   showMultisigSettings: boolean
   expireHours?: number
   expireMinutes?: number
   expireSeconds?: number
   threshold?: number
+  memo?: string
   executeAutomatically?: boolean
 }) {
   const cancelTxnRef = React.useRef(null)
@@ -576,20 +604,20 @@ function ConfirmTxnDialog({
       <AlertDialog.Body>
         <form id="confirm-txn-form" onSubmit={onSendTxn}>
           <DataField label="To">
-            {contact ? (
+            {contactName ? (
               <Text fontWeight="medium" fontSize="lg">
-                {contact.name}
+                {contactName}
               </Text>
             ) : null}
-            <AddressText addressText={txnDetails.to} isFullText />
+            <AddressText addressText={to} isFullText />
           </DataField>
           <DataField label="Amount">
             <HStack spacing={1}>
               <Image src={cubeImg} borderRadius="full" boxSize={9} />
               <Text fontSize="lg" isTruncated fontWeight="medium">
-                {txnDetails.amount}
+                {amount}
               </Text>
-              <Text fontSize="lg">{txnDetails.asset?.symbol}</Text>
+              <Text fontSize="lg">{assetSymbol}</Text>
             </HStack>
           </DataField>
           {showMultisigSettings ? (
@@ -606,6 +634,7 @@ function ConfirmTxnDialog({
                 label="Execute Automatically"
                 value={executeAutomatically ? "Yes" : "No"}
               />
+              <DataField label="Memo" value={memo} />
             </>
           ) : null}
 
