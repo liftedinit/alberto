@@ -73,6 +73,7 @@ function AddAccountModal({
       size={tab === 1 ? "xl" : undefined}
       footer={<></>}
       closeOnOverlayClick={false}
+      closeOnEsc={tab === 1 ? false : true}
     >
       <Modal.Body>
         <Tabs mb={4} onChange={tabIdx => setTab(tabIdx)}>

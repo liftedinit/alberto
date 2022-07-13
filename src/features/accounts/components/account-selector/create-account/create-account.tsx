@@ -244,6 +244,7 @@ function AccountOwnerField({
   const owners = watch("accountSettings.owners")
 
   const isLedgerTransactEnabled = getValues(`features.${accountLedgerFeature}`)
+  const isMultisigEnabled = getValues(`features.${accountMultisigFeature}`)
 
   const {
     field: addressField,
@@ -279,17 +280,26 @@ function AccountOwnerField({
 
   const rolesValueRef = React.useRef(rolesValue)
   rolesValueRef.current = rolesValue
-  const isRemovedRef = React.useRef(false)
   React.useEffect(() => {
-    if (!isLedgerTransactEnabled && !isRemovedRef.current) {
-      isRemovedRef.current = true
-      onRolesChange(
-        rolesValueRef.current.filter(
-          (r: string) => r !== AccountRole[AccountRole.canLedgerTransact],
-        ),
-      )
+    if (!isLedgerTransactEnabled || !isMultisigEnabled) {
+      let result = rolesValueRef.current.slice().filter((r: string) => {
+        if (
+          !isLedgerTransactEnabled &&
+          r === AccountRole[AccountRole.canLedgerTransact]
+        ) {
+          return false
+        } else if (
+          !isMultisigEnabled &&
+          (r === AccountRole[AccountRole.canMultisigSubmit] ||
+            r === AccountRole[AccountRole.canMultisigApprove])
+        ) {
+          return false
+        }
+        return true
+      })
+      onRolesChange(result)
     }
-  }, [isLedgerTransactEnabled, rolesValue, onRolesChange])
+  }, [isLedgerTransactEnabled, isMultisigEnabled, onRolesChange])
 
   const roles: Role[] = [
     {
@@ -297,18 +307,23 @@ function AccountOwnerField({
       description: "Can perform regular ledger transactions.",
       value: AccountRole[AccountRole.owner],
     },
-    {
-      label: "Multisig Submit",
-      description:
-        "Can submit new transactions and withdraw own submitted transactions.",
-      value: AccountRole[AccountRole.canMultisigSubmit],
-    },
-    {
-      label: "Multisig Approve",
-      description: "Can approve transactions and revoke their own approvals.",
-      value: AccountRole[AccountRole.canMultisigApprove],
-    },
   ]
+
+  if (isMultisigEnabled) {
+    roles.push(
+      {
+        label: "Multisig Submit",
+        description:
+          "Can submit new transactions and withdraw own submitted transactions.",
+        value: AccountRole[AccountRole.canMultisigSubmit],
+      },
+      {
+        label: "Multisig Approve",
+        description: "Can approve transactions and revoke their own approvals.",
+        value: AccountRole[AccountRole.canMultisigApprove],
+      },
+    )
+  }
 
   if (isLedgerTransactEnabled) {
     roles.push({
@@ -563,7 +578,7 @@ function Review() {
         </Alert>
       ) : null}
       <Flex gap={2} mt={8}>
-        <Button size="sm" onClick={prevStep}>
+        <Button size="sm" onClick={prevStep} isDisabled={isLoading}>
           Prev
         </Button>
         <Button
