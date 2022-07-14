@@ -537,7 +537,7 @@ function Review() {
   const { handleSubmit, getValues } = useFormContext()
   const { prevStep } = useStepsContext()
 
-  const { mutate, error, data, isLoading } = useCreateAccount()
+  const { mutate, error, isLoading } = useCreateAccount()
 
   function onCreateClick(formData: unknown) {
     mutate(formData as CreateAccountFormData, {
