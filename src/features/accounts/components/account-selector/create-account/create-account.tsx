@@ -110,7 +110,7 @@ export function CreateAccount() {
 
 function SelectFeatures() {
   const { nextStep } = useStepsContext()
-  const { register } = useFormContext()
+  const { register, watch } = useFormContext()
 
   const { getAttribute, getFeatures } = useNetworkStatus()
   const accountAttribute = getAttribute(NetworkAttributes.account)
@@ -121,6 +121,8 @@ function SelectFeatures() {
     AccountFeatureTypes.accountLedger,
     AccountFeatureTypes.accountMultisig,
   ])
+  const watchFeatures = watch("features")
+  const hasFeature = Object.values(watchFeatures).some(v => !!v)
 
   const featureOptions = []
   hasLedger &&
@@ -165,7 +167,13 @@ function SelectFeatures() {
           )
         })}
       </VStack>
-      <Button size="sm" colorScheme="brand.teal" mt={8} onClick={nextStep}>
+      <Button
+        size="sm"
+        colorScheme="brand.teal"
+        mt={8}
+        onClick={nextStep}
+        isDisabled={!hasFeature}
+      >
         Next
       </Button>
     </>
