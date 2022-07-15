@@ -9,6 +9,7 @@ import { multisigTxnTypes } from "features/accounts"
 import { MultisigTxnListItem } from "./multisig-txn-list-item"
 import { CreateAccountTxnListItem } from "./create-account-txn-list-item"
 import { SendTxnListItem } from "./send-txn-list-item"
+import { AddFeaturesTxnListItem } from "./add-features-txn-list-item"
 
 export function TxnListItem({
   transaction,
@@ -22,6 +23,8 @@ export function TxnListItem({
     return <SendTxnListItem txn={transaction as SendEvent} address={address} />
   } else if (txnTypeName === EventType.accountCreate) {
     return <CreateAccountTxnListItem txn={transaction as CreateAccountEvent} />
+  } else if (txnTypeName === EventType.accountAddFeatures) {
+    return <AddFeaturesTxnListItem txn={transaction as CreateAccountEvent} />
   } else if (isMultisigTxnType(transaction.type)) {
     return <MultisigTxnListItem txn={transaction as MultisigEvent} />
   }

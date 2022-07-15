@@ -34,7 +34,11 @@ export function useCreateAccount() {
         new Map(),
       )
       const features = makeFeatures(vars.features, vars.featureSettings)
-      const res = await n?.account.create(accountName, roles, features)
+      const res = await n?.account.create({
+        account: accountName,
+        roles,
+        features,
+      })
       return res
     },
   )

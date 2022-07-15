@@ -3,13 +3,19 @@ import { Alert, AlertIcon, AlertDescription, Button, VStack } from "components"
 import {
   MultisigSettingsFields,
   useMultisigSetDefaults,
+  useAddFeatures,
+  useGetAccountInfo,
 } from "features/accounts"
+import { AccountFeatureTypes, AccountMultisigArgument } from "many-js"
 
 export function MultisigSettings({
   accountAddress,
 }: {
   accountAddress: string | undefined
 }) {
+  const { data: accountInfoData } = useGetAccountInfo(accountAddress)
+  const hasMultisigFeature = accountInfoData?.hasMultisigFeature
+
   const formMethods = useForm({
     defaultValues: {
       threshold: 0,
@@ -22,9 +28,16 @@ export function MultisigSettings({
   })
 
   const {
+    mutate: doAddFeatures,
+    isLoading: isAddingFeatures,
+    isSuccess: isAddFeaturesSuccess,
+    error: addFeaturesError,
+  } = useAddFeatures(accountAddress)
+
+  const {
     mutate: doSetMultisigDefaults,
-    isLoading: isSaving,
-    isSuccess,
+    isLoading: isSettingDefaults,
+    isSuccess: isSetDefaultsSuccess,
     error,
   } = useMultisigSetDefaults(accountAddress!)
 
@@ -37,11 +50,28 @@ export function MultisigSettings({
     threshold: number
     executeAutomatically: string
   }) {
-    doSetMultisigDefaults({
-      expireInSecs,
-      threshold,
-      executeAutomatically: executeAutomatically === "1",
-    })
+    if (!hasMultisigFeature) {
+      doAddFeatures({
+        features: [
+          [
+            AccountFeatureTypes.accountMultisig,
+            new Map()
+              .set(AccountMultisigArgument.threshold, threshold)
+              .set(AccountMultisigArgument.expireInSecs, expireInSecs)
+              .set(
+                AccountMultisigArgument.executeAutomatically,
+                executeAutomatically === "1",
+              ),
+          ],
+        ],
+      })
+    } else {
+      doSetMultisigDefaults({
+        expireInSecs,
+        threshold,
+        executeAutomatically: executeAutomatically === "1",
+      })
+    }
   }
 
   return (
@@ -50,22 +80,24 @@ export function MultisigSettings({
         <VStack alignItems="flex-start" spacing={6}>
           <MultisigSettingsFields accountAddress={accountAddress!} />
 
-          {error?.message ? (
+          {addFeaturesError?.message || error?.message ? (
             <Alert status="warning" variant="left-accent">
               <AlertIcon />
-              <AlertDescription>{error.message}</AlertDescription>
+              <AlertDescription>
+                {addFeaturesError?.message ?? error?.message}
+              </AlertDescription>
             </Alert>
           ) : null}
-          {isSuccess && (
+          {isSetDefaultsSuccess || isAddFeaturesSuccess ? (
             <Alert status="success" variant="left-accent">
               <AlertIcon />
               <AlertDescription>Settings saved</AlertDescription>
             </Alert>
-          )}
+          ) : null}
           <Button
             type="submit"
             colorScheme="brand.teal"
-            isLoading={isSaving}
+            isLoading={isSettingDefaults || isAddingFeatures}
             loadingText="Saving"
             w={{ base: "full", md: "auto" }}
           >

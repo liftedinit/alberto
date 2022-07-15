@@ -41,7 +41,7 @@ export function AccountInfo({
   )
 }
 
-function AccountRoles({ roles }: { roles: AccountInfoData["roles"] }) {
+export function AccountRoles({ roles }: { roles: AccountInfoData["roles"] }) {
   const contacts = useContactsStore(s => s.byId)
   const accounts = useAccountsStore(s => Array.from(s.byId).map(a => a[1]))
 
