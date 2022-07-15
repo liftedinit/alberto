@@ -4,6 +4,7 @@ import {
   AnonymousIdentity,
   AccountRole,
   EventType,
+  AccountFeatureTypes,
 } from "many-js"
 
 export type AccountId = number
@@ -39,6 +40,11 @@ export const submitterRoles = [
   AccountRole[AccountRole.canMultisigSubmit],
   AccountRole[AccountRole.owner],
 ]
+
+export const accountMultisigFeature =
+  AccountFeatureTypes[AccountFeatureTypes.accountMultisig]
+export const accountLedgerFeature =
+  AccountFeatureTypes[AccountFeatureTypes.accountLedger]
 
 export const approverRoles = [
   AccountRole[AccountRole.canMultisigApprove],

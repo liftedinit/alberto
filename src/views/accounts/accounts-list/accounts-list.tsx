@@ -15,21 +15,18 @@ import {
   HStack,
   IconButton,
   Input,
-  Modal,
-  PlusIcon,
-  Spinner,
-  Tab,
-  Tabs,
-  TabList,
   Text,
   useToast,
   useDisclosure,
   usePageContainerProvider,
   VStack,
   AccountsIcon,
+  ChevronRightIcon,
+  useBreakpointValue,
 } from "components"
 import {
   AccountInfo,
+  AccountSelector,
   useAccountStore,
   useGetAccountInfo,
 } from "features/accounts"
@@ -111,115 +108,10 @@ function NoAccountsPrompt() {
   )
 }
 
-function AccountSelector({
-  onAccountSelected,
-  children,
-}: React.PropsWithChildren<{
-  onAccountSelected: (address: string, acctInfo: AccountInfoData) => void
-}>) {
-  const { onClose, isOpen, onOpen } = useDisclosure()
-
-  return (
-    <>
-      {typeof children === "function" ? (
-        children({ onOpen, onClose, isOpen })
-      ) : (
-        <IconButton
-          rounded="full"
-          size="sm"
-          aria-label="import account"
-          icon={<PlusIcon boxSize={6} />}
-          onClick={onOpen}
-        />
-      )}
-      <AddAccountModal
-        onClose={onClose}
-        isOpen={isOpen}
-        onAccountSelected={onAccountSelected}
-      />
-    </>
-  )
-}
-
-function AddAccountModal({
-  onClose,
-  isOpen,
-  onAccountSelected,
-}: {
-  onClose: () => void
-  isOpen: boolean
-  onAccountSelected: (address: string, acctInfo: AccountInfoData) => void
-}) {
-  const [accountAddress, setAccountAddress] = React.useState("")
-  const debouncedAcctAddress = useDebounce(accountAddress)
-  const { data, isLoading, isFetching } =
-    useGetAccountInfo(debouncedAcctAddress)
-
-  function onImportClick() {
-    data?.accountInfo &&
-      onAccountSelected(debouncedAcctAddress, data.accountInfo)
-    onClose()
-  }
-
-  React.useEffect(() => {
-    !isOpen && setAccountAddress("")
-  }, [isOpen])
-
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      header="Add Account"
-      scrollBehavior="inside"
-      footer={
-        data?.accountInfo ? (
-          <Button size="sm" colorScheme="brand.teal" onClick={onImportClick}>
-            Import
-          </Button>
-        ) : (
-          <></>
-        )
-      }
-      closeOnOverlayClick={false}
-    >
-      <Modal.Body>
-        <Tabs mb={4}>
-          <TabList>
-            <Tab>Search</Tab>
-          </TabList>
-        </Tabs>
-        <FormControl isRequired>
-          <Input
-            name="account"
-            id="account"
-            size="sm"
-            variant="filled"
-            maxLength={100}
-            minLength={50}
-            onChange={e => setAccountAddress(e.target.value.trim())}
-            placeholder="Account address"
-          />
-        </FormControl>
-        {isFetching && (
-          <Center mt={4}>
-            <Spinner size="lg" justifySelf="center" alignSelf="center" />
-          </Center>
-        )}
-        {!isFetching && !isLoading && !data && (
-          <Center mt={4}>
-            <Text>No account was found.</Text>
-          </Center>
-        )}
-        <AccountInfo accountInfo={data?.accountInfo} />
-      </Modal.Body>
-    </Modal>
-  )
-}
-
 function AccountList({ searchTerm }: { searchTerm: string }) {
   const accounts = useAccountStore(s => Array.from(s.byId))
   return (
-    <VStack alignItems="flex-start" divider={<Divider />} spacing={4}>
+    <VStack alignItems="flex-start" divider={<Divider />} spacing={0}>
       {accounts.map(acc => {
         const [address, { description }] = acc
         if (
@@ -229,41 +121,74 @@ function AccountList({ searchTerm }: { searchTerm: string }) {
               .toLocaleLowerCase()
               .includes(searchTerm.toLocaleLowerCase()))
         )
-          return (
-            <Flex
-              alignItems="center"
-              justifyContent="space-between"
-              key={address}
-              w="full"
-              gap={4}
-            >
-              <Box w="full" overflow="hidden">
-                <RouterLink to={address}>
-                  <Text fontWeight="medium" isTruncated>
-                    {description as string}
-                  </Text>
-                </RouterLink>
-                <AddressText bgColor={undefined} p={0} addressText={address} />
-              </Box>
-              <RemoveAccountDialog address={address}>
-                {onOpen => (
-                  <IconButton
-                    size="sm"
-                    rounded="full"
-                    aria-label="remove contact"
-                    onClick={e => {
-                      e.stopPropagation()
-                      onOpen()
-                    }}
-                    icon={<CloseIcon color="red" boxSize={5} />}
-                  />
-                )}
-              </RemoveAccountDialog>
-            </Flex>
-          )
+          return <AccountListItem key={address} address={address} />
         return null
       })}
     </VStack>
+  )
+}
+
+function AccountListItem({ address }: { address: string }) {
+  const { data } = useGetAccountInfo(address)
+  const description = data?.accountInfo?.description
+  const [showActions, setShowActions] = React.useState(false)
+  const isBase = useBreakpointValue({ base: true, md: false })
+
+  React.useEffect(() => {
+    if (isBase) setShowActions(true)
+    else setShowActions(false)
+  }, [isBase])
+
+  return (
+    <Flex
+      alignItems="center"
+      justifyContent="space-between"
+      w="full"
+      gap={2}
+      py={4}
+      px={3}
+      onMouseEnter={isBase ? undefined : () => setShowActions(true)}
+      onMouseLeave={isBase ? undefined : () => setShowActions(false)}
+      _hover={{ bgColor: "gray.50" }}
+    >
+      <Box w="full" overflow="hidden">
+        <Text as="span" fontWeight="medium" isTruncated>
+          {description}
+        </Text>
+        <AddressText
+          bgColor={undefined}
+          p={0}
+          addressText={address}
+          iconProps={{ boxSize: 4 }}
+        />
+      </Box>
+      {showActions && (
+        <>
+          <RemoveAccountDialog address={address}>
+            {onOpen => (
+              <IconButton
+                size="sm"
+                rounded="full"
+                aria-label="remove contact"
+                onClick={e => {
+                  e.stopPropagation()
+                  onOpen()
+                }}
+                icon={<CloseIcon color="red" boxSize={5} />}
+              />
+            )}
+          </RemoveAccountDialog>
+          <IconButton
+            as={RouterLink}
+            to={address}
+            size="sm"
+            rounded="full"
+            aria-label="view account"
+            icon={<ChevronRightIcon />}
+          />
+        </>
+      )}
+    </Flex>
   )
 }
 

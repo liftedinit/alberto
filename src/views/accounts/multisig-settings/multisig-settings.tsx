@@ -1,4 +1,3 @@
-import React from "react"
 import { useForm, FormProvider } from "react-hook-form"
 import { Alert, AlertIcon, AlertDescription, Button, VStack } from "components"
 import {
@@ -17,6 +16,7 @@ export function MultisigSettings({
       expireInSecs: 0,
       hours: 0,
       minutes: 0,
+      seconds: 0,
       executeAutomatically: "0",
     },
   })

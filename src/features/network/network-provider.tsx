@@ -5,6 +5,7 @@ import {
   AnonymousIdentity,
   IdStore,
   Account,
+  Base,
   Events,
 } from "many-js"
 import { useNetworkStore } from "./store"
@@ -26,7 +27,7 @@ export function NetworkProvider({ children }: React.PropsWithChildren<{}>) {
     const identity = activeAccount?.identity ?? anonIdentity
     const url = activeNetwork?.url || ""
     const queryNetwork = new Network(url, anonIdentity)
-    queryNetwork.apply([Ledger, IdStore, Account, Events])
+    queryNetwork.apply([Ledger, IdStore, Account, Events, Base])
     const cmdNetwork = new Network(url, identity)
     cmdNetwork.apply([Ledger, IdStore, Account])
     return [queryNetwork, cmdNetwork] as [Network, Network]

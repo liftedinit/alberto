@@ -56,7 +56,7 @@ function CreateAccountTxnDetailsModal({
       footer={<></>}
     >
       <Modal.Body>
-        <HStack>
+        <HStack mb={6}>
           <PlusCircleIcon boxSize={8} />
           <Text>Create Account</Text>
         </HStack>

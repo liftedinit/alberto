@@ -1,7 +1,9 @@
 import { Outlet, useParams } from "react-router-dom"
 import {
+  AddressText,
   Box,
   Breadcrumb,
+  Flex,
   Layout,
   PageContainer,
   PageContainerProvider,
@@ -46,7 +48,21 @@ function AccountsHeader() {
       {data?.accountInfo?.description && (
         <Breadcrumb.BreadcrumbItem isCurrentPage={!!accountAddress}>
           <Breadcrumb.BreadcrumbLink to={`${accountAddress}`}>
-            {data.accountInfo.description}
+            <Flex>
+              {data.accountInfo.description}
+              {accountAddress && (
+                <>
+                  &nbsp; (
+                  <AddressText
+                    addressText={accountAddress}
+                    p={0}
+                    iconProps={{ boxSize: 4 }}
+                    bgColor={undefined}
+                  />
+                  )
+                </>
+              )}
+            </Flex>
           </Breadcrumb.BreadcrumbLink>
         </Breadcrumb.BreadcrumbItem>
       )}

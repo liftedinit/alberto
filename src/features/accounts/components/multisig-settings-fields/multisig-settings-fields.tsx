@@ -24,7 +24,7 @@ export function MultisigSettingsFields({
   name = "",
   maxApprovers,
 }: {
-  accountAddress: string
+  accountAddress?: string
   canEdit?: boolean
   name?: string
   maxApprovers?: number
@@ -56,14 +56,15 @@ export function MultisigSettingsFields({
   >
 
   const _maxApprovers =
-    maxApprovers ??
-    Array.from(accountInfo?.roles ?? [])?.reduce((acc, roleData) => {
-      const [, roles] = roleData
-      if (roles?.some(r => approverRoles.includes(r))) {
-        acc += 1
-      }
-      return acc
-    }, 0)
+    (maxApprovers ??
+      Array.from(accountInfo?.roles ?? [])?.reduce((acc, roleData) => {
+        const [, roles] = roleData
+        if (roles?.some(r => approverRoles.includes(r))) {
+          acc += 1
+        }
+        return acc
+      }, 0)) ||
+    1
 
   const isInitialValuesSet = React.useRef(false)
   React.useEffect(

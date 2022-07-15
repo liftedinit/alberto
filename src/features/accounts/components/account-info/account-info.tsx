@@ -20,7 +20,7 @@ export function AccountInfo({
 }) {
   if (!accountInfo) return null
   return (
-    <VStack spacing={4} alignItems="flex-start" mt={4}>
+    <VStack spacing={4} alignItems="flex-start">
       <Box>
         <Heading size="sm" opacity={0.6} mb={2}>
           Name
@@ -45,6 +45,7 @@ function AccountRoles({ roles }: { roles: AccountInfoData["roles"] }) {
   const contacts = useContactsStore(s => s.byId)
   const accounts = useAccountsStore(s => Array.from(s.byId).map(a => a[1]))
 
+  if (!roles || roles.size === 0) return <Text>No owners and roles.</Text>
   return (
     <VStack
       alignItems="flex-start"
@@ -69,7 +70,7 @@ function AccountRoles({ roles }: { roles: AccountInfoData["roles"] }) {
                   </Text>
                 ) : null}
                 <AddressText bgColor={undefined} p={0} addressText={address} />
-                <Flex gap={2} mt={1}>
+                <Flex gap={2} flexWrap="wrap" mt={1}>
                   {rolesList
                     ? rolesList.map((roleName: string) => {
                         return (

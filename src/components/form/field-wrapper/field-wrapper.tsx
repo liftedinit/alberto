@@ -3,6 +3,7 @@ import {
   FormControl,
   FormControlProps,
   FormLabel,
+  FormLabelProps,
   FormHelperText,
   FormErrorMessage,
 } from "components"
@@ -12,12 +13,20 @@ export type FieldWrapperProps = {
   children: React.ReactNode
   error?: string | undefined
   description?: string
+  labelProps?: FormLabelProps
 }
 
 export function FieldWrapper(
   props: FieldWrapperProps & Omit<FormControlProps, "label">,
 ) {
-  const { label, description, error, children, ...restProps } = props
+  const {
+    label,
+    description,
+    error,
+    labelProps = {},
+    children,
+    ...restProps
+  } = props
 
   return (
     <FormControl isInvalid={Boolean(error)} {...restProps}>
@@ -25,7 +34,7 @@ export function FieldWrapper(
         (typeof label === "function" ? (
           label()
         ) : (
-          <FormLabel>{label}</FormLabel>
+          <FormLabel {...labelProps}>{label}</FormLabel>
         ))}
       {children}
       {error && <FormErrorMessage>{error}</FormErrorMessage>}
