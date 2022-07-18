@@ -1,6 +1,10 @@
 import React from "react"
 import { useForm, FormProvider } from "react-hook-form"
-import { ANON_IDENTITY } from "many-js"
+import {
+  AccountFeatureTypes,
+  AccountMultisigArgument,
+  ANON_IDENTITY,
+} from "many-js"
 import {
   AddressText,
   Alert,
@@ -31,6 +35,7 @@ import {
 } from "components"
 import cubeImg from "assets/cube.png"
 import {
+  accountMultisigFeature,
   MultisigSettingsFields,
   useAccountsStore,
   useGetAccountInfo,
@@ -149,6 +154,9 @@ export function useSendAssetForm({
   const canEditMultisigSettings = !!(
     showMultisigSettings && accountInfoData?.isOwner
   )
+  const multisigSettings = accountInfoData?.accountInfo?.features?.get(
+    accountMultisigFeature,
+  )
 
   const {
     isOpen: isShowConfirmDialog,
@@ -178,11 +186,47 @@ export function useSendAssetForm({
     onCloseConfirmDialog()
   }
 
+  function getNewMultisigSettings(
+    oldSettings: Map<string, unknown>,
+    newSettings: { [k: string]: unknown },
+  ): { [k: string]: unknown } {
+    const result: { [k: string]: unknown } = {}
+    if (oldSettings && newSettings) {
+      if (
+        oldSettings?.get(
+          AccountMultisigArgument[AccountMultisigArgument.threshold],
+        ) !== newSettings.threshold
+      ) {
+        result.threshold = newSettings.threshold
+      }
+      if (
+        oldSettings?.get(
+          AccountMultisigArgument[AccountMultisigArgument.expireInSecs],
+        ) !== newSettings.expireInSecs
+      ) {
+        result.expireInSecs = newSettings.expireInSecs
+      }
+      if (
+        oldSettings?.get(
+          AccountMultisigArgument[AccountMultisigArgument.executeAutomatically],
+        ) !== newSettings.executeAutomatically
+      ) {
+        result.executeAutomatically = newSettings.executeAutomatically
+      }
+    }
+
+    return result
+  }
+
   async function onSendTxn(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const formValues = getValues()
     const bigIntAmount = parseNumberToBigInt(parseFloat(formValues.amount))
     if (accountAddress) {
+      const newMultisigSettings = getNewMultisigSettings(
+        multisigSettings as Map<string, unknown>,
+        formValues.multisigSettings,
+      )
       doCreateMultisigSubmitTxn(
         {
           from: address,
@@ -190,10 +234,7 @@ export function useSendAssetForm({
           amount: bigIntAmount,
           symbol: asset!.identity,
           memo: formValues?.memo?.trim(),
-          expireInSecs: formValues.multisigSettings.expireInSecs,
-          executeAutomatically:
-            formValues.multisigSettings.executeAutomatically === "1",
-          threshold: formValues.multisigSettings.threshold,
+          ...newMultisigSettings,
         },
         {
           onSuccess: () => {
