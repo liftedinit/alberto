@@ -227,27 +227,22 @@ export function useSendAssetForm({
         multisigSettings as Map<string, unknown>,
         formValues.multisigSettings,
       )
-      if (
-        (multisigSettings as Map<string, unknown>)?.get(
-          AccountMultisigArgument[AccountMultisigArgument.expireInSecs],
-        )
+      doCreateMultisigSubmitTxn(
+        {
+          from: address,
+          to: formValues.to,
+          amount: bigIntAmount,
+          symbol: asset!.identity,
+          memo: formValues?.memo?.trim(),
+          ...newMultisigSettings,
+        },
+        {
+          onSuccess: () => {
+            onSendSuccess()
+            onSuccess?.()
+          },
+        },
       )
-        doCreateMultisigSubmitTxn(
-          {
-            from: address,
-            to: formValues.to,
-            amount: bigIntAmount,
-            symbol: asset!.identity,
-            memo: formValues?.memo?.trim(),
-            ...newMultisigSettings,
-          },
-          {
-            onSuccess: () => {
-              onSendSuccess()
-              onSuccess?.()
-            },
-          },
-        )
       return
     }
     doCreateSendTxn(
