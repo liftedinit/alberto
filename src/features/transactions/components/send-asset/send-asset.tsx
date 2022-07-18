@@ -1,10 +1,6 @@
 import React from "react"
 import { useForm, FormProvider } from "react-hook-form"
-import {
-  AccountFeatureTypes,
-  AccountMultisigArgument,
-  ANON_IDENTITY,
-} from "many-js"
+import { AccountMultisigArgument, ANON_IDENTITY } from "many-js"
 import {
   AddressText,
   Alert,
@@ -206,12 +202,13 @@ export function useSendAssetForm({
       ) {
         result.expireInSecs = newSettings.expireInSecs
       }
+      const newExecuteAutomatically = newSettings.executeAutomatically === "1"
       if (
         oldSettings?.get(
           AccountMultisigArgument[AccountMultisigArgument.executeAutomatically],
-        ) !== newSettings.executeAutomatically
+        ) !== newExecuteAutomatically
       ) {
-        result.executeAutomatically = newSettings.executeAutomatically
+        result.executeAutomatically = newExecuteAutomatically
       }
     }
 
