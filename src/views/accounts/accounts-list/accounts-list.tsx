@@ -1,6 +1,5 @@
 import React from "react"
 import { Link as RouterLink } from "react-router-dom"
-import { AccountInfoData } from "many-js"
 import {
   AddressText,
   AlertDialog,
