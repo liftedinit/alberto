@@ -36,15 +36,16 @@ export function useNetworkStatus() {
     }
 
     function getFeatures(attribute: number[] = [], targets: number[] = []) {
-      const onlyFeatures = attribute.slice(1)
       const result: { [k: number]: boolean } = {}
-      targets.forEach(feat => {
-        const found = onlyFeatures.includes(feat)
-        result[feat] = found
-      })
+      if (Array.isArray(attribute)) {
+        const onlyFeatures = attribute.slice(1)
+        targets.forEach(feat => {
+          const found = onlyFeatures.includes(feat)
+          result[feat] = found
+        })
+      }
       return result
     }
-
     return {
       status: data?.status,
       getAttribute,
