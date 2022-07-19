@@ -87,10 +87,7 @@ function NoAccountsPrompt() {
         <AccountsIcon color="gray.300" boxSize="16" />
         <Text fontWeight="medium">No accounts found</Text>
         <AccountSelector
-          onAccountSelected={(
-            address: string,
-            accountInfo: AccountInfoData,
-          ) => {
+          onAccountSelected={(address: string) => {
             update(address, {})
           }}
         >
