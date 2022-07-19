@@ -4,9 +4,11 @@ import { AccountInfoData } from "many-js"
 import {
   AddressText,
   AlertDialog,
+  AccountsIcon,
   Box,
   Button,
   ButtonGroup,
+  ChevronRightIcon,
   Center,
   CloseIcon,
   Divider,
@@ -19,10 +21,8 @@ import {
   useToast,
   useDisclosure,
   usePageContainerProvider,
-  VStack,
-  AccountsIcon,
-  ChevronRightIcon,
   useBreakpointValue,
+  VStack,
 } from "components"
 import {
   AccountInfo,
@@ -62,11 +62,8 @@ export function AccountsList() {
           />
           <Flex>
             <AccountSelector
-              onAccountSelected={(
-                address: string,
-                accountInfo: AccountInfoData,
-              ) => {
-                update(address, accountInfo)
+              onAccountSelected={(address: string) => {
+                update(address, {})
               }}
             />
           </Flex>
@@ -94,7 +91,7 @@ function NoAccountsPrompt() {
             address: string,
             accountInfo: AccountInfoData,
           ) => {
-            update(address, accountInfo)
+            update(address, {})
           }}
         >
           {({ onOpen }: { onOpen: () => void }) => (
@@ -113,22 +110,26 @@ function AccountList({ searchTerm }: { searchTerm: string }) {
   return (
     <VStack alignItems="flex-start" divider={<Divider />} spacing={0}>
       {accounts.map(acc => {
-        const [address, { description }] = acc
-        if (
-          !searchTerm ||
-          (searchTerm &&
-            (description as string)
-              .toLocaleLowerCase()
-              .includes(searchTerm.toLocaleLowerCase()))
+        const [address] = acc
+        return (
+          <AccountListItem
+            searchTerm={searchTerm}
+            key={address}
+            address={address}
+          />
         )
-          return <AccountListItem key={address} address={address} />
-        return null
       })}
     </VStack>
   )
 }
 
-function AccountListItem({ address }: { address: string }) {
+function AccountListItem({
+  address,
+  searchTerm,
+}: {
+  address: string
+  searchTerm?: string
+}) {
   const { data } = useGetAccountInfo(address)
   const description = data?.accountInfo?.description
   const [showActions, setShowActions] = React.useState(false)
@@ -139,57 +140,66 @@ function AccountListItem({ address }: { address: string }) {
     else setShowActions(false)
   }, [isBase])
 
-  return (
-    <Flex
-      alignItems="center"
-      justifyContent="space-between"
-      w="full"
-      gap={2}
-      py={4}
-      px={3}
-      onMouseEnter={isBase ? undefined : () => setShowActions(true)}
-      onMouseLeave={isBase ? undefined : () => setShowActions(false)}
-      _hover={{ bgColor: "gray.50" }}
-    >
-      <Box w="full" overflow="hidden">
-        <Text as="span" fontWeight="medium" isTruncated>
-          {description}
-        </Text>
-        <AddressText
-          bgColor={undefined}
-          p={0}
-          addressText={address}
-          iconProps={{ boxSize: 4 }}
-        />
-      </Box>
-      {showActions && (
-        <>
-          <RemoveAccountDialog address={address}>
-            {onOpen => (
-              <IconButton
-                size="sm"
-                rounded="full"
-                aria-label="remove contact"
-                onClick={e => {
-                  e.stopPropagation()
-                  onOpen()
-                }}
-                icon={<CloseIcon color="red" boxSize={5} />}
-              />
-            )}
-          </RemoveAccountDialog>
-          <IconButton
-            as={RouterLink}
-            to={address}
-            size="sm"
-            rounded="full"
-            aria-label="view account"
-            icon={<ChevronRightIcon />}
+  if (
+    !searchTerm ||
+    (searchTerm &&
+      (description as string)
+        ?.toLocaleLowerCase()
+        ?.includes(searchTerm.toLocaleLowerCase()))
+  ) {
+    return (
+      <Flex
+        alignItems="center"
+        justifyContent="space-between"
+        w="full"
+        gap={2}
+        py={4}
+        px={3}
+        onMouseEnter={isBase ? undefined : () => setShowActions(true)}
+        onMouseLeave={isBase ? undefined : () => setShowActions(false)}
+        _hover={{ bgColor: "gray.50" }}
+      >
+        <Box w="full" overflow="hidden">
+          <Text as={RouterLink} to={address} fontWeight="medium" isTruncated>
+            {description}
+          </Text>
+          <AddressText
+            bgColor={undefined}
+            p={0}
+            addressText={address}
+            iconProps={{ boxSize: 4 }}
           />
-        </>
-      )}
-    </Flex>
-  )
+        </Box>
+        {showActions && (
+          <>
+            <RemoveAccountDialog address={address}>
+              {onOpen => (
+                <IconButton
+                  size="sm"
+                  rounded="full"
+                  aria-label="remove contact"
+                  onClick={e => {
+                    e.stopPropagation()
+                    onOpen()
+                  }}
+                  icon={<CloseIcon color="red" boxSize={5} />}
+                />
+              )}
+            </RemoveAccountDialog>
+            <IconButton
+              as={RouterLink}
+              to={address}
+              size="sm"
+              rounded="full"
+              aria-label="view account"
+              icon={<ChevronRightIcon />}
+            />
+          </>
+        )}
+      </Flex>
+    )
+  }
+  return null
 }
 
 function RemoveAccountDialog({
