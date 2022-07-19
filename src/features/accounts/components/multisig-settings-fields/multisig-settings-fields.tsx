@@ -44,7 +44,6 @@ export function MultisigSettingsFields({
 
   const { field: radioField } = useController({
     name: executeAutomaticallyFieldName,
-    rules: { required: "This field is required" },
   })
 
   const { data: accountInfoData } = useGetAccountInfo(accountAddress)
@@ -90,10 +89,7 @@ export function MultisigSettingsFields({
         const currExecuteAutomatically = multisigFeature.get(
           AccountMultisigArgument[AccountMultisigArgument.executeAutomatically],
         )
-        setValue(
-          executeAutomaticallyFieldName,
-          currExecuteAutomatically === true ? "1" : "0",
-        )
+        setValue(executeAutomaticallyFieldName, currExecuteAutomatically)
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -212,7 +208,14 @@ export function MultisigSettingsFields({
         description="Execute transactions automatically when threshold has been reached."
         error={get(errors, executeAutomaticallyFieldName)?.message}
       >
-        <RadioGroup colorScheme="brand.teal" {...radioField}>
+        <RadioGroup
+          colorScheme="brand.teal"
+          {...radioField}
+          value={radioField.value === false ? "0" : "1"}
+          onChange={val => {
+            radioField.onChange(val === "1")
+          }}
+        >
           <HStack spacing={4}>
             <Radio value="0" isReadOnly={!canEdit}>
               No

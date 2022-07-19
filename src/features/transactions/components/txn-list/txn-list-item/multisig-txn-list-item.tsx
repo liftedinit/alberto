@@ -120,7 +120,7 @@ function MultisigSetDefaultsTxnDetailsModal({
         </DataField>
         <DataField
           label="Execute Automatically"
-          value={multisigTxn.executeAutomatically === true ? "Yes" : "No"}
+          value={multisigTxn.executeAutomatically ? "Yes" : "No"}
         />
       </Modal.Body>
     </Modal>
@@ -370,7 +370,7 @@ function MultisigTxnDetailsModal({
 
         <DataField
           label="Execute Automatically"
-          value={executeAutomatically === true ? "Yes" : "No"}
+          value={executeAutomatically ? "Yes" : "No"}
         />
       </Modal.Body>
     </Modal>
