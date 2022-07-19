@@ -1,5 +1,4 @@
 import React from "react"
-import { AccountInfoData } from "many-js"
 import {
   IconButton,
   Modal,
