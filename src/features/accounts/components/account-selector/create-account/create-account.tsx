@@ -4,7 +4,6 @@ import {
   FormProvider,
   useForm,
   useFormContext,
-  useController,
   useFieldArray,
   get,
 } from "react-hook-form"
@@ -15,21 +14,14 @@ import {
   Button,
   Box,
   Checkbox,
-  Divider,
   Flex,
   Heading,
-  IconButton,
   Input,
   OptionCard,
   PlusIcon,
-  Role,
-  RolesSelector,
   Step,
   Steps,
   StepsProvider,
-  Tag,
-  TagLabel,
-  TagCloseButton,
   Text,
   useSteps,
   useStepsContext,
@@ -38,21 +30,20 @@ import {
   FieldWrapper,
   DataField,
   TxnExpireText,
-  MinusIcon,
-  AddressBookIcon,
   useToast,
 } from "components"
-import { AccountFeatureTypes, AccountRole, NetworkAttributes } from "many-js"
-import { ContactSelector, useGetContactName } from "features/contacts"
+import { AccountFeatureTypes, NetworkAttributes } from "many-js"
 import { MultisigSettingsFields } from "../../multisig-settings-fields"
 import { AccountInfo } from "../../account-info"
 import {
+  AccountOwnerField,
   accountLedgerFeature,
   accountMultisigFeature,
   CreateAccountFormData,
   useCreateAccount,
   useAccountsStore,
   useAccountStore,
+  getRolesList,
 } from "features/accounts"
 import { useNetworkStatus } from "features/network"
 
@@ -188,11 +179,18 @@ function AccountSettings() {
     register,
     handleSubmit,
     setFocus,
+    getValues,
     formState: { errors },
   } = useFormContext()
   const { fields, append, remove } = useFieldArray({
     name: "accountSettings.owners",
   })
+
+  const hasMultisigFeature = getValues(`features.${accountMultisigFeature}`)
+  const hasLedgerFeature = getValues(`features.${accountLedgerFeature}`)
+
+  const roles = getRolesList({ hasLedgerFeature, hasMultisigFeature })
+  const owners = getValues("accountSettings.owners")
 
   React.useEffect(() => {
     setFocus("accountSettings.name")
@@ -219,11 +217,8 @@ function AccountSettings() {
         />
       </FieldWrapper>
 
-      <FieldWrapper
-        label="Owners And Roles"
-        labelProps={{ fontSize: inputSize }}
-      >
-        <VStack alignItems="flex-start" w="full" divider={<Divider />}>
+      <FieldWrapper label="Roles" labelProps={{ fontSize: inputSize }}>
+        <VStack alignItems="flex-start" w="full" spacing={4}>
           {fields.map((field, idx) => {
             return (
               <Box w="full" key={field.id}>
@@ -231,6 +226,10 @@ function AccountSettings() {
                   onRemoveClick={() => remove(idx)}
                   addressFieldName={`accountSettings.owners.${idx}.address`}
                   rolesFieldName={`accountSettings.owners.${idx}.roles`}
+                  isLedgerTransactEnabled={hasLedgerFeature}
+                  isMultisigEnabled={hasMultisigFeature}
+                  owners={owners}
+                  roles={roles}
                 />
               </Box>
             )
@@ -261,234 +260,6 @@ function AccountSettings() {
         </Button>
       </Flex>
     </>
-  )
-}
-
-function AccountOwnerField({
-  addressFieldName,
-  rolesFieldName,
-  onRemoveClick,
-}: {
-  addressFieldName: string
-  rolesFieldName: string
-  onRemoveClick: () => void
-}) {
-  const inputSize = useBreakpointValue({ base: "sm", md: "md" })
-  const tagSize = useBreakpointValue({ base: "sm", md: "md" })
-  const { getValues, watch } = useFormContext()
-  const getContactName = useGetContactName()
-
-  const owners = watch("accountSettings.owners")
-
-  const isLedgerTransactEnabled = getValues(`features.${accountLedgerFeature}`)
-  const isMultisigEnabled = getValues(`features.${accountMultisigFeature}`)
-
-  const {
-    field: addressField,
-    fieldState: { error },
-  } = useController({
-    name: addressFieldName,
-    rules: {
-      required: "Owner address is required",
-      validate: {
-        noDuplicates: val => {
-          const count = owners.reduce(
-            (acc: number, owner: { address: string }) => {
-              return owner.address === val ? acc + 1 : acc
-            },
-            0,
-          )
-          return count >= 2 ? "Duplicate owners not allowed" : true
-        },
-      },
-    },
-  })
-  const contactName = getContactName(addressField.value)
-
-  const {
-    field: { onChange: onRolesChange, value: rolesValue },
-    fieldState: { error: rolesError },
-  } = useController({
-    name: rolesFieldName,
-    rules: {
-      required: "Roles is required",
-    },
-  })
-
-  const rolesValueRef = React.useRef(rolesValue)
-  rolesValueRef.current = rolesValue
-  React.useEffect(() => {
-    if (!isLedgerTransactEnabled || !isMultisigEnabled) {
-      let result = rolesValueRef.current.slice().filter((r: string) => {
-        if (
-          !isLedgerTransactEnabled &&
-          r === AccountRole[AccountRole.canLedgerTransact]
-        ) {
-          return false
-        } else if (
-          !isMultisigEnabled &&
-          (r === AccountRole[AccountRole.canMultisigSubmit] ||
-            r === AccountRole[AccountRole.canMultisigApprove])
-        ) {
-          return false
-        }
-        return true
-      })
-      onRolesChange(result)
-    }
-  }, [isLedgerTransactEnabled, isMultisigEnabled, onRolesChange])
-
-  const roles: Role[] = [
-    {
-      label: "Owner",
-      description: "Can perform regular ledger transactions.",
-      value: AccountRole[AccountRole.owner],
-    },
-  ]
-
-  if (isMultisigEnabled) {
-    roles.push(
-      {
-        label: "Multisig Submit",
-        description:
-          "Can submit new transactions and withdraw own submitted transactions.",
-        value: AccountRole[AccountRole.canMultisigSubmit],
-      },
-      {
-        label: "Multisig Approve",
-        description: "Can approve transactions and revoke their own approvals.",
-        value: AccountRole[AccountRole.canMultisigApprove],
-      },
-    )
-  }
-
-  if (isLedgerTransactEnabled) {
-    roles.push({
-      label: "Ledger Transact",
-      description:
-        "Can perform regular transactions that would be possible from their identities, from this account.",
-      value: AccountRole[AccountRole.canLedgerTransact],
-    })
-  }
-
-  return (
-    <Box bgColor="gray.100" p={3} rounded="md">
-      <FieldWrapper
-        error={error?.message}
-        label="Owner"
-        labelProps={{ fontSize: inputSize }}
-      >
-        <Flex gap={2} alignItems="center" rounded="sm" p={2} bgColor="white">
-          <VStack spacing={0} w="full" alignItems="flex-start">
-            {contactName ? (
-              <Text
-                as="span"
-                fontSize={inputSize}
-                fontWeight="semibold"
-                casing="capitalize"
-              >
-                {contactName}
-              </Text>
-            ) : null}
-            <Input
-              placeholder="mahrdiqb7h7agbx..."
-              variant="unstyled"
-              bgColor="white !important"
-              size={inputSize}
-              {...addressField}
-            />
-          </VStack>
-          <ContactSelector
-            onContactClicked={(onClose, c) => {
-              addressField.onChange(c.address)
-              onClose()
-            }}
-          >
-            {onOpen => {
-              return (
-                <IconButton
-                  aria-label="select contact"
-                  icon={<AddressBookIcon />}
-                  size="xs"
-                  variant="ghost"
-                  colorScheme="brand.teal"
-                  onClick={onOpen}
-                />
-              )
-            }}
-          </ContactSelector>
-        </Flex>
-      </FieldWrapper>
-      <FieldWrapper
-        error={rolesError?.message}
-        label="Roles"
-        mt={4}
-        labelProps={{ fontSize: inputSize }}
-      >
-        <Flex
-          gap={1}
-          flexWrap="wrap"
-          flexGrow={1}
-          alignItems="center"
-          p={2}
-          bgColor="white"
-          rounded="sm"
-        >
-          {rolesValue.map((roleName: string, idx: number, arr: string[]) => {
-            return (
-              <Tag
-                key={roleName}
-                size={tagSize}
-                variant="solid"
-                colorScheme="brand.teal"
-              >
-                <TagLabel fontSize={inputSize} fontWeight="medium">
-                  {roleName}
-                </TagLabel>
-                <TagCloseButton
-                  onClick={() => {
-                    const filtered = rolesValue.filter(
-                      (r: string) => r !== roleName,
-                    )
-                    onRolesChange(filtered)
-                  }}
-                />
-              </Tag>
-            )
-          })}
-          <RolesSelector
-            rolesList={roles}
-            selectedRoles={rolesValue}
-            onRoleClicked={(_, roles) => {
-              onRolesChange(roles)
-            }}
-          >
-            {onOpen => {
-              return (
-                <IconButton
-                  aria-label="select roles"
-                  size="xs"
-                  variant="ghost"
-                  icon={<PlusIcon />}
-                  colorScheme="brand.teal"
-                  onClick={onOpen}
-                />
-              )
-            }}
-          </RolesSelector>
-        </Flex>
-      </FieldWrapper>
-      <Flex justifyContent="flex-end" mt={2}>
-        <IconButton
-          size="xs"
-          title="remove owner"
-          aria-label="remove owner"
-          colorScheme="red"
-          onClick={onRemoveClick}
-          icon={<MinusIcon boxSize={3} />}
-        />
-      </Flex>
-    </Box>
   )
 }
 

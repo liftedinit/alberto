@@ -35,7 +35,7 @@ export function useCreateAccount() {
       )
       const features = makeFeatures(vars.features, vars.featureSettings)
       const res = await n?.account.create({
-        account: accountName,
+        name: accountName,
         roles,
         features,
       })

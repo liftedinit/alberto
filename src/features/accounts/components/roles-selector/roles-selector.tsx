@@ -6,6 +6,7 @@ import {
   useDisclosure,
   VStack,
 } from "components"
+import { AccountRole } from "many-js"
 
 type Props = {
   onRoleClicked: (onClose: () => void, roles: string[]) => void
@@ -87,4 +88,46 @@ function RolesList({
       })}
     </VStack>
   )
+}
+
+export function getRolesList({
+  hasLedgerFeature,
+  hasMultisigFeature,
+}: {
+  hasLedgerFeature: boolean
+  hasMultisigFeature: boolean
+}): Role[] {
+  const roles: Role[] = [
+    {
+      label: "Owner",
+      description: "Can perform regular ledger transactions.",
+      value: AccountRole[AccountRole.owner],
+    },
+  ]
+
+  if (hasMultisigFeature) {
+    roles.push(
+      {
+        label: "Multisig Submit",
+        description:
+          "Can submit new transactions and withdraw own submitted transactions.",
+        value: AccountRole[AccountRole.canMultisigSubmit],
+      },
+      {
+        label: "Multisig Approve",
+        description: "Can approve transactions and revoke their own approvals.",
+        value: AccountRole[AccountRole.canMultisigApprove],
+      },
+    )
+  }
+
+  if (hasLedgerFeature) {
+    roles.push({
+      label: "Ledger Transact",
+      description:
+        "Can perform regular transactions that would be possible from their identities, from this account.",
+      value: AccountRole[AccountRole.canLedgerTransact],
+    })
+  }
+  return roles
 }

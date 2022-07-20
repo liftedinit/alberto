@@ -10,10 +10,10 @@ import {
 } from "components"
 import { Assets } from "views/home/assets"
 import { TxnList } from "features/transactions"
-import { AccountInfo, useGetAccountInfo } from "features/accounts"
 import { MultisigSettings } from "../multisig-settings/multisig-settings"
 import { useNetworkStatus } from "features/network"
 import { AccountFeatureTypes, NetworkAttributes } from "many-js"
+import { AccountSettings } from "../account-settings"
 
 enum TabNames {
   assets = "assets",
@@ -35,7 +35,6 @@ export function AccountDetails() {
   let tabs = Object.values(TabNames).slice(0, hasMultisig ? undefined : -1)
   const activeTabName = tabs[activeTabIdx]
   const [, setContainerProps] = usePageContainerProvider()
-  const { data } = useGetAccountInfo(accountAddress)
 
   React.useLayoutEffect(() => {
     setContainerProps({
@@ -68,12 +67,7 @@ export function AccountDetails() {
             <MultisigSettings accountAddress={accountAddress} />
           )}
           {activeTabName === TabNames.accountSettings && (
-            <Box p={4}>
-              <AccountInfo
-                accountInfo={data?.accountInfo}
-                address={accountAddress}
-              />
-            </Box>
+            <AccountSettings accountAddress={accountAddress} />
           )}
         </SlideFade>
       </Box>
