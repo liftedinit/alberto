@@ -217,10 +217,12 @@ export function AccountSettings({
       >
         Add Owner
       </Button>
-      {addRolesError ||
-      removeRolesError ||
-      isAddRolesSuccess ||
-      isRemoveRolesSuccess ? (
+      {(addRolesError ||
+        removeRolesError ||
+        isAddRolesSuccess ||
+        isRemoveRolesSuccess) &&
+      !isRemovingRoles &&
+      !isAddingRoles ? (
         <Alert
           rounded="md"
           mt={2}
