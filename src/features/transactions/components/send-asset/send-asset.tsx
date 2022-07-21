@@ -1,6 +1,6 @@
 import React from "react"
 import { useForm, FormProvider } from "react-hook-form"
-import { AccountMultisigArgument, ANON_IDENTITY } from "many-js"
+import { ANON_IDENTITY } from "many-js"
 import {
   AddressText,
   Alert,
@@ -131,7 +131,7 @@ export function useSendAssetForm({
       hours: 0,
       minutes: 0,
       seconds: 0,
-      executeAutomatically: "0",
+      executeAutomatically: false,
     },
   }
 
@@ -188,28 +188,12 @@ export function useSendAssetForm({
   ): { [k: string]: unknown } {
     const result: { [k: string]: unknown } = {}
     if (oldSettings && newSettings) {
-      if (
-        oldSettings?.get(
-          AccountMultisigArgument[AccountMultisigArgument.threshold],
-        ) !== newSettings.threshold
-      ) {
-        result.threshold = newSettings.threshold
-      }
-      if (
-        oldSettings?.get(
-          AccountMultisigArgument[AccountMultisigArgument.expireInSecs],
-        ) !== newSettings.expireInSecs
-      ) {
-        result.expireInSecs = newSettings.expireInSecs
-      }
-      const newExecuteAutomatically = newSettings.executeAutomatically === "1"
-      if (
-        oldSettings?.get(
-          AccountMultisigArgument[AccountMultisigArgument.executeAutomatically],
-        ) !== newExecuteAutomatically
-      ) {
-        result.executeAutomatically = newExecuteAutomatically
-      }
+      Object.keys(newSettings).forEach(k => {
+        const newValue = newSettings[k]
+        if (oldSettings?.has(k) && oldSettings?.get(k) !== newValue) {
+          result[k] = newValue
+        }
+      })
     }
 
     return result
@@ -558,7 +542,7 @@ export function SendAssetForm({
         expireHours={hours}
         expireMinutes={minutes}
         expireSeconds={seconds}
-        executeAutomatically={executeAutomatically === "1"}
+        executeAutomatically={executeAutomatically}
         threshold={threshold}
         showMultisigSettings={showMultisigSettings}
       />

@@ -17,7 +17,7 @@ export function MultisigSettings({
       hours: 0,
       minutes: 0,
       seconds: 0,
-      executeAutomatically: "0",
+      executeAutomatically: false,
     },
   })
 
@@ -35,12 +35,12 @@ export function MultisigSettings({
   }: {
     expireInSecs: number
     threshold: number
-    executeAutomatically: string
+    executeAutomatically: boolean
   }) {
     doSetMultisigDefaults({
       expireInSecs,
       threshold,
-      executeAutomatically: executeAutomatically === "1",
+      executeAutomatically,
     })
   }
 

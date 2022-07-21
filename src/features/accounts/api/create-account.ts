@@ -22,7 +22,7 @@ export function useCreateAccount() {
   const [, n] = useNetworkContext()
   return useMutation<CreateAccountResponse, Error, CreateAccountFormData>(
     async (vars: CreateAccountFormData) => {
-      const accountName = vars.accountSettings.name
+      const name = vars.accountSettings.name
       const roles = vars.accountSettings.owners.reduce(
         (
           acc: Map<string, string[]>,
@@ -34,7 +34,7 @@ export function useCreateAccount() {
         new Map(),
       )
       const features = makeFeatures(vars.features, vars.featureSettings)
-      const res = await n?.account.create(accountName, roles, features)
+      const res = await n?.account.create({ name, roles, features })
       return res
     },
   )
@@ -56,7 +56,7 @@ function makeFeatures(
       multisigSettings as {
         threshold: number
         expireInSecs: number
-        executeAutomatically: "0" | "1"
+        executeAutomatically: boolean
       }
     const multisigArguments = [
       AccountFeatureTypes.accountMultisig,
@@ -65,7 +65,7 @@ function makeFeatures(
         .set(AccountMultisigArgument.expireInSecs, expireInSecs)
         .set(
           AccountMultisigArgument.executeAutomatically,
-          executeAutomatically === "1",
+          executeAutomatically,
         ),
     ]
     result.push(multisigArguments)
