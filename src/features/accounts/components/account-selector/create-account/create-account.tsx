@@ -73,7 +73,7 @@ export function CreateAccount() {
           hours: 0,
           minutes: 0,
           seconds: 0,
-          executeAutomatically: "0",
+          executeAutomatically: false,
         },
       },
     },
@@ -377,7 +377,7 @@ function Review() {
             label="Execute Automatically"
             value={
               values.featureSettings[accountMultisigFeature]
-                .executeAutomatically === "1"
+                .executeAutomatically
                 ? "Yes"
                 : "No"
             }

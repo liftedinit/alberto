@@ -38,6 +38,7 @@
     "zustand": "^3.7.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.23.4",
     "@types/jest": "^27.4.1",
     "prettier": "^2.6.0",
     "react-error-overlay": "^6.0.9",

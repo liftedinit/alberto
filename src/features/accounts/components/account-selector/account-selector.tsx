@@ -1,5 +1,4 @@
 import React from "react"
-import { AccountInfoData } from "many-js"
 import {
   IconButton,
   Modal,
@@ -12,10 +11,7 @@ import {
 import { SearchAccount } from "./search-account/search-account"
 import { CreateAccount } from "./create-account"
 
-export type OnAccountSelected = (
-  address: string,
-  acctInfo: AccountInfoData,
-) => void
+export type OnAccountSelected = (address: string) => void
 
 export function AccountSelector({
   onAccountSelected,
@@ -84,8 +80,8 @@ function AddAccountModal({
         </Tabs>
         {tab === 0 ? (
           <SearchAccount
-            onAccountSelected={(address, acctInfo) => {
-              onAccountSelected(address, acctInfo)
+            onAccountSelected={address => {
+              onAccountSelected(address)
               onClose()
             }}
           />

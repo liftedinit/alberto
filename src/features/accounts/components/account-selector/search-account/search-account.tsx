@@ -23,8 +23,7 @@ export function SearchAccount({
     useGetAccountInfo(debouncedAcctAddress)
 
   function onImportClick() {
-    data?.accountInfo &&
-      onAccountSelected(debouncedAcctAddress, data.accountInfo)
+    data?.accountInfo && onAccountSelected(debouncedAcctAddress)
   }
 
   return (
