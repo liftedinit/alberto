@@ -27,7 +27,7 @@ import { useGetContactName } from "features/contacts"
 export function TransactionDetails() {
   return (
     <Container mt={4} maxW="md">
-      <Box my={4}>
+      <Box mb={4}>
         <Breadcrumb>
           <Breadcrumb.BreadcrumbItem>
             <Breadcrumb.BreadcrumbLink to="">
