@@ -10,6 +10,7 @@ import {
   Home,
   SendAsset,
   SplashView,
+  TransactionDetails,
 } from "./views"
 
 const ONE_SECOND = 1 * 1000
@@ -39,6 +40,7 @@ function App() {
           <Route index element={<AccountsList />} />
           <Route path=":accountAddress" element={<AccountDetails />} />
         </Route>
+        <Route path="transactions/:txnId" element={<TransactionDetails />} />
         <Route path="contacts" element={<Contacts />} />
         <Route path="send" element={<SendAsset />} />
       </Route>

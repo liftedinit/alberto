@@ -3,6 +3,7 @@ import { useNetworkContext } from "features/network"
 import { BoundType, EventsListResponse, OrderType } from "many-js"
 import { ListFilterArgs, Event } from "many-js"
 import { useMutation, useQuery, useQueryClient } from "react-query"
+import { arrayBufferToBase64 } from "helper/convert"
 
 export function useCreateSendTxn() {
   const [, network] = useNetworkContext()
@@ -35,15 +36,17 @@ export function useTransactionsList({
   filter = {},
   count: reqCount = 11,
 }: {
-  address: string
-  filter?: ListFilterArgs
+  address?: string
+  filter?: Omit<ListFilterArgs, "txnIdRange"> & {
+    txnIdRange?: { boundType: BoundType; value: ArrayBuffer }[]
+  }
   count?: number
 }) {
   const [network] = useNetworkContext()
   const [txnIds, setTxnIds] = React.useState<ArrayBuffer[]>([])
 
   const filters = {
-    ...filter,
+    accounts: address,
     ...(txnIds.length > 0
       ? {
           txnIdRange: [
@@ -52,7 +55,7 @@ export function useTransactionsList({
           ],
         }
       : {}),
-    accounts: address,
+    ...filter,
   }
 
   const q = useQuery<EventsListResponse, Error>({
@@ -63,13 +66,13 @@ export function useTransactionsList({
         count: reqCount,
         order: OrderType.descending,
       }),
-    enabled: !!network?.url && !!address,
+    enabled: !!network?.url,
     keepPreviousData: true,
   })
 
   const txnsWithId = (q?.data?.events ?? []).map((t: Event) => ({
     ...t,
-    _id: Buffer.from(t.id).toString("base64"),
+    _id: arrayBufferToBase64(t.id),
   }))
   const respCount = txnsWithId.length
   const hasNextPage = respCount === reqCount

@@ -1,1 +1,2 @@
-export { TxnList } from "./txn-list"
+export * from "./txn-list"
+export * from "./txn-list-item"

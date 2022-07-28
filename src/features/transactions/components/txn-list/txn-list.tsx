@@ -19,7 +19,7 @@ export function TxnList({
   filter = {},
 }: {
   address: string
-  filter?: ListFilterArgs
+  filter?: Omit<ListFilterArgs, "txnIdRange">
 }) {
   const queryData = useTransactionsList({
     address,

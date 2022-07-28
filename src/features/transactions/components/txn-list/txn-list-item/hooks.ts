@@ -178,30 +178,56 @@ export function useMultisigActions({
       0,
     ) >= (multisigTxnInfoData?.info?.threshold ?? Infinity)
 
-  const { mutate: doWithdraw, isLoading: isWithdrawLoading } =
-    useMultisigWithdraw(txnToken)
+  const {
+    reset: resetWithdraw,
+    mutate: doWithdraw,
+    isLoading: isWithdrawLoading,
+    error: withdrawError,
+  } = useMultisigWithdraw(txnToken)
   const canWithdraw = isSubmitter || isOwner
 
-  const { mutate: doApprove, isLoading: isApproveLoading } =
-    useMultisigApprove(txnToken)
+  const {
+    reset: resetApprove,
+    mutate: doApprove,
+    isLoading: isApproveLoading,
+    error: approveError,
+  } = useMultisigApprove(txnToken)
   const canApprove = approvers?.get(identityAddress)
     ? false
     : !!rolesForIdentity?.some(r => approverRoles.includes(r))
 
-  const { mutate: doRevoke, isLoading: isRevokeLoading } =
-    useMultisigRevoke(txnToken)
+  const {
+    reset: resetRevoke,
+    mutate: doRevoke,
+    isLoading: isRevokeLoading,
+    error: revokeError,
+  } = useMultisigRevoke(txnToken)
   const canRevoke =
     isApprover &&
     (!approvers.has(identityAddress) || approvers.get(identityAddress) === true)
 
-  const { mutate: doExecute, isLoading: isExecuteLoading } =
-    useMultisigExecute(txnToken)
+  const {
+    reset: resetExecute,
+    mutate: doExecute,
+    isLoading: isExecuteLoading,
+    error: executeError,
+  } = useMultisigExecute(txnToken)
   const canExecute = isThresholdReached && (isSubmitter || isOwner)
 
   const isLoading =
     isApproveLoading || isRevokeLoading || isWithdrawLoading || isExecuteLoading
+  const error = (withdrawError || approveError || revokeError || executeError)
+    ?.message
+
+  function resetErrors() {
+    resetApprove()
+    resetExecute()
+    resetRevoke()
+    resetWithdraw()
+  }
 
   return {
+    error,
     canWithdraw,
     doWithdraw,
     isWithdrawLoading,
@@ -215,5 +241,6 @@ export function useMultisigActions({
     doExecute,
     isExecuteLoading,
     isLoading,
+    resetErrors,
   }
 }
