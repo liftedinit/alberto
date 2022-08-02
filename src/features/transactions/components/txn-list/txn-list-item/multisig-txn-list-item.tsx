@@ -5,6 +5,7 @@ import {
   MultisigEvent,
   MultisigSetDefaultsEvent,
   MultisigTransactionInfo,
+  MultisigTransactionState,
 } from "many-js"
 import {
   Alert,
@@ -49,6 +50,10 @@ export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
   const { actionLabel, actorAddress, txnLabel, TxnIcon, iconProps } =
     useMultisigTxn(txn)
 
+  const { data: multisigTxnInfoData } = useGetMultisigTxnInfo(token)
+  const { state } = multisigTxnInfoData?.info ?? {}
+  const stateText = getTxnStateText(state)
+
   const getContactName = useGetContactName()
   const contactName = getContactName(actorAddress)
 
@@ -62,7 +67,12 @@ export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
       actorAddress={actorAddress}
       txnDetails={
         token || txn.type === EventType.accountMultisigSetDefaults ? (
-          <Flex justifyContent="flex-end">
+          <Flex justifyContent="flex-end" alignItems="center" gap={2}>
+            {stateText && txn.type === EventType.accountMultisigSubmit ? (
+              <Text casing="capitalize" fontSize="xs">
+                {stateText}
+              </Text>
+            ) : null}
             <MultisigTxnDetails multisigTxn={txn} />
           </Flex>
         ) : null
@@ -154,10 +164,21 @@ function MultisigTxnDetailsModal({
 
   const { data: multisigTxnInfoData } = useGetMultisigTxnInfo(token)
 
-  const { memo, executeAutomatically, threshold, transaction, submitter } =
-    (multisigTxnInfoData?.info ?? {}) as MultisigTransactionInfo
+  const {
+    memo,
+    executeAutomatically,
+    threshold,
+    transaction,
+    submitter,
+    state,
+  } = (multisigTxnInfoData?.info ?? {}) as MultisigTransactionInfo
 
   const submitterContactName = getContactName(submitter)
+
+  const stateText = getTxnStateText(state)
+  const isPending =
+    stateText ===
+    txnStateText[MultisigTransactionState[MultisigTransactionState.pending]]
 
   const approvers = makeApproversMap(
     accountInfoData?.accountInfo?.roles,
@@ -171,13 +192,17 @@ function MultisigTxnDetailsModal({
       onClose={onClose}
       header="Transaction Details"
       footer={
-        <Box w="full">
-          <MultisigActions
-            onActionDone={status => status === "success" && onClose()}
-            accountAddress={multisigTxn.account}
-            txnToken={token!}
-          />
-        </Box>
+        isPending ? (
+          <Box w="full">
+            <MultisigActions
+              onActionDone={status => status === "success" && onClose()}
+              accountAddress={multisigTxn.account}
+              txnToken={token!}
+            />
+          </Box>
+        ) : (
+          <></>
+        )
       }
     >
       <Modal.Body>
@@ -185,6 +210,12 @@ function MultisigTxnDetailsModal({
           address={multisigTxn.account}
           transaction={transaction}
         />
+
+        <DataField label="Status">
+          <Text fontWeight="medium" casing="capitalize">
+            {stateText}
+          </Text>
+        </DataField>
 
         <DataField label="Date" value={new Date(time).toLocaleString()} />
 
@@ -562,4 +593,18 @@ export function ShareTxnButton({
       )}
     </CopyToClipboard>
   )
+}
+
+export function getTxnStateText(state?: string) {
+  return state ? txnStateText[state] : ""
+}
+
+const txnStateText = {
+  [MultisigTransactionState[MultisigTransactionState.pending]]: "pending",
+  [MultisigTransactionState[MultisigTransactionState.executedAutomatically]]:
+    "executed automatically",
+  [MultisigTransactionState[MultisigTransactionState.executedManually]]:
+    "executed manually",
+  [MultisigTransactionState[MultisigTransactionState.expired]]: "expired",
+  [MultisigTransactionState[MultisigTransactionState.withdrawn]]: "withdrawn",
 }

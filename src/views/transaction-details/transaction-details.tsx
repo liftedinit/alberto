@@ -15,13 +15,18 @@ import { useGetAccountInfo, useGetMultisigTxnInfo } from "features/accounts"
 import { base64ToArrayBuffer } from "helper/convert"
 import {
   ApproversList,
+  getTxnStateText,
   makeApproversMap,
   MultisigActions,
   ShareTxnButton,
   SubmittedTxnData,
   useTransactionsList,
 } from "features/transactions"
-import { BoundType, MultisigSubmitEvent } from "many-js"
+import {
+  BoundType,
+  MultisigSubmitEvent,
+  MultisigTransactionState,
+} from "many-js"
 import { useGetContactName } from "features/contacts"
 
 export function TransactionDetails() {
@@ -96,7 +101,11 @@ function TxnDetails() {
     executeAutomatically,
     submitter,
     approvers,
+    state,
   } = multisigTxnInfoData?.info ?? {}
+  const stateText = getTxnStateText(state)
+  const isPending =
+    state === MultisigTransactionState[MultisigTransactionState.pending]
 
   const submitterContactName = getContactName(submitter)
 
@@ -146,6 +155,12 @@ function TxnDetails() {
         <>
           <SubmittedTxnData address={txn?.account} transaction={transaction} />
 
+          <DataField label="Status">
+            <Text fontWeight="medium" casing="capitalize">
+              {stateText}
+            </Text>
+          </DataField>
+
           <DataField
             label="Date"
             value={txn?.time ? new Date(txn?.time).toLocaleString() : ""}
@@ -191,11 +206,13 @@ function TxnDetails() {
             <ShareTxnButton base64TxnId={base64TxnId} mt={4} mb={8} />
           ) : null}
 
-          <MultisigActions
-            accountAddress={txn?.account}
-            onActionDone={undefined}
-            txnToken={txn?.token}
-          />
+          {isPending ? (
+            <MultisigActions
+              accountAddress={txn?.account}
+              onActionDone={undefined}
+              txnToken={txn?.token}
+            />
+          ) : null}
         </>
       ) : null}
     </>
