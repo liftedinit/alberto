@@ -2,7 +2,7 @@ import { Icon as BaseIcon, IconProps } from "components"
 import { MdContentCopy } from "react-icons/md"
 import { HiOutlineRefresh } from "react-icons/hi"
 import { BiDownload, BiPlusCircle, BiMinusCircle } from "react-icons/bi"
-import { BsPersonDash, BsPersonPlus } from "react-icons/bs"
+import { BsLightningFill, BsPersonDash, BsPersonPlus } from "react-icons/bs"
 import { IoIosPaperPlane, IoMdPaperPlane, IoMdUndo } from "react-icons/io"
 import {
   IoWallet,
@@ -177,4 +177,8 @@ export function UserPlusIcon(props: IconProps) {
 
 export function LinkIcon(props: IconProps) {
   return <Icon as={FaLink} {...props} />
+}
+
+export function LightningIcon(props: IconProps) {
+  return <Icon as={BsLightningFill} {...props} />
 }

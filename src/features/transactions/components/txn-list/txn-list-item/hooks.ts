@@ -14,6 +14,7 @@ import {
 import {
   CheckCircleIcon,
   MinusCircleIcon,
+  LightningIcon,
   PendingIcon,
   ReceiveIcon,
   SendOutlineIcon,
@@ -100,7 +101,7 @@ export function useMultisigTxn(txn: MultisigEvent) {
           : "Executed Automatically",
         actorAddress: (txn as MultisigExecuteEvent).executor,
         txnLabel: "Multisig - Execute",
-        TxnIcon: ExecuteIcon,
+        TxnIcon: LightningIcon,
       }
       break
     case EventType.accountMultisigRevoke:
