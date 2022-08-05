@@ -69,7 +69,12 @@ export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
         token || txn.type === EventType.accountMultisigSetDefaults ? (
           <Flex justifyContent="flex-end" alignItems="center" gap={2}>
             {stateText && txn.type === EventType.accountMultisigSubmit ? (
-              <Text casing="capitalize" fontSize="xs">
+              <Text
+                casing="capitalize"
+                fontSize="xs"
+                wordBreak="break-word"
+                whiteSpace="pre-wrap"
+              >
                 {stateText}
               </Text>
             ) : null}
