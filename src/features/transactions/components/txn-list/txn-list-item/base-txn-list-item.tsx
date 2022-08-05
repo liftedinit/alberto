@@ -21,15 +21,7 @@ export function BaseTxnListItem({
   return (
     <TxnItemRow
       first={
-        <HStack>
-          {icon}
-          <VStack alignItems="flex-start" spacing={0} flexGrow={1}>
-            <Text lineHeight="normal" casing="capitalize">
-              {txnTypeName}
-            </Text>
-            <Text fontSize="xs">{txnTime}</Text>
-          </VStack>
-        </HStack>
+        <TxnFirstCol icon={icon} txnTime={txnTime} txnTypeName={txnTypeName} />
       }
       second={
         <>
@@ -54,22 +46,55 @@ export function BaseTxnListItem({
   )
 }
 
-function TxnItemRow({
+export function TxnFirstCol({
+  icon,
+  txnTypeName,
+  txnTime,
+}: {
+  icon: React.ReactNode
+  txnTypeName: string
+  txnTime: string
+}) {
+  return (
+    <HStack>
+      {icon}
+      <VStack alignItems="flex-start" spacing={0} flexGrow={1}>
+        <TxnTypeName name={txnTypeName} />
+        <TxnTime txnTime={txnTime} />
+      </VStack>
+    </HStack>
+  )
+}
+function TxnTime({ txnTime }: { txnTime: string }) {
+  return <Text fontSize="xs">{txnTime}</Text>
+}
+
+function TxnTypeName({ name }: { name: string }) {
+  return (
+    <Text lineHeight="normal" casing="capitalize">
+      {name}
+    </Text>
+  )
+}
+
+export function TxnItemRow({
   first,
   second,
+  secondProps = {},
   third,
   rowProps,
 }: {
   first: React.ReactNode
-  second: React.ReactNode
+  second?: React.ReactNode
+  secondProps?: Record<string, unknown>
   rowProps?: Record<string, unknown>
-  third: React.ReactNode
+  third?: React.ReactNode
 }) {
   return (
     <Tr aria-label="transaction list item" {...rowProps}>
       <Td>{first}</Td>
-      <Td>{second}</Td>
-      <Td>{third}</Td>
+      {second && <Td {...secondProps}>{second}</Td>}
+      {third && <Td>{third}</Td>}
     </Tr>
   )
 }

@@ -13,7 +13,11 @@ export function useGetAccountInfo(accountAddress?: string) {
   const address = activeIdentity?.address
 
   return useQuery<
-    GetAccountInfoResponse & { isOwner: boolean; hasMultisigFeature: boolean }
+    GetAccountInfoResponse & {
+      isOwner: boolean
+      hasMultisigFeature: boolean
+      hasLedgerFeature: boolean
+    }
   >({
     queryKey: ["accountinfo", accountAddress],
     queryFn: async () => {
@@ -23,12 +27,14 @@ export function useGetAccountInfo(accountAddress?: string) {
           ?.get?.(address)
           ?.includes(AccountRole[AccountRole.owner]),
       )
-      const hasMultisigFeature = Boolean(
-        res?.accountInfo?.features?.get(
-          AccountFeatureTypes[AccountFeatureTypes.accountMultisig],
-        ),
+      const features = res?.accountInfo?.features
+      const hasLedgerFeature = Boolean(
+        features?.get(AccountFeatureTypes[AccountFeatureTypes.accountLedger]),
       )
-      return { ...res, isOwner, hasMultisigFeature }
+      const hasMultisigFeature = Boolean(
+        features?.get(AccountFeatureTypes[AccountFeatureTypes.accountMultisig]),
+      )
+      return { ...res, isOwner, hasMultisigFeature, hasLedgerFeature }
     },
     enabled: Boolean(accountAddress),
   })
