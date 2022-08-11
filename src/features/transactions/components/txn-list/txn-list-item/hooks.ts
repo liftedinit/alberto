@@ -19,7 +19,6 @@ import {
   ReceiveIcon,
   SendOutlineIcon,
   UndoIcon,
-  ExecuteIcon,
   SettingsOutlineIcon,
 } from "components"
 import { amountFormatter } from "helper/common"
