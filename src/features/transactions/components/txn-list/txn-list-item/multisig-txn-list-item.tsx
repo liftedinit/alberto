@@ -15,19 +15,20 @@ import {
   ButtonProps,
   Box,
   CheckCircleIcon,
+  CopyToClipboard,
   DataField,
   Flex,
   HStack,
+  LinkIcon,
   Modal,
+  SettingsOutlineIcon,
   SimpleGrid,
-  TimesCircleIcon,
+  Spinner,
   Text,
+  TimesCircleIcon,
+  TxnExpireText,
   useToast,
   VStack,
-  SettingsOutlineIcon,
-  TxnExpireText,
-  LinkIcon,
-  CopyToClipboard,
 } from "components"
 import { useGetContactName } from "features/contacts"
 import {
@@ -144,15 +145,49 @@ function MultisigTxnDetailsModal({
   isOpen: boolean
   onClose: () => void
 }) {
-  const { token, time, id } = multisigTxn
+  const { token, account } = multisigTxn
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      header="Transaction Details"
+      footer={
+        <Box w="full">
+          <MultisigActions
+            onActionDone={status => status === "success" && onClose()}
+            accountAddress={account}
+            txnToken={token!}
+          />
+        </Box>
+      }
+    >
+      <Modal.Body>
+        <SubmittedMultisigTxnDetails multisigTxn={multisigTxn} />
+      </Modal.Body>
+    </Modal>
+  )
+}
+
+export function SubmittedMultisigTxnDetails({
+  multisigTxn,
+}: {
+  multisigTxn: MultisigEvent
+}) {
+  const { token, time, id, account } = multisigTxn
 
   const base64TxnId = id ? encodeURIComponent(arrayBufferToBase64(id)) : null
 
   const getContactName = useGetContactName()
 
-  const { data: accountInfoData } = useGetAccountInfo(multisigTxn.account)
+  const { data: accountInfoData, error: getAccountInfoError } =
+    useGetAccountInfo(multisigTxn.account)
 
-  const { data: multisigTxnInfoData } = useGetMultisigTxnInfo(token)
+  const {
+    data: multisigTxnInfoData,
+    isLoading: isMultisigTxnInfoLoading,
+    error: multisigTxnInfoError,
+  } = useGetMultisigTxnInfo(token)
 
   const { memo, executeAutomatically, threshold, transaction, submitter } =
     (multisigTxnInfoData?.info ?? {}) as MultisigTransactionInfo
@@ -165,68 +200,72 @@ function MultisigTxnDetailsModal({
     getContactName,
   )
 
+  if (getAccountInfoError || multisigTxnInfoError) {
+    return (
+      <Alert status="warning">
+        <AlertIcon />
+        <AlertDescription>
+          <Text>
+            {getAccountInfoError?.message ?? multisigTxnInfoError?.message}
+          </Text>
+        </AlertDescription>
+      </Alert>
+    )
+  }
+
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      header="Transaction Details"
-      footer={
-        <Box w="full">
-          <MultisigActions
-            onActionDone={status => status === "success" && onClose()}
-            accountAddress={multisigTxn.account}
-            txnToken={token!}
-          />
+    <>
+      {isMultisigTxnInfoLoading ? (
+        <Box
+          position="absolute"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          w="full"
+        >
+          <Spinner size="lg" />
         </Box>
-      }
-    >
-      <Modal.Body>
-        <SubmittedTxnData
-          address={multisigTxn.account}
-          transaction={transaction}
+      ) : null}
+      <SubmittedTxnData address={account} transaction={transaction} />
+
+      <DataField label="Date" value={new Date(time).toLocaleString()} />
+
+      <DataField
+        label="Expire"
+        value={
+          multisigTxnInfoData?.info?.expireDate
+            ? new Date(multisigTxnInfoData?.info.expireDate).toLocaleString()
+            : ""
+        }
+      />
+
+      <DataField label="Submitted By">
+        {submitterContactName && (
+          <Text fontWeight="medium">{submitterContactName}</Text>
+        )}
+        <AddressText
+          addressText={submitter ?? ""}
+          bgColor={undefined}
+          p={0}
+          textProps={{ fontWeight: "semibold" }}
         />
+      </DataField>
 
-        <DataField label="Date" value={new Date(time).toLocaleString()} />
+      <DataField label="Approvers">
+        <ApproversList approvers={approvers} />
+      </DataField>
 
-        <DataField
-          label="Expire"
-          value={
-            multisigTxnInfoData?.info?.expireDate
-              ? new Date(multisigTxnInfoData?.info.expireDate).toLocaleString()
-              : ""
-          }
-        />
+      <DataField label="Required Approvers" value={threshold} />
 
-        <DataField label="Submitted By">
-          {submitterContactName && (
-            <Text fontWeight="medium">{submitterContactName}</Text>
-          )}
-          <AddressText
-            addressText={submitter ?? ""}
-            bgColor={undefined}
-            p={0}
-            textProps={{ fontWeight: "semibold" }}
-          />
-        </DataField>
+      <DataField label="Memo" value={memo} />
 
-        <DataField label="Approvers">
-          <ApproversList approvers={approvers} />
-        </DataField>
+      <DataField
+        label="Execute Automatically"
+        value={executeAutomatically ? "Yes" : "No"}
+      />
 
-        <DataField label="Required Approvers" value={threshold} />
-
-        <DataField label="Memo" value={memo} />
-
-        <DataField
-          label="Execute Automatically"
-          value={executeAutomatically ? "Yes" : "No"}
-        />
-
-        {base64TxnId ? (
-          <ShareTxnButton base64TxnId={base64TxnId} mt={6} />
-        ) : null}
-      </Modal.Body>
-    </Modal>
+      {base64TxnId ? <ShareTxnButton base64TxnId={base64TxnId} mt={6} /> : null}
+    </>
   )
 }
 
