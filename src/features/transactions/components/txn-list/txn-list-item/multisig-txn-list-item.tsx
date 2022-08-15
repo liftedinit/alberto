@@ -1,27 +1,34 @@
 import {
   EventType,
-  MultisigSubmitEvent,
   SendEvent,
   Event,
   MultisigEvent,
   MultisigSetDefaultsEvent,
+  MultisigTransactionInfo,
 } from "many-js"
 import {
+  Alert,
+  AlertIcon,
+  AlertDescription,
   AddressText,
   Button,
+  ButtonProps,
   Box,
   CheckCircleIcon,
+  CopyToClipboard,
   DataField,
   Flex,
   HStack,
+  LinkIcon,
   Modal,
+  SettingsOutlineIcon,
   SimpleGrid,
-  TimesCircleIcon,
+  Spinner,
   Text,
+  TimesCircleIcon,
+  TxnExpireText,
   useToast,
   VStack,
-  SettingsOutlineIcon,
-  TxnExpireText,
 } from "components"
 import { useGetContactName } from "features/contacts"
 import {
@@ -30,11 +37,13 @@ import {
   useGetAccountInfo,
   useGetMultisigTxnInfo,
 } from "features/accounts"
-import React from "react"
 import { useMultisigActions, useMultisigTxn, useSendTxn } from "./hooks"
 import { BaseTxnListItem } from "./base-txn-list-item"
 import { BaseTxnDetails } from "./base-txn-details"
-import { getHoursMinutesSecondsFromSeconds } from "helper/convert"
+import {
+  arrayBufferToBase64,
+  getHoursMinutesSecondsFromSeconds,
+} from "helper/convert"
 
 export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
   const { time, token } = txn
@@ -136,92 +145,7 @@ function MultisigTxnDetailsModal({
   isOpen: boolean
   onClose: () => void
 }) {
-  const toast = useToast()
-  const activeIdentityAddress = useAccountsStore(s =>
-    s.byId.get(s.activeId),
-  )?.address
-
-  const getContactName = useGetContactName()
-
-  const { data: accountInfoData } = useGetAccountInfo(multisigTxn.account)
-
-  const { token, time } = multisigTxn
-
-  const { data: multisigTxnInfoData } = useGetMultisigTxnInfo(token)
-
-  const { memo, executeAutomatically, threshold, transaction, submitter } =
-    (multisigTxnInfoData?.info ?? {}) as MultisigSubmitEvent
-
-  const submitterContactName = getContactName(submitter)
-
-  const approvers = React.useMemo(() => {
-    const accountRoles = accountInfoData?.accountInfo?.roles ?? new Map()
-
-    return Array.from(accountRoles).reduce(
-      (
-        acc: {
-          address: string
-          hasApproved: boolean | undefined
-          contactName?: string
-        }[],
-        roleData,
-      ) => {
-        const [address, roleList] = roleData as [string, string[]]
-
-        const hasApproverRole = approverRoles.some(r => roleList.includes(r))
-
-        if (!hasApproverRole) {
-          return acc
-        }
-
-        acc.push({
-          address,
-          hasApproved: multisigTxnInfoData?.info?.approvers?.get(address),
-          contactName: getContactName(address),
-        })
-
-        return acc
-      },
-      [] as {
-        address: string
-        hasApproved: boolean | undefined
-        contactName?: string
-      }[],
-    )
-  }, [accountInfoData, multisigTxnInfoData, getContactName])
-
-  const {
-    doApprove,
-    isApproveLoading,
-    canApprove,
-    canRevoke,
-    doRevoke,
-    isRevokeLoading,
-    doWithdraw,
-    canWithdraw,
-    isWithdrawLoading,
-    canExecute,
-    doExecute,
-    isExecuteLoading,
-    isLoading,
-  } = useMultisigActions({
-    identityAddress: activeIdentityAddress!,
-    accountAddress: multisigTxn.account,
-    txnToken: token!,
-  })
-
-  function onActionDone(
-    status: "success" | "warning",
-    title: string,
-    description: string,
-  ) {
-    toast({
-      status,
-      title,
-      description,
-    })
-    onClose()
-  }
+  const { token, account } = multisigTxn
 
   return (
     <Modal
@@ -229,155 +153,123 @@ function MultisigTxnDetailsModal({
       onClose={onClose}
       header="Transaction Details"
       footer={
-        <VStack alignItems="flex-start" w="full" spacing={8}>
-          <VStack alignItems="flex-start" w="full">
-            {canApprove && (
-              <Button
-                variant="outline"
-                colorScheme="brand.teal"
-                isFullWidth
-                isLoading={isApproveLoading}
-                disabled={isLoading}
-                onClick={e => {
-                  e.preventDefault()
-                  const title = "Approve"
-                  doApprove(undefined, {
-                    onSuccess: () => {
-                      onActionDone("success", title, "Transaction was approved")
-                    },
-                    onError: err => {
-                      onActionDone("warning", title, err?.message)
-                    },
-                  })
-                }}
-              >
-                Approve
-              </Button>
-            )}
-
-            {canRevoke && (
-              <Button
-                disabled={isLoading}
-                variant="outline"
-                colorScheme="brand.teal"
-                isFullWidth
-                isLoading={isRevokeLoading}
-                onClick={e => {
-                  e.preventDefault()
-                  const title = "Revoke"
-                  doRevoke(undefined, {
-                    onSuccess: () => {
-                      onActionDone("success", title, "Transaction was revoked")
-                    },
-                    onError: err => {
-                      onActionDone("warning", title, err?.message)
-                    },
-                  })
-                }}
-              >
-                Revoke
-              </Button>
-            )}
-            {canWithdraw && (
-              <Button
-                disabled={isLoading}
-                variant="outline"
-                colorScheme="brand.teal"
-                isFullWidth
-                isLoading={isWithdrawLoading}
-                onClick={e => {
-                  e.preventDefault()
-                  const title = "Withdraw"
-                  doWithdraw(undefined, {
-                    onSuccess: () => {
-                      onActionDone(
-                        "success",
-                        title,
-                        "Transaction was withdrawn",
-                      )
-                    },
-                    onError: err => {
-                      onActionDone("warning", title, err?.message)
-                    },
-                  })
-                }}
-              >
-                Withdraw
-              </Button>
-            )}
-          </VStack>
-          {canExecute && (
-            <Button
-              disabled={isLoading}
-              isLoading={isExecuteLoading}
-              colorScheme="brand.teal"
-              isFullWidth
-              onClick={e => {
-                e.preventDefault()
-                const title = "Execute"
-                doExecute(undefined, {
-                  onSuccess: () => {
-                    onActionDone("success", title, "Transaction was executed")
-                  },
-                  onError: err => {
-                    onActionDone("warning", title, err?.message)
-                  },
-                })
-              }}
-            >
-              Execute
-            </Button>
-          )}
-        </VStack>
+        <Box w="full">
+          <MultisigActions
+            onActionDone={status => status === "success" && onClose()}
+            accountAddress={account}
+            txnToken={token!}
+          />
+        </Box>
       }
     >
       <Modal.Body>
-        <SubmittedTxnData
-          address={multisigTxn.account}
-          transaction={transaction}
-        />
-
-        <DataField label="Date" value={new Date(time).toLocaleString()} />
-
-        <DataField
-          label="Expire"
-          value={
-            multisigTxnInfoData?.info?.expireDate
-              ? new Date(multisigTxnInfoData?.info.expireDate).toLocaleString()
-              : ""
-          }
-        />
-
-        <DataField label="Submitted By">
-          {submitterContactName && (
-            <Text fontWeight="medium">{submitterContactName}</Text>
-          )}
-          <AddressText
-            addressText={submitter ?? ""}
-            bgColor={undefined}
-            p={0}
-            textProps={{ fontWeight: "semibold" }}
-          />
-        </DataField>
-
-        <DataField label="Approvers">
-          <ApproversList approvers={approvers} />
-        </DataField>
-
-        <DataField label="Required Approvers" value={threshold} />
-
-        <DataField label="Memo" value={memo} />
-
-        <DataField
-          label="Execute Automatically"
-          value={executeAutomatically ? "Yes" : "No"}
-        />
+        <SubmittedMultisigTxnDetails multisigTxn={multisigTxn} />
       </Modal.Body>
     </Modal>
   )
 }
 
-function SubmittedTxnData({
+export function SubmittedMultisigTxnDetails({
+  multisigTxn,
+}: {
+  multisigTxn: MultisigEvent
+}) {
+  const { token, time, id, account } = multisigTxn
+
+  const base64TxnId = id ? encodeURIComponent(arrayBufferToBase64(id)) : null
+
+  const getContactName = useGetContactName()
+
+  const { data: accountInfoData, error: getAccountInfoError } =
+    useGetAccountInfo(multisigTxn.account)
+
+  const {
+    data: multisigTxnInfoData,
+    isLoading: isMultisigTxnInfoLoading,
+    error: multisigTxnInfoError,
+  } = useGetMultisigTxnInfo(token)
+
+  const { memo, executeAutomatically, threshold, transaction, submitter } =
+    (multisigTxnInfoData?.info ?? {}) as MultisigTransactionInfo
+
+  const submitterContactName = getContactName(submitter)
+
+  const approvers = makeApproversMap(
+    accountInfoData?.accountInfo?.roles,
+    multisigTxnInfoData?.info?.approvers,
+    getContactName,
+  )
+
+  if (getAccountInfoError || multisigTxnInfoError) {
+    return (
+      <Alert status="warning">
+        <AlertIcon />
+        <AlertDescription>
+          <Text>
+            {getAccountInfoError?.message ?? multisigTxnInfoError?.message}
+          </Text>
+        </AlertDescription>
+      </Alert>
+    )
+  }
+
+  return (
+    <>
+      {isMultisigTxnInfoLoading ? (
+        <Box
+          position="absolute"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          w="full"
+        >
+          <Spinner size="lg" />
+        </Box>
+      ) : null}
+      <SubmittedTxnData address={account} transaction={transaction} />
+
+      <DataField label="Date" value={new Date(time).toLocaleString()} />
+
+      <DataField
+        label="Expire"
+        value={
+          multisigTxnInfoData?.info?.expireDate
+            ? new Date(multisigTxnInfoData?.info.expireDate).toLocaleString()
+            : ""
+        }
+      />
+
+      <DataField label="Submitted By">
+        {submitterContactName && (
+          <Text fontWeight="medium">{submitterContactName}</Text>
+        )}
+        <AddressText
+          addressText={submitter ?? ""}
+          bgColor={undefined}
+          p={0}
+          textProps={{ fontWeight: "semibold" }}
+        />
+      </DataField>
+
+      <DataField label="Approvers">
+        <ApproversList approvers={approvers} />
+      </DataField>
+
+      <DataField label="Required Approvers" value={threshold} />
+
+      <DataField label="Memo" value={memo} />
+
+      <DataField
+        label="Execute Automatically"
+        value={executeAutomatically ? "Yes" : "No"}
+      />
+
+      {base64TxnId ? <ShareTxnButton base64TxnId={base64TxnId} mt={6} /> : null}
+    </>
+  )
+}
+
+export function SubmittedTxnData({
   address,
   transaction,
 }: {
@@ -417,9 +309,13 @@ function SubmittedSendTxn({
 
   return (
     <>
-      <HStack alignItems="center" mb={4}>
-        <TxnIcon boxSize={8} />
-        <Text casing="capitalize">{title}</Text>
+      <HStack alignItems="center" mb={4} justifyContent="space-between">
+        <Flex alignItems="center" gap={4}>
+          <TxnIcon boxSize={8} />
+          <Text fontSize="lg" casing="capitalize">
+            {title}
+          </Text>
+        </Flex>
       </HStack>
       <DataField label="Amount">
         <Flex mb={4}>
@@ -427,7 +323,7 @@ function SubmittedSendTxn({
             {displayAmount}
           </Text>
           &nbsp;
-          <Text fontWeight="medium">{symbol}</Text>
+          <Text>{symbol}</Text>
         </Flex>
       </DataField>
 
@@ -445,7 +341,7 @@ function SubmittedSendTxn({
   )
 }
 
-function ApproversList({
+export function ApproversList({
   approvers,
 }: {
   approvers: {
@@ -484,5 +380,225 @@ function ApproversList({
         )
       })}
     </>
+  )
+}
+
+export function MultisigActions({
+  accountAddress,
+  txnToken,
+  onActionDone: onDone,
+}: {
+  accountAddress: string
+  txnToken: ArrayBuffer
+  onActionDone?: (status: "success" | "warning") => void
+}) {
+  const toast = useToast()
+  const activeIdentityAddress = useAccountsStore(s =>
+    s.byId.get(s.activeId),
+  )?.address
+
+  const {
+    doApprove,
+    isApproveLoading,
+    canApprove,
+    canRevoke,
+    doRevoke,
+    isRevokeLoading,
+    doWithdraw,
+    canWithdraw,
+    isWithdrawLoading,
+    canExecute,
+    doExecute,
+    isExecuteLoading,
+    isLoading,
+    error,
+    resetErrors,
+  } = useMultisigActions({
+    identityAddress: activeIdentityAddress!,
+    accountAddress,
+    txnToken,
+  })
+
+  function onActionDone(
+    status: "success" | "warning",
+    title: string,
+    description: string,
+  ) {
+    if (status === "success") {
+      toast({
+        status,
+        title,
+        description,
+      })
+    }
+    onDone?.(status)
+  }
+
+  return (
+    <>
+      {error ? (
+        <Alert status="warning" rounded="md" mb={4}>
+          <AlertIcon />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      ) : null}
+      <VStack alignItems="flex-start" w="full" spacing={8}>
+        <VStack alignItems="flex-start" w="full">
+          {canApprove && (
+            <Button
+              variant="outline"
+              colorScheme="brand.teal"
+              isFullWidth
+              isLoading={isApproveLoading}
+              disabled={isLoading}
+              onClick={e => {
+                e.preventDefault()
+                resetErrors()
+                const title = "Approve"
+                doApprove(undefined, {
+                  onSuccess: () => {
+                    onActionDone("success", title, "Transaction was approved")
+                  },
+                  onError: err => {
+                    onActionDone("warning", title, err?.message)
+                  },
+                })
+              }}
+            >
+              Approve
+            </Button>
+          )}
+
+          {canRevoke && (
+            <Button
+              disabled={isLoading}
+              variant="outline"
+              colorScheme="brand.teal"
+              isFullWidth
+              isLoading={isRevokeLoading}
+              onClick={e => {
+                e.preventDefault()
+                resetErrors()
+                const title = "Revoke"
+                doRevoke(undefined, {
+                  onSuccess: () => {
+                    onActionDone("success", title, "Transaction was revoked")
+                  },
+                  onError: err => {
+                    onActionDone("warning", title, err?.message)
+                  },
+                })
+              }}
+            >
+              Revoke
+            </Button>
+          )}
+          {canWithdraw && (
+            <Button
+              disabled={isLoading}
+              variant="outline"
+              colorScheme="brand.teal"
+              isFullWidth
+              isLoading={isWithdrawLoading}
+              onClick={e => {
+                e.preventDefault()
+                resetErrors()
+                const title = "Withdraw"
+                doWithdraw(undefined, {
+                  onSuccess: () => {
+                    onActionDone("success", title, "Transaction was withdrawn")
+                  },
+                  onError: err => {
+                    onActionDone("warning", title, err?.message)
+                  },
+                })
+              }}
+            >
+              Withdraw
+            </Button>
+          )}
+        </VStack>
+        {canExecute && (
+          <Button
+            disabled={isLoading}
+            isLoading={isExecuteLoading}
+            colorScheme="brand.teal"
+            isFullWidth
+            onClick={e => {
+              e.preventDefault()
+              resetErrors()
+              const title = "Execute"
+              doExecute(undefined, {
+                onSuccess: () => {
+                  onActionDone("success", title, "Transaction was executed")
+                },
+                onError: err => {
+                  onActionDone("warning", title, err?.message)
+                },
+              })
+            }}
+          >
+            Execute
+          </Button>
+        )}
+      </VStack>
+    </>
+  )
+}
+
+export function makeApproversMap(
+  currRoles: Map<string, string[]> = new Map(),
+  approvers: Map<string, boolean> = new Map(),
+  getContactName: (s: string) => string,
+) {
+  return Array.from(currRoles).reduce(
+    (acc, roleData) => {
+      const [address, roleList] = roleData as [string, string[]]
+
+      const hasApproverRole = approverRoles.some(r => roleList.includes(r))
+
+      if (!hasApproverRole) {
+        return acc
+      }
+
+      acc.push({
+        address,
+        hasApproved: approvers?.get(address),
+        contactName: getContactName(address),
+      })
+
+      return acc
+    },
+    [] as {
+      address: string
+      hasApproved: boolean | undefined
+      contactName?: string
+    }[],
+  )
+}
+
+export function ShareTxnButton({
+  base64TxnId,
+  ...props
+}: ButtonProps & {
+  base64TxnId: string
+}) {
+  return (
+    <CopyToClipboard
+      msg="Link copied!"
+      toCopy={window.location.origin + `/#/transactions/${base64TxnId}`}
+    >
+      {({ onCopy }) => (
+        <Button
+          size="sm"
+          variant="link"
+          onClick={onCopy}
+          leftIcon={<LinkIcon boxSize={4} />}
+          {...props}
+        >
+          Share this transaction
+        </Button>
+      )}
+    </CopyToClipboard>
   )
 }

@@ -17,7 +17,8 @@ export function useGetAccountInfo(accountAddress?: string) {
       isOwner: boolean
       hasMultisigFeature: boolean
       hasLedgerFeature: boolean
-    }
+    },
+    Error
   >({
     queryKey: ["accountinfo", accountAddress],
     queryFn: async () => {

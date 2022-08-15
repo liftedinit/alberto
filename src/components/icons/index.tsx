@@ -17,6 +17,7 @@ import {
   FaRegAddressBook,
   FaCheck,
   FaCheckCircle,
+  FaLink,
   FaUserCircle,
   FaTimes,
   FaTimesCircle,
@@ -172,4 +173,8 @@ export function UserMinusIcon(props: IconProps) {
 
 export function UserPlusIcon(props: IconProps) {
   return <Icon as={BsPersonPlus} {...props} />
+}
+
+export function LinkIcon(props: IconProps) {
+  return <Icon as={FaLink} {...props} />
 }
