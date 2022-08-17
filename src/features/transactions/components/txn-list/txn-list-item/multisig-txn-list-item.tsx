@@ -5,6 +5,7 @@ import {
   MultisigEvent,
   MultisigSetDefaultsEvent,
   MultisigTransactionInfo,
+  MultisigTransactionState,
 } from "many-js"
 import {
   Alert,
@@ -50,6 +51,10 @@ export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
   const { actionLabel, actorAddress, txnLabel, TxnIcon, iconProps } =
     useMultisigTxn(txn)
 
+  const { data: multisigTxnInfoData } = useGetMultisigTxnInfo(token)
+  const { state } = multisigTxnInfoData?.info ?? {}
+  const stateText = getTxnStateText(state)
+
   const getContactName = useGetContactName()
   const contactName = getContactName(actorAddress)
 
@@ -63,7 +68,17 @@ export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
       actorAddress={actorAddress}
       txnDetails={
         token || txn.type === EventType.accountMultisigSetDefaults ? (
-          <Flex justifyContent="flex-end">
+          <Flex justifyContent="flex-end" alignItems="center" gap={2}>
+            {stateText && txn.type === EventType.accountMultisigSubmit ? (
+              <Text
+                casing="capitalize"
+                fontSize="xs"
+                wordBreak="break-word"
+                whiteSpace="pre-wrap"
+              >
+                {stateText}
+              </Text>
+            ) : null}
             <MultisigTxnDetails multisigTxn={txn} />
           </Flex>
         ) : null
@@ -168,7 +183,6 @@ function MultisigTxnDetailsModal({
     </Modal>
   )
 }
-
 export function SubmittedMultisigTxnDetails({
   multisigTxn,
 }: {
@@ -601,4 +615,18 @@ export function ShareTxnButton({
       )}
     </CopyToClipboard>
   )
+}
+
+export function getTxnStateText(state?: string) {
+  return state ? txnStateText[state] : ""
+}
+
+const txnStateText = {
+  [MultisigTransactionState[MultisigTransactionState.pending]]: "pending",
+  [MultisigTransactionState[MultisigTransactionState.executedAutomatically]]:
+    "executed automatically",
+  [MultisigTransactionState[MultisigTransactionState.executedManually]]:
+    "executed manually",
+  [MultisigTransactionState[MultisigTransactionState.expired]]: "expired",
+  [MultisigTransactionState[MultisigTransactionState.withdrawn]]: "withdrawn",
 }
