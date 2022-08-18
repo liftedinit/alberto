@@ -26,6 +26,7 @@ import {
 import { doesAccountExist } from "features/accounts/utils"
 import { base64ToArrayBuffer } from "helper/convert"
 import { RecoverOptions } from "features/accounts/types"
+import { LedgerSafariWarning } from "./ledger-safari-warning"
 
 export function ImportFlow({ setAddMethod, onSuccess }: AddAccountMethodProps) {
   const toast = useToast()
@@ -123,6 +124,7 @@ export function ImportFlow({ setAddMethod, onSuccess }: AddAccountMethodProps) {
           Back
         </Button>
         <Container>
+          <LedgerSafariWarning mb={3} />
           <Alert status="info" variant="left-accent" mb={8}>
             <HStack spacing={4}>
               <Box>

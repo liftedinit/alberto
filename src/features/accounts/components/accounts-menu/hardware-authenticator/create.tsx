@@ -20,6 +20,7 @@ import {
   ChevronLeftIcon,
 } from "components"
 import { AddAccountMethodProps } from "../add-account-modal"
+import { LedgerSafariWarning } from "./ledger-safari-warning"
 import {
   useAccountsStore,
   useCredentialsStore,
@@ -72,7 +73,8 @@ function Authorize({ setAddMethod }: AddAccountMethodProps) {
       onBackClick={() => setAddMethod("")}
       footer={<Button onClick={onAuthorizeClicked}>Authorize</Button>}
     >
-      <Alert status="info" variant="left-accent">
+      <LedgerSafariWarning mb={3} />
+      <Alert status="info" variant="left-accent" rounded="md">
         <HStack spacing={4}>
           <Box>
             <UsbIcon boxSize={10} />
