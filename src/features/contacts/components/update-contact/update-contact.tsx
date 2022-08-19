@@ -1,24 +1,20 @@
 import React from "react"
+import { useForm } from "react-hook-form"
 import {
   AlertDialog,
   Button,
   ButtonGroup,
-  FormLabel,
-  FormControl,
+  FieldWrapper,
   Input,
   Modal,
   Text,
   useToast,
   useDisclosure,
+  validateAddress,
   VStack,
 } from "components"
 import { useContactsStore } from "features/contacts/store"
 import { Contact } from "features/contacts/types"
-
-interface FormElements extends HTMLFormControlsCollection {
-  name: HTMLInputElement
-  address: HTMLInputElement
-}
 
 export function UpdateContact({
   header,
@@ -89,6 +85,10 @@ export function UpdateContact({
   )
 }
 
+const defaultValues = {
+  name: "",
+  address: "",
+}
 export function ContactFormModal({
   isOpen,
   onClose,
@@ -104,87 +104,67 @@ export function ContactFormModal({
   contact?: Contact
   onSubmit: (c: Contact) => void
 }) {
-  const formRef = React.useRef<HTMLFormElement>(null)
-  const [formValues, setFormValues] = React.useState({ name: "", address: "" })
-
-  function _onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    e.stopPropagation()
-
-    const { name: nameInput, address: addressInput } = (
-      e.target as HTMLFormElement
-    ).elements as FormElements
-
-    const name = nameInput.value.trim()
-    const address = addressInput.value.trim()
-
-    if (!name || !address) return
-
-    onSubmit({ name, address })
-  }
-
-  function handleChange(e: React.FormEvent<HTMLInputElement>) {
-    const { name, value } = e.target as HTMLInputElement
-    setFormValues(s => ({ ...s, [name]: value }))
-  }
+  const form = useForm({ defaultValues })
 
   React.useEffect(() => {
-    isOpen && contact && setFormValues({ ...contact })
-
-    !isOpen && setFormValues({ name: "", address: "" })
-  }, [isOpen, contact])
+    if (isOpen && !!contact) {
+      form.reset({ name: contact.name, address: contact.address })
+    }
+    !isOpen && form.reset(defaultValues)
+  }, [isOpen, contact, form])
 
   return (
-    <>
-      <Modal
-        header={header ?? "Contact"}
-        isOpen={isOpen}
-        onClose={onClose}
-        footer={
-          footer ?? (
-            <Button
-              form="contact-form"
-              type="submit"
-              w={{ base: "full", md: "auto" }}
-            >
-              Save
-            </Button>
-          )
-        }
-      >
-        <Modal.Body>
-          <form onSubmit={_onSubmit} ref={formRef} id="contact-form">
-            <VStack>
-              <FormControl isRequired id="name">
-                <FormLabel>Name</FormLabel>
-                <Input
-                  name="name"
-                  variant="filled"
-                  maxLength={75}
-                  minLength={1}
-                  value={formValues.name}
-                  autoFocus
-                  onChange={handleChange}
-                />
-              </FormControl>
-              <FormControl isRequired id="address">
-                <FormLabel>Address</FormLabel>
-                <Input
-                  name="address"
-                  variant="filled"
-                  value={formValues.address}
-                  maxLength={100}
-                  minLength={50}
-                  onChange={handleChange}
-                  isTruncated
-                  fontFamily="monospace"
-                />
-              </FormControl>
-            </VStack>
-          </form>
-        </Modal.Body>
-      </Modal>
-    </>
+    <Modal
+      header={header ?? "Contact"}
+      isOpen={isOpen}
+      onClose={onClose}
+      footer={
+        footer ?? (
+          <Button
+            w={{ base: "full", md: "auto" }}
+            onClick={form.handleSubmit(onSubmit)}
+          >
+            Save
+          </Button>
+        )
+      }
+    >
+      <Modal.Body>
+        <VStack>
+          <FieldWrapper
+            isRequired
+            label="Name"
+            error={form?.formState?.errors?.name?.message}
+          >
+            <Input
+              {...form.register("name", {
+                required: "Name is required",
+                maxLength: {
+                  value: 128,
+                  message: "Maximum of 128 characters allowed",
+                },
+              })}
+            />
+          </FieldWrapper>
+          <FieldWrapper
+            isRequired
+            label="Address"
+            error={form?.formState?.errors?.address?.message}
+          >
+            <Input
+              isTruncated
+              fontFamily="monospace"
+              {...form.register("address", {
+                required: "Address is required",
+                validate: {
+                  validateAddress,
+                },
+              })}
+            />
+          </FieldWrapper>
+        </VStack>
+      </Modal.Body>
+    </Modal>
   )
 }
 
