@@ -58,6 +58,9 @@ function AccountsHeader() {
                     p={0}
                     iconProps={{ boxSize: 4 }}
                     bgColor={undefined}
+                    textProps={{
+                      "aria-label": "account address",
+                    }}
                   />
                   )
                 </>

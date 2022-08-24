@@ -95,7 +95,7 @@ export function AccountsMenu() {
         </MenuButton>
         <MenuList maxW="100vw" zIndex={2}>
           <MenuOptionGroup title="Accounts" />
-          <Box overflow="auto" maxHeight="40vh">
+          <Box overflow="auto" maxHeight="40vh" data-testid="wallet menu list">
             {activeAccount ? (
               <Box overflow="auto" maxHeight="40vh">
                 <AccountMenuItem
@@ -126,7 +126,11 @@ export function AccountsMenu() {
             alignItems="center"
             _hover={{ backgroundColor: "transparent" }}
           >
-            <Button isFullWidth onClick={onAddModalOpen}>
+            <Button
+              data-testid="add wallet btn"
+              isFullWidth
+              onClick={onAddModalOpen}
+            >
               Add Account
             </Button>
           </MenuItem>
@@ -137,6 +141,9 @@ export function AccountsMenu() {
           addressText={activeAccount.address!}
           display={{ base: "none", md: "inline-flex" }}
           ms={2}
+          textProps={{
+            "aria-label": "active wallet address",
+          }}
         />
       )}
 
@@ -209,7 +216,7 @@ function AccountMenuItem({
       {
         <IconButton
           variant="ghost"
-          aria-label="edit account"
+          aria-label={`edit account ${accountData.name}`}
           icon={<EditIcon boxSize={5} />}
           onClick={() => onEditClick(account)}
         />

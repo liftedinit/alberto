@@ -129,7 +129,7 @@ function AssetListItem({
       onMouseEnter={() => toggleShowSend?.(true)}
       onMouseLeave={() => toggleShowSend?.(false)}
       cursor="pointer"
-      aria-label="asset list item"
+      aria-label={`asset list item ${asset.symbol}`}
       onClick={() => onAssetClicked(asset)}
       py={1}
       px={3}
@@ -145,6 +145,7 @@ function AssetListItem({
           textOverflow="ellipsis"
           fontSize="xl"
           fontWeight="medium"
+          aria-label={`${asset.symbol} amount`}
         >
           {amountFormatter(asset.balance)}
         </Text>

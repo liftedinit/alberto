@@ -78,9 +78,8 @@ describe("<SendAsset />", () => {
       target: { value: "5" },
     })
     userEvent.click(nextBtn)
-    const confirmCheckbox = screen.getByRole("checkbox", {
-      name: /confirm transaction/i,
-    })
+    await screen.findByTestId("approve-txn")
+    const confirmCheckbox = screen.getByTestId("approve-txn")
     const sendBtn = screen.getByRole("button", { name: /send/i })
     expect(sendBtn).toBeDisabled()
     userEvent.click(confirmCheckbox)

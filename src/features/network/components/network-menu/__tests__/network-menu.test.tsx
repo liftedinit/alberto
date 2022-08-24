@@ -29,22 +29,19 @@ describe("NetworkMenu", () => {
     userEvent.type(urlInput, "test-network/api")
     userEvent.click(saveBtn)
 
-    await waitForElementToBeRemoved(modal)
-    expect(modal).not.toBeInTheDocument()
     expect(within(activeNetwork).getByText("test-network")).toBeInTheDocument()
   })
   it("should remove a network", async () => {
     await setupEditNetwork()
     const modal = screen.getByTestId("network-create-update-contents")
     const removeInput = within(modal).getByLabelText(/remove network/i)
-    const removeBtn = within(modal).getByTestId("remove-network-btn")
+    const removeBtn = within(modal).getByTestId("remove network button")
     expect(removeBtn).toBeDisabled()
 
     userEvent.type(removeInput, "/api")
     expect(removeBtn).not.toBeDisabled()
     userEvent.click(removeBtn)
-    await waitForElementToBeRemoved(modal)
-    expect(screen.queryByText(/localhost/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/manifest/i)).not.toBeInTheDocument()
     // we've removed all the networks
     expect(screen.getByText(/no network selected/i)).toBeInTheDocument()
   })
@@ -67,7 +64,7 @@ describe("NetworkMenu", () => {
 
 function setupNetworkMenu() {
   render(<NetworkMenu />)
-  const activeNetwork = screen.getByTestId("active-network-menu-trigger")
+  const activeNetwork = screen.getByLabelText("active network menu trigger")
   userEvent.click(activeNetwork)
   return activeNetwork
 }

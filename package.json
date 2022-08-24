@@ -5,8 +5,11 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "test": "react-scripts test",
+    "prepare": "husky install",
+    "test:e2e": "npx playwright test --config=./e2e/playwright.config.ts",
+    "test:e2e:local": "BROWSERSTACK_LOCAL=true npx playwright test --config=./e2e/playwright-local.config.ts"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.8.6",
@@ -38,8 +41,11 @@
     "zustand": "^3.7.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.23.4",
+    "@playwright/test": "^1.24.2",
     "@types/jest": "^27.4.1",
+    "browserstack-local": "^1.5.1",
+    "dotenv": "^16.0.1",
+    "husky": "^8.0.1",
     "prettier": "^2.6.0",
     "react-error-overlay": "^6.0.9",
     "ts-jest": "^27.1.3"

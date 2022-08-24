@@ -377,6 +377,7 @@ export function SendAssetForm({
                 variant="unstyled"
                 placeholder="maffbahksdwaqeenayy..."
                 fontFamily="monospace"
+                id="to"
                 isTruncated
                 {...formMethods.register("to", {
                   required: "This field is required",
@@ -433,6 +434,7 @@ export function SendAssetForm({
                 alignSelf="flex-start"
                 variant="unstyled"
                 placeholder="0.0"
+                id="amount"
                 fontFamily="monospace"
                 {...formMethods.register("amount", {
                   required: "This field is required",
@@ -617,6 +619,7 @@ function ConfirmTxnDialog({
             disabled={!isConfirmed || isLoading}
             form="confirm-txn-form"
             type="submit"
+            data-testid="send-txn-btn"
           >
             Send
           </Button>
@@ -667,6 +670,7 @@ function ConfirmTxnDialog({
             colorScheme="brand.teal"
             aria-label="confirm transaction"
             onChange={e => setIsConfirmed(e.target.checked)}
+            data-testid="approve-txn"
           >
             Approve this transaction
           </Checkbox>

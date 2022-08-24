@@ -97,7 +97,12 @@ export function AccountOwnerField({
   }, [isLedgerTransactEnabled, isMultisigEnabled, onRolesChange])
 
   return (
-    <Box bgColor="gray.100" p={3} rounded="md">
+    <Box
+      bgColor="gray.100"
+      p={3}
+      rounded="md"
+      aria-label={`owner ${addressField.value}`}
+    >
       <FieldWrapper
         error={error?.message}
         label="Owner"
@@ -159,7 +164,7 @@ export function AccountOwnerField({
           bgColor="white"
           rounded="sm"
         >
-          {rolesValue.map((roleName: string, idx: number, arr: string[]) => {
+          {rolesValue.map((roleName: string) => {
             return (
               <Tag
                 key={roleName}

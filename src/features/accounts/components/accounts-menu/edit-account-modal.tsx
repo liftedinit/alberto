@@ -116,7 +116,7 @@ export function EditAccountModal({
           )}
         </form>
         {isAnonymous ? null : (
-          <form id="remove-account-form">
+          <form data-testid="remove-account-form" id="remove-account-form">
             <FormControl mt={3} id="addressInput">
               <FormLabel htmlFor="addressInput" color="red">
                 Remove Account

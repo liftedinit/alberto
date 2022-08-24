@@ -128,6 +128,8 @@ export function MultisigSettingsFields({
           focusBorderColor="teal.300"
           width={{ base: "full", md: "100px" }}
           pointerEvents={canEdit ? undefined : "none"}
+          isReadOnly={!canEdit}
+          data-testid="required approvers dropdown"
           {...register(thresholdFieldName, {
             valueAsNumber: true,
             required: "This field is required",
