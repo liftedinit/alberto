@@ -24,14 +24,12 @@ jobs:
       - run:
           name: Run tests
           command: npm run test
-      - run:
-          # node 17+ workaround https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported
-          name: set openssl-legacy-provider in NODE_OPTIONS
-          command: |
-              if [ "<< parameters.node_version >>" == "current" ]
-              then
-                echo 'export NODE_OPTIONS=--openssl-legacy-provider' >> $BASH_ENV
-              fi
+      - when:
+          condition:
+            equal: [ 'current', << parameters.node_version >> ]
+          steps:
+            # node 17+ workaround https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported
+            - run: echo 'export NODE_OPTIONS=--openssl-legacy-provider' >> $BASH_ENV
       - run:
           name: Build app
           command: npm run build
