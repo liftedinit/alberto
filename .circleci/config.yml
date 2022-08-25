@@ -14,12 +14,6 @@ jobs:
       name: node/default
       tag: << parameters.node_version >>
     steps:
-      - checkout
-      - run:
-          name: Node & NPM version
-          command: |
-            node --version
-            npm --version
       - install-packages
       - run:
           name: Run tests
@@ -37,7 +31,6 @@ jobs:
   create:
     executor: node/default
     steps:
-      - checkout
       - install-packages
       - run: mkdir -p artifacts
       - run:
@@ -136,8 +129,12 @@ workflows:
 
 commands:
   install-packages:
-    description: install packages
+    description: Checkout and install packages
     steps:
+      - checkout
+      - run:
+          name: Versions
+          command: node -v && npm -v
       - node/install-packages:
           pkg-manager: npm
       - run:
