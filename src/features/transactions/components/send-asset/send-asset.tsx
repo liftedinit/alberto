@@ -76,8 +76,7 @@ export function SendAssetModal({
           <Button
             width={{ base: "full", md: "auto" }}
             colorScheme="brand.teal"
-            type="submit"
-            form="send-asset-form"
+            disabled={sendAssetState.isNextDisabled}
             onClick={sendAssetState.formMethods.handleSubmit(
               sendAssetState.onNext,
             )}
@@ -246,9 +245,12 @@ export function useSendAssetForm({
     return
   }
 
+  const [watchTo, watchAmount] = formMethods.watch(["to", "amount"])
+
   return {
     balances,
     onNext,
+    isNextDisabled: !watchTo || !watchAmount || !asset,
     onSendTxn,
     doCreateMultisigSubmitTxn,
     error: createMultisigSubmitTxnError?.message || createSendTxnError?.message,
@@ -269,13 +271,11 @@ export function useSendAssetForm({
 
 export function SendAssetForm({
   accountAddress,
-  formId = "send-asset-form",
   sendAssetState,
   showNextBtn = true,
 }: {
   accountAddress?: string
   sendAssetState: ReturnType<typeof useSendAssetForm>
-  formId?: string
   onSuccess?: () => void
   showNextBtn?: boolean
 }) {
@@ -283,6 +283,7 @@ export function SendAssetForm({
   const {
     balances,
     onNext,
+    isNextDisabled,
     onSendTxn,
     isCreateMultisigSubmitTxnLoading,
     isCreateSendTxnLoading,
@@ -302,7 +303,6 @@ export function SendAssetForm({
     formState: { errors },
   } = formMethods
 
-  const watchTo = formMethods.watch("to")
   const {
     to,
     amount,
@@ -315,15 +315,12 @@ export function SendAssetForm({
       threshold,
     },
   } = formMethods.getValues()
-  const contactName = getContactName(watchTo)
+
+  const contactName = getContactName(to)
 
   return (
     <FormProvider {...formMethods}>
-      <form
-        onSubmit={formMethods.handleSubmit(onNext)}
-        aria-label="send form"
-        id={formId}
-      >
+      <div aria-label="send form">
         <VStack alignItems="flex-start" spacing={5}>
           <FieldWrapper
             isRequired
@@ -519,15 +516,16 @@ export function SendAssetForm({
             <Flex justifyContent="flex-end" w="full">
               <Button
                 width={{ base: "full", md: "auto" }}
+                disabled={isNextDisabled}
                 colorScheme="brand.teal"
-                type="submit"
+                onClick={formMethods.handleSubmit(onNext)}
               >
                 Next
               </Button>
             </Flex>
           )}
         </VStack>
-      </form>
+      </div>
       <ConfirmTxnDialog
         isOpen={isShowConfirmDialog}
         onClose={onCloseConfirmDialog}

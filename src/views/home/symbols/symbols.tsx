@@ -93,6 +93,7 @@ export function Symbols({
       </Stack>
       {isSendAssetModalOpen && (
         <SendAssetModal
+          key={String(isSendAssetModalOpen)}
           isOpen={isSendAssetModalOpen}
           onClose={onClose}
           address={address}
