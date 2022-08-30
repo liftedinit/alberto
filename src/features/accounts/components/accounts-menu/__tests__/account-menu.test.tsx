@@ -111,7 +111,9 @@ describe("AccountsMenu", () => {
 
   it("should edit account name", async () => {
     await setupEditAccount("to-be-renamed")
-    const nameInput = screen.getByLabelText(/name/i) as HTMLInputElement
+    const nameInput = screen.getByRole("textbox", {
+      name: /name/i,
+    }) as HTMLInputElement
     nameInput.setSelectionRange(0, nameInput.value.length)
     userEvent.type(nameInput, "{backspace}is-renamed")
     expect(nameInput).toHaveValue("is-renamed")

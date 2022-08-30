@@ -91,7 +91,11 @@ function NoAccountsPrompt() {
           }}
         >
           {({ onOpen }: { onOpen: () => void }) => (
-            <Button onClick={onOpen} variant="link">
+            <Button
+              onClick={onOpen}
+              variant="link"
+              data-testid="add account btn"
+            >
               Add account
             </Button>
           )}

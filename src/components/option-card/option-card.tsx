@@ -1,10 +1,16 @@
+import React from "react"
 import { Box, Flex, Text } from "components"
 
 export function OptionCard({
   children,
   label,
   description,
-}: React.PropsWithChildren<{ label: string; description?: string }>) {
+  onClick,
+}: React.PropsWithChildren<{
+  label: string
+  description?: string
+  onClick?: (e: React.SyntheticEvent) => void
+}>) {
   return (
     <Flex
       py={3}
@@ -14,6 +20,8 @@ export function OptionCard({
       gap={4}
       w="full"
       alignItems="center"
+      _hover={{ cursor: "pointer" }}
+      onClick={onClick}
     >
       {children}
       <Flex flexDir="column" gap={1}>

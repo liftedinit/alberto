@@ -101,7 +101,7 @@ export function CreateAccount() {
 
 function SelectFeatures() {
   const { nextStep } = useStepsContext()
-  const { register, watch } = useFormContext()
+  const { register, watch, setValue, getValues } = useFormContext()
 
   const { getAttribute, getFeatures } = useNetworkStatus()
   const accountAttribute = getAttribute(NetworkAttributes.account)
@@ -122,7 +122,6 @@ function SelectFeatures() {
       description:
         'Allows any identity with the "canLedgerTransact" role perform regular ledger transactions.',
       name: `features.${accountLedgerFeature}`,
-      ariaLabel: "account ledger feature",
     })
 
   hasMultisig &&
@@ -130,7 +129,6 @@ function SelectFeatures() {
       label: "Multisig",
       description: "Enables transactions requiring multiple signatures.",
       name: `features.${accountMultisigFeature}`,
-      ariaLabel: "account multisig feature",
     })
 
   return (
@@ -148,10 +146,14 @@ function SelectFeatures() {
               key={opt.label}
               label={opt.label}
               description={opt.description}
+              onClick={e => {
+                e.preventDefault()
+                setValue(opt.name, !getValues(opt.name))
+              }}
             >
               <Checkbox
                 colorScheme="brand.teal"
-                aria-label="account ledger feature"
+                isChecked={getValues(opt.name)}
                 {...register(opt.name)}
               />
             </OptionCard>
@@ -400,6 +402,7 @@ function Review() {
           onClick={handleSubmit(onCreateClick)}
           isLoading={isLoading}
           loadingText="Creating"
+          data-testid="create account btn"
         >
           Create
         </Button>

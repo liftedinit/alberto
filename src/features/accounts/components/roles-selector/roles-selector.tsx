@@ -68,7 +68,7 @@ function RolesList({
   rolesList: Role[]
 }) {
   return (
-    <VStack alignItems="flex-start">
+    <VStack alignItems="flex-start" data-testid="roles list">
       {rolesList.map(role => {
         const checked = selectedRoles.includes(role.value)
         return (
@@ -76,12 +76,19 @@ function RolesList({
             key={role.label}
             label={role.label}
             description={role.description}
+            onClick={e => {
+              e.preventDefault()
+              onRoleSelected(role.value)
+            }}
           >
             <Checkbox
               colorScheme="brand.teal"
               aria-label="account multisig feature"
               isChecked={checked}
-              onChange={() => onRoleSelected(role.value)}
+              data-testid={`${role.label} role`}
+              onChange={() => {
+                onRoleSelected(role.value)
+              }}
             />
           </OptionCard>
         )

@@ -62,7 +62,7 @@ export function NetworkMenu() {
           lineHeight="normal"
           size="md"
           minWidth="100px"
-          data-testid="active-network-menu-trigger"
+          aria-label="active network menu trigger"
           colorScheme="brand.black"
           variant="outline"
           leftIcon={
@@ -337,7 +337,7 @@ function NetworkDetailsModal({
                   colorScheme="red"
                   disabled={deleteUrl !== formValues.url}
                   onClick={() => onDelete(network[0])}
-                  data-testid="remove-network-btn"
+                  data-testid="remove network button"
                 >
                   Remove
                 </Button>
