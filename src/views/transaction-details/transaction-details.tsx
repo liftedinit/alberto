@@ -15,7 +15,7 @@ import {
   SubmittedMultisigTxnDetails,
   useTransactionsList,
 } from "features/transactions"
-import { BoundType, MultisigSubmitEvent } from "many-js"
+import { BoundType, MultisigSubmitEvent } from "@liftedinit/many-js"
 
 export function TransactionDetails() {
   return (

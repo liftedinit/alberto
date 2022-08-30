@@ -1,4 +1,4 @@
-import { Address } from "many-js"
+import { Address } from "@liftedinit/many-js"
 
 const DEFAULT_MAX_DIGITS = 9
 

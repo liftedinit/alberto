@@ -1,5 +1,9 @@
 import React from "react"
-import { AnonymousIdentity, ANON_IDENTITY, WebAuthnIdentity } from "many-js"
+import {
+  AnonymousIdentity,
+  ANON_IDENTITY,
+  WebAuthnIdentity,
+} from "@liftedinit/many-js"
 import { useAccountsStore } from "features/accounts"
 import {
   AddressText,

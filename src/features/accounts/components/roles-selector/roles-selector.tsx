@@ -6,7 +6,7 @@ import {
   useDisclosure,
   VStack,
 } from "components"
-import { AccountRole } from "many-js"
+import { AccountRole } from "@liftedinit/many-js"
 
 type Props = {
   onRoleClicked: (onClose: () => void, roles: string[]) => void

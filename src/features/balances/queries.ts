@@ -1,5 +1,5 @@
 import { useQuery } from "react-query"
-import { Balances } from "many-js"
+import { Balances } from "@liftedinit/many-js"
 import { useLedgerInfo, useNetworkContext } from "features/network"
 import { Asset } from "./types"
 

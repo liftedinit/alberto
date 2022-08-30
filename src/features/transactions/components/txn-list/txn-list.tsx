@@ -1,4 +1,4 @@
-import { ListFilterArgs, Event } from "many-js"
+import { ListFilterArgs, Event } from "@liftedinit/many-js"
 import {
   Button,
   ChevronRightIcon,

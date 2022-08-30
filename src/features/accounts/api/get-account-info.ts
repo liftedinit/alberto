@@ -4,7 +4,7 @@ import {
   AccountFeatureTypes,
   AccountRole,
   GetAccountInfoResponse,
-} from "many-js"
+} from "@liftedinit/many-js"
 import { useAccountsStore } from "../stores"
 
 export function useGetAccountInfo(accountAddress?: string) {

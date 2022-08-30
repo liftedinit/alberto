@@ -11,7 +11,7 @@ import {
   AddressText,
 } from "components"
 import { useAccountsStore, AccountId, Account } from "../../index"
-import { AnonymousIdentity } from "many-js"
+import { AnonymousIdentity } from "@liftedinit/many-js"
 
 export function EditAccountModal({
   isOpen,

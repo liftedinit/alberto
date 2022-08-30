@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from "react"
 import { Button, Layout } from "components"
-import { WebAuthnIdentity } from "many-js"
+import { WebAuthnIdentity } from "@liftedinit/many-js"
 
 // http://localhost:3000
 // const base64CredId =

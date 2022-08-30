@@ -1,6 +1,6 @@
 import React from "react"
 import { useQuery } from "react-query"
-import { LedgerInfo, NetworkAttributes } from "many-js"
+import { LedgerInfo, NetworkAttributes } from "@liftedinit/many-js"
 import { useNetworkContext } from "./network-provider"
 
 export function useLedgerInfo({ address }: { address: string }) {

@@ -1,4 +1,4 @@
-import { AddRolesEvent, EventType, RemoveRolesEvent } from "many-js"
+import { AddRolesEvent, EventType, RemoveRolesEvent } from "@liftedinit/many-js"
 import {
   Box,
   EditIcon,

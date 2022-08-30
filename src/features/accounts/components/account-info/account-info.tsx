@@ -1,4 +1,4 @@
-import { AccountInfoData } from "many-js"
+import { AccountInfoData } from "@liftedinit/many-js"
 import {
   AddressText,
   Box,
