@@ -2,7 +2,7 @@ import {
   AccountInfoData,
   CreateAccountEvent,
   GetAccountInfoResponse,
-} from "many-js"
+} from "@liftedinit/many-js"
 import { Modal, PlusCircleIcon, HStack, Text } from "components"
 import { BaseTxnListItem } from "./base-txn-list-item"
 import { BaseTxnDetails } from "./base-txn-details"

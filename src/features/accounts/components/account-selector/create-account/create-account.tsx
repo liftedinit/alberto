@@ -32,7 +32,7 @@ import {
   TxnExpireText,
   useToast,
 } from "components"
-import { AccountFeatureTypes, NetworkAttributes } from "many-js"
+import { AccountFeatureTypes, NetworkAttributes } from "@liftedinit/many-js"
 import { MultisigSettingsFields } from "../../multisig-settings-fields"
 import { AccountInfo } from "../../account-info"
 import {

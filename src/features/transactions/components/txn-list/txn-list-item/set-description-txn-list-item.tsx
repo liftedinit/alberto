@@ -1,4 +1,4 @@
-import { SetDescriptionEvent } from "many-js"
+import { SetDescriptionEvent } from "@liftedinit/many-js"
 import { EditIcon, Text } from "components"
 import { TxnFirstCol, TxnItemRow } from "./base-txn-list-item"
 

@@ -1,6 +1,6 @@
 import React from "react"
 import { useForm, FormProvider } from "react-hook-form"
-import { ANON_IDENTITY } from "many-js"
+import { ANON_IDENTITY } from "@liftedinit/many-js"
 import {
   AddressText,
   Alert,

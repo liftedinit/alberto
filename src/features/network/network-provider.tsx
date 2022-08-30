@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 import {
   Network,
   Ledger,
@@ -7,7 +7,7 @@ import {
   Account,
   Base,
   Events,
-} from "many-js"
+} from "@liftedinit/many-js"
 import { useNetworkStore } from "./store"
 import { useAccountsStore } from "features/accounts"
 

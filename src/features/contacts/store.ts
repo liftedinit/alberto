@@ -5,7 +5,7 @@ import localforage from "localforage"
 import { replacer, reviver } from "helper/json"
 import { Contact } from "./types"
 import { useAccountsStore } from "features/accounts"
-import { AnonymousIdentity } from "many-js"
+import { AnonymousIdentity } from "@liftedinit/many-js"
 
 interface Actions {
   deleteContact: (id: string) => void

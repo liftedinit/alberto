@@ -1,5 +1,5 @@
 import React from "react"
-import { WebAuthnIdentity } from "many-js"
+import { WebAuthnIdentity } from "@liftedinit/many-js"
 import {
   Alert,
   Button,

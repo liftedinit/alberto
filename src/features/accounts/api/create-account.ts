@@ -4,7 +4,7 @@ import {
   AccountFeatureTypes,
   AccountMultisigArgument,
   CreateAccountResponse,
-} from "many-js"
+} from "@liftedinit/many-js"
 import { accountLedgerFeature, accountMultisigFeature } from "../types"
 
 export type CreateAccountFormData = {

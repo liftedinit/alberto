@@ -6,7 +6,10 @@ import {
   useAddFeatures,
   useGetAccountInfo,
 } from "features/accounts"
-import { AccountFeatureTypes, AccountMultisigArgument } from "many-js"
+import {
+  AccountFeatureTypes,
+  AccountMultisigArgument,
+} from "@liftedinit/many-js"
 
 export function MultisigSettings({
   accountAddress,

@@ -12,7 +12,7 @@ import { Assets } from "views/home/assets"
 import { TxnList } from "features/transactions"
 import { MultisigSettings } from "../multisig-settings/multisig-settings"
 import { useNetworkStatus } from "features/network"
-import { AccountFeatureTypes, NetworkAttributes } from "many-js"
+import { AccountFeatureTypes, NetworkAttributes } from "@liftedinit/many-js"
 import { AccountSettings } from "../account-settings"
 
 enum TabNames {

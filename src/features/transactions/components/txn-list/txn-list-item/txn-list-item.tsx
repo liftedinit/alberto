@@ -8,7 +8,7 @@ import {
   SetDescriptionEvent,
   AddRolesEvent,
   RemoveRolesEvent,
-} from "many-js"
+} from "@liftedinit/many-js"
 import { multisigTxnTypes } from "features/accounts"
 import { MultisigTxnListItem } from "./multisig-txn-list-item"
 import { CreateAccountTxnListItem } from "./create-account-txn-list-item"

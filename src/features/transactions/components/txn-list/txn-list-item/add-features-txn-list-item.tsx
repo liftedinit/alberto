@@ -2,7 +2,7 @@ import {
   AccountFeatureTypes,
   AccountMultisigArgument,
   AddFeaturesEvent,
-} from "many-js"
+} from "@liftedinit/many-js"
 import {
   Box,
   DataField,

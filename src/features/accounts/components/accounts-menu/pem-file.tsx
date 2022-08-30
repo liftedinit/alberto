@@ -10,7 +10,7 @@ import {
   useToast,
 } from "components"
 import { useAccountsStore } from "features/accounts"
-import { Ed25519KeyPairIdentity } from "many-js"
+import { Ed25519KeyPairIdentity } from "@liftedinit/many-js"
 import { doesAccountExist } from "../../utils"
 import { AddAccountMethodProps } from "./add-account-modal"
 

@@ -1,7 +1,7 @@
 import React from "react"
 import { useQuery } from "react-query"
 import { BoxProps, CopyToClipboard, HStack, Text } from "components"
-import { Identity } from "many-js"
+import { Identity } from "@liftedinit/many-js"
 import { makeShortId } from "helper/common"
 
 export function AddressText({

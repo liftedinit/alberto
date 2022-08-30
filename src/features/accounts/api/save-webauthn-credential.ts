@@ -1,6 +1,6 @@
 import { useMutation } from "react-query"
 import { useNetworkContext } from "features/network"
-import { IdStore, Network, WebAuthnIdentity } from "many-js"
+import { IdStore, Network, WebAuthnIdentity } from "@liftedinit/many-js"
 
 export function useSaveWebauthnCredential() {
   const [network] = useNetworkContext()
