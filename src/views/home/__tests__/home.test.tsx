@@ -10,7 +10,11 @@ import * as useIsBaseBreakpoint from "hooks/useIsBaseBreakpoint"
 import { useNetworkContext } from "features/network/network-provider"
 import { useAccountsStore } from "features/accounts"
 import { Home } from "views/home"
-import { AnonymousIdentity, Ed25519KeyPairIdentity, Event } from "many-js"
+import {
+  AnonymousIdentity,
+  Ed25519KeyPairIdentity,
+  Event,
+} from "@liftedinit/many-js"
 import { base64ToArrayBuffer } from "helper/convert"
 
 jest.mock("features/network/network-provider", () => {

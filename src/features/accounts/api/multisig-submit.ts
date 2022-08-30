@@ -1,6 +1,6 @@
 import { useMutation } from "react-query"
 import { useNetworkContext } from "features/network"
-import { EventType } from "many-js"
+import { EventType } from "@liftedinit/many-js"
 
 type SubmitData = {
   from: string

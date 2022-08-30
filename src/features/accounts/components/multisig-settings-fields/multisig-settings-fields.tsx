@@ -1,6 +1,9 @@
 import React from "react"
 import { useFormContext, useController, get } from "react-hook-form"
-import { AccountFeatureTypes, AccountMultisigArgument } from "many-js"
+import {
+  AccountFeatureTypes,
+  AccountMultisigArgument,
+} from "@liftedinit/many-js"
 import {
   Box,
   Flex,

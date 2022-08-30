@@ -16,7 +16,7 @@ import {
   MinusIcon,
   AddressBookIcon,
 } from "components"
-import { AccountRole } from "many-js"
+import { AccountRole } from "@liftedinit/many-js"
 import { ContactSelector, useGetContactName } from "features/contacts"
 import { Role, RolesSelector } from "features/accounts"
 

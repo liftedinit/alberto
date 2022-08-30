@@ -1,4 +1,4 @@
-import { AnonymousIdentity, WebAuthnIdentity } from "many-js"
+import { AnonymousIdentity, WebAuthnIdentity } from "@liftedinit/many-js"
 import { base64ToArrayBuffer } from "./convert"
 
 export function replacer(key: string, value: any) {

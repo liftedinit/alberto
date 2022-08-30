@@ -10,7 +10,7 @@ import {
   MultisigExecuteEvent,
   MultisigWithdrawEvent,
   MultisigSetDefaultsEvent,
-} from "many-js"
+} from "@liftedinit/many-js"
 import {
   CheckCircleIcon,
   MinusCircleIcon,

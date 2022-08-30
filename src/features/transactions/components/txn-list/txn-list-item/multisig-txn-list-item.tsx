@@ -6,7 +6,7 @@ import {
   MultisigSetDefaultsEvent,
   MultisigTransactionInfo,
   MultisigTransactionState,
-} from "many-js"
+} from "@liftedinit/many-js"
 import {
   Alert,
   AlertIcon,

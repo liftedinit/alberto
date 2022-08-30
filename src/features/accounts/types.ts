@@ -5,7 +5,7 @@ import {
   AccountRole,
   EventType,
   AccountFeatureTypes,
-} from "many-js"
+} from "@liftedinit/many-js"
 
 export type AccountId = number
 export interface Account {

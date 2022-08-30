@@ -140,6 +140,3 @@ commands:
           command: node -v && npm -v
       - node/install-packages:
           pkg-manager: npm
-      - run:
-          name: Update many-js
-          command: npm update many-js

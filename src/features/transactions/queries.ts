@@ -1,7 +1,7 @@
 import React from "react"
 import { useNetworkContext } from "features/network"
-import { BoundType, EventsListResponse, OrderType } from "many-js"
-import { ListFilterArgs, Event } from "many-js"
+import { BoundType, EventsListResponse, OrderType } from "@liftedinit/many-js"
+import { ListFilterArgs, Event } from "@liftedinit/many-js"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { arrayBufferToBase64 } from "helper/convert"
 

@@ -9,11 +9,15 @@ import {
   waitForElementToBeRemoved,
 } from "test/test-utils"
 import { toast } from "components"
-import { AnonymousIdentity, Ed25519KeyPairIdentity, Address } from "many-js"
+import {
+  AnonymousIdentity,
+  Ed25519KeyPairIdentity,
+  Address,
+} from "@liftedinit/many-js"
 import { AccountsMenu } from "../accounts-menu"
 import { useAccountsStore } from "features/accounts"
 
-jest.mock("many-js")
+jest.mock("@liftedinit/many-js")
 
 describe("AccountsMenu", () => {
   beforeEach(async function () {

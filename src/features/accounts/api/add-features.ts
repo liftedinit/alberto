@@ -1,6 +1,6 @@
 import { useMutation } from "react-query"
 import { useNetworkContext } from "features/network"
-import { AccountFeature } from "many-js"
+import { AccountFeature } from "@liftedinit/many-js"
 
 export function useAddFeatures(address?: string) {
   const [, n] = useNetworkContext()

@@ -1,6 +1,6 @@
 import { useQuery } from "react-query"
 import { useNetworkContext } from "features/network"
-import { MultisigInfoResponse } from "many-js"
+import { MultisigInfoResponse } from "@liftedinit/many-js"
 
 export function useGetMultisigTxnInfo(token?: ArrayBuffer) {
   const [n] = useNetworkContext()

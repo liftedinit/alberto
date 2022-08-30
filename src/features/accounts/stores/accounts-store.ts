@@ -5,7 +5,7 @@ import {
   AnonymousIdentity,
   ANON_IDENTITY,
   Ed25519KeyPairIdentity,
-} from "many-js"
+} from "@liftedinit/many-js"
 import { replacer, reviver } from "helper/json"
 import { Account, AccountId, AccountsState } from "../types"
 
