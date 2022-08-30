@@ -62,7 +62,7 @@ describe("<SendAsset />", () => {
     const assets = screen.getAllByLabelText(/select asset/i)
     const firstAsset = assets[0]
     const { symbol: selectedAssetSymbol } = ownedAssetsWithBalance[0]
-    const form = screen.getByRole("form")
+    const form = screen.getByLabelText("send form")
     userEvent.click(firstAsset)
     expect(
       within(form).getByText(new RegExp(selectedAssetSymbol, "i")),
