@@ -13,7 +13,7 @@ jobs:
     executor:
       name: node/default
       tag: << parameters.node_version >>
-    resource_class: small
+    resource_class: medium
     steps:
       - install-packages
       - run:
@@ -21,7 +21,7 @@ jobs:
           command: npm run test
       - when:
           condition:
-            equal: [ 'current', << parameters.node_version >> ]
+            equal: ["current", << parameters.node_version >>]
           steps:
             # node 17+ workaround https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported
             - run: echo 'export NODE_OPTIONS=--openssl-legacy-provider' >> $BASH_ENV
@@ -31,7 +31,7 @@ jobs:
 
   create:
     executor: node/default
-    resource_class: small
+    resource_class: medium
     steps:
       - install-packages
       - run: mkdir -p artifacts
@@ -82,14 +82,14 @@ workflows:
           matrix:
             parameters:
               node_version:
-                - 'lts'
-                - 'current'
-                - '16.16.0'
+                - "lts"
+                - "current"
+                - "16.16.0"
 
   release:
     when:
       not:
-        equal: [ scheduled_pipeline, << pipeline.trigger_source >> ]
+        equal: [scheduled_pipeline, << pipeline.trigger_source >>]
     jobs:
       - create:
           filters:
@@ -97,10 +97,10 @@ workflows:
               ignore: /.*/
             tags:
               only:
-                - /^\d+\.\d+\.\d+$/              # e.g., 0.1.1, 1.0.0
+                - /^\d+\.\d+\.\d+$/ # e.g., 0.1.1, 1.0.0
                 - /^\d+\.\d+\.\d+-(alpha|beta)$/ # e.g., 0.1.1-alpha, 2.3.1-beta
-                - /^\d+\.\d+\.\d+-.*-rc.*$/      # e.g., 0.1.1-alpha-rc1, 1.3.4-beta-rc4
-                - /^\d+\.\d+\.\d+-pre.*$/        # e.g., 0.1.1-prealpha-3, 1.5.6-prealpha-8
+                - /^\d+\.\d+\.\d+-.*-rc.*$/ # e.g., 0.1.1-alpha-rc1, 1.3.4-beta-rc4
+                - /^\d+\.\d+\.\d+-pre.*$/ # e.g., 0.1.1-prealpha-3, 1.5.6-prealpha-8
       - publish:
           name: publish
           pre-release: false
@@ -113,7 +113,7 @@ workflows:
               ignore: /.*/
             tags:
               only:
-                - /^\d+\.\d+\.\d+$/              # e.g., 0.1.1, 1.0.0
+                - /^\d+\.\d+\.\d+$/ # e.g., 0.1.1, 1.0.0
                 - /^\d+\.\d+\.\d+-(alpha|beta)$/ # e.g., 0.1.1-alpha, 2.3.1-beta
       - publish:
           name: publish-pre-release
@@ -128,7 +128,7 @@ workflows:
             tags:
               only:
                 - /^\d+\.\d+\.\d+-.*-rc.*$/ # e.g., 0.1.1-alpha-rc1, 1.3.4-beta-rc4
-                - /^\d+\.\d+\.\d+-pre.*$/   # e.g., 0.1.1-prealpha-3, 1.5.6-prealpha-8
+                - /^\d+\.\d+\.\d+-pre.*$/ # e.g., 0.1.1-prealpha-3, 1.5.6-prealpha-8
 
 commands:
   install-packages:
