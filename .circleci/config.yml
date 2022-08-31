@@ -13,7 +13,7 @@ jobs:
     executor:
       name: node/default
       tag: << parameters.node_version >>
-    resource_class: small
+    resource_class: medium
     steps:
       - install-packages
       - run:
@@ -31,7 +31,7 @@ jobs:
 
   create:
     executor: node/default
-    resource_class: small
+    resource_class: medium
     steps:
       - install-packages
       - run: mkdir -p artifacts
@@ -57,7 +57,7 @@ jobs:
         default: false
     docker:
       - image: cibuilds/github:0.10
-    resource_class: small
+    resource_class: medium
     steps:
       - attach_workspace:
           at: ~/project/artifacts
