@@ -4,9 +4,11 @@ import {
   Button,
   Center,
   HStack,
+  IconButton,
   Input,
   InputGroup,
   InputLeftElement,
+  PlusIcon,
   SearchIcon,
   Text,
   VStack,
@@ -59,7 +61,15 @@ export function ContactsManagement({
             </InputGroup>
             <UpdateContact header="Create Contact">
               {onOpen => {
-                return <Button onClick={onOpen}>Add</Button>
+                return (
+                  <IconButton
+                    rounded="full"
+                    size="sm"
+                    aria-label="import account"
+                    icon={<PlusIcon boxSize={6} />}
+                    onClick={onOpen}
+                  />
+                )
               }}
             </UpdateContact>
           </HStack>
