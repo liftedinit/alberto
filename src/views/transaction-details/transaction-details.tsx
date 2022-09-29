@@ -19,20 +19,22 @@ import { BoundType, MultisigSubmitEvent } from "@liftedinit/many-js"
 
 export function TransactionDetails() {
   return (
-    <Container mt={4} maxW="md">
-      <Box mb={4}>
-        <Breadcrumb>
-          <Breadcrumb.BreadcrumbItem>
-            <Breadcrumb.BreadcrumbLink to="">
-              Transaction Details
-            </Breadcrumb.BreadcrumbLink>
-          </Breadcrumb.BreadcrumbItem>
-        </Breadcrumb>
-      </Box>
-      <Box bgColor="white" rounded="md" shadow="md" position="relative" p={4}>
-        <TxnDetails />
-      </Box>
-    </Container>
+    <Box overflow="auto" pb={4}>
+      <Container mt={4} maxW="md">
+        <Box mb={4}>
+          <Breadcrumb>
+            <Breadcrumb.BreadcrumbItem>
+              <Breadcrumb.BreadcrumbLink to="">
+                Transaction Details
+              </Breadcrumb.BreadcrumbLink>
+            </Breadcrumb.BreadcrumbItem>
+          </Breadcrumb>
+        </Box>
+        <Box bgColor="white" rounded="md" shadow="md" position="relative" p={4}>
+          <TxnDetails />
+        </Box>
+      </Container>
+    </Box>
   )
 }
 
@@ -102,11 +104,13 @@ function TxnDetails() {
       {txn ? (
         <>
           <SubmittedMultisigTxnDetails multisigTxn={txn} />
-          <MultisigActions
-            accountAddress={txn?.account}
-            onActionDone={undefined}
-            txnToken={txn?.token}
-          />
+          <Box mt={4}>
+            <MultisigActions
+              accountAddress={txn?.account}
+              onActionDone={undefined}
+              txnToken={txn?.token}
+            />
+          </Box>
         </>
       ) : null}
     </>
