@@ -1,5 +1,5 @@
-import cube from "../assets/cube.png"
-import "./Splash.css"
+import cube from "../assets/cube.png";
+import "./Splash.css";
 
 function SplashView() {
   return (
@@ -8,6 +8,6 @@ function SplashView() {
       <h1>Alberto</h1>
       <h2>Lifted Initiative</h2>
     </div>
-  )
+  );
 }
-export default SplashView
+export default SplashView;
