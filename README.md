@@ -1,12 +1,12 @@
-# Albert
+# Alberto
 
-Albert by L1 Labs is a cryptocurrency wallet that can hold identities and manage
-communications with a ledger running as a module on a network that supports the
-Many Protocol.
+Alberto by Lifted Labs is a cryptocurrency wallet that can hold identities and
+manage communications with a ledger running as a module on a network that
+supports the Many Protocol.
 
 ## Getting Started
 
-To start Albert, install dependencies and then run locally.
+To start Alberto, install dependencies and then run locally.
 
 ```sh
 npm install
@@ -33,6 +33,6 @@ npm start
     different ones.
 - Run `npm run test:e2e` to run playwright tests locally
 
-Albert will also be available on mobile devices as an "installable" progressive
+Alberto will also be available on mobile devices as an "installable" progressive
 web application via GitHub Pages once this repository has been made publicly
 available.
