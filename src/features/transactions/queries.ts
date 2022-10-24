@@ -1,6 +1,10 @@
 import React from "react"
 import { useNetworkContext } from "features/network"
-import { BoundType, EventsListResponse, OrderType } from "@liftedinit/many-js"
+import {
+  BoundType,
+  EventsListResponse,
+  ListOrderType,
+} from "@liftedinit/many-js"
 import { ListFilterArgs, Event } from "@liftedinit/many-js"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { arrayBufferToBase64 } from "helper/convert"
@@ -64,7 +68,7 @@ export function useTransactionsList({
       await network?.events?.list({
         filters,
         count: reqCount,
-        order: OrderType.descending,
+        order: ListOrderType.descending,
       }),
     enabled: !!network?.url,
     keepPreviousData: true,
@@ -72,6 +76,7 @@ export function useTransactionsList({
 
   const txnsWithId = (q?.data?.events ?? []).map((t: Event) => ({
     ...t,
+    time: t.time * 1000,
     _id: arrayBufferToBase64(t.id),
   }))
   const respCount = txnsWithId.length

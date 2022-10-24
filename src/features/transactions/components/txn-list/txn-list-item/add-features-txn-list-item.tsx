@@ -23,7 +23,7 @@ export function AddFeaturesTxnListItem({ txn }: { txn: AddFeaturesEvent }) {
     <BaseTxnListItem
       icon={<EditIcon boxSize={5} />}
       txnTypeName="Add Features"
-      txnTime={txn?.time?.toLocaleString()}
+      txnTime={txn?.time}
       txnDetails={
         <BaseTxnDetails>
           {({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => (

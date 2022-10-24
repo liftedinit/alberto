@@ -20,7 +20,7 @@ export function CreateAccountTxnListItem({ txn }: { txn: CreateAccountEvent }) {
     <BaseTxnListItem
       icon={<PlusCircleIcon />}
       txnTypeName="Create Account"
-      txnTime={time?.toLocaleString()}
+      txnTime={time}
       txnDetails={
         <BaseTxnDetails>
           {({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => (
