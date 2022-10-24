@@ -29,7 +29,7 @@ export function SendTxnListItem({
     <BaseTxnListItem
       icon={<TxnIcon />}
       txnTypeName={title}
-      txnTime={time?.toLocaleString()}
+      txnTime={time}
       actionLabel={toOrFromLabel}
       actorName={contactName}
       actorAddress={toOrFromAddress}

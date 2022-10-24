@@ -13,7 +13,7 @@ export function SetDescriptionTxnListItem({
         <TxnFirstCol
           icon={<EditIcon boxSize={5} />}
           txnTypeName="Set Description"
-          txnTime={txn?.time?.toLocaleString()}
+          txnTime={txn?.time}
         />
       }
       secondProps={{ colSpan: 2 }}

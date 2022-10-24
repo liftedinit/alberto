@@ -68,7 +68,7 @@ export function TxnList({
               return (
                 <TxnListItem
                   transaction={t}
-                  key={t._id + t.time.getTime()}
+                  key={t._id + t.time}
                   address={address}
                 />
               )

@@ -26,7 +26,7 @@ export function EditRolesTxnListItem({
     <BaseTxnListItem
       icon={<Icon boxSize={5} />}
       txnTypeName={txnTypeName}
-      txnTime={txn?.time?.toLocaleString()}
+      txnTime={txn?.time}
       txnDetails={
         <BaseTxnDetails>
           {({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => (

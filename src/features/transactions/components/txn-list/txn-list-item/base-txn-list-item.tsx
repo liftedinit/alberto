@@ -12,7 +12,7 @@ export function BaseTxnListItem({
 }: {
   icon: React.ReactNode
   txnTypeName: string
-  txnTime: string
+  txnTime: number
   actionLabel?: string
   actorName?: string
   actorAddress?: string
@@ -53,7 +53,7 @@ export function TxnFirstCol({
 }: {
   icon: React.ReactNode
   txnTypeName: string
-  txnTime: string
+  txnTime: number
 }) {
   return (
     <HStack>
@@ -65,8 +65,8 @@ export function TxnFirstCol({
     </HStack>
   )
 }
-function TxnTime({ txnTime }: { txnTime: string }) {
-  return <Text fontSize="xs">{txnTime}</Text>
+function TxnTime({ txnTime }: { txnTime: number }) {
+  return <Text fontSize="xs">{new Date(txnTime)?.toLocaleString()}</Text>
 }
 
 function TxnTypeName({ name }: { name: string }) {

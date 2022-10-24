@@ -62,7 +62,7 @@ export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
     <BaseTxnListItem
       icon={<TxnIcon {...iconProps} />}
       txnTypeName={txnLabel}
-      txnTime={time?.toLocaleString()}
+      txnTime={time}
       actionLabel={actionLabel}
       actorName={contactName}
       actorAddress={actorAddress}
