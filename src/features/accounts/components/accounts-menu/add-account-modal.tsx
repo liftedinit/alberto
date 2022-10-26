@@ -1,4 +1,3 @@
-import React from "react"
 import {
   Box,
   Button,
@@ -7,14 +6,17 @@ import {
   Modal,
   ScaleFade,
   Tab,
-  Tabs,
   TabList,
+  Tabs,
   VStack,
 } from "components"
-import { SeedWords } from "./seed-words"
+import React from "react"
+
+import { SocialLogin } from "../social-login"
 import { CreateAccount } from "./create-account"
-import { PemFile } from "./pem-file"
 import { HardwareAuthenticator } from "./hardware-authenticator"
+import { PemFile } from "./pem-file"
+import { SeedWords } from "./seed-words"
 
 export enum AddAccountMethodTypes {
   createSeed,
@@ -68,6 +70,7 @@ export function AddAccountModal({
             onAddMethodClick={methodType => {
               setAddMethod(methodType)
             }}
+            onSuccess={onSuccess}
           />
         </ScaleFade>
       )}
@@ -113,8 +116,10 @@ enum TabNames {
 
 function AddAccountMethods({
   onAddMethodClick,
+  onSuccess,
 }: {
   onAddMethodClick: (method: AddAccountMethodTypes) => void
+  onSuccess: () => void
 }) {
   const [activeTab, setActiveTab] = React.useState(TabNames.create)
   const tabs = ["Create New", "Import"]
@@ -136,7 +141,7 @@ function AddAccountMethods({
             ))}
           </TabList>
         </Tabs>
-
+        <SocialLogin onSuccess={onSuccess} />
         {activeTab === TabNames.create && (
           <CreateAccountOptions onAddMethodClick={onAddMethodClick} />
         )}

@@ -13,7 +13,7 @@ jobs:
     executor:
       name: node/default
       tag: << parameters.node_version >>
-    resource_class: medium
+    resource_class: medium+
     steps:
       - install-packages
       - run:

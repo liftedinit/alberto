@@ -1,40 +1,45 @@
 import { Icon as BaseIcon, IconProps } from "components"
-import { MdContentCopy } from "react-icons/md"
-import { HiOutlineRefresh } from "react-icons/hi"
-import { BiDownload, BiPlusCircle, BiMinusCircle } from "react-icons/bi"
+import { BiDownload, BiMinusCircle, BiPlusCircle } from "react-icons/bi"
 import { BsLightningFill, BsPersonDash, BsPersonPlus } from "react-icons/bs"
-import { IoIosPaperPlane, IoMdPaperPlane, IoMdUndo } from "react-icons/io"
-import {
-  IoWallet,
-  IoWalletOutline,
-  IoSettingsSharp,
-  IoSearch,
-  IoSettingsOutline,
-  IoTimeOutline,
-} from "react-icons/io5"
-import {
-  FaAddressBook,
-  FaRegAddressBook,
-  FaCheck,
-  FaCheckCircle,
-  FaLink,
-  FaUserCircle,
-  FaTimes,
-  FaTimesCircle,
-  FaMinus,
-  FaRegPlayCircle,
-  FaAddressCard,
-  FaRegAddressCard,
-} from "react-icons/fa"
 import { CgUsb } from "react-icons/cg"
 import {
+  FaAddressBook,
+  FaAddressCard,
+  FaCheck,
+  FaCheckCircle,
+  FaGithub,
+  FaLink,
+  FaMinus,
+  FaRegAddressBook,
+  FaRegAddressCard,
+  FaRegPlayCircle,
+  FaTimes,
+  FaTimesCircle,
+  FaTwitter,
+  FaUserCircle,
+} from "react-icons/fa"
+import {
   FiChevronDown,
-  FiEdit,
-  FiChevronRight,
   FiChevronLeft,
+  FiChevronRight,
   FiChevronUp,
+  FiEdit,
   FiPlus,
 } from "react-icons/fi"
+import { FcGoogle } from "react-icons/fc"
+import { HiOutlineRefresh } from "react-icons/hi"
+import { IoMdUndo } from "react-icons/io"
+import {
+  IoPaperPlane,
+  IoPaperPlaneOutline,
+  IoSearch,
+  IoSettingsOutline,
+  IoSettingsSharp,
+  IoTimeOutline,
+  IoWallet,
+  IoWalletOutline,
+} from "react-icons/io5"
+import { MdContentCopy } from "react-icons/md"
 
 const Icon: typeof BaseIcon = (props: IconProps) => {
   return <BaseIcon boxSize={6} {...props} />
@@ -45,11 +50,11 @@ export function ReceiveIcon(props: IconProps) {
 }
 
 export function SendIcon(props: IconProps) {
-  return <Icon as={IoIosPaperPlane} {...props} />
+  return <Icon as={IoPaperPlane} {...props} />
 }
 
 export function SendOutlineIcon(props: IconProps) {
-  return <Icon as={IoMdPaperPlane} {...props} />
+  return <Icon as={IoPaperPlaneOutline} {...props} />
 }
 
 export function SettingsIcon(props: IconProps) {
@@ -181,4 +186,16 @@ export function LinkIcon(props: IconProps) {
 
 export function LightningIcon(props: IconProps) {
   return <Icon as={BsLightningFill} {...props} />
+}
+
+export function GoogleIcon(props: IconProps) {
+  return <Icon as={FcGoogle} {...props} />
+}
+
+export function GithubIcon(props: IconProps) {
+  return <Icon as={FaGithub} {...props} />
+}
+
+export function TwitterIcon(props: IconProps) {
+  return <Icon as={FaTwitter} color="#1d9bf0" {...props} />
 }

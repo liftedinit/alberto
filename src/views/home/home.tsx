@@ -1,19 +1,27 @@
-import React from "react"
 import {
   Box,
   Breadcrumb,
+  Button,
   Container,
   Layout,
+  PlusIcon,
   SlideFade,
   Tab,
-  Tabs,
   TabList,
+  Tabs,
+  Text,
+  useDisclosure,
+  VStack,
 } from "components"
-import { useIsBaseBreakpoint } from "hooks"
+import { AddAccountModal, useAccountsStore } from "features/accounts"
 import { useNetworkContext } from "features/network"
-import { useAccountsStore } from "features/accounts"
-import { Assets } from "./assets"
 import { TxnList } from "features/transactions"
+import { useIsBaseBreakpoint } from "hooks"
+import React from "react"
+
+import { AnonymousIdentity } from "@liftedinit/many-js"
+
+import { Assets } from "./assets"
 
 enum TabNames {
   assets = "assets",
@@ -21,11 +29,17 @@ enum TabNames {
 }
 
 export function Home() {
+  const {
+    isOpen: isAddAccountOpen,
+    onClose: onCloseAddAccount,
+    onOpen: onOpenAddAccount,
+  } = useDisclosure()
   const isBase = useIsBaseBreakpoint()
   const [network] = useNetworkContext()
   const account = useAccountsStore(s => s.byId.get(s.activeId))
   const address = account?.address ?? ""
   const [activeTab, setActiveTab] = React.useState<TabNames>(TabNames.assets)
+  const isAnonymous = account?.identity instanceof AnonymousIdentity
 
   function isTabActive(tab: TabNames) {
     return tab === activeTab
@@ -64,15 +78,39 @@ export function Home() {
               }
             >
               <TabList>
-                <Tab>{TabNames.assets}</Tab>
-                <Tab>{TabNames.activity}</Tab>
+                <Tab isDisabled={isAnonymous}>{TabNames.assets}</Tab>
+                <Tab isDisabled={isAnonymous}>{TabNames.activity}</Tab>
               </TabList>
             </Tabs>
 
-            <SlideFade in key={activeTab}>
-              {isTabActive(TabNames.assets) && <Assets address={address} />}
-              {isTabActive(TabNames.activity) && <TxnList address={address} />}
-            </SlideFade>
+            {isAnonymous ? (
+              <>
+                <VStack flexDir="column" my={10} spacing={4}>
+                  <Text fontWeight="medium">
+                    Create or add your account to begin.
+                  </Text>
+
+                  <Button
+                    onClick={onOpenAddAccount}
+                    leftIcon={<PlusIcon />}
+                    colorScheme="brand.teal"
+                  >
+                    Add Account
+                  </Button>
+                </VStack>
+                <AddAccountModal
+                  isOpen={isAddAccountOpen}
+                  onClose={onCloseAddAccount}
+                />
+              </>
+            ) : (
+              <SlideFade in key={activeTab}>
+                {isTabActive(TabNames.assets) && <Assets address={address} />}
+                {isTabActive(TabNames.activity) && (
+                  <TxnList address={address} />
+                )}
+              </SlideFade>
+            )}
           </Box>
         </Container>
       </SlideFade>

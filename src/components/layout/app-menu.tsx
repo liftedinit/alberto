@@ -5,7 +5,9 @@ import {
   AccountsOutlineIcon,
   AddressBookIcon,
   AddressBookOutlineIcon,
-  Center,
+  Box,
+  Heading,
+  HStack,
   Icon,
   Image,
   Link,
@@ -14,44 +16,43 @@ import {
   Stack,
   Show,
   StackProps,
+  Text,
   WalletIcon,
   WalletOutlineIcon,
 } from "components"
-import cubeImg from "assets/cube.png"
 import { useIsBaseBreakpoint } from "hooks"
+import logoImg from "assets/logo192.png"
 
 export function AppMenu() {
   const location = useLocation()
   const isBase = useIsBaseBreakpoint()
   const iconsRef = React.useRef([
     {
+      name: "Wallet",
       pathname: "/",
       activeIcon: WalletIcon,
       icon: WalletOutlineIcon,
     },
     {
+      name: "Send",
       pathname: "/send",
       activeIcon: SendIcon,
       icon: SendOutlineIcon,
     },
     {
+      name: "Contacts",
       pathname: "/contacts",
       activeIcon: AddressBookIcon,
       icon: AddressBookOutlineIcon,
     },
     {
+      name: "Accounts",
       pathname: "/accounts",
       activeIcon: AccountsIcon,
       icon: AccountsOutlineIcon,
       matcher: (pathname: string, currentPathname: string) =>
         pathname.startsWith(currentPathname),
     },
-
-    // {
-    //   pathname: "/settings",
-    //   activeIcon: SettingsIcon,
-    //   icon: SettingsOutlineIcon,
-    // },
   ])
   const stackProps: StackProps = isBase
     ? {
@@ -64,43 +65,75 @@ export function AppMenu() {
         direction: "column",
         justifyContent: "flex-start",
         shadow: "lg",
-        borderInlineEndRadius: "lg",
         h: "100%",
       }
-  const centerProps = isBase
-    ? {
-        flexGrow: 1,
-      }
-    : { borderWidth: "0" }
 
   return (
-    <Stack alignItems="stretch" {...stackProps}>
+    <Stack alignItems="stretch" {...stackProps} bgColor="white">
       <Show above="md">
-        <Image src={cubeImg} />
+        <HStack mt="46px" spacing="4" ml="8" mb="4">
+          <Image h="67px" src={logoImg} />
+          <Heading size="md" fontWeight="normal">
+            Alberto
+          </Heading>
+        </HStack>
       </Show>
-      {iconsRef.current.map(({ icon, activeIcon, pathname, matcher }, idx) => {
-        const isActive = matcher
-          ? matcher(location.pathname, pathname)
-          : pathname === location.pathname
-        return (
-          <Center {...centerProps} key={idx} p={2} rounded="full">
-            <Link
-              as={RouterLink}
-              to={pathname}
+      {iconsRef.current.map(
+        ({ name, icon, activeIcon, pathname, matcher }, idx) => {
+          const isActive = matcher
+            ? matcher(location.pathname, pathname)
+            : pathname === location.pathname
+          return (
+            <Box
               display="flex"
-              rounded="full"
-              p={2}
-              _focus={{ border: "none" }}
+              justifyContent={isBase ? "center" : undefined}
+              flexGrow={isBase ? 1 : undefined}
+              p={isBase ? 0 : undefined}
+              height={isBase ? "60px" : "auto"}
+              pl={isBase ? "0" : "7"}
+              borderEndWidth={isActive && !isBase ? "4px" : "0px"}
+              borderEndColor={
+                isActive && !isBase ? "brand.teal.500" : undefined
+              }
+              alignItems="center"
             >
-              <Icon
-                color={isActive ? "brand.teal.500" : undefined}
-                boxSize={isBase ? 8 : 9}
-                as={isActive ? activeIcon : icon}
-              />
-            </Link>
-          </Center>
-        )
-      })}
+              <Link
+                key={idx}
+                as={RouterLink}
+                to={pathname}
+                rounded="full"
+                p={isBase ? 2 : 0}
+                _focus={{
+                  boxShadow: "none",
+                }}
+              >
+                <Stack
+                  key={idx}
+                  alignItems="center"
+                  direction={["column", "row"]}
+                  justifyContent="center"
+                  spacing={isBase ? "0" : "5"}
+                >
+                  <Icon
+                    color={isActive ? "brand.teal.500" : "gray.600"}
+                    boxSize={6}
+                    as={isActive ? activeIcon : icon}
+                  />
+                  {isBase ? null : (
+                    <Text
+                      fontSize="lg"
+                      fontWeight={isActive ? "medium" : "normal"}
+                      color={isActive ? "brand.black" : "gray.600"}
+                    >
+                      {name}
+                    </Text>
+                  )}
+                </Stack>
+              </Link>
+            </Box>
+          )
+        },
+      )}
     </Stack>
   )
 }
