@@ -5,6 +5,8 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
+    "build:prod": "APP_ENV=production react-env --env APP_ENV -- npm run build",
+    "build:staging": "APP_ENV=staging react-env --env APP_ENV -- npm run build",
     "eject": "react-scripts eject",
     "test": "react-scripts test",
     "prepare": "husky install",
@@ -12,6 +14,7 @@
     "test:e2e:local": "BROWSERSTACK_LOCAL=true npx playwright test --config=./e2e/playwright-local.config.ts"
   },
   "dependencies": {
+    "@beam-australia/react-env": "^3.1.1",
     "@chakra-ui/react": "^1.8.6",
     "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.8.1",

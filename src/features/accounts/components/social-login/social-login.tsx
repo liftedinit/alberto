@@ -19,19 +19,21 @@ import {
 import { doesAccountExist, useAccountsStore } from "features/accounts"
 import React from "react"
 import { get, useForm } from "react-hook-form"
-import { useQuery, useMutation } from "react-query"
+import { useMutation, useQuery } from "react-query"
 
+import env from "@beam-australia/react-env"
 import { Ed25519KeyPairIdentity } from "@liftedinit/many-js"
-import { CHAIN_NAMESPACES, WALLET_ADAPTERS, UserInfo } from "@web3auth/base"
+import { CHAIN_NAMESPACES, UserInfo, WALLET_ADAPTERS } from "@web3auth/base"
 import { Web3AuthCore } from "@web3auth/core"
 import {
   OpenloginAdapter,
   OpenloginLoginParams,
 } from "@web3auth/openlogin-adapter"
 
-const WEB3AUTH_CLIENT_ID = process.env.REACT_APP_WEB3AUTH_CLIENTID
-const WEB3AUTH_NETWORK = (process.env.REACT_APP_WEB3AUTH_NETWORK ??
-  "testnet") as "testnet" | "cyan"
+const WEB3AUTH_CLIENT_ID = env("WEB3AUTH_CLIENTID")
+const WEB3AUTH_NETWORK = (env("WEB3AUTH_NETWORK") ?? "testnet") as
+  | "testnet"
+  | "cyan"
 
 export const LOGIN_PROVIDER = {
   GOOGLE: "google",

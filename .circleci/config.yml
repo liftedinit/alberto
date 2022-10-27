@@ -21,31 +21,38 @@ jobs:
           command: npm run test
       - when:
           condition:
-            equal: [ 'current', << parameters.node_version >> ]
+            and:
+              - not:
+                  equal: [ '16.16.0', << parameters.node_version >> ]
           steps:
             # node 17+ workaround https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported
             - run: echo 'export NODE_OPTIONS=--openssl-legacy-provider' >> $BASH_ENV
       - run:
-          name: Build app
-          command: npm run build
+          name: Build staging app
+          command: npm run build:staging
 
   create:
-    executor: node/default
-    resource_class: medium
+    parameters:
+      app_env:
+        type: string
+    executor:
+      name: node/default
+      tag: '16.16.0'
+    resource_class: large
     steps:
       - install-packages
-      - run: mkdir -p artifacts
+      - run: mkdir /tmp/artifacts
       - run:
-          name: Build app
-          command: npm run build
+          name: Build << parameters.app_env >> app
+          command: npm run build:<< parameters.app_env >>
       - run:
           name: Compress artifacts
-          command: tar -cvzf artifacts/build.tar.gz ./build
+          command: tar -cvzf /tmp/artifacts/build-<< parameters.app_env >>.tar.gz ./build
       - run:
           name: create release shasum
-          command: shasum artifacts/build.tar.gz > artifacts/shasum_${CIRCLE_TAG}_${CIRCLE_SHA1}_${OSD_ID}_${OSD_VERSION}.txt
+          command: shasum /tmp/artifacts/build-<< parameters.app_env >>.tar.gz > /tmp/artifacts/build-<< parameters.app_env >>_${CIRCLE_TAG}_${CIRCLE_SHA1}_${OSD_ID}_${OSD_VERSION}.txt
       - persist_to_workspace:
-          root: artifacts
+          root: /tmp/artifacts
           paths:
             - "*.tar.gz"
             - "*.txt"
@@ -60,20 +67,20 @@ jobs:
     resource_class: medium
     steps:
       - attach_workspace:
-          at: ~/project/artifacts
+          at: /tmp/artifacts
       - when:
           condition:
             not: << parameters.pre-release >>
           steps:
             - run:
                 name: publish release
-                command: ghr -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} ${CIRCLE_TAG} ~/project/artifacts
+                command: ghr -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} ${CIRCLE_TAG} /tmp/artifacts
       - when:
           condition: << parameters.pre-release >>
           steps:
             - run:
                 name: publish pre-release
-                command: ghr -prerelease -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} ${CIRCLE_TAG} ~/project/artifacts
+                command: ghr -prerelease -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} ${CIRCLE_TAG} /tmp/artifacts
 
 workflows:
   ci:
@@ -92,6 +99,11 @@ workflows:
         equal: [ scheduled_pipeline, << pipeline.trigger_source >> ]
     jobs:
       - create:
+          matrix:
+            parameters:
+              app_env:
+                - 'staging'
+                - 'prod'
           filters:
             branches:
               ignore: /.*/
