@@ -59,17 +59,16 @@ export function NetworkMenu() {
         <MenuButton
           as={Button}
           rightIcon={<ChevronDownIcon />}
-          lineHeight="normal"
-          size="md"
-          minWidth="100px"
-          aria-label="active network menu trigger"
-          colorScheme="brand.black"
-          variant="outline"
           leftIcon={
             activeNetwork ? <Circle bg="green.400" size="10px" /> : null
           }
+          size="md"
+          minWidth="100px"
+          aria-label="active network menu trigger"
+          bgColor="white"
+          shadow="md"
         >
-          <Text casing="uppercase" isTruncated fontWeight="semibold">
+          <Text casing="capitalize" isTruncated>
             {`${activeNetwork?.name ?? "no network selected"}`}
           </Text>
         </MenuButton>

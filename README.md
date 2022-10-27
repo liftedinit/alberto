@@ -36,3 +36,8 @@ npm start
 Alberto will also be available on mobile devices as an "installable" progressive
 web application via GitHub Pages once this repository has been made publicly
 available.
+
+## Web3auth
+
+- Lifted web3auth dashboard: https://dashboard.web3auth.io/
+- Users dashboard: https://app.openlogin.com/

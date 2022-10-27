@@ -49,7 +49,7 @@ export function PemFile({ setAddMethod, onSuccess }: AddAccountMethodProps) {
       })
     }
 
-    createAccount({
+    await createAccount({
       name,
       identity,
     })

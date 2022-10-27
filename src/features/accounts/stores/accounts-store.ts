@@ -10,7 +10,7 @@ import { replacer, reviver } from "helper/json"
 import { Account, AccountId, AccountsState } from "../types"
 
 interface AccountMethods {
-  createAccount: (a: Partial<Account>) => void
+  createAccount: (a: Partial<Account>) => Promise<void>
   deleteAccount: (id: AccountId) => void
   updateAccount: (id: AccountId, a: Partial<Account>) => void
   setActiveId: (id: AccountId) => void

@@ -44,7 +44,7 @@ export function CreateAccount({
       form.reportValidity()
       return
     }
-    createAccount({
+    await createAccount({
       name,
       identity,
     })

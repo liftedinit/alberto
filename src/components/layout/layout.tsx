@@ -32,7 +32,7 @@ export function Layout({ children }: React.PropsWithChildren<{}>) {
           base: `auto 1fr auto`,
           md: `auto 1fr auto`,
         }}
-        templateColumns={{ base: `1fr`, md: `100px 1fr` }}
+        templateColumns={{ base: `1fr`, md: `224px 1fr` }}
         templateAreas={{
           base: `'nav' 'main' 'menu'`,
           md: `'menu nav' 'menu main' 'menu main'`,

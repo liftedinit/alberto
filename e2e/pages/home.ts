@@ -132,7 +132,7 @@ export class HomePage {
   }) {
     await this.page.locator("text=assets").click()
     await this.page.hover(`[aria-label="asset list item ${symbol}"]`)
-    await this.page.locator("text=Send").click()
+    await this.page.locator("button", { hasText: "Send" }).click()
     await this.page.keyboard.type(toAddress)
     await this.page.locator("input[name=amount]").type(amount)
     await this.page.locator("text=Next").click()

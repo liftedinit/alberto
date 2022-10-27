@@ -107,11 +107,9 @@ export function EditAccountModal({
               <FormLabel mt={3}>Address</FormLabel>
               <AddressText
                 addressText={accountData?.address ?? ""}
-                px={4}
                 h="40px"
-              >
-                {addressStr}
-              </AddressText>
+                isFullText
+              />
             </>
           )}
         </form>

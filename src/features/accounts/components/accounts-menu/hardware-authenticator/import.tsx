@@ -23,7 +23,7 @@ import {
   useCredentialsStore,
   useGetWebauthnCredential,
 } from "features/accounts"
-import { doesAccountExist } from "features/accounts/utils"
+import { doesAccountExist } from "features/accounts"
 import { base64ToArrayBuffer } from "helper/convert"
 import { RecoverOptions } from "features/accounts/types"
 import { LedgerSafariWarning } from "./ledger-safari-warning"
@@ -92,7 +92,7 @@ export function ImportFlow({ setAddMethod, onSuccess }: AddAccountMethodProps) {
         })
       }
       await WebAuthnIdentity.getCredential(credentialId)
-      createAccount({
+      await createAccount({
         name,
         identity: webAuthnIdentity,
       })

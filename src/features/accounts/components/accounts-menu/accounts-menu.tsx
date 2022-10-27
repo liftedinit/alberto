@@ -14,7 +14,6 @@ import {
   EditIcon,
   Flex,
   HStack,
-  Icon,
   IconButton,
   Menu,
   MenuButton,
@@ -25,7 +24,6 @@ import {
   SimpleGrid,
   Text,
   useDisclosure,
-  UserIcon,
   VStack,
   UsbIcon,
 } from "components"
@@ -83,19 +81,11 @@ export function AccountsMenu() {
         <MenuButton
           as={Button}
           rightIcon={<ChevronDownIcon />}
-          leftIcon={<Icon as={UserIcon} w={5} h={5} />}
           aria-label="active account menu trigger"
-          variant="outline"
-          colorScheme="brand.black"
+          bgColor="white"
+          shadow="md"
         >
-          <Text
-            casing="uppercase"
-            fontWeight="semibold"
-            isTruncated
-            lineHeight="normal"
-          >
-            {activeAccount?.name}
-          </Text>
+          <Text isTruncated>{activeAccount?.name}</Text>
         </MenuButton>
         <MenuList maxW="100vw" zIndex={2}>
           <MenuOptionGroup title="Accounts" />
@@ -184,7 +174,7 @@ function AccountMenuItem({
         <HStack>
           {isActive ? (
             <HStack>
-              <Text fontSize={{ base: "xl", md: "md" }} casing="uppercase">
+              <Text fontSize={{ base: "xl", md: "md" }}>
                 {accountData.name}
               </Text>
               {isWebAuthnIdentity && <UsbIcon boxSize={5} />}
@@ -202,7 +192,6 @@ function AccountMenuItem({
                 whiteSpace="pre-wrap"
                 fontSize={{ base: "xl", md: "md" }}
                 textAlign="left"
-                casing="uppercase"
               >
                 {accountData.name}
               </Text>

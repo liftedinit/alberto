@@ -57,7 +57,7 @@ test("remove wallet", async ({ page }) => {
   await page.locator('[aria-label="edit account wallet1"]').click()
   const address = (await homePage.updateAccountForm
     .locator("[aria-label='public address']")
-    .textContent()) as string
+    .getAttribute("title")) as string
   const removeBtn = homePage.removeAccountForm.locator("button", {
     hasText: "Remove",
   })
