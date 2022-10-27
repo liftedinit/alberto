@@ -247,6 +247,9 @@ function AddAccountCard({
       as="button"
       title={title}
       fontWeight="medium"
+      _hover={{
+        color: "brand.teal.500",
+      }}
     >
       {label}
       <Box>

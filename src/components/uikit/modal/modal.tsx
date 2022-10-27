@@ -29,7 +29,12 @@ export function Modal({
           : {})}
       >
         {header && <BaseModalHeader>{header}</BaseModalHeader>}
-        <BaseModalCloseButton />
+        <BaseModalCloseButton
+          _hover={{
+            backgroundColor: "brand.merlot.50",
+            color: "brand.teal.500",
+          }}
+        />
         {children}
         {footer && <BaseModalFooter>{footer}</BaseModalFooter>}
       </BaseModalContent>
