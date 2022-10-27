@@ -120,7 +120,7 @@ function CreatePhrase() {
         identity: identity!,
       },
       {
-        onSuccess(data) {
+        async onSuccess(data) {
           if (data?.phrase) {
             updateCredential(
               data.phrase,
@@ -128,7 +128,7 @@ function CreatePhrase() {
               identity!.cosePublicKey,
               address,
             )
-            createAccount({ name, identity: identity! })
+            await createAccount({ name, identity: identity! })
             toast({
               status: "success",
               title: "Add Account",

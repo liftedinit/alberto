@@ -49,7 +49,7 @@ export function SeedWords({ setAddMethod, onSuccess }: AddAccountMethodProps) {
       })
     }
 
-    createAccount({
+    await createAccount({
       name: account.name,
       identity,
     })

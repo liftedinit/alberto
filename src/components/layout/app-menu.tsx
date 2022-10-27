@@ -86,6 +86,7 @@ export function AppMenu() {
           return (
             <Box
               display="flex"
+              key={idx}
               justifyContent={isBase ? "center" : undefined}
               flexGrow={isBase ? 1 : undefined}
               p={isBase ? 0 : undefined}
@@ -98,7 +99,6 @@ export function AppMenu() {
               alignItems="center"
             >
               <Link
-                key={idx}
                 as={RouterLink}
                 to={pathname}
                 rounded="full"
