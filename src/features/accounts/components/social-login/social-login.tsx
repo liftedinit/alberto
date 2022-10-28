@@ -77,7 +77,9 @@ export function SocialLogin({ onSuccess }: { onSuccess: () => void }) {
         isEmailPasswordless,
       })
 
-      const identity = Ed25519KeyPairIdentity.fromHex(privateKey.slice(0, 32))
+      const identity = Ed25519KeyPairIdentity.fromHex(
+        Buffer.from(privateKey, "hex"),
+      )
       const address = (await identity.getAddress()).toString()
 
       const accountExists = await doesAccountExist(address, accounts)
