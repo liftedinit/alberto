@@ -47,10 +47,10 @@ jobs:
           command: npm run build:<< parameters.app_env >>
       - run:
           name: Compress artifacts
-          command: tar -cvzf /tmp/artifacts/build-<< parameters.app_env >>.tar.gz ./build
+          command: tar -cvzf /tmp/artifacts/alberto_<< parameters.app_env >>_${CIRCLE_TAG}_${CIRCLE_SHA1}.tar.gz ./build
       - run:
           name: create release shasum
-          command: shasum /tmp/artifacts/build-<< parameters.app_env >>.tar.gz > /tmp/artifacts/build-<< parameters.app_env >>_${CIRCLE_TAG}_${CIRCLE_SHA1}_${OSD_ID}_${OSD_VERSION}.txt
+          command: shasum /tmp/artifacts/alberto_<< parameters.app_env >>_${CIRCLE_TAG}_${CIRCLE_SHA1}.tar.gz > /tmp/artifacts/shasum_<< parameters.app_env >>_${CIRCLE_TAG}_${CIRCLE_SHA1}.txt
       - persist_to_workspace:
           root: /tmp/artifacts
           paths:
