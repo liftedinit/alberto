@@ -12,6 +12,19 @@ export const base64ToArrayBuffer = (str: string): ArrayBuffer =>
 export const arrayBufferToBase64 = (buffer: ArrayBuffer): string =>
   Buffer.from(buffer).toString("base64")
 
+export const base64UrlToArrayBuffer = (str: string): ArrayBuffer =>
+    // Add back the `===` that were missing. These are between 0 and 3,
+    // depending on if there are any remainder to the base64 string.
+    // Base64 are always multiples of 4.
+    base64ToArrayBuffer(str + "===".slice(0, str.length % 4))
+
+export const arrayBufferToBase64Url = (buffer: ArrayBuffer): string =>
+    // Remove the === at the end to make it base64url.
+    // `base64url` encoding is supported by Node but not the version of `buffer`
+    // we actually install and use.
+    arrayBufferToBase64(buffer).replace(/=+$/, "")
+
+
 export const fromDateTime = (date: Date) => {
   const rft = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" })
 
@@ -22,7 +35,7 @@ export const fromDateTime = (date: Date) => {
   const WEEK = 7 * DAY;
   const MONTH = 30 * DAY;
   const YEAR = 365 * DAY;
-  
+
   const intervals = [
       { ge: YEAR, divisor: YEAR, unit: 'year' },
       { ge: MONTH, divisor: MONTH, unit: 'month' },
@@ -37,7 +50,7 @@ export const fromDateTime = (date: Date) => {
   const now: number = new Date(Date.now()).getTime();
   const diff: number = now - (typeof date === 'object' ? date : new Date(date)).getTime();
   const diffAbs: number = Math.abs(diff);
-  
+
   for (const interval of intervals) {
     if (diffAbs >= interval.ge) {
         const x = Math.round(Math.abs(diff) / interval.divisor);
