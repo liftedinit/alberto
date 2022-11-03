@@ -9,7 +9,7 @@ import {
   AlertDescription,
   AlertIcon,
 } from "components"
-import { base64ToArrayBuffer } from "helper/convert"
+import { base64UrlToArrayBuffer } from "helper/convert"
 import {
   MultisigActions,
   SubmittedMultisigTxnDetails,
@@ -42,7 +42,7 @@ function TxnDetails() {
   const { txnId } = useParams()
 
   const txnIdBytes = txnId
-    ? base64ToArrayBuffer(decodeURIComponent(txnId))
+    ? base64UrlToArrayBuffer(decodeURIComponent(txnId))
     : undefined
 
   const {

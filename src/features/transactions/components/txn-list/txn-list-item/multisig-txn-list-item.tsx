@@ -42,7 +42,7 @@ import { useMultisigActions, useMultisigTxn, useSendTxn } from "./hooks"
 import { BaseTxnListItem } from "./base-txn-list-item"
 import { BaseTxnDetails } from "./base-txn-details"
 import {
-  arrayBufferToBase64,
+  arrayBufferToBase64Url,
   getHoursMinutesSecondsFromSeconds,
 } from "helper/convert"
 
@@ -190,7 +190,7 @@ export function SubmittedMultisigTxnDetails({
 }) {
   const { token, time, id, account } = multisigTxn
 
-  const base64TxnId = id ? encodeURIComponent(arrayBufferToBase64(id)) : null
+  const base64TxnId = id ? encodeURIComponent(arrayBufferToBase64Url(id)) : null
 
   const getContactName = useGetContactName()
 
