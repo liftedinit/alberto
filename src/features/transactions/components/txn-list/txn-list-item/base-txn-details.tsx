@@ -1,5 +1,10 @@
 import React from "react"
-import { ChevronRightIcon, Flex, IconButton, useDisclosure } from "components"
+import {
+  ChevronRightIcon,
+  Flex,
+  IconButton,
+  useDisclosure,
+} from "shared/components"
 
 export function BaseTxnDetails({ children }: React.PropsWithChildren<{}>) {
   const { isOpen, onOpen, onClose } = useDisclosure()

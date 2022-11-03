@@ -9,7 +9,7 @@ import {
   Modal,
   useToast,
   AddressText,
-} from "components"
+} from "shared/components"
 import { useAccountsStore, AccountId, Account } from "../../index"
 import { AnonymousIdentity } from "@liftedinit/many-js"
 

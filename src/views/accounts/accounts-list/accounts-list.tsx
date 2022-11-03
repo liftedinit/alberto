@@ -22,14 +22,14 @@ import {
   usePageContainerProvider,
   useBreakpointValue,
   VStack,
-} from "components"
+} from "shared/components"
 import {
   AccountInfo,
   AccountSelector,
   useAccountStore,
   useGetAccountInfo,
 } from "features/accounts"
-import { useDebounce } from "hooks"
+import { useDebounce } from "shared/hooks"
 
 export function AccountsList() {
   const [, setContainerProps] = usePageContainerProvider()

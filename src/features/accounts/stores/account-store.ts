@@ -1,7 +1,7 @@
 import create from "zustand"
 import { persist } from "zustand/middleware"
 import localforage from "localforage"
-import { replacer, reviver } from "helper/json"
+import { replacer, reviver } from "shared/helpers"
 
 interface Actions {
   update: (address: string, a: Record<string, unknown>) => void

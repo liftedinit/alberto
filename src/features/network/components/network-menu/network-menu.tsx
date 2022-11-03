@@ -24,7 +24,7 @@ import {
   Text,
   useToast,
   useDisclosure,
-} from "components"
+} from "shared/components"
 import { NetworkId, NetworkParams } from "../../types"
 
 type EditNetwork = [NetworkId, NetworkParams]

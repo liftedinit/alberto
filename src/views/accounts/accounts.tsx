@@ -8,7 +8,7 @@ import {
   PageContainer,
   PageContainerProvider,
   SlideFade,
-} from "components"
+} from "shared/components"
 import { useGetAccountInfo } from "features/accounts"
 
 export function Accounts() {

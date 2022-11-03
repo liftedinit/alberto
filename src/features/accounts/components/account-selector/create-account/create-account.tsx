@@ -31,7 +31,7 @@ import {
   DataField,
   TxnExpireText,
   useToast,
-} from "components"
+} from "shared/components"
 import { AccountFeatureTypes, NetworkAttributes } from "@liftedinit/many-js"
 import { MultisigSettingsFields } from "../../multisig-settings-fields"
 import { AccountInfo } from "../../account-info"

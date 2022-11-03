@@ -15,7 +15,7 @@ import {
   Text,
   TwitterIcon,
   useToast,
-} from "components"
+} from "shared/components"
 import { doesAccountExist, useAccountsStore } from "features/accounts"
 import React from "react"
 import { get, useForm } from "react-hook-form"

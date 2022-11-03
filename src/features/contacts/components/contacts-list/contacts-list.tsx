@@ -12,7 +12,7 @@ import {
   UserIcon,
   VStack,
   AddressText,
-} from "components"
+} from "shared/components"
 import { Contact } from "../../types"
 import { RemoveContactDialog, UpdateContact } from "../update-contact"
 

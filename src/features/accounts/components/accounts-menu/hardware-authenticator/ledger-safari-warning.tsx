@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, AlertProps, Text } from "components"
+import { Alert, AlertIcon, AlertProps, Text } from "shared/components"
 
 export function LedgerSafariWarning(props: AlertProps) {
   const userAgent = navigator.userAgent

@@ -18,7 +18,7 @@ import {
   useToast,
   UsbIcon,
   ChevronLeftIcon,
-} from "components"
+} from "shared/components"
 import { AddAccountMethodProps } from "../add-account-modal"
 import { LedgerSafariWarning } from "./ledger-safari-warning"
 import {
@@ -26,7 +26,7 @@ import {
   useCredentialsStore,
   useSaveWebauthnCredential,
 } from "features/accounts"
-import { arrayBufferToBase64 } from "helper/convert"
+import { arrayBufferToBase64 } from "shared/helpers"
 
 const enum CreateSteps {
   first,

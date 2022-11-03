@@ -28,8 +28,8 @@ import {
   useToast,
   useDisclosure,
   VStack,
-} from "components"
-import cubeImg from "assets/cube.png"
+} from "shared/components"
+import cubeImg from "shared/assets/cube.png"
 import {
   accountMultisigFeature,
   MultisigSettingsFields,
@@ -39,7 +39,7 @@ import {
 import { useBalances } from "features/balances"
 import { useCreateSendTxn } from "features/transactions"
 import { ContactSelector, useGetContactName } from "features/contacts"
-import { amountFormatter, parseNumberToBigInt } from "helper/common"
+import { amountFormatter, parseNumberToBigInt } from "shared/helpers"
 import { useMultisigSubmit } from "features/accounts"
 
 export function SendAssetModal({

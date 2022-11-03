@@ -26,7 +26,7 @@ import {
   useDisclosure,
   VStack,
   UsbIcon,
-} from "components"
+} from "shared/components"
 import { AddAccountModal } from "./add-account-modal"
 import { EditAccountModal } from "./edit-account-modal"
 import { Account, AccountId } from "../../types"

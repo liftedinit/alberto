@@ -12,14 +12,14 @@ import {
   SearchIcon,
   Text,
   VStack,
-} from "components"
+} from "shared/components"
 import {
   UpdateContact,
   ContactsList,
   useContactsList,
   Contact,
 } from "features/contacts"
-import { useDebounce } from "hooks"
+import { useDebounce } from "shared/hooks"
 
 export function ContactsManagement({
   onContactClicked,

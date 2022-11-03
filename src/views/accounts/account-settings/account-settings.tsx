@@ -12,7 +12,7 @@ import {
   Input,
   PlusIcon,
   VStack,
-} from "components"
+} from "shared/components"
 import {
   AccountOwnerField,
   getRolesList,

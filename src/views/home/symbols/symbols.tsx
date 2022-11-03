@@ -12,11 +12,11 @@ import {
   Text,
   useDisclosure,
   useBreakpointValue,
-} from "components"
+} from "shared/components"
 import { Asset, useBalances } from "features/balances"
 import { SendAssetModal } from "features/transactions"
-import cubeImg from "assets/cube.png"
-import { amountFormatter } from "helper/common"
+import cubeImg from "shared/assets/cube.png"
+import { amountFormatter } from "shared/helpers"
 
 export function Symbols({
   address,

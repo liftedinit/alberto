@@ -12,7 +12,7 @@ import {
   useDisclosure,
   validateAddress,
   VStack,
-} from "components"
+} from "shared/components"
 import { useContactsStore } from "features/contacts/store"
 import { Contact } from "features/contacts/types"
 

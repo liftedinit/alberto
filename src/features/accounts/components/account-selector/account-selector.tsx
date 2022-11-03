@@ -7,7 +7,7 @@ import {
   Tabs,
   TabList,
   useDisclosure,
-} from "components"
+} from "shared/components"
 import { SearchAccount } from "./search-account/search-account"
 import { CreateAccount } from "./create-account"
 

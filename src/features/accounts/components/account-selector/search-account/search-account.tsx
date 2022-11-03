@@ -7,9 +7,9 @@ import {
   Input,
   Spinner,
   Text,
-} from "components"
+} from "shared/components"
 import { AccountInfo, useGetAccountInfo } from "features/accounts"
-import { useDebounce } from "hooks"
+import { useDebounce } from "shared/hooks"
 import { OnAccountSelected } from "../account-selector"
 
 export function SearchAccount({
