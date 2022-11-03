@@ -6,7 +6,7 @@ import {
   waitFor,
   userEvent,
 } from "test/test-utils"
-import * as useIsBaseBreakpoint from "hooks/useIsBaseBreakpoint"
+import * as useIsBaseBreakpoint from "shared/hooks"
 import { useNetworkContext } from "features/network/network-provider"
 import { useAccountsStore } from "features/accounts"
 import { Home } from "views/home"
@@ -15,7 +15,7 @@ import {
   Ed25519KeyPairIdentity,
   Event,
 } from "@liftedinit/many-js"
-import { base64ToArrayBuffer } from "helper/convert"
+import { base64ToArrayBuffer } from "shared/helpers"
 
 jest.mock("features/network/network-provider", () => {
   return {
