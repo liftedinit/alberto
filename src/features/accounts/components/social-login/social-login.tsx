@@ -42,12 +42,6 @@ export const LOGIN_PROVIDER = {
   EMAIL_PASSWORDLESS: "email_passwordless",
 } as const
 
-const socials = [
-  { Icon: GoogleIcon, provider: LOGIN_PROVIDER.GOOGLE },
-  { Icon: TwitterIcon, provider: LOGIN_PROVIDER.TWITTER },
-  { Icon: GithubIcon, provider: LOGIN_PROVIDER.GITHUB },
-]
-
 export function SocialLogin({ onSuccess }: { onSuccess: () => void }) {
   const toast = useToast()
   const { createAccount, accounts } = useAccountsStore(
@@ -135,20 +129,33 @@ export function SocialLogin({ onSuccess }: { onSuccess: () => void }) {
           {isConnecting ? <Spinner size="sm" /> : null}
         </HStack>
         <HStack spacing={6}>
-          {socials.map(social => {
-            return (
-              <IconButton
-                key={social.provider}
-                aria-label={social.provider}
-                icon={<social.Icon />}
-                rounded="full"
-                bgColor="white"
-                shadow="md"
-                isDisabled={isConnecting}
-                onClick={() => doLogin(social.provider)}
-              />
-            )
-          })}
+          <IconButton
+            aria-label={LOGIN_PROVIDER.GOOGLE}
+            icon={<GoogleIcon />}
+            rounded="full"
+            bgColor="white"
+            shadow="md"
+            isDisabled={isConnecting}
+            onClick={() => doLogin(LOGIN_PROVIDER.GOOGLE)}
+          />
+          <IconButton
+            aria-label={LOGIN_PROVIDER.GITHUB}
+            icon={<GithubIcon />}
+            rounded="full"
+            bgColor="white"
+            shadow="md"
+            isDisabled={isConnecting}
+            onClick={() => doLogin(LOGIN_PROVIDER.GITHUB)}
+          />
+          <IconButton
+            aria-label={LOGIN_PROVIDER.TWITTER}
+            icon={<TwitterIcon />}
+            rounded="full"
+            bgColor="white"
+            shadow="md"
+            isDisabled={isConnecting}
+            onClick={() => doLogin(LOGIN_PROVIDER.TWITTER)}
+          />
         </HStack>
       </Box>
       <Box mb={6}>
