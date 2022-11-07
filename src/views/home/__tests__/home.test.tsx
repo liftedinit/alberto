@@ -6,7 +6,7 @@ import {
   waitFor,
   userEvent,
 } from "test/test-utils"
-import * as useIsBaseBreakpoint from "shared/hooks"
+import * as useIsBaseBreakpoint from "shared/hooks/useIsBaseBreakpoint"
 import { useNetworkContext } from "features/network/network-provider"
 import { useAccountsStore } from "features/accounts"
 import { Home } from "views/home"
@@ -24,9 +24,9 @@ jest.mock("features/network/network-provider", () => {
   }
 })
 
-jest.mock("components/address-text", () => {
+jest.mock("shared/components/address-text", () => {
   return {
-    ...jest.requireActual("components/address-text"),
+    ...jest.requireActual("shared/components/address-text"),
     useAddressText: jest.fn(),
   }
 })

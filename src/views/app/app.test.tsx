@@ -1,5 +1,5 @@
 import { render, screen, waitForElementToBeRemoved } from "test/test-utils"
-import App from "./App"
+import { App } from "views"
 
 describe("App", () => {
   it("first renders the splash page", async () => {
