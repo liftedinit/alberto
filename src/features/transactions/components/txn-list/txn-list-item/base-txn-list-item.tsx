@@ -1,5 +1,5 @@
 import React from "react"
-import { AddressText, HStack, Td, Tr, Text, VStack } from "components"
+import { AddressText, HStack, Td, Tr, Text, VStack } from "shared/components"
 
 export function BaseTxnListItem({
   icon,

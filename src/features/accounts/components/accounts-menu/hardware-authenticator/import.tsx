@@ -16,7 +16,7 @@ import {
   useToast,
   UsbIcon,
   ChevronLeftIcon,
-} from "components"
+} from "shared/components"
 import { AddAccountMethodProps } from "../add-account-modal"
 import {
   useAccountsStore,
@@ -24,7 +24,7 @@ import {
   useGetWebauthnCredential,
 } from "features/accounts"
 import { doesAccountExist } from "features/accounts"
-import { base64ToArrayBuffer } from "helper/convert"
+import { base64ToArrayBuffer } from "shared/helpers"
 import { RecoverOptions } from "features/accounts/types"
 import { LedgerSafariWarning } from "./ledger-safari-warning"
 

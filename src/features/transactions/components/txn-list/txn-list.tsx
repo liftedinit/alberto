@@ -10,7 +10,7 @@ import {
   Tbody,
   TableContainer,
   Text,
-} from "components"
+} from "shared/components"
 import { useTransactionsList } from "features/transactions/queries"
 import { TxnListItem } from "./txn-list-item"
 

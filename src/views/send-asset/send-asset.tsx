@@ -1,5 +1,11 @@
 import { useLocation } from "react-router-dom"
-import { Breadcrumb, Box, Container, Layout, SlideFade } from "components"
+import {
+  Breadcrumb,
+  Box,
+  Container,
+  Layout,
+  SlideFade,
+} from "shared/components"
 import { useAccountsStore } from "features/accounts"
 import { SendAssetForm, useSendAssetForm } from "features/transactions"
 

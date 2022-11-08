@@ -30,7 +30,7 @@ import {
   TxnExpireText,
   useToast,
   VStack,
-} from "components"
+} from "shared/components"
 import { useGetContactName } from "features/contacts"
 import {
   approverRoles,
@@ -44,7 +44,7 @@ import { BaseTxnDetails } from "./base-txn-details"
 import {
   arrayBufferToBase64Url,
   getHoursMinutesSecondsFromSeconds,
-} from "helper/convert"
+} from "shared/helpers"
 
 export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
   const { time, token } = txn

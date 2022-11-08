@@ -1,4 +1,10 @@
-import { Box, Breadcrumb, Container, Layout, SlideFade } from "components"
+import {
+  Box,
+  Breadcrumb,
+  Container,
+  Layout,
+  SlideFade,
+} from "shared/components"
 import { ContactsManagement } from "features/contacts"
 
 export function Contacts() {

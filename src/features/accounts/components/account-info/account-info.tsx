@@ -7,7 +7,7 @@ import {
   Heading,
   Text,
   VStack,
-} from "components"
+} from "shared/components"
 import { useContactsStore } from "features/contacts"
 import { useAccountsStore } from "features/accounts"
 

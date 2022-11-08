@@ -1,5 +1,5 @@
 import { SendEvent } from "@liftedinit/many-js"
-import { Flex, Text } from "components"
+import { Flex, Text } from "shared/components"
 import { useSendTxn } from "./hooks"
 import { BaseTxnListItem } from "./base-txn-list-item"
 

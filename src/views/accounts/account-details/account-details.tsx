@@ -7,7 +7,7 @@ import {
   TabList,
   Tab,
   usePageContainerProvider,
-} from "components"
+} from "shared/components"
 import { Assets } from "views/home/assets"
 import { TxnList } from "features/transactions"
 import { MultisigSettings } from "../multisig-settings/multisig-settings"

@@ -1,5 +1,5 @@
 import React from "react"
-import { Modal, useDisclosure } from "components"
+import { Modal, useDisclosure } from "shared/components"
 import { ContactsManagement } from "../contacts-management"
 import { Contact } from "../../types"
 

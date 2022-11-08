@@ -1,5 +1,5 @@
 import React from "react"
-import { SlideFade } from "components"
+import { SlideFade } from "shared/components"
 import { Asset } from "features/balances"
 import { Symbols } from "../symbols"
 import { AssetDetails } from "../asset-details"

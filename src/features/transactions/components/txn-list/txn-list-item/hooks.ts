@@ -20,8 +20,8 @@ import {
   SendOutlineIcon,
   UndoIcon,
   SettingsOutlineIcon,
-} from "components"
-import { amountFormatter } from "helper/common"
+} from "shared/components"
+import { amountFormatter } from "shared/helpers"
 import {
   approverRoles,
   useGetAccountInfo,

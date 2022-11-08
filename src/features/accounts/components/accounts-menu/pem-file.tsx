@@ -8,7 +8,7 @@ import {
   Modal,
   Textarea,
   useToast,
-} from "components"
+} from "shared/components"
 import { useAccountsStore } from "features/accounts"
 import { Ed25519KeyPairIdentity } from "@liftedinit/many-js"
 import { doesAccountExist } from "../../utils"

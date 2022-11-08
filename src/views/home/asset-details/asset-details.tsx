@@ -1,9 +1,9 @@
 import { GrFormPrevious } from "react-icons/gr"
-import { AddressText, Button, Heading, Image, VStack } from "components"
+import { AddressText, Button, Heading, Image, VStack } from "shared/components"
 import { TxnList } from "features/transactions"
-import cubeImg from "assets/cube.png"
+import cubeImg from "shared/assets/cube.png"
 import { Asset } from "features/balances"
-import { amountFormatter } from "helper/common"
+import { amountFormatter } from "shared/helpers"
 
 type Props = {
   asset: Asset

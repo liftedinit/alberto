@@ -9,7 +9,7 @@ import {
   TabList,
   Tabs,
   VStack,
-} from "components"
+} from "shared/components"
 import React from "react"
 
 import { SocialLogin } from "../social-login"

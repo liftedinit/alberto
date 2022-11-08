@@ -12,11 +12,11 @@ import {
   Text,
   useDisclosure,
   VStack,
-} from "components"
+} from "shared/components"
 import { AddAccountModal, useAccountsStore } from "features/accounts"
 import { useNetworkContext } from "features/network"
 import { TxnList } from "features/transactions"
-import { useIsBaseBreakpoint } from "hooks"
+import { useIsBaseBreakpoint } from "shared/hooks"
 import React from "react"
 
 import { AnonymousIdentity } from "@liftedinit/many-js"

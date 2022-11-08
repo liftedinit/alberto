@@ -8,8 +8,8 @@ import {
   Alert,
   AlertDescription,
   AlertIcon,
-} from "components"
-import { base64UrlToArrayBuffer } from "helper/convert"
+} from "shared/components"
+import { base64UrlToArrayBuffer } from "shared/helpers"
 import {
   MultisigActions,
   SubmittedMultisigTxnDetails,

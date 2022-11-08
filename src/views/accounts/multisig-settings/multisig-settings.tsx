@@ -1,5 +1,11 @@
 import { useForm, FormProvider } from "react-hook-form"
-import { Alert, AlertIcon, AlertDescription, Button, VStack } from "components"
+import {
+  Alert,
+  AlertIcon,
+  AlertDescription,
+  Button,
+  VStack,
+} from "shared/components"
 import {
   MultisigSettingsFields,
   useMultisigSetDefaults,

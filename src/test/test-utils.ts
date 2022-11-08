@@ -1,6 +1,6 @@
 import { render as rtlRender } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { AppProvider } from "providers/app"
+import { AppProvider } from "views"
 import React from "react"
 
 export function render(ui: any, options = {}) {

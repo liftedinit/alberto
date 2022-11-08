@@ -14,12 +14,12 @@ import {
   Radio,
   HStack,
   Select,
-} from "components"
+} from "shared/components"
 import { approverRoles, useGetAccountInfo } from "features/accounts"
 import {
   getHoursMinutesSecondsFromSeconds,
   getSecondsFromHoursMinutesSeconds,
-} from "helper/convert"
+} from "shared/helpers"
 
 export function MultisigSettingsFields({
   accountAddress,

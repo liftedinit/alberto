@@ -8,7 +8,7 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from "test/test-utils"
-import { toast } from "components"
+import { toast } from "shared/components"
 import {
   AnonymousIdentity,
   Ed25519KeyPairIdentity,

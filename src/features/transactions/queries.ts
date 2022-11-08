@@ -7,7 +7,7 @@ import {
 } from "@liftedinit/many-js"
 import { ListFilterArgs, Event } from "@liftedinit/many-js"
 import { useMutation, useQuery, useQueryClient } from "react-query"
-import { arrayBufferToBase64 } from "helper/convert"
+import { arrayBufferToBase64 } from "shared/helpers"
 
 export function useCreateSendTxn() {
   const [, network] = useNetworkContext()
