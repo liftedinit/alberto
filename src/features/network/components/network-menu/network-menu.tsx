@@ -38,20 +38,11 @@ export function NetworkMenu() {
     setEditingNetwork(network)
     onOpen()
   }
-  const { activeNetwork, networks, activeId, setActiveId } = useNetworkStore(
-    s => ({
-      networks: Array.from(s.byId).sort((a, b) => {
-        const [, { name: nameA }] = a
-        const [, { name: nameB }] = b
-        const nameALower = nameA.toLowerCase()
-        const nameBLower = nameB.toLowerCase()
-        return nameALower === nameBLower ? 0 : nameALower < nameBLower ? -1 : 1
-      }),
-      activeId: s.activeId,
-      activeNetwork: s.byId.get(s.activeId),
-      setActiveId: s.setActiveId,
-    }),
-  )
+  const { activeNetwork, networks, setActiveId } = useNetworkStore(s => ({
+    networks: s.getNetworks(),
+    activeNetwork: s.getActiveNetwork(),
+    setActiveId: s.setActiveId,
+  }))
 
   return (
     <Flex alignItems="center" justifyContent="flex-end" minW="100px">
@@ -77,18 +68,18 @@ export function NetworkMenu() {
           <Box overflow="auto" maxHeight="40vh">
             {activeNetwork ? (
               <NetworkMenuItem
-                activeId={activeId}
-                id={activeId}
+                activeId={activeNetwork.id!}
+                id={activeNetwork.id!}
                 network={activeNetwork!}
                 onEditNetwork={onEditNetwork}
               />
             ) : null}
-            {networks.map(([id, network]) =>
-              id === activeId ? null : (
+            {networks.map(network =>
+              network.id === activeNetwork?.id ? null : (
                 <NetworkMenuItem
-                  key={id}
-                  activeId={activeId}
-                  id={id}
+                  key={network.id}
+                  activeId={activeNetwork?.id!}
+                  id={network.id!}
                   network={network}
                   setActiveId={setActiveId}
                   onEditNetwork={onEditNetwork}

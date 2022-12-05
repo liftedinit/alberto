@@ -1,9 +1,17 @@
-module.exports = function override(webpackConfig) {
-  webpackConfig.module.rules.push({
-    test: /\.mjs$/,
-    include: /node_modules/,
-    type: "javascript/auto",
-  });
+module.exports = {
+  webpack: function override(webpackConfig) {
+    webpackConfig.module.rules.push({
+      test: /\.mjs$/,
+      include: /node_modules/,
+      type: "javascript/auto",
+    })
 
-  return webpackConfig;
-};
+    return webpackConfig
+  },
+  devServer: function (configDevServer) {
+    return function (proxy, allowedHosts) {
+      const config = configDevServer(proxy, allowedHosts)
+      return { ...config, public: "alberto.local" }
+    }
+  },
+}

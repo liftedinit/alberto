@@ -5,12 +5,16 @@ import { replacer, reviver } from "shared/helpers"
 import { NetworkId, NetworkParams, NetworksState } from "./types"
 
 const initialState = {
-  activeId: 0,
-  nextId: 1,
-  byId: new Map([[0, { name: "Manifest", url: "/api" }]]),
+  nextId: 2,
+  byId: new Map([
+    [0, { name: "Manifest Ledger", url: "/api", filter: "alberto" }],
+    [1, { name: "GBOP Ledger", url: "/api-end", filter: "end-labs" }],
+  ]),
 }
 
 interface NetworkActions {
+  getNetworks: () => NetworkParams[]
+  getActiveNetwork: () => NetworkParams | undefined
   createNetwork: (n: NetworkParams) => void
   setActiveId: (id: NetworkId) => void
   updateNetwork: (id: NetworkId, n: NetworkParams) => void
@@ -19,8 +23,22 @@ interface NetworkActions {
 
 export const useNetworkStore = create<NetworksState & NetworkActions>(
   persist(
-    set => ({
+    (set, get) => ({
       ...initialState,
+      getNetworks: () => {
+        const hostname = window.location.hostname
+        const networks = Array.from(get().byId)
+          .map(([id, network]) => ({ id, ...network }))
+          .sort(({ name: a }, { name: b }) =>
+            a.toLowerCase() < b.toLowerCase() ? -1 : 1,
+          )
+          .filter(({ filter }) => !filter || hostname.includes(filter))
+        return networks
+      },
+      getActiveNetwork: () => {
+        const networks = get().getNetworks()
+        return networks.find(({ id }) => id === get().activeId)
+      },
       createNetwork: (networkParams: NetworkParams) =>
         set(state => {
           const id = state.nextId
