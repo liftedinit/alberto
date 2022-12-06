@@ -9,7 +9,7 @@ const initialState = {
   nextId: 3,
   byId: new Map([
     [0, { name: "Manifest Ledger", url: "/api", filter: "alberto" }],
-    [1, { name: "GBOP Ledger", url: "/api-end", filter: "end-labs" }],
+    [1, { name: "END Ledger", url: "/api-end", filter: "end-labs" }],
   ]),
 }
 
