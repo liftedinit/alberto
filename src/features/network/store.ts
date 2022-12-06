@@ -4,6 +4,8 @@ import localforage from "localforage"
 import { replacer, reviver } from "@liftedinit/ui"
 import { NetworkId, NetworkParams, NetworksState } from "./types"
 
+const devDomains = ["localhost", "liftedinit.tech"]
+
 const initialState = {
   activeId: 0,
   nextId: 3,
@@ -37,7 +39,7 @@ export const useNetworkStore = create<NetworksState & NetworkActions>(
             ({ filter }) =>
               !filter ||
               hostname.includes(filter) ||
-              hostname.includes("localhost"),
+              devDomains.some(domain => hostname.includes(domain)),
           )
         return networks
       },
