@@ -6,7 +6,7 @@ import {
   waitFor,
   userEvent,
 } from "test/test-utils"
-import * as useIsBaseBreakpoint from "@liftedinit/ui"
+import * as UseIsBaseBreakpoint from "@liftedinit/ui/dist/hooks/use-is-base-breakpoint"
 import { useNetworkContext } from "features/network/network-provider"
 import { useAccountsStore } from "features/accounts"
 import { Home } from "views/home"
@@ -24,15 +24,8 @@ jest.mock("features/network/network-provider", () => {
   }
 })
 
-jest.mock("@liftedinit/ui/address-text", () => {
-  return {
-    ...jest.requireActual("@liftedinit/ui/address-text"),
-    useAddressText: jest.fn(),
-  }
-})
-
 const mockUseIsBaseBreakpoint = jest.spyOn(
-  useIsBaseBreakpoint,
+  UseIsBaseBreakpoint,
   "useIsBaseBreakpoint",
 )
 

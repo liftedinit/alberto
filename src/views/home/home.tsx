@@ -24,8 +24,8 @@ import { AnonymousIdentity } from "@liftedinit/many-js"
 import { Assets } from "./assets"
 
 enum TabNames {
-  assets = "assets",
-  activity = "activity",
+  assets = "Assets",
+  activity = "Activity",
 }
 
 export function Home() {

@@ -16,10 +16,10 @@ import { AccountFeatureTypes, NetworkAttributes } from "@liftedinit/many-js"
 import { AccountSettings } from "../account-settings"
 
 enum TabNames {
-  assets = "assets",
-  activity = "activity",
-  accountSettings = "account settings",
-  multisigSettings = "multisig settings",
+  assets = "Assets",
+  activity = "Activity",
+  accountSettings = "Account Settings",
+  multisigSettings = "Multisig Settings",
 }
 
 export function AccountDetails() {
