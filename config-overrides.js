@@ -11,7 +11,8 @@ module.exports = {
   devServer: function (configDevServer) {
     return function (proxy, allowedHosts) {
       const config = configDevServer(proxy, allowedHosts)
-      return { ...config, public: "alberto.local" }
+      return config
+      // return { ...config, public: "wallet.end-labs.local" }
     }
   },
 }

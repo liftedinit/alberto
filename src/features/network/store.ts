@@ -5,7 +5,8 @@ import { replacer, reviver } from "shared/helpers"
 import { NetworkId, NetworkParams, NetworksState } from "./types"
 
 const initialState = {
-  nextId: 2,
+  activeId: 0,
+  nextId: 3,
   byId: new Map([
     [0, { name: "Manifest Ledger", url: "/api", filter: "alberto" }],
     [1, { name: "GBOP Ledger", url: "/api-end", filter: "end-labs" }],
@@ -32,12 +33,18 @@ export const useNetworkStore = create<NetworksState & NetworkActions>(
           .sort(({ name: a }, { name: b }) =>
             a.toLowerCase() < b.toLowerCase() ? -1 : 1,
           )
-          .filter(({ filter }) => !filter || hostname.includes(filter))
+          .filter(
+            ({ filter }) =>
+              !filter ||
+              hostname.includes(filter) ||
+              hostname.includes("localhost"),
+          )
         return networks
       },
       getActiveNetwork: () => {
         const networks = get().getNetworks()
-        return networks.find(({ id }) => id === get().activeId)
+        const activeNetwork = networks.find(({ id }) => id === get().activeId)
+        return activeNetwork ?? networks[0]
       },
       createNetwork: (networkParams: NetworkParams) =>
         set(state => {
