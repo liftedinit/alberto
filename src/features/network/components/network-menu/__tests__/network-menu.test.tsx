@@ -42,8 +42,6 @@ describe("NetworkMenu", () => {
     expect(removeBtn).not.toBeDisabled()
     userEvent.click(removeBtn)
     expect(screen.queryByText(/manifest/i)).not.toBeInTheDocument()
-    // we've removed all the networks
-    expect(screen.getByText(/no network selected/i)).toBeInTheDocument()
   })
   it("should edit a network", async () => {
     const activeNetwork = await setupEditNetwork()
@@ -53,11 +51,11 @@ describe("NetworkMenu", () => {
     userEvent.type(nameInput, "-edited")
     userEvent.type(urlInput, "-edited")
 
-    expect(nameInput).toHaveValue("Manifest-edited")
+    expect(nameInput).toHaveValue("Manifest Ledger-edited")
     expect(urlInput).toHaveValue("/api-edited")
     userEvent.click(saveBtn)
     expect(
-      within(activeNetwork).getByText(/manifest-edited/i),
+      within(activeNetwork).getByText(/manifest ledger-edited/i),
     ).toBeInTheDocument()
   })
 })
@@ -71,7 +69,9 @@ function setupNetworkMenu() {
 
 async function setupEditNetwork() {
   const activeNetwork = setupNetworkMenu()
-  const editBtn = await screen.findByRole("button", { name: /edit network/i })
+  const editBtn = (
+    await screen.findAllByRole("button", { name: /edit network/i })
+  )[0]
   fireEvent.click(editBtn)
   return activeNetwork
 }
