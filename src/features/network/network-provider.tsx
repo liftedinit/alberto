@@ -17,7 +17,7 @@ const NetworkContext = React.createContext<[Network?, Network?]>([
 ])
 
 export function NetworkProvider({ children }: React.PropsWithChildren<{}>) {
-  const activeNetwork = useNetworkStore(state => state.byId.get(state.activeId))
+  const activeNetwork = useNetworkStore(state => state.getActiveNetwork())
   const activeAccount = useAccountsStore(state =>
     state.byId.get(state.activeId),
   )!
