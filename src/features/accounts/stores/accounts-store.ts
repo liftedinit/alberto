@@ -6,7 +6,7 @@ import {
   ANON_IDENTITY,
   Ed25519KeyPairIdentity,
 } from "@liftedinit/many-js"
-import { replacer, reviver } from "shared/helpers"
+import { replacer, reviver } from "@liftedinit/ui"
 import { Account, AccountId, AccountsState } from "../types"
 
 interface AccountMethods {

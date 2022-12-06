@@ -8,7 +8,7 @@ import {
   Text,
   UserPlusIcon,
   UserMinusIcon,
-} from "shared/components"
+} from "@liftedinit/ui"
 import { BaseTxnListItem } from "./base-txn-list-item"
 import { BaseTxnDetails } from "./base-txn-details"
 import { AccountRoles } from "features/accounts"

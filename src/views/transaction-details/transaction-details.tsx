@@ -8,8 +8,8 @@ import {
   Alert,
   AlertDescription,
   AlertIcon,
-} from "shared/components"
-import { base64UrlToArrayBuffer } from "shared/helpers"
+  base64UrlToArrayBuffer,
+} from "@liftedinit/ui"
 import {
   MultisigActions,
   SubmittedMultisigTxnDetails,

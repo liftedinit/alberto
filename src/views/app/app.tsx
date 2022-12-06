@@ -1,7 +1,6 @@
 import React from "react"
 import { Outlet } from "react-router"
 import { Routes, Route } from "react-router-dom"
-import { Layout } from "shared/components"
 import {
   Accounts,
   AccountDetails,
@@ -11,6 +10,7 @@ import {
   SendAsset,
   Splash,
   TransactionDetails,
+  Layout,
 } from "views"
 
 const ONE_SECOND = 1 * 1000

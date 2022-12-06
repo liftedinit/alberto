@@ -8,12 +8,8 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from "test/test-utils"
-import { toast } from "shared/components"
-import {
-  AnonymousIdentity,
-  Ed25519KeyPairIdentity,
-  Address,
-} from "@liftedinit/many-js"
+import { toast } from "@liftedinit/ui"
+import { AnonymousIdentity, Ed25519KeyPairIdentity } from "@liftedinit/many-js"
 import { AccountsMenu } from "../accounts-menu"
 import { useAccountsStore } from "features/accounts"
 

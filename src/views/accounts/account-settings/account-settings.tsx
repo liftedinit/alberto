@@ -12,7 +12,7 @@ import {
   Input,
   PlusIcon,
   VStack,
-} from "shared/components"
+} from "@liftedinit/ui"
 import {
   AccountOwnerField,
   getRolesList,

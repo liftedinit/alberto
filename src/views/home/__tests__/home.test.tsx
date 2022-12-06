@@ -6,7 +6,7 @@ import {
   waitFor,
   userEvent,
 } from "test/test-utils"
-import * as useIsBaseBreakpoint from "shared/hooks/useIsBaseBreakpoint"
+import * as useIsBaseBreakpoint from "@liftedinit/ui"
 import { useNetworkContext } from "features/network/network-provider"
 import { useAccountsStore } from "features/accounts"
 import { Home } from "views/home"
@@ -15,7 +15,7 @@ import {
   Ed25519KeyPairIdentity,
   Event,
 } from "@liftedinit/many-js"
-import { base64ToArrayBuffer } from "shared/helpers"
+import { base64ToArrayBuffer } from "@liftedinit/ui"
 
 jest.mock("features/network/network-provider", () => {
   return {
@@ -24,9 +24,9 @@ jest.mock("features/network/network-provider", () => {
   }
 })
 
-jest.mock("shared/components/address-text", () => {
+jest.mock("@liftedinit/ui/address-text", () => {
   return {
-    ...jest.requireActual("shared/components/address-text"),
+    ...jest.requireActual("@liftedinit/ui/address-text"),
     useAddressText: jest.fn(),
   }
 })

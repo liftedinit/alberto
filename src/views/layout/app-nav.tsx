@@ -1,4 +1,4 @@
-import { Flex } from "shared/components"
+import { Flex } from "@liftedinit/ui"
 import { NetworkMenu } from "features/network"
 import { AccountsMenu } from "features/accounts"
 

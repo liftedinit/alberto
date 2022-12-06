@@ -7,7 +7,7 @@ import {
   Heading,
   Text,
   VStack,
-} from "shared/components"
+} from "@liftedinit/ui"
 import { useContactsStore } from "features/contacts"
 import { useAccountsStore } from "features/accounts"
 

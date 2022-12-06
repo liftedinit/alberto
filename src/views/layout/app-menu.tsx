@@ -19,9 +19,9 @@ import {
   Text,
   WalletIcon,
   WalletOutlineIcon,
-} from "shared/components"
-import { useIsBaseBreakpoint } from "shared/hooks"
-import logoImg from "shared/assets/logo192.png"
+  useIsBaseBreakpoint,
+} from "@liftedinit/ui"
+import { logoSvg } from "@liftedinit/ui"
 
 export function AppMenu() {
   const location = useLocation()
@@ -72,7 +72,7 @@ export function AppMenu() {
     <Stack alignItems="stretch" {...stackProps} bgColor="white">
       <Show above="md">
         <HStack mt="46px" spacing="4" ml="8" mb="4">
-          <Image h="67px" src={logoImg} />
+          <Image h="67px" src={logoSvg} />
           <Heading size="md" fontWeight="normal">
             Alberto
           </Heading>

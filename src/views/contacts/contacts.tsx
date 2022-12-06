@@ -1,10 +1,5 @@
-import {
-  Box,
-  Breadcrumb,
-  Container,
-  Layout,
-  SlideFade,
-} from "shared/components"
+import { Box, Breadcrumb, Container, SlideFade } from "@liftedinit/ui"
+import { Layout } from "views"
 import { ContactsManagement } from "features/contacts"
 
 export function Contacts() {

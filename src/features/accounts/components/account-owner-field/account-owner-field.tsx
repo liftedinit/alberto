@@ -15,7 +15,7 @@ import {
   FieldWrapper,
   MinusIcon,
   AddressBookIcon,
-} from "shared/components"
+} from "@liftedinit/ui"
 import { AccountRole } from "@liftedinit/many-js"
 import { ContactSelector, useGetContactName } from "features/contacts"
 import { Role, RolesSelector } from "features/accounts"

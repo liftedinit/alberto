@@ -1,5 +1,4 @@
-import React from "react"
-import { Modal, useDisclosure } from "shared/components"
+import { Modal, useDisclosure } from "@liftedinit/ui"
 import { ContactsManagement } from "../contacts-management"
 import { Contact } from "../../types"
 

@@ -5,7 +5,7 @@ import {
   OptionCard,
   useDisclosure,
   VStack,
-} from "shared/components"
+} from "@liftedinit/ui"
 import { AccountRole } from "@liftedinit/many-js"
 
 type Props = {

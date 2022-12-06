@@ -1,7 +1,7 @@
 import create from "zustand"
 import { persist } from "zustand/middleware"
 import localforage from "localforage"
-import { replacer, reviver } from "shared/helpers"
+import { replacer, reviver } from "@liftedinit/ui"
 import { CredentialData } from "../types"
 
 interface CredentialsStoreActions {

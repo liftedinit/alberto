@@ -22,14 +22,14 @@ import {
   usePageContainerProvider,
   useBreakpointValue,
   VStack,
-} from "shared/components"
+  useDebounce,
+} from "@liftedinit/ui"
 import {
   AccountInfo,
   AccountSelector,
   useAccountStore,
   useGetAccountInfo,
 } from "features/accounts"
-import { useDebounce } from "shared/hooks"
 
 export function AccountsList() {
   const [, setContainerProps] = usePageContainerProvider()

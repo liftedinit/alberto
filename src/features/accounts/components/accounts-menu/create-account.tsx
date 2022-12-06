@@ -11,7 +11,7 @@ import {
   SimpleGrid,
   Text,
   useToast,
-} from "shared/components"
+} from "@liftedinit/ui"
 import { useAccountsStore } from "features/accounts"
 import { Ed25519KeyPairIdentity } from "@liftedinit/many-js"
 import { AddAccountMethodProps } from "./add-account-modal"

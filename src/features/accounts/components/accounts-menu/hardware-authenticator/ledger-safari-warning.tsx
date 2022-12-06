@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, AlertProps, Text } from "shared/components"
+import { Alert, AlertIcon, AlertProps, Text } from "@liftedinit/ui"
 
 export function LedgerSafariWarning(props: AlertProps) {
   const userAgent = navigator.userAgent

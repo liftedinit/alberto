@@ -3,7 +3,6 @@ import {
   Breadcrumb,
   Button,
   Container,
-  Layout,
   PlusIcon,
   SlideFade,
   Tab,
@@ -12,11 +11,12 @@ import {
   Text,
   useDisclosure,
   VStack,
-} from "shared/components"
+  useIsBaseBreakpoint,
+} from "@liftedinit/ui"
+import { Layout } from "views"
 import { AddAccountModal, useAccountsStore } from "features/accounts"
 import { useNetworkContext } from "features/network"
 import { TxnList } from "features/transactions"
-import { useIsBaseBreakpoint } from "shared/hooks"
 import React from "react"
 
 import { AnonymousIdentity } from "@liftedinit/many-js"

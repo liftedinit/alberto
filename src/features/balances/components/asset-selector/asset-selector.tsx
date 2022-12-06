@@ -15,11 +15,11 @@ import {
   Text,
   useDisclosure,
   VStack,
-} from "shared/components"
-import cubeImg from "shared/assets/cube.png"
-import { useDebounce } from "shared/hooks"
+  cubePng,
+  useDebounce,
+  amountFormatter,
+} from "@liftedinit/ui"
 import { Asset } from "features/balances"
-import { amountFormatter } from "shared/helpers"
 
 export function AssetSelector({
   ownedAssets,
@@ -73,7 +73,7 @@ export function AssetSelector({
                 w="full"
               >
                 <HStack>
-                  <Image src={cubeImg} borderRadius="full" boxSize={9} />
+                  <Image src={cubePng} borderRadius="full" boxSize={9} />
                   <VStack alignItems="flex-start" spacing={0}>
                     <Text fontSize="lg" lineHeight="normal">
                       {asset.symbol}

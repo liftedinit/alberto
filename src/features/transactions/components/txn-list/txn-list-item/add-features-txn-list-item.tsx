@@ -12,11 +12,11 @@ import {
   Modal,
   Text,
   TxnExpireText,
-} from "shared/components"
+  getHoursMinutesSecondsFromSeconds,
+} from "@liftedinit/ui"
 import { BaseTxnListItem } from "./base-txn-list-item"
 import { BaseTxnDetails } from "./base-txn-details"
 import { AccountRoles } from "features/accounts"
-import { getHoursMinutesSecondsFromSeconds } from "shared/helpers"
 
 export function AddFeaturesTxnListItem({ txn }: { txn: AddFeaturesEvent }) {
   return (

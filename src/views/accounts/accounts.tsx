@@ -8,7 +8,8 @@ import {
   PageContainer,
   PageContainerProvider,
   SlideFade,
-} from "shared/components"
+} from "@liftedinit/ui"
+import { Layout } from "views"
 import { useGetAccountInfo } from "features/accounts"
 
 export function Accounts() {

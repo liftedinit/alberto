@@ -8,10 +8,9 @@ import {
   Modal,
   Textarea,
   useToast,
-} from "shared/components"
-import { useAccountsStore } from "features/accounts"
+} from "@liftedinit/ui"
+import { useAccountsStore, doesAccountExist } from "features/accounts"
 import { Ed25519KeyPairIdentity } from "@liftedinit/many-js"
-import { doesAccountExist } from "features/accounts"
 import { AddAccountMethodProps, toastTitle } from "./add-account-modal"
 
 export function SeedWords({ setAddMethod, onSuccess }: AddAccountMethodProps) {

@@ -9,7 +9,7 @@ import {
   TabList,
   Tabs,
   VStack,
-} from "shared/components"
+} from "@liftedinit/ui"
 import React from "react"
 
 import { SocialLogin } from "../social-login"

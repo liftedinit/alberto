@@ -1,5 +1,5 @@
 import React from "react"
-import { SlideFade } from "shared/components"
+import { SlideFade } from "@liftedinit/ui"
 import { Asset } from "features/balances"
 import { Symbols } from "../symbols"
 import { AssetDetails } from "../asset-details"

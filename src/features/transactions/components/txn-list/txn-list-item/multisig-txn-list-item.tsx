@@ -30,7 +30,9 @@ import {
   TxnExpireText,
   useToast,
   VStack,
-} from "shared/components"
+  arrayBufferToBase64Url,
+  getHoursMinutesSecondsFromSeconds,
+} from "@liftedinit/ui"
 import { useGetContactName } from "features/contacts"
 import {
   approverRoles,
@@ -41,10 +43,6 @@ import {
 import { useMultisigActions, useMultisigTxn, useSendTxn } from "./hooks"
 import { BaseTxnListItem } from "./base-txn-list-item"
 import { BaseTxnDetails } from "./base-txn-details"
-import {
-  arrayBufferToBase64Url,
-  getHoursMinutesSecondsFromSeconds,
-} from "shared/helpers"
 
 export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
   const { time, token } = txn

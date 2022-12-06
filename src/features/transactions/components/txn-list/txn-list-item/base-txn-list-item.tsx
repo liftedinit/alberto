@@ -1,5 +1,5 @@
 import React from "react"
-import { AddressText, HStack, Td, Tr, Text, VStack } from "shared/components"
+import { AddressText, HStack, Td, Tr, Text, VStack } from "@liftedinit/ui"
 
 export function BaseTxnListItem({
   icon,

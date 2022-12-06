@@ -12,14 +12,14 @@ import {
   SearchIcon,
   Text,
   VStack,
-} from "shared/components"
+  useDebounce,
+} from "@liftedinit/ui"
 import {
   UpdateContact,
   ContactsList,
   useContactsList,
   Contact,
 } from "features/contacts"
-import { useDebounce } from "shared/hooks"
 
 export function ContactsManagement({
   onContactClicked,

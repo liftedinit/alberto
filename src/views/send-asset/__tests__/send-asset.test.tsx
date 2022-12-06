@@ -6,11 +6,10 @@ import {
   fireEvent,
   userEvent,
 } from "test/test-utils"
-import { toast } from "shared/components"
+import { amountFormatter, toast } from "@liftedinit/ui"
 import { useBalances } from "features/balances/queries"
 import { useCreateSendTxn } from "features/transactions/queries"
 import { SendAsset } from "views"
-import { amountFormatter } from "shared/helpers"
 
 jest.mock("features/balances/queries")
 jest.mock("features/transactions/queries")

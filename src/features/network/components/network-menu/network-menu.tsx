@@ -24,7 +24,7 @@ import {
   Text,
   useToast,
   useDisclosure,
-} from "shared/components"
+} from "@liftedinit/ui"
 import { NetworkId, NetworkParams } from "../../types"
 
 type EditNetwork = [NetworkId, NetworkParams]

@@ -14,12 +14,10 @@ import {
   Radio,
   HStack,
   Select,
-} from "shared/components"
-import { approverRoles, useGetAccountInfo } from "features/accounts"
-import {
   getHoursMinutesSecondsFromSeconds,
   getSecondsFromHoursMinutesSeconds,
-} from "shared/helpers"
+} from "@liftedinit/ui"
+import { approverRoles, useGetAccountInfo } from "features/accounts"
 
 export function MultisigSettingsFields({
   accountAddress,

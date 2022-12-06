@@ -1,11 +1,6 @@
 import { useLocation } from "react-router-dom"
-import {
-  Breadcrumb,
-  Box,
-  Container,
-  Layout,
-  SlideFade,
-} from "shared/components"
+import { Breadcrumb, Box, Container, SlideFade } from "@liftedinit/ui"
+import { Layout } from "views"
 import { useAccountsStore } from "features/accounts"
 import { SendAssetForm, useSendAssetForm } from "features/transactions"
 

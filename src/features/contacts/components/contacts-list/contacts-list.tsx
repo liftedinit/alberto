@@ -12,7 +12,7 @@ import {
   UserIcon,
   VStack,
   AddressText,
-} from "shared/components"
+} from "@liftedinit/ui"
 import { Contact } from "../../types"
 import { RemoveContactDialog, UpdateContact } from "../update-contact"
 
