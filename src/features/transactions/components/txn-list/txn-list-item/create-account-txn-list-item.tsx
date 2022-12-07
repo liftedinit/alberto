@@ -3,7 +3,7 @@ import {
   CreateAccountEvent,
   GetAccountInfoResponse,
 } from "@liftedinit/many-js"
-import { Modal, PlusCircleIcon, HStack, Text } from "shared/components"
+import { Modal, PlusCircleIcon, HStack, Text } from "@liftedinit/ui"
 import { BaseTxnListItem } from "./base-txn-list-item"
 import { BaseTxnDetails } from "./base-txn-details"
 import { AccountInfo } from "features/accounts"

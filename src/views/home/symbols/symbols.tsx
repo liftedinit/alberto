@@ -12,11 +12,11 @@ import {
   Text,
   useDisclosure,
   useBreakpointValue,
-} from "shared/components"
+  cubePng,
+  amountFormatter,
+} from "@liftedinit/ui"
 import { Asset, useBalances } from "features/balances"
 import { SendAssetModal } from "features/transactions"
-import cubeImg from "shared/assets/cube.png"
-import { amountFormatter } from "shared/helpers"
 
 export function Symbols({
   address,
@@ -138,7 +138,7 @@ function AssetListItem({
         bgColor: "gray.50",
       }}
     >
-      <Image src={cubeImg} boxSize={10} />
+      <Image src={cubePng} boxSize={10} />
       <HStack overflow="hidden" alignItems="center" flexGrow={1}>
         <Text
           overflow="hidden"

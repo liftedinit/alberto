@@ -12,7 +12,7 @@ import {
   useDisclosure,
   validateAddress,
   VStack,
-} from "shared/components"
+} from "@liftedinit/ui"
 import { useContactsStore } from "features/contacts/store"
 import { Contact } from "features/contacts/types"
 

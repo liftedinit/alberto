@@ -7,7 +7,7 @@ import {
   Tabs,
   TabList,
   useDisclosure,
-} from "shared/components"
+} from "@liftedinit/ui"
 import { SearchAccount } from "./search-account/search-account"
 import { CreateAccount } from "./create-account"
 

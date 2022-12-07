@@ -1,5 +1,5 @@
 import { SetDescriptionEvent } from "@liftedinit/many-js"
-import { EditIcon, Text } from "shared/components"
+import { EditIcon, Text } from "@liftedinit/ui"
 import { TxnFirstCol, TxnItemRow } from "./base-txn-list-item"
 
 export function SetDescriptionTxnListItem({

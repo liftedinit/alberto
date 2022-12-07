@@ -1,9 +1,15 @@
 import { GrFormPrevious } from "react-icons/gr"
-import { AddressText, Button, Heading, Image, VStack } from "shared/components"
+import {
+  AddressText,
+  Button,
+  Heading,
+  Image,
+  VStack,
+  amountFormatter,
+  cubePng,
+} from "@liftedinit/ui"
 import { TxnList } from "features/transactions"
-import cubeImg from "shared/assets/cube.png"
 import { Asset } from "features/balances"
-import { amountFormatter } from "shared/helpers"
 
 type Props = {
   asset: Asset
@@ -22,7 +28,7 @@ export function AssetDetails({ asset, setAsset, address }: Props) {
         Back
       </Button>
       <VStack>
-        <Image src={cubeImg} boxSize="14" />
+        <Image src={cubePng} boxSize="14" />
         <Heading size="lg" fontWeight="normal">
           {amountFormatter(asset.balance)} {asset.symbol}
         </Heading>

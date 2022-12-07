@@ -10,7 +10,7 @@ import {
   Tbody,
   TableContainer,
   Text,
-} from "shared/components"
+} from "@liftedinit/ui"
 import { useTransactionsList } from "features/transactions/queries"
 import { TxnListItem } from "./txn-list-item"
 

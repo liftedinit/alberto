@@ -4,10 +4,11 @@ import {
   BoundType,
   EventsListResponse,
   ListOrderType,
+  ListFilterArgs,
+  Event,
 } from "@liftedinit/many-js"
-import { ListFilterArgs, Event } from "@liftedinit/many-js"
 import { useMutation, useQuery, useQueryClient } from "react-query"
-import { arrayBufferToBase64 } from "shared/helpers"
+import { arrayBufferToBase64 } from "@liftedinit/ui"
 
 export function useCreateSendTxn() {
   const [, network] = useNetworkContext()

@@ -8,7 +8,6 @@ import {
   AlertDescription,
   AlertDialog,
   AlertDialogProps,
-  AssetSelector,
   Button,
   Box,
   Checkbox,
@@ -28,18 +27,19 @@ import {
   useToast,
   useDisclosure,
   VStack,
-} from "shared/components"
-import cubeImg from "shared/assets/cube.png"
+  cubePng,
+  amountFormatter,
+  parseNumberToBigInt,
+} from "@liftedinit/ui"
 import {
   accountMultisigFeature,
   MultisigSettingsFields,
   useAccountsStore,
   useGetAccountInfo,
 } from "features/accounts"
-import { useBalances } from "features/balances"
+import { useBalances, AssetSelector } from "features/balances"
 import { useCreateSendTxn } from "features/transactions"
 import { ContactSelector, useGetContactName } from "features/contacts"
-import { amountFormatter, parseNumberToBigInt } from "shared/helpers"
 import { useMultisigSubmit } from "features/accounts"
 
 export function SendAssetModal({
@@ -445,7 +445,7 @@ export function SendAssetForm({
                 {asset ? (
                   <>
                     <HStack spacing={1}>
-                      <Image src={cubeImg} borderRadius="full" boxSize={9} />
+                      <Image src={cubePng} borderRadius="full" boxSize={9} />
                       <Text fontSize="xl">{asset.symbol}</Text>
                     </HStack>
                     <HStack>
@@ -636,7 +636,7 @@ function ConfirmTxnDialog({
           </DataField>
           <DataField label="Amount">
             <HStack spacing={1}>
-              <Image src={cubeImg} borderRadius="full" boxSize={9} />
+              <Image src={cubePng} borderRadius="full" boxSize={9} />
               <Text fontSize="lg" isTruncated fontWeight="medium">
                 {amount}
               </Text>

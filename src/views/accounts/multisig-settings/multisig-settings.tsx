@@ -5,7 +5,7 @@ import {
   AlertDescription,
   Button,
   VStack,
-} from "shared/components"
+} from "@liftedinit/ui"
 import {
   MultisigSettingsFields,
   useMultisigSetDefaults,

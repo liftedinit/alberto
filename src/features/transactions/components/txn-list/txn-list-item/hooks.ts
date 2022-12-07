@@ -20,8 +20,8 @@ import {
   SendOutlineIcon,
   UndoIcon,
   SettingsOutlineIcon,
-} from "shared/components"
-import { amountFormatter } from "shared/helpers"
+  amountFormatter,
+} from "@liftedinit/ui"
 import {
   approverRoles,
   useGetAccountInfo,

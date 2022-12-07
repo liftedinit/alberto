@@ -1,5 +1,5 @@
 import React, { Dispatch } from "react"
-import { Grid, GridItem, GridItemProps } from "shared/components"
+import { Grid, GridItem, GridItemProps } from "@liftedinit/ui"
 import { AppNav } from "./app-nav"
 import { AppMenu } from "./app-menu"
 

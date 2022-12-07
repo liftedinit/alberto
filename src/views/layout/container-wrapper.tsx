@@ -1,9 +1,5 @@
 import React from "react"
-import {
-  Container,
-  ContainerProps,
-  useBreakpointValue,
-} from "shared/components"
+import { Container, ContainerProps, useBreakpointValue } from "@liftedinit/ui"
 
 export function ContainerWrapper({
   children,

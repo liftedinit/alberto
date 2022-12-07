@@ -4,7 +4,7 @@ import {
   Flex,
   IconButton,
   useDisclosure,
-} from "shared/components"
+} from "@liftedinit/ui"
 
 export function BaseTxnDetails({ children }: React.PropsWithChildren<{}>) {
   const { isOpen, onOpen, onClose } = useDisclosure()
