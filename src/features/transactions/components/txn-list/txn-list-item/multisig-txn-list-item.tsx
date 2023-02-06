@@ -246,7 +246,9 @@ export function SubmittedMultisigTxnDetails({
         label="Expire"
         value={
           multisigTxnInfoData?.info?.expireDate
-            ? new Date(multisigTxnInfoData?.info.expireDate).toLocaleString()
+            ? new Date(
+                multisigTxnInfoData?.info.expireDate * 1000, // Date expects milliseconds
+              ).toLocaleString()
             : ""
         }
       />
