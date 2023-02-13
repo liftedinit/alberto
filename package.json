@@ -10,7 +10,9 @@
     "eject": "react-scripts eject",
     "test": "react-scripts test",
     "prepare": "husky install",
-    "test:e2e": "npx playwright test --config=./e2e/playwright.config.ts"
+    "test:e2e": "npx playwright test --config=./e2e/playwright.config.ts",
+    "version": "git add -A",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "@beam-australia/react-env": "^3.1.1",
