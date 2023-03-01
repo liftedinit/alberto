@@ -204,10 +204,7 @@ export function SubmittedMultisigTxnDetails({
   const { memo, executeAutomatically, threshold, transaction, submitter } =
     (multisigTxnInfoData?.info ?? {}) as MultisigTransactionInfo
 
-  const memoStr =
-    memo && Array.isArray(memo) && memo[0] instanceof String
-      ? (memo[0] as string)
-      : ""
+  const memoStr = memo && memo[0] instanceof String ? (memo[0] as string) : ""
 
   const submitterContactName = getContactName(submitter)
 
