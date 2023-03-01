@@ -204,6 +204,11 @@ export function SubmittedMultisigTxnDetails({
   const { memo, executeAutomatically, threshold, transaction, submitter } =
     (multisigTxnInfoData?.info ?? {}) as MultisigTransactionInfo
 
+  const memoStr =
+    memo && Array.isArray(memo) && memo[0] instanceof String
+      ? (memo[0] as string)
+      : ""
+
   const submitterContactName = getContactName(submitter)
 
   const approvers = makeApproversMap(
@@ -271,7 +276,7 @@ export function SubmittedMultisigTxnDetails({
 
       <DataField label="Required Approvers" value={threshold} />
 
-      <DataField label="Memo" value={memo} />
+      <DataField label="Memo" value={memoStr} />
 
       <DataField
         label="Execute Automatically"

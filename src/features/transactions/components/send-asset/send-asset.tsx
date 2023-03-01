@@ -213,7 +213,7 @@ export function useSendAssetForm({
           to: formValues.to,
           amount: bigIntAmount,
           symbol: asset!.identity,
-          memo: formValues?.memo?.trim(),
+          memo: [formValues?.memo?.trim()],
           ...newMultisigSettings,
         },
         {
