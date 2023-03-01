@@ -207,22 +207,24 @@ export function useSendAssetForm({
         multisigSettings as Map<string, unknown>,
         formValues.multisigSettings,
       )
-      doCreateMultisigSubmitTxn(
-        {
-          from: address,
-          to: formValues.to,
-          amount: bigIntAmount,
-          symbol: asset!.identity,
-          memo: formValues?.memo?.trim(),
-          ...newMultisigSettings,
+      const txn = {
+        from: address,
+        to: formValues.to,
+        amount: bigIntAmount,
+        symbol: asset!.identity,
+        ...newMultisigSettings,
+      }
+      if (formValues.memo) {
+        //@ts-ignore
+        txn.memo = [formValues.memo.trim()]
+      }
+
+      doCreateMultisigSubmitTxn(txn, {
+        onSuccess: () => {
+          onSendSuccess()
+          onSuccess?.()
         },
-        {
-          onSuccess: () => {
-            onSendSuccess()
-            onSuccess?.()
-          },
-        },
-      )
+      })
       return
     }
     doCreateSendTxn(
