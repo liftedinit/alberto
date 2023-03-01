@@ -41,3 +41,13 @@ available.
 
 - Lifted web3auth dashboard: https://dashboard.web3auth.io/
 - Users dashboard: https://app.openlogin.com/
+
+## Version
+
+Alberto is currently pre-release alpha software, so incrementing the version
+(which will trigger creating a GitHub Release) is best accomplished with the
+following command:
+
+```sh
+npm version prerelease --preid alpha
+```
