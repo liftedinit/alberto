@@ -54,6 +54,9 @@ export function AddAccountModal({
   React.useEffect(() => {
     setAddMethod("")
   }, [isOpen])
+  React.useEffect(() => {
+    console.log(addMethod, hasAddMethod);
+  }, [addMethod, hasAddMethod])
 
   return (
     <Modal
@@ -61,8 +64,8 @@ export function AddAccountModal({
       onClose={onClose}
       size={hasAddMethod ? "xl" : "md"}
       data-testid="add-account-form-container"
-      closeOnOverlayClick={hasAddMethod ? false : true}
-      closeOnEsc={hasAddMethod ? false : true}
+      closeOnOverlayClick={!hasAddMethod}
+      closeOnEsc={!hasAddMethod}
     >
       {!hasAddMethod && (
         <ScaleFade in={true} initialScale={0.9}>

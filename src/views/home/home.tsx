@@ -22,18 +22,17 @@ import React from "react"
 import { AnonymousIdentity } from "@liftedinit/many-js"
 
 import { Assets } from "./assets"
+import {UseDisclosureProps} from "@chakra-ui/hooks/src/use-disclosure";
 
 enum TabNames {
   assets = "Assets",
   activity = "Activity",
 }
 
-export function Home() {
+export function Home(props: { modalDisclosure: UseDisclosureProps }) {
   const {
-    isOpen: isAddAccountOpen,
-    onClose: onCloseAddAccount,
     onOpen: onOpenAddAccount,
-  } = useDisclosure()
+  } = props.modalDisclosure
   const isBase = useIsBaseBreakpoint()
   const [network] = useNetworkContext()
   const account = useAccountsStore(s => s.byId.get(s.activeId))
@@ -70,7 +69,7 @@ export function Home() {
             p={{ base: 2, md: 4 }}
           >
             <Tabs
-              isFitted={isBase ? true : false}
+              isFitted={isBase}
               index={isTabActive(TabNames.assets) ? 0 : 1}
               mb={3}
               onChange={index =>
@@ -98,10 +97,6 @@ export function Home() {
                     Add Account
                   </Button>
                 </VStack>
-                <AddAccountModal
-                  isOpen={isAddAccountOpen}
-                  onClose={onCloseAddAccount}
-                />
               </>
             ) : (
               <SlideFade in key={activeTab}>
