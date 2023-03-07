@@ -8,7 +8,7 @@ import {
   TabList,
   useDisclosure,
 } from "@liftedinit/ui"
-import { SearchAccount } from "./search-account/search-account"
+import { SearchAccount } from "./search-account"
 import { CreateAccount } from "./create-account"
 
 export type OnAccountSelected = (address: string) => void
@@ -69,7 +69,7 @@ function AddAccountModal({
       size={tab === 1 ? "xl" : undefined}
       footer={<></>}
       closeOnOverlayClick={false}
-      closeOnEsc={tab === 1 ? false : true}
+      closeOnEsc={tab !== 1}
     >
       <Modal.Body>
         <Tabs mb={4} onChange={tabIdx => setTab(tabIdx)}>
