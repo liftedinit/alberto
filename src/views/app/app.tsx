@@ -34,30 +34,30 @@ export function App() {
     return <Splash />
   }
   return (
-      <>
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <Layout>
-            <Outlet />
-          </Layout>
-        }
-      >
-        <Route index element={<Home modalDisclosure={modalDisclosure} />} />
-        <Route path="accounts" element={<Accounts />}>
-          <Route index element={<AccountsList />} />
-          <Route path=":accountAddress" element={<AccountDetails />} />
+    <>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Layout>
+              <Outlet />
+            </Layout>
+          }
+        >
+          <Route index element={<Home modalDisclosure={modalDisclosure} />} />
+          <Route path="accounts" element={<Accounts />}>
+            <Route index element={<AccountsList />} />
+            <Route path=":accountAddress" element={<AccountDetails />} />
+          </Route>
+          <Route path="transactions/:txnId" element={<TransactionDetails />} />
+          <Route path="contacts" element={<Contacts />} />
+          <Route path="send" element={<SendAsset />} />
         </Route>
-        <Route path="transactions/:txnId" element={<TransactionDetails />} />
-        <Route path="contacts" element={<Contacts />} />
-        <Route path="send" element={<SendAsset />} />
-      </Route>
-    </Routes>
-        <AddAccountModal
-            isOpen={isAddAccountOpen}
-            onClose={onCloseAddAccount}
-        />
-</>
+      </Routes>
+      <AddAccountModal
+          isOpen={isAddAccountOpen}
+          onClose={onCloseAddAccount}
+      />
+    </>
         )
 }
