@@ -27,7 +27,6 @@ export function App() {
   const {
     isOpen: isAddAccountOpen,
     onClose: onCloseAddAccount,
-    onOpen: onOpenAddAccount,
   } = modalDisclosure
 
   if (showSplash) {

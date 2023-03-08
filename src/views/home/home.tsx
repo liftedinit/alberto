@@ -9,12 +9,11 @@ import {
   TabList,
   Tabs,
   Text,
-  useDisclosure,
   VStack,
   useIsBaseBreakpoint,
 } from "@liftedinit/ui"
 import { Layout } from "views"
-import { AddAccountModal, useAccountsStore } from "features/accounts"
+import { useAccountsStore } from "features/accounts"
 import { useNetworkContext } from "features/network"
 import { TxnList } from "features/transactions"
 import React from "react"
