@@ -54,9 +54,6 @@ export function AddAccountModal({
   React.useEffect(() => {
     setAddMethod("")
   }, [isOpen])
-  React.useEffect(() => {
-    console.log(addMethod, hasAddMethod);
-  }, [addMethod, hasAddMethod])
 
   return (
     <Modal
