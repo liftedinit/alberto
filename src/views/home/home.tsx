@@ -29,10 +29,12 @@ enum TabNames {
   activity = "Activity",
 }
 
-export function Home(props: { modalDisclosure: UseDisclosureProps }) {
-  const {
-    onOpen: onOpenAddAccount,
-  } = props.modalDisclosure
+export function Home(
+    props: {
+        modalDisclosure?: UseDisclosureProps
+    }
+) {
+  const onOpenAddAccount = props.modalDisclosure?.onOpen || (() => {})
   const isBase = useIsBaseBreakpoint()
   const [network] = useNetworkContext()
   const account = useAccountsStore(s => s.byId.get(s.activeId))
