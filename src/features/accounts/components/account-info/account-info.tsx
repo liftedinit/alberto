@@ -1,15 +1,7 @@
 import { AccountInfoData } from "@liftedinit/many-js"
-import {
-  AddressText,
-  Box,
-  Divider,
-  Flex,
-  Heading,
-  Text,
-  VStack,
-} from "@liftedinit/ui"
+import { Box, Divider, Flex, Heading, Text, VStack } from "@liftedinit/ui"
 import { useContactsStore } from "features/contacts"
-import { useAccountsStore } from "features/accounts"
+import { AddressText, useAccountsStore } from "features/accounts"
 
 export function AccountInfo({
   address,

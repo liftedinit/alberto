@@ -11,7 +11,6 @@ import {
   Alert,
   AlertIcon,
   AlertDescription,
-  AddressText,
   Button,
   ButtonProps,
   Box,
@@ -35,6 +34,7 @@ import {
 } from "@liftedinit/ui"
 import { useGetContactName } from "features/contacts"
 import {
+  AddressText,
   approverRoles,
   useAccountsStore,
   useGetAccountInfo,

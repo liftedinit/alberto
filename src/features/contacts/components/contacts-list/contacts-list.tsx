@@ -11,8 +11,8 @@ import {
   StackDivider,
   UserIcon,
   VStack,
-  AddressText,
 } from "@liftedinit/ui"
+import { AddressText } from "features/accounts"
 import { Contact } from "../../types"
 import { RemoveContactDialog, UpdateContact } from "../update-contact"
 

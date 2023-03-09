@@ -8,8 +8,8 @@ import {
   Input,
   Modal,
   useToast,
-  AddressText,
 } from "@liftedinit/ui"
+import { AddressText } from "features/accounts"
 import { useAccountsStore, AccountId, Account } from "../../index"
 import { AnonymousIdentity } from "@liftedinit/many-js"
 

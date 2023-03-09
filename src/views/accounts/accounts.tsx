@@ -1,6 +1,5 @@
 import { Outlet, useParams } from "react-router-dom"
 import {
-  AddressText,
   Box,
   Breadcrumb,
   Flex,
@@ -9,7 +8,7 @@ import {
   SlideFade,
 } from "@liftedinit/ui"
 import { Layout } from "views"
-import { useGetAccountInfo } from "features/accounts"
+import { AddressText, useGetAccountInfo } from "features/accounts"
 
 export function Accounts() {
   return (

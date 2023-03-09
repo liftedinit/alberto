@@ -1,6 +1,5 @@
 import { GrFormPrevious } from "react-icons/gr"
 import {
-  AddressText,
   Button,
   Heading,
   Image,
@@ -10,6 +9,7 @@ import {
 } from "@liftedinit/ui"
 import { TxnList } from "features/transactions"
 import { Asset } from "features/balances"
+import { AddressText } from "features/accounts"
 
 type Props = {
   asset: Asset

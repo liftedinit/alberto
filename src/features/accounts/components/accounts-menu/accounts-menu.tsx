@@ -4,9 +4,8 @@ import {
   ANON_IDENTITY,
   WebAuthnIdentity,
 } from "@liftedinit/many-js"
-import { useAccountsStore } from "features/accounts"
+import { AddressText, useAccountsStore } from "features/accounts"
 import {
-  AddressText,
   Box,
   Button,
   Circle,

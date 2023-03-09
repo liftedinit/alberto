@@ -2,7 +2,6 @@ import React from "react"
 import { useForm, FormProvider } from "react-hook-form"
 import { ANON_IDENTITY } from "@liftedinit/many-js"
 import {
-  AddressText,
   Alert,
   AlertIcon,
   AlertDescription,
@@ -32,6 +31,7 @@ import {
   parseNumberToBigInt,
 } from "@liftedinit/ui"
 import {
+  AddressText,
   accountMultisigFeature,
   MultisigSettingsFields,
   useAccountsStore,
