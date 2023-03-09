@@ -19,10 +19,5 @@ describe("reviver", () => {
 
     const webauthnDe = reviver("", webauthn)
     expect(webauthnDe).toBeInstanceOf(WebAuthnIdentity)
-    // let address = await webauthnDe.getAddress()
-    //
-    // expect(address.toString()).toEqual(
-    //   "mahgrwinlmcbpl6pglk34hwfruvikyu4wooba2xol3yqns5qhp",
-    // )
   })
 })
