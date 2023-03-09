@@ -84,6 +84,10 @@ jobs:
                 command:
                   ghr -u ${CIRCLE_PROJECT_USERNAME} -r
                   ${CIRCLE_PROJECT_REPONAME} ${CIRCLE_TAG} /tmp/artifacts
+            - run:
+                name: deploy to dev environment
+                command:
+                  curl -X POST --fail -F token=$DEV_TRIGGER_TOKEN -F ref=$DEV_TRIGGER_REF $DEV_TRIGGER_URL 
       - when:
           condition: << parameters.pre-release >>
           steps:
@@ -92,7 +96,10 @@ jobs:
                 command:
                   ghr -prerelease -u ${CIRCLE_PROJECT_USERNAME} -r
                   ${CIRCLE_PROJECT_REPONAME} ${CIRCLE_TAG} /tmp/artifacts
-
+            - run:
+                name: deploy to dev environment
+                command:
+                  curl -X POST --fail -F token=$DEV_TRIGGER_TOKEN -F ref=$DEV_TRIGGER_REF $DEV_TRIGGER_URL 
 workflows:
   ci:
     jobs:
