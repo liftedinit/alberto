@@ -87,7 +87,7 @@ jobs:
             - run:
                 name: deploy to dev environment
                 command:
-                  curl -X POST --fail -F token=$DEV_TRIGGER_TOKEN -F ref=$DEV_TRIGGER_REF $DEV_TRIGGER_URL 
+                  curl -X POST --fail -F token=${DEV_TRIGGER_TOKEN} -F ref=${DEV_TRIGGER_REF} ${DEV_TRIGGER_URL} 
       - when:
           condition: << parameters.pre-release >>
           steps:
@@ -99,7 +99,7 @@ jobs:
             - run:
                 name: deploy to dev environment
                 command:
-                  curl -X POST --fail -F token=$DEV_TRIGGER_TOKEN -F ref=$DEV_TRIGGER_REF $DEV_TRIGGER_URL 
+                  curl -X POST --fail -F token=${DEV_TRIGGER_TOKEN} -F ref=${DEV_TRIGGER_REF} ${DEV_TRIGGER_URL}
 workflows:
   ci:
     jobs:
