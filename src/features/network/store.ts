@@ -1,7 +1,7 @@
 import create from "zustand"
 import { persist } from "zustand/middleware"
 import localforage from "localforage"
-import { replacer, reviver } from "@liftedinit/ui"
+import { replacer, reviver } from "shared"
 import { NetworkId, NetworkParams, NetworksState } from "./types"
 
 const devDomains = ["localhost", "liftedinit.tech"]
