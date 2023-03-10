@@ -114,7 +114,7 @@ export function AccountOwnerField({
               <Text
                 as="span"
                 fontSize={inputSize}
-                fontWeight="semibold"
+                fontWeight="medium"
                 casing="capitalize"
               >
                 {contactName}
