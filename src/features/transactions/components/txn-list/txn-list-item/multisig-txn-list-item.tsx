@@ -263,7 +263,7 @@ export function SubmittedMultisigTxnDetails({
           addressText={submitter ?? ""}
           bgColor={undefined}
           p={0}
-          textProps={{ fontWeight: "semibold" }}
+          textProps={{ fontWeight: "medium" }}
         />
       </DataField>
 
@@ -349,7 +349,7 @@ function SubmittedSendTxn({
           mb={4}
           bgColor={undefined}
           p={0}
-          textProps={{ fontWeight: "semibold" }}
+          textProps={{ fontWeight: "medium" }}
           addressText={toOrFromAddress}
         />
       </DataField>
@@ -389,7 +389,7 @@ export function ApproversList({
                 bgColor={undefined}
                 p={0}
                 addressText={address}
-                textProps={{ fontWeight: "semibold" }}
+                textProps={{ fontWeight: "medium" }}
               />
             </Box>
           </SimpleGrid>
