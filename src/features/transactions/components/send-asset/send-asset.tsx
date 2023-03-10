@@ -711,7 +711,7 @@ function EligibleIdentityWarning({
                 as="span"
                 p={0}
                 bgColor={undefined}
-                textProps={{ fontWeight: "semibold", fontSize: "sm" }}
+                textProps={{ fontWeight: "medium", fontSize: "sm" }}
                 iconProps={{ boxSize: 4 }}
               />
               )
