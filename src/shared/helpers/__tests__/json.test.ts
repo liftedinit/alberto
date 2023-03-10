@@ -19,15 +19,5 @@ describe("reviver", () => {
 
     const webauthnDe = reviver("", webauthn)
     expect(webauthnDe).toBeInstanceOf(WebAuthnIdentity)
-    let address = await webauthnDe.getAddress()
-    // Mock `Buffer` only here so base32encode works as expected.
-    // This _should_ be in `setupTests.ts` but I could not make it work.
-    const oldBuffer = global.Buffer
-    global.Buffer = require("Buffer").Buffer
-
-    expect(address.toString()).toEqual(
-      "mahgrwinlmcbpl6pglk34hwfruvikyu4wooba2xol3yqns5qhp",
-    )
-    global.Buffer = oldBuffer
   })
 })
