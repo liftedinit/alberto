@@ -10,10 +10,11 @@ import {
   MultisigExecuteEvent,
   MultisigWithdrawEvent,
   MultisigSetDefaultsEvent,
+  BurnEvent,
+  MintEvent,
 } from "@liftedinit/many-js"
 import {
   CheckCircleIcon,
-  MinusCircleIcon,
   LightningIcon,
   PendingIcon,
   ReceiveIcon,
@@ -21,6 +22,8 @@ import {
   UndoIcon,
   SettingsOutlineIcon,
   amountFormatter,
+  MinusCircleIcon,
+  PlusCircleIcon,
 } from "@liftedinit/ui"
 import {
   approverRoles,
@@ -63,6 +66,34 @@ export function useSendTxn({
     displayAmount,
     toOrFromAddress,
     contactName,
+    symbol: symbols.get(symbolAddress),
+  }
+}
+
+export function useMintBurnTxn({
+  address,
+  txn,
+}: {
+  address: string
+  txn: MintEvent | BurnEvent
+}) {
+  const { data } = useLedgerInfo({ address })
+  const symbols = data!.symbols
+
+  const isMint = txn.type === EventType.mint
+  const { amounts, symbolAddress } = txn as MintEvent
+  const TxnIcon = isMint ? PlusCircleIcon : MinusCircleIcon
+  const iconColor = isMint ? "green.500" : "red"
+  const title = isMint ? "mint" : "burn"
+  const amount = BigInt(amounts[address])
+
+  const displayAmount = `${isMint ? "+" : "-"}${amountFormatter(amount)}`
+
+  return {
+    title,
+    TxnIcon,
+    iconColor,
+    displayAmount,
     symbol: symbols.get(symbolAddress),
   }
 }
