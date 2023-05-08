@@ -145,7 +145,7 @@ workflows:
               ignore: /.*/
             tags:
               only:
-                - /^v?\d(\.\d){2}(-[\w-]+(\.[\w-])?)$/ # prereleases (0.1.1-alpha.8)
+                - /^v?\d(\.\d){2}(-[\w-]+(\.[\w-]+)?)$/ # prereleases (0.1.1-alpha.8)
 
 commands:
   install-packages:
