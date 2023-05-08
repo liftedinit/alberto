@@ -119,7 +119,7 @@ workflows:
             tags:
               only:
                 - /^v?\d(\.\d){2}$/ # e.g. major, minor, patch (0.1.1)
-                - /^v?\d(\.\d){2}(-[\w-]+(\.[\w-])?)$/ # prereleases (0.1.1-alpha.8)
+                - /^v?\d(\.\d){2}(-[\w-]+(\.[\w-]+)?)$/ # prereleases (0.1.1-alpha.8)
       - publish:
           name: publish
           pre-release: false
