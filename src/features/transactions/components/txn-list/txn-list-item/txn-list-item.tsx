@@ -8,6 +8,7 @@ import {
   SetDescriptionEvent,
   AddRolesEvent,
   RemoveRolesEvent,
+  MintEvent,
 } from "@liftedinit/many-js"
 import { multisigTxnTypes } from "features/accounts"
 import { MultisigTxnListItem } from "./multisig-txn-list-item"
@@ -16,6 +17,7 @@ import { SendTxnListItem } from "./send-txn-list-item"
 import { AddFeaturesTxnListItem } from "./add-features-txn-list-item"
 import { SetDescriptionTxnListItem } from "./set-description-txn-list-item"
 import { EditRolesTxnListItem } from "./edit-roles-txn-list-item"
+import { MintBurnTxnListItem } from "./mint-burn-txn-list-item"
 
 type EditRolesEvent = AddRolesEvent | RemoveRolesEvent
 
@@ -42,6 +44,10 @@ export function TxnListItem({
     txnTypeName === EventType.accountRemoveRoles
   ) {
     return <EditRolesTxnListItem txn={transaction as EditRolesEvent} />
+  } else if (txnTypeName === EventType.mint || txnTypeName === EventType.burn) {
+    return (
+      <MintBurnTxnListItem txn={transaction as MintEvent} address={address} />
+    )
   } else if (isMultisigTxnType(transaction.type)) {
     return <MultisigTxnListItem txn={transaction as MultisigEvent} />
   }
