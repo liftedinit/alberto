@@ -75,6 +75,24 @@ export function useTransactionsList({
     keepPreviousData: true,
   })
 
+  // HERE
+  //
+  // If the current network is the Manifest ledger, then get the LegacyNetwork and use that to query the events as well.
+  //     const q2 = useQuery<EventsListResponse, Error>({
+  //       queryKey: ["events", "list", address, filters, legacy_network?.url],
+  //       queryFn: async () =>
+  //         await legacy_network?.events?.list({
+  //           filters,
+  //           count: reqCount,
+  //           order: ListOrderType.descending,
+  //         }),
+  //       enabled: !!legacy_network?.url,
+  //       keepPreviousData: true,
+  //     })
+  //
+  // Merge the output of the two queries into one and modify the code below to take the merged output into account.
+  // HERE
+
   const txnsWithId = (q?.data?.events ?? []).map((t: Event) => ({
     ...t,
     time: t.time * 1000,
