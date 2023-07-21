@@ -1,1 +1,1 @@
-export { Symbols } from "./symbols";
+export { Symbols } from "./symbols"

@@ -1,8 +1,8 @@
 import create from "zustand"
-import {persist} from "zustand/middleware"
+import { persist } from "zustand/middleware"
 import localforage from "localforage"
-import {replacer, reviver} from "shared"
-import {NetworkId, NetworkParams, NetworksState} from "./types"
+import { replacer, reviver } from "shared"
+import { NetworkId, NetworkParams, NetworksState } from "./types"
 
 const devDomains = ["localhost", "liftedinit.tech"]
 
@@ -47,8 +47,8 @@ export const useNetworkStore = create<NetworksState & NetworkActions>(
       },
       getLegacyNetworks: () => {
         return Array.from(get().byId)
-          .map(([id, network]) => ({id, ...network}))
-          .filter(({filter}) => filter === "legacy")
+          .map(([id, network]) => ({ id, ...network }))
+          .filter(({ filter }) => filter === "legacy")
       },
       getActiveNetwork: () => {
         const networks = get().getNetworks()
