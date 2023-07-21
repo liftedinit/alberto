@@ -12,7 +12,10 @@ const initialState = {
   byId: new Map([
     [0, { name: "Manifest Ledger", url: "/api", filter: "alberto" }],
     [1, { name: "END Ledger", url: "/api-end", filter: "end-labs" }],
-    [2, { name: "Legacy Manifest Ledger", url: "/api123", filter: "legacy" }], // Hidden from UI
+    [
+      2,
+      { name: "Legacy Manifest Ledger", url: "/api/legacy", filter: "legacy" },
+    ], // Hidden from UI
   ]),
 }
 
