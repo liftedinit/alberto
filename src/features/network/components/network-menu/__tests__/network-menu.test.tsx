@@ -18,7 +18,7 @@ describe("NetworkMenu", () => {
 
   it("should create a new network", async () => {
     const activeNetwork = setupNetworkMenu()
-    createNetwork("test-network", "test-network/api")
+    await createNetwork("test-network", "test-network/api")
     expect(within(activeNetwork).getByText("test-network")).toBeInTheDocument()
   })
 
@@ -26,7 +26,7 @@ describe("NetworkMenu", () => {
     setupNetworkMenu()
 
     // Create and remove a new network
-    createNetwork("test-network", "test-network/api")
+    await createNetwork("test-network", "test-network/api")
     await removeNetwork("test-network/api")
     expect(screen.queryByText(/test-network/i)).not.toBeInTheDocument()
   })
@@ -35,7 +35,7 @@ describe("NetworkMenu", () => {
     const activeNetwork = setupNetworkMenu()
 
     // Create a new network
-    createNetwork("test-network", "test-network/api")
+    await createNetwork("test-network", "test-network/api")
 
     // Edit network
     await editNetwork("-edited", "-edited")
@@ -52,9 +52,11 @@ function setupNetworkMenu() {
   return activeNetwork
 }
 
-function createNetwork(name: string, url: string) {
-  const addNewBtn = screen.getByText(/add network/i)
-  userEvent.click(addNewBtn)
+async function createNetwork(name: string, url: string) {
+  const addNewBtn = await screen.findAllByRole("button", {
+    name: /add network/i,
+  })
+  userEvent.click(addNewBtn[0])
 
   const { saveBtn, nameInput, urlInput } = getFormElements()
 
