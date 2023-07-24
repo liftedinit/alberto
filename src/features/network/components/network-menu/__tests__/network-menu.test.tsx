@@ -38,10 +38,10 @@ describe("NetworkMenu", () => {
     const removeBtn = within(modal).getByTestId("remove network button")
     expect(removeBtn).toBeDisabled()
 
-    userEvent.type(removeInput, "/api")
+    userEvent.type(removeInput, "/dummy")
     expect(removeBtn).not.toBeDisabled()
     userEvent.click(removeBtn)
-    expect(screen.queryByText(/^manifest/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/^dummy/i)).not.toBeInTheDocument()
   })
   it("should edit a network", async () => {
     const activeNetwork = await setupEditNetwork()
