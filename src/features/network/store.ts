@@ -11,7 +11,7 @@ const initialState = {
   nextId: 4,
   byId: new Map([
     [0, { name: "Manifest Ledger", url: "/api", filter: "alberto" }],
-    [1, { name: "Dummy", url: "/foo", filter: "dummy" }],
+    [1, { name: "Dummy", url: "/dummy", filter: "dummy" }],
     [2, { name: "END Ledger", url: "/api-end", filter: "end-labs" }],
     [
       3,
