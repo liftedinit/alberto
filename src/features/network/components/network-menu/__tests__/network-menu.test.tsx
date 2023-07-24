@@ -35,8 +35,10 @@ describe("NetworkMenu", () => {
     setupNetworkMenu()
 
     // Create a new network
-    const addNewBtn = screen.getByText(/add network/i)
-    userEvent.click(addNewBtn)
+    const addNewBtn = await screen.findAllByRole("button", {
+      name: /add network/i,
+    })
+    userEvent.click(addNewBtn[0])
 
     const modal = screen.getByTestId("network-create-update-contents")
     const saveBtn = within(modal).getByText(/save/i)
