@@ -96,10 +96,12 @@ describe("NetworkMenu", () => {
     userEvent.type(nameInput, "-edited")
     userEvent.type(urlInput, "-edited")
 
-    expect(newNameInput).toHaveValue("Dummy-edited")
-    expect(newUrlInput).toHaveValue("/dummy-edited")
+    expect(newNameInput).toHaveValue("test-network-edited")
+    expect(newUrlInput).toHaveValue("test-network/api-edited")
     userEvent.click(newSaveBtn)
-    expect(within(activeNetwork).getByText(/dummy-edited/i)).toBeInTheDocument()
+    expect(
+      within(activeNetwork).getByText(/test-network-edited/i),
+    ).toBeInTheDocument()
   })
 })
 
