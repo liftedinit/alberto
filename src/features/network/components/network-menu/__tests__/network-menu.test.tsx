@@ -52,9 +52,12 @@ describe("NetworkMenu", () => {
     userEvent.click(saveBtn)
 
     // Remove the network
-    // const update_modal = screen.getByTestId("network-create-update-contents")
-    const removeInput = within(modal).getByLabelText(/remove network/i)
-    const removeBtn = within(modal).getByTestId("remove network button")
+    const editBtn = (
+      await screen.findAllByRole("button", { name: /edit network/i })
+    )[0]
+    fireEvent.click(editBtn)
+    const removeInput = screen.getByLabelText(/remove network/i)
+    const removeBtn = screen.getByTestId("remove network button")
     expect(removeBtn).toBeDisabled()
 
     userEvent.type(removeInput, "test-network/api")
