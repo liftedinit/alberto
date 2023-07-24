@@ -11,7 +11,7 @@ import { NetworkMenu } from "../network-menu"
 describe("NetworkMenu", () => {
   it("should render with default manifest network", () => {
     render(<NetworkMenu />)
-    expect(screen.getAllByText(/manifest/i).length).toBe(2)
+    expect(screen.getAllByText(/manifest/i).length).toBe(3)
   })
   it("should create a new network", async () => {
     const activeNetwork = setupNetworkMenu()
@@ -38,10 +38,10 @@ describe("NetworkMenu", () => {
     const removeBtn = within(modal).getByTestId("remove network button")
     expect(removeBtn).toBeDisabled()
 
-    userEvent.type(removeInput, "/api")
+    userEvent.type(removeInput, "/api/legacy")
     expect(removeBtn).not.toBeDisabled()
     userEvent.click(removeBtn)
-    expect(screen.queryByText(/manifest/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/legacy manifest/i)).not.toBeInTheDocument()
   })
   it("should edit a network", async () => {
     const activeNetwork = await setupEditNetwork()
