@@ -122,9 +122,9 @@ export function useTransactionsList({
   )
 
   const respCount = txnsWithId.length
-  const hasNextPage = respCount === reqCount
+  const hasNextPage = respCount >= reqCount
   const visibleTxnsWithId = hasNextPage
-    ? txnsWithId.slice(0, respCount - 1)
+    ? txnsWithId.slice(0, reqCount - 1)
     : txnsWithId
 
   return {
