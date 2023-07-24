@@ -12,8 +12,8 @@ import {
   TransactionDetails,
   Layout,
 } from "views"
-import {useDisclosure} from "@liftedinit/ui";
-import {AddAccountModal} from "../../features/accounts";
+import { useDisclosure } from "@liftedinit/ui"
+import { AddAccountModal } from "../../features/accounts"
 
 const ONE_SECOND = 1 * 1000
 
@@ -24,10 +24,8 @@ export function App() {
     return () => clearTimeout(id)
   }, [])
   const modalDisclosure = useDisclosure()
-  const {
-    isOpen: isAddAccountOpen,
-    onClose: onCloseAddAccount,
-  } = modalDisclosure
+  const { isOpen: isAddAccountOpen, onClose: onCloseAddAccount } =
+    modalDisclosure
 
   if (showSplash) {
     return <Splash />
@@ -53,10 +51,7 @@ export function App() {
           <Route path="send" element={<SendAsset />} />
         </Route>
       </Routes>
-      <AddAccountModal
-          isOpen={isAddAccountOpen}
-          onClose={onCloseAddAccount}
-      />
+      <AddAccountModal isOpen={isAddAccountOpen} onClose={onCloseAddAccount} />
     </>
-        )
+  )
 }
