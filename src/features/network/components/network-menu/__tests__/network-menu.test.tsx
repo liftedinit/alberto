@@ -51,12 +51,10 @@ describe("NetworkMenu", () => {
     userEvent.type(nameInput, "-edited")
     userEvent.type(urlInput, "-edited")
 
-    expect(nameInput).toHaveValue("Manifest Ledger-edited")
-    expect(urlInput).toHaveValue("/api-edited")
+    expect(nameInput).toHaveValue("Dummy-edited")
+    expect(urlInput).toHaveValue("/dummy-edited")
     userEvent.click(saveBtn)
-    expect(
-      within(activeNetwork).getByText(/manifest ledger-edited/i),
-    ).toBeInTheDocument()
+    expect(within(activeNetwork).getByText(/dummy-edited/i)).toBeInTheDocument()
   })
 })
 
@@ -71,7 +69,7 @@ async function setupEditNetwork() {
   const activeNetwork = setupNetworkMenu()
   const editBtn = (
     await screen.findAllByRole("button", { name: /edit network/i })
-  )[0]
+  )[1]
   fireEvent.click(editBtn)
   return activeNetwork
 }
