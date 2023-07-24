@@ -32,6 +32,8 @@ describe("NetworkMenu", () => {
     expect(within(activeNetwork).getByText("test-network")).toBeInTheDocument()
   })
   it("should remove a network", async () => {
+    setupNetworkMenu()
+
     // Create a new network
     const addNewBtn = screen.getByText(/add network/i)
     userEvent.click(addNewBtn)
@@ -48,9 +50,9 @@ describe("NetworkMenu", () => {
     userEvent.click(saveBtn)
 
     // Remove the network
-    const update_modal = screen.getByTestId("network-create-update-contents")
-    const removeInput = within(update_modal).getByLabelText(/remove network/i)
-    const removeBtn = within(update_modal).getByTestId("remove network button")
+    // const update_modal = screen.getByTestId("network-create-update-contents")
+    const removeInput = within(modal).getByLabelText(/remove network/i)
+    const removeBtn = within(modal).getByTestId("remove network button")
     expect(removeBtn).toBeDisabled()
 
     userEvent.type(removeInput, "test-network/api")
