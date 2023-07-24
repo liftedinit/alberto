@@ -8,13 +8,12 @@ const devDomains = ["localhost", "liftedinit.tech"]
 
 const initialState = {
   activeId: 0,
-  nextId: 4,
+  nextId: 3,
   byId: new Map([
     [0, { name: "Manifest Ledger", url: "/api", filter: "alberto" }],
-    [1, { name: "Dummy", url: "/dummy", filter: "dummy" }],
-    [2, { name: "END Ledger", url: "/api-end", filter: "end-labs" }],
+    [1, { name: "END Ledger", url: "/api-end", filter: "end-labs" }],
     [
-      3,
+      2,
       { name: "Legacy Manifest Ledger", url: "/api/legacy", filter: "legacy" },
     ], // Hidden from UI
   ]),
