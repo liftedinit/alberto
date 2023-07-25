@@ -289,6 +289,7 @@ function NetworkDetailsModal({
                 variant="filled"
                 onChange={onChange}
                 value={formValues.name}
+                disabled={formValues.name === "Manifest Ledger"}
               />
             </FormControl>
             <FormControl isRequired>
