@@ -1,5 +1,7 @@
 # Alberto
 
+[![coverage](https://img.shields.io/codecov/c/gh/liftedinit/alberto)](https://app.codecov.io/gh/liftedinit/alberto)
+
 Alberto by Lifted Labs is a cryptocurrency wallet that can hold identities and
 manage communications with a ledger running as a module on a network that
 supports the Many Protocol.

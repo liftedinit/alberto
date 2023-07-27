@@ -3,7 +3,8 @@
 version: 2.1
 
 orbs:
-  node: circleci/node@5.0.2
+  node: circleci/node@5.1.0
+  codecov: codecov/codecov@3.2.4
 
 jobs:
   test-build:
@@ -18,7 +19,8 @@ jobs:
       - install-packages
       - run:
           name: Run tests
-          command: npm run test
+          command: npm run test -- --coverage
+      - codecov/upload
       - when:
           condition:
             and:
@@ -52,12 +54,16 @@ jobs:
           command: npm run build:<< parameters.app_env >>
       - run:
           name: Compress artifacts
-          command:
-            tar -cvzf /tmp/artifacts/alberto_<< parameters.app_env >>_<< parameters.release_id >>_${CIRCLE_SHA1}.tar.gz ./build
+          command: >
+            tar -cvzf /tmp/artifacts/alberto_<< parameters.app_env >>_<<
+            parameters.release_id >>_${CIRCLE_SHA1}.tar.gz ./build
       - run:
           name: create release shasum
-          command:
-            shasum /tmp/artifacts/alberto_<< parameters.app_env >>_<< parameters.release_id >>_${CIRCLE_SHA1}.tar.gz > /tmp/artifacts/shasum_<< parameters.app_env >>_<< parameters.release_id >>_${CIRCLE_SHA1}.txt
+          command: >
+            shasum /tmp/artifacts/alberto_<< parameters.app_env >>_<<
+            parameters.release_id >>_${CIRCLE_SHA1}.tar.gz >
+            /tmp/artifacts/shasum_<< parameters.app_env >>_<<
+            parameters.release_id >>_${CIRCLE_SHA1}.txt
       - persist_to_workspace:
           root: /tmp/artifacts
           paths:
