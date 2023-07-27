@@ -12,6 +12,7 @@ import {
   MultisigSetDefaultsEvent,
   BurnEvent,
   MintEvent,
+  MultisigTransactionInfo,
 } from "@liftedinit/many-js"
 import {
   CheckCircleIcon,
@@ -187,63 +188,91 @@ export function useMultisigActions({
   const rolesForIdentity =
     accountInfoData?.accountInfo?.roles?.get(identityAddress)
 
-  const { data: multisigTxnInfoData } = useGetMultisigTxnInfo(txnToken)
+  const { data: maybeMultisigTxnInfoData } = useGetMultisigTxnInfo(txnToken)
+  const { isLegacyOnly, info: multisigTxnInfoData } =
+    maybeMultisigTxnInfoData ?? {}
 
-  const approvers = multisigTxnInfoData?.info?.approvers ?? new Map()
+  // Get the first result and compare it to the rest of the array, if any
+  const maybeFirst =
+    multisigTxnInfoData?.[0]?.info ?? ({} as MultisigTransactionInfo)
 
+  const approvers = maybeFirst.approvers ?? new Map<string, boolean>()
   const isApprover = rolesForIdentity?.some(r => approverRoles.includes(r))
-
-  const isSubmitter = multisigTxnInfoData?.info?.submitter === identityAddress
+  const isSubmitter = maybeFirst.submitter === identityAddress
+  const state = maybeFirst.state
 
   const isOwner = !!accountInfoData?.accountInfo?.roles
     ?.get(identityAddress)
     ?.includes(AccountRole[AccountRole.owner])
 
   const isThresholdReached =
-    Array.from(multisigTxnInfoData?.info?.approvers ?? new Map()).reduce(
-      (acc, approver) => {
-        const [, hasApproved] = approver
-        if (hasApproved) acc += 1
-        return acc
-      },
+    Array.from(approvers).reduce(
+      (acc, [, hasApproved]) => acc + (hasApproved ? 1 : 0),
       0,
-    ) >= (multisigTxnInfoData?.info?.threshold ?? Infinity)
+    ) >= (maybeFirst.threshold ?? Infinity)
+
+  // Are all the results the same?
+  const isSame = multisigTxnInfoData?.every(({ info }) => info === maybeFirst)
+  if (isSame === false) {
+    throw new Error(
+      "Discrepancy of the Multisig Transaction Info between networks.",
+    )
+  }
+
+  const createMutateHook = (hook: any) => {
+    const { reset, mutate, isLoading, error } = hook(txnToken)
+    return {
+      reset,
+      mutate,
+      isLoading,
+      error,
+    }
+  }
 
   const {
     reset: resetWithdraw,
     mutate: doWithdraw,
     isLoading: isWithdrawLoading,
     error: withdrawError,
-  } = useMultisigWithdraw(txnToken)
-  const canWithdraw = isSubmitter || isOwner
-
+  } = createMutateHook(useMultisigWithdraw)
   const {
     reset: resetApprove,
     mutate: doApprove,
     isLoading: isApproveLoading,
     error: approveError,
-  } = useMultisigApprove(txnToken)
-  const canApprove = approvers?.get(identityAddress)
-    ? false
-    : !!rolesForIdentity?.some(r => approverRoles.includes(r))
-
+  } = createMutateHook(useMultisigApprove)
   const {
     reset: resetRevoke,
     mutate: doRevoke,
     isLoading: isRevokeLoading,
     error: revokeError,
-  } = useMultisigRevoke(txnToken)
-  const canRevoke =
-    isApprover &&
-    (!approvers.has(identityAddress) || approvers.get(identityAddress) === true)
-
+  } = createMutateHook(useMultisigRevoke)
   const {
     reset: resetExecute,
     mutate: doExecute,
     isLoading: isExecuteLoading,
     error: executeError,
-  } = useMultisigExecute(txnToken)
-  const canExecute = isThresholdReached && (isSubmitter || isOwner)
+  } = createMutateHook(useMultisigExecute)
+
+  const txIsPending = state === "pending" // TODO: Use MultisigTransactionState enum from many-js
+
+  const canWithdraw = (isSubmitter || isOwner) && !isLegacyOnly && txIsPending
+  const canApprove =
+    !approvers?.get(identityAddress) &&
+    isApprover &&
+    !isLegacyOnly &&
+    txIsPending
+  const canRevoke =
+    isApprover &&
+    (!approvers.has(identityAddress) ||
+      approvers.get(identityAddress) === true) &&
+    !isLegacyOnly &&
+    txIsPending
+  const canExecute =
+    isThresholdReached &&
+    (isSubmitter || isOwner) &&
+    !isLegacyOnly &&
+    txIsPending
 
   const isLoading =
     isApproveLoading || isRevokeLoading || isWithdrawLoading || isExecuteLoading

@@ -21,18 +21,14 @@ import React from "react"
 import { AnonymousIdentity } from "@liftedinit/many-js"
 
 import { Assets } from "./assets"
-import {UseDisclosureProps} from "@chakra-ui/hooks/src/use-disclosure";
+import { UseDisclosureProps } from "@chakra-ui/hooks/src/use-disclosure"
 
 enum TabNames {
   assets = "Assets",
   activity = "Activity",
 }
 
-export function Home(
-    props: {
-        modalDisclosure?: UseDisclosureProps
-    }
-) {
+export function Home(props: { modalDisclosure?: UseDisclosureProps }) {
   const onOpenAddAccount = props.modalDisclosure?.onOpen || (() => {})
   const isBase = useIsBaseBreakpoint()
   const [network] = useNetworkContext()
