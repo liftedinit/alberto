@@ -12,12 +12,17 @@ const initialState = {
   byId: new Map([
     [0, { name: "Manifest Ledger", url: "/api", filter: "alberto" }],
     [1, { name: "END Ledger", url: "/api-end", filter: "end-labs" }],
+    [
+      2,
+      { name: "Legacy Manifest Ledger", url: "/api/legacy", filter: "legacy" },
+    ], // Hidden from UI
   ]),
 }
 
 interface NetworkActions {
   getNetworks: () => NetworkParams[]
   getActiveNetwork: () => NetworkParams | undefined
+  getLegacyNetworks: () => NetworkParams[]
   createNetwork: (n: NetworkParams) => void
   setActiveId: (id: NetworkId) => void
   updateNetwork: (id: NetworkId, n: NetworkParams) => void
@@ -42,6 +47,11 @@ export const useNetworkStore = create<NetworksState & NetworkActions>(
               devDomains.some(domain => hostname.includes(domain)),
           )
         return networks
+      },
+      getLegacyNetworks: () => {
+        return Array.from(get().byId)
+          .map(([id, network]) => ({ id, ...network }))
+          .filter(({ filter }) => filter === "legacy")
       },
       getActiveNetwork: () => {
         const networks = get().getNetworks()

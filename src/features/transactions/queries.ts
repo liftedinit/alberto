@@ -1,13 +1,21 @@
 import React from "react"
-import { useNetworkContext } from "features/network"
+import { useNetworkContext, useNetworkStore } from "features/network"
 import {
+  AnonymousIdentity,
   BoundType,
-  EventsListResponse,
-  ListOrderType,
-  ListFilterArgs,
   Event,
+  Events,
+  EventsListResponse,
+  ListFilterArgs,
+  ListOrderType,
+  Network,
 } from "@liftedinit/many-js"
-import { useMutation, useQuery, useQueryClient } from "react-query"
+import {
+  useMutation,
+  useQueries,
+  useQueryClient,
+  UseQueryResult,
+} from "react-query"
 import { arrayBufferToBase64 } from "@liftedinit/ui"
 
 export function useCreateSendTxn() {
@@ -62,34 +70,68 @@ export function useTransactionsList({
       : {}),
     ...filter,
   }
+  const q = [
+    {
+      queryKey: ["events", "list", address, filters, network?.url],
+      queryFn: async () =>
+        await network?.events?.list({
+          filters,
+          count: reqCount,
+          order: ListOrderType.descending,
+        }),
+      enabled: !!network?.url,
+      keepPreviousData: true,
+    },
+  ]
 
-  const q = useQuery<EventsListResponse, Error>({
-    queryKey: ["events", "list", address, filters, network?.url],
+  const activeNetwork = useNetworkStore(state => state.getActiveNetwork())
+  const legacyNetworksParams = useNetworkStore(state =>
+    state.getLegacyNetworks(),
+  )
+  const legacyNetworks = legacyNetworksParams.map(legacyNetworkParam => {
+    const url = legacyNetworkParam?.url || ""
+    const network = new Network(url, new AnonymousIdentity())
+    network.apply([Events])
+    return network
+  })
+  const legacy_q = legacyNetworks.map(legacyNetwork => ({
+    queryKey: ["events", "list", address, filters, legacyNetwork?.url],
     queryFn: async () =>
-      await network?.events?.list({
+      await legacyNetwork?.events?.list({
         filters,
         count: reqCount,
         order: ListOrderType.descending,
       }),
-    enabled: !!network?.url,
+    enabled:
+      activeNetwork?.name?.toLowerCase() === "manifest ledger" &&
+      !!legacyNetwork?.url,
     keepPreviousData: true,
-  })
-
-  const txnsWithId = (q?.data?.events ?? []).map((t: Event) => ({
-    ...t,
-    time: t.time * 1000,
-    _id: arrayBufferToBase64(t.id),
   }))
+
+  const allData = useQueries({
+    queries: [...q, ...legacy_q],
+  }) as UseQueryResult<EventsListResponse, Error>[]
+
+  const txnsWithId = allData.flatMap(
+    queryResult =>
+      queryResult.data?.events.map((t: Event) => ({
+        ...t,
+        time: t.time * 1000,
+        _id: arrayBufferToBase64(t.id),
+      })) || [],
+  )
+
   const respCount = txnsWithId.length
-  const hasNextPage = respCount === reqCount
+  const hasNextPage = respCount >= reqCount
   const visibleTxnsWithId = hasNextPage
-    ? txnsWithId.slice(0, respCount - 1)
+    ? txnsWithId.slice(0, reqCount - 1)
     : txnsWithId
+
   return {
-    isPreviousData: q.isPreviousData,
-    error: q?.error?.message,
-    isError: q.isError,
-    isLoading: q.isFetching,
+    isPreviousData: allData.some(result => result.isPreviousData),
+    error: allData.find(result => result.error)?.error?.message,
+    isError: allData.some(result => result.isError),
+    isLoading: allData.some(result => result.isFetching),
     hasNextPage,
     currPageCount: txnIds.length,
     prevBtnProps: {
@@ -106,7 +148,7 @@ export function useTransactionsList({
       },
     },
     data: {
-      count: q?.data?.count ?? 0,
+      count: txnsWithId.length,
       transactions: visibleTxnsWithId ?? [],
     },
   }

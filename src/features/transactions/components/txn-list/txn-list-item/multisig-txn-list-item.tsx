@@ -49,8 +49,10 @@ export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
   const { actionLabel, actorAddress, txnLabel, TxnIcon, iconProps } =
     useMultisigTxn(txn)
 
-  const { data: multisigTxnInfoData } = useGetMultisigTxnInfo(token)
-  const { state } = multisigTxnInfoData?.info ?? {}
+  const { data: maybeMultisigTxnInfoData } = useGetMultisigTxnInfo(token)
+  const { info: multisigTxnInfoData } = maybeMultisigTxnInfoData ?? {}
+  let states = new Set(multisigTxnInfoData?.map(item => item.info?.state))
+  let state = states.size === 1 ? [...states][0] : undefined // FIXME: State can be different
   const stateText = getTxnStateText(state)
 
   const getContactName = useGetContactName()
@@ -196,13 +198,36 @@ export function SubmittedMultisigTxnDetails({
     useGetAccountInfo(multisigTxn.account)
 
   const {
-    data: multisigTxnInfoData,
+    data: maybeMultisigTxnInfoData,
     isLoading: isMultisigTxnInfoLoading,
     error: multisigTxnInfoError,
   } = useGetMultisigTxnInfo(token)
+  const multisigTxnInfoData = maybeMultisigTxnInfoData?.info || []
 
-  const { memo, executeAutomatically, threshold, transaction, submitter } =
-    (multisigTxnInfoData?.info ?? {}) as MultisigTransactionInfo
+  // Get the first result and compare it to the rest of the array, if any
+  const maybeFirst =
+    multisigTxnInfoData?.[0]?.info ?? ({} as MultisigTransactionInfo)
+
+  // Are all the results the same?
+  const isSame = multisigTxnInfoData?.every(({ info }) => info === maybeFirst)
+
+  // If not, throw an error
+  const maybeError = isSame
+    ? undefined
+    : new Error(
+        "Discrepancy of the Multisig Transaction Info between networks.",
+      )
+
+  // Get the first result as the MultisigTransactionInfo
+  // The destructured elements will be undefined if the map is empty
+  const {
+    memo,
+    executeAutomatically,
+    threshold,
+    transaction,
+    submitter,
+    expireDate,
+  } = maybeFirst
 
   const memoStr = memo && typeof memo[0] === "string" ? memo[0] : ""
 
@@ -210,17 +235,22 @@ export function SubmittedMultisigTxnDetails({
 
   const approvers = makeApproversMap(
     accountInfoData?.accountInfo?.roles,
-    multisigTxnInfoData?.info?.approvers,
+    maybeFirst.approvers,
     getContactName,
   )
 
-  if (getAccountInfoError || multisigTxnInfoError) {
+  const hasError = getAccountInfoError || multisigTxnInfoError || maybeError
+  const isExpireDateExist = maybeFirst.expireDate
+
+  if (hasError) {
     return (
       <Alert status="warning">
         <AlertIcon />
         <AlertDescription>
           <Text>
-            {getAccountInfoError?.message ?? multisigTxnInfoError?.message}
+            {getAccountInfoError?.message ??
+              multisigTxnInfoError?.message ??
+              maybeError?.message}
           </Text>
         </AlertDescription>
       </Alert>
@@ -247,10 +277,8 @@ export function SubmittedMultisigTxnDetails({
       <DataField
         label="Expire"
         value={
-          multisigTxnInfoData?.info?.expireDate
-            ? new Date(
-                multisigTxnInfoData?.info.expireDate * 1000, // Date expects milliseconds
-              ).toLocaleString()
+          isExpireDateExist
+            ? new Date(expireDate * 1000).toLocaleString() // Date expects milliseconds
             : ""
         }
       />
@@ -475,7 +503,7 @@ export function MultisigActions({
                   onSuccess: () => {
                     onActionDone("success", title, "Transaction was approved")
                   },
-                  onError: err => {
+                  onError: (err: { message: string }) => {
                     onActionDone("warning", title, err?.message)
                   },
                 })
@@ -500,7 +528,7 @@ export function MultisigActions({
                   onSuccess: () => {
                     onActionDone("success", title, "Transaction was revoked")
                   },
-                  onError: err => {
+                  onError: (err: { message: string }) => {
                     onActionDone("warning", title, err?.message)
                   },
                 })
@@ -524,7 +552,7 @@ export function MultisigActions({
                   onSuccess: () => {
                     onActionDone("success", title, "Transaction was withdrawn")
                   },
-                  onError: err => {
+                  onError: (err: { message: string }) => {
                     onActionDone("warning", title, err?.message)
                   },
                 })
@@ -548,7 +576,7 @@ export function MultisigActions({
                 onSuccess: () => {
                   onActionDone("success", title, "Transaction was executed")
                 },
-                onError: err => {
+                onError: (err: { message: string }) => {
                   onActionDone("warning", title, err?.message)
                 },
               })
