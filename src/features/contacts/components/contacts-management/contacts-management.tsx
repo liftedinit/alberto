@@ -1,4 +1,4 @@
-import React from "react"
+import React, { ChangeEvent, useRef } from "react"
 import {
   AddressBookIcon,
   Button,
@@ -6,19 +6,21 @@ import {
   HStack,
   IconButton,
   Input,
-  InputGroup,
   InputLeftElement,
   PlusIcon,
   SearchIcon,
   Text,
   VStack,
   useDebounce,
+  Divider,
+  InputGroup,
 } from "@liftedinit/ui"
 import {
   UpdateContact,
   ContactsList,
   useContactsList,
   Contact,
+  useContactsStore,
 } from "features/contacts"
 
 export function ContactsManagement({
@@ -29,6 +31,28 @@ export function ContactsManagement({
   const [searchName, setSearchName] = React.useState("")
   const debouncedSearchName = useDebounce(searchName)
   const { contacts, total } = useContactsList(debouncedSearchName)
+  const inputRef = useRef<HTMLInputElement | null>(null)
+
+  const { updateContact } = useContactsStore()
+  const importContacts = (changeEvent: ChangeEvent<HTMLInputElement>) => {
+    const reader = new FileReader()
+    reader.onload = onLoadEvent => {
+      const contacts: Contact[] = JSON.parse(
+        onLoadEvent.target?.result as string,
+      )
+      contacts.forEach(contact => updateContact(contact.address, contact))
+    }
+    changeEvent.target.files && reader.readAsText(changeEvent.target.files?.[0])
+  }
+
+  const exportContacts = () => {
+    const flat = contacts.map(group => group.children).flat()
+    const a = document.createElement("a")
+    const file = new Blob([JSON.stringify(flat)], { type: "text/plain" })
+    a.href = URL.createObjectURL(file)
+    a.download = "contacts.json"
+    a.click()
+  }
 
   return (
     <>
@@ -79,6 +103,18 @@ export function ContactsManagement({
           />
         </>
       )}
+      <Divider my={6} />
+      <HStack>
+        <InputGroup onClick={() => inputRef.current?.click()}>
+          <input onChange={importContacts} type="file" ref={inputRef} hidden />
+          <Button variant="outline">Import Contacts</Button>
+        </InputGroup>
+        <InputGroup onClick={exportContacts}>
+          <Button variant="outline" disabled={!total}>
+            Export Contacts
+          </Button>
+        </InputGroup>
+      </HStack>
     </>
   )
 }
