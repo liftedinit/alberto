@@ -55,15 +55,11 @@ jobs:
       - run:
           name: Compress artifacts
           command: >
-            tar -cvzf /tmp/artifacts/alberto_<< parameters.app_env >>_<<
-            parameters.release_id >>_${CIRCLE_SHA1}.tar.gz ./build
+            tar -cvzf /tmp/artifacts/alberto_<< parameters.app_env >>_<< parameters.release_id >>_${CIRCLE_SHA1}.tar.gz ./build
       - run:
           name: create release shasum
           command: >
-            shasum /tmp/artifacts/alberto_<< parameters.app_env >>_<<
-            parameters.release_id >>_${CIRCLE_SHA1}.tar.gz >
-            /tmp/artifacts/shasum_<< parameters.app_env >>_<<
-            parameters.release_id >>_${CIRCLE_SHA1}.txt
+            shasum /tmp/artifacts/alberto_<< parameters.app_env >>_<< parameters.release_id >>_${CIRCLE_SHA1}.tar.gz > /tmp/artifacts/shasum_<< parameters.app_env >>_<< parameters.release_id >>_${CIRCLE_SHA1}.txt
       - persist_to_workspace:
           root: /tmp/artifacts
           paths:
