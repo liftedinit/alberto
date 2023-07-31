@@ -3,7 +3,8 @@
 version: 2.1
 
 orbs:
-  node: circleci/node@5.0.2
+  node: circleci/node@5.1.0
+  codecov: codecov/codecov@3.2.4
 
 jobs:
   test-build:
@@ -18,7 +19,18 @@ jobs:
       - install-packages
       - run:
           name: Run tests
-          command: npm run test
+          command: npm run test -- --coverage
+      - codecov/upload
+      - when:
+          condition:
+            and:
+              - not:
+                  equal: ["16.16.0", << parameters.node_version >>]
+          steps:
+            # node 17+ workaround https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported
+            - run:
+                echo 'export NODE_OPTIONS=--openssl-legacy-provider' >>
+                $BASH_ENV
       - run:
           name: Build staging app
           command: npm run build:staging
@@ -42,11 +54,11 @@ jobs:
           command: npm run build:<< parameters.app_env >>
       - run:
           name: Compress artifacts
-          command:
+          command: >
             tar -cvzf /tmp/artifacts/alberto_<< parameters.app_env >>_<< parameters.release_id >>_${CIRCLE_SHA1}.tar.gz ./build
       - run:
           name: create release shasum
-          command:
+          command: >
             shasum /tmp/artifacts/alberto_<< parameters.app_env >>_<< parameters.release_id >>_${CIRCLE_SHA1}.tar.gz > /tmp/artifacts/shasum_<< parameters.app_env >>_<< parameters.release_id >>_${CIRCLE_SHA1}.txt
       - persist_to_workspace:
           root: /tmp/artifacts
