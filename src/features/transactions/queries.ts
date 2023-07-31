@@ -10,6 +10,9 @@ import { arrayBufferToBase64 } from "@liftedinit/ui"
 import React, { useEffect } from "react"
 
 const PAGE_SIZE = 11
+type EventWithID = Event & {
+  _id: string
+}
 
 export function useCreateSendTxn() {
   const [, network] = useNetworkContext()
@@ -52,101 +55,92 @@ export function useTransactionsList({
   filter = {},
   count: reqCount = PAGE_SIZE,
 }: TransactionsListArgs) {
-  const [data, setData] = React.useState<any[]>([])
+  const [data, setData] = React.useState<EventWithID[]>([])
   const [loading, setLoading] = React.useState(true)
-  const [error, setError] = React.useState(Error)
+  const [error, setError] = React.useState<Error | null>(null)
   const [txnIds, setTxnIds] = React.useState<ArrayBuffer[]>([])
   const [activeNetwork, , legacyNetworks] = useNetworkContext()
 
   const filterRef = React.useRef(filter)
 
-  useEffect(() => {
-    const fetchQueries = async () => {
-      try {
-        setLoading(true)
-        const backends = [
-          ...(activeNetwork ? [activeNetwork] : []),
-          ...(legacyNetworks || []),
-        ]
-        let resultData: Event[] = []
+  // `useCallback` will return a memoized version of the callback that only changes if one of the dependencies has changed.
+  const fetchQueries = React.useCallback(async () => {
+    try {
+      setLoading(true)
+      const backends = [
+        ...(activeNetwork ? [activeNetwork] : []),
+        ...(legacyNetworks || []),
+      ]
+      let resultData: EventWithID[] = []
 
-        // Filter by account address and any filter given by the user
-        const filters = {
-          accounts: address,
-          ...filterRef.current,
-        }
+      // Filter by account address and any filter given by the user
+      const filters = {
+        accounts: address,
+        ...filterRef.current,
+      }
 
-        let checkTx = false // Flag to check if txnIds[0] exists in the current backend
+      let checkTx = txnIds.length > 0 // Flag to check if txnIds[0] exists in the current backend
+      let counter = reqCount
 
-        // txnIds[0] is the last (hidden) transaction from the previous page / the first transaction of the next page
-        // Create a filter that will look that this transaction exists in the current endpoint
-        // This is a workaround for https://github.com/liftedinit/many-rs/issues/404
-        if (txnIds.length > 0) {
+      // TODO: An optimization would be to not query the first backend if we're already on the next one
+      for (const backend of backends) {
+        let response
+
+        // Filter by txnIds[0] iif it exists in the current backend
+        if (txnIds.length > 0 && checkTx) {
           filters.txnIdRange = [
-            { boundType: BoundType.inclusive, value: txnIds[0] },
+            undefined,
             { boundType: BoundType.inclusive, value: txnIds[0] },
           ]
-          checkTx = true
         }
 
-        let counter = reqCount
-        for (const backend of backends) {
-          // Get the data from the current endpoint
-          let response = await backend.events?.list({
+        try {
+          response = await backend.events?.list({
             count: counter,
             order: ListOrderType.descending,
             filters,
           })
-          const response_length = response?.events.length
-
-          // The current backend has no data; try the next one
-          if (response_length === 0 && checkTx) {
+        } catch (err) {
+          // If the event is not found, continue to the next backend
+          if ((err as Error)?.message.startsWith("Event not found")) {
             continue
-          } else if (response_length === 1 && checkTx) {
-            // txnIds[0] exists in the current backend; query the backend again for the remaining transactions
-            checkTx = false
-            filters.txnIdRange = [
-              undefined,
-              { boundType: BoundType.inclusive, value: txnIds[0] },
-            ]
-            response = await backend.events?.list({
-              count: counter,
-              order: ListOrderType.descending,
-              filters,
-            })
           }
-
-          resultData = resultData.concat(
-            response?.events.map((t: Event) => ({
-              ...t,
-              time: t.time * 1000,
-              _id: arrayBufferToBase64(t.id),
-            })) || [],
-          )
-
-          // At this point the current backend has some data. Do we have enough?
-          if (
-            response?.events.length === reqCount ||
-            resultData.length === reqCount
-          ) {
-            // We have enough data for the current page, break
-            break
-          }
-
-          // At this point we have some data but not enough for the current page
-          // Try to get the remaining data from the next backend
-          counter = reqCount - resultData.length
-          delete filters.txnIdRange // Remove the filter, if any
         }
-        setData(resultData)
-        setLoading(false)
-      } catch (err) {
-        setError(err as Error)
-        setLoading(false)
+
+        resultData = resultData.concat(
+          response?.events.map((t: Event) => ({
+            ...t,
+            time: t.time * 1000,
+            _id: arrayBufferToBase64(t.id),
+          })) || [],
+        )
+
+        // At this point the current backend has some data. Do we have enough?
+        if (
+          response?.events.length === reqCount ||
+          resultData.length === reqCount
+        ) {
+          // We have enough data for the current page, break
+          break
+        }
+
+        // At this point we have some data but not enough for the current page
+        // Try to get the remaining data from the next backend
+        counter = reqCount - resultData.length
+        delete filters.txnIdRange // Remove the filter, if any
+        checkTx = false // We're reaching the next backend; we don't need to check for txnIds[0] anymore
       }
+      setData(resultData)
+      setLoading(false)
+    } catch (err) {
+      setError(err as Error)
+      setLoading(false)
     }
-    fetchQueries()
   }, [address, reqCount, activeNetwork, legacyNetworks, txnIds])
+
+  useEffect(() => {
+    fetchQueries()
+  }, [fetchQueries])
 
   const hasNextPage = data.length === PAGE_SIZE
   const visibleTxnsWithId = hasNextPage ? data.slice(0, PAGE_SIZE - 1) : data
