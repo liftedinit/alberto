@@ -19,16 +19,6 @@ jobs:
       - run:
           name: Run tests
           command: npm run test
-      - when:
-          condition:
-            and:
-              - not:
-                  equal: ["16.16.0", << parameters.node_version >>]
-          steps:
-            # node 17+ workaround https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported
-            - run:
-                echo 'export NODE_OPTIONS=--openssl-legacy-provider' >>
-                $BASH_ENV
       - run:
           name: Build staging app
           command: npm run build:staging
@@ -42,7 +32,7 @@ jobs:
         default: "RELEASE"
     executor:
       name: node/default
-      tag: "16.16.0"
+      tag: "18.16.1"
     resource_class: large
     steps:
       - install-packages
@@ -102,7 +92,7 @@ workflows:
           matrix:
             parameters:
               node_version:
-                - "16.16.0"
+                - "18.16.1"
       - create:
           name: create-<< matrix.app_env >>
           matrix:
