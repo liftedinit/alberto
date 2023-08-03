@@ -39,6 +39,7 @@ export function ContactsManagement({
   const importContacts = (changeEvent: ChangeEvent<HTMLInputElement>) => {
     const reader = new FileReader()
     reader.onload = onLoadEvent => {
+      let imported = 0
       let failed = 0
       const contacts: Contact[] = JSON.parse(
         onLoadEvent.target?.result as string,
@@ -46,6 +47,7 @@ export function ContactsManagement({
       contacts.forEach(contact => {
         if (contact.address && contact.name) {
           updateContact(contact.address, contact)
+          imported++
         } else {
           failed++
         }
@@ -54,14 +56,16 @@ export function ContactsManagement({
         toast({
           status: "success",
           title: "Import Contacts",
-          description: `${contacts.length} contacts imported`,
+          description: `${imported} contact${imported > 1 ? "s" : ""} imported`,
         })
       } else {
         toast({
           status: "warning",
           title: "Import Contacts",
-          description: `${contacts.length - failed
-            } contacts imported, ${failed} contacts failed to import`,
+          description: `
+            ${imported} contact${imported > 1 ? "s" : ""} imported,
+            ${failed} contact${failed > 1 ? "s" : ""} failed to import
+          `,
         })
       }
     }
