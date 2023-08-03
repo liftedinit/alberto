@@ -14,6 +14,7 @@ import {
   useDebounce,
   Divider,
   InputGroup,
+  useToast,
 } from "@liftedinit/ui"
 import {
   UpdateContact,
@@ -32,16 +33,39 @@ export function ContactsManagement({
   const debouncedSearchName = useDebounce(searchName)
   const { contacts, total } = useContactsList(debouncedSearchName)
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const toast = useToast()
 
   const { updateContact } = useContactsStore()
   const importContacts = (changeEvent: ChangeEvent<HTMLInputElement>) => {
     const reader = new FileReader()
     reader.onload = onLoadEvent => {
+      let failed = 0
       const contacts: Contact[] = JSON.parse(
         onLoadEvent.target?.result as string,
       )
-      contacts.forEach(contact => updateContact(contact.address, contact))
+      contacts.forEach(contact => {
+        if (contact.address && contact.name) {
+          updateContact(contact.address, contact)
+        } else {
+          failed++
+        }
+      })
+      if (!failed) {
+        toast({
+          status: "success",
+          title: "Import Contacts",
+          description: `${contacts.length} contacts imported`,
+        })
+      } else {
+        toast({
+          status: "warning",
+          title: "Import Contacts",
+          description: `${contacts.length - failed
+            } contacts imported, ${failed} contacts failed to import`,
+        })
+      }
     }
+
     changeEvent.target.files && reader.readAsText(changeEvent.target.files?.[0])
   }
 
@@ -49,8 +73,9 @@ export function ContactsManagement({
     const flat = contacts.map(group => group.children).flat()
     const a = document.createElement("a")
     const file = new Blob([JSON.stringify(flat)], { type: "text/plain" })
+    const date = new Date().toISOString().split("T")[0]
     a.href = URL.createObjectURL(file)
-    a.download = "contacts.json"
+    a.download = `contacts_${date}.json`
     a.click()
   }
 
