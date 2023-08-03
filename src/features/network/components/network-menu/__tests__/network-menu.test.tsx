@@ -8,6 +8,8 @@ import {
 } from "test/test-utils"
 import { NetworkMenu } from "../network-menu"
 
+jest.setTimeout(20 * 1000)
+
 describe("NetworkMenu", () => {
   afterEach(cleanup)
 
