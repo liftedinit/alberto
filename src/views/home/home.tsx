@@ -29,7 +29,7 @@ enum TabNames {
 }
 
 export function Home(props: { modalDisclosure?: UseDisclosureProps }) {
-  const onOpenAddAccount = props.modalDisclosure?.onOpen || (() => {})
+  const onOpenAddAccount = props.modalDisclosure?.onOpen || (() => { })
   const isBase = useIsBaseBreakpoint()
   const [network] = useNetworkContext()
   const account = useAccountsStore(s => s.byId.get(s.activeId))
@@ -50,7 +50,14 @@ export function Home(props: { modalDisclosure?: UseDisclosureProps }) {
   return (
     <Layout.Main>
       <SlideFade in>
-        <Container maxW={{ base: "auto", md: "container.sm" }}>
+        <Container
+          maxW={{
+            base: "auto",
+            md: "container.sm",
+            lg: "container.md",
+            xl: "container.lg",
+          }}
+        >
           <Breadcrumb my={4}>
             <Breadcrumb.BreadcrumbItem>
               <Breadcrumb.BreadcrumbLink to="/" isCurrentPage={true}>

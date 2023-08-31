@@ -3,9 +3,8 @@ import {
   AddressText,
   Box,
   Breadcrumb,
+  Container,
   Flex,
-  PageContainer,
-  PageContainerProvider,
   SlideFade,
 } from "@liftedinit/ui"
 import { Layout } from "views"
@@ -13,20 +12,25 @@ import { useGetAccountInfo } from "features/accounts"
 
 export function Accounts() {
   return (
-    <PageContainerProvider>
-      <Layout.Main>
-        <SlideFade in={true}>
-          <PageContainer>
-            <Box my={4}>
-              <AccountsHeader />
-            </Box>
-            <Box rounded="md" shadow="md" bgColor="white" p={4}>
-              <Outlet />
-            </Box>
-          </PageContainer>
-        </SlideFade>
-      </Layout.Main>
-    </PageContainerProvider>
+    <Layout.Main>
+      <SlideFade in={true}>
+        <Container
+          maxW={{
+            base: "auto",
+            md: "container.sm",
+            lg: "container.md",
+            xl: "container.lg",
+          }}
+        >
+          <Box my={4}>
+            <AccountsHeader />
+          </Box>
+          <Box rounded="md" shadow="md" bgColor="white" p={4}>
+            <Outlet />
+          </Box>
+        </Container>
+      </SlideFade>
+    </Layout.Main>
   )
 }
 
