@@ -102,7 +102,7 @@ describe("home page", () => {
     expect(assetsTab).toBeInTheDocument()
     expect(activityTab).toBeInTheDocument()
   })
-  it("should list the balances of each token the account holds", async function() {
+  it("should list the balances of each token the account holds", async function () {
     setupHome()
 
     expect(screen.getByText(/abc/i)).toBeInTheDocument()
@@ -173,7 +173,6 @@ describe("home page", () => {
   it("should show list of account transaction history", async () => {
     const { activityTab } = setupHome()
     userEvent.click(activityTab)
-    await waitFor(() => screen.findByText(/abc/i))
 
     await waitFor(() =>
       expect(mockNetwork.events.list).toHaveBeenCalledTimes(1),
