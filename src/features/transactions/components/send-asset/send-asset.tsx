@@ -389,47 +389,58 @@ export function SendAssetForm({
             </VStack>
           </FieldWrapper>
 
-          <HStack w="100%" justifyContent="space-between" alignItems="stretch">
-            <FormLabel htmlFor="asset">Asset</FormLabel>
-            <Box>
-              <AssetSelector
-                ownedAssets={balances.data.ownedAssetsWithBalance}
-                allAssets={balances.data.allAssetsWithBalance}
-                onAssetClicked={asset => {
-                  setAsset(asset)
-                }}
+          <FieldWrapper
+            isRequired
+            label={() => {
+              return (
+                <HStack
+                  w="100%"
+                  justifyContent="space-between"
+                  alignItems="stretch"
+                >
+                  <FormLabel htmlFor="asset">Asset</FormLabel>
+                  <Box>
+                    <AssetSelector
+                      ownedAssets={balances.data.ownedAssetsWithBalance}
+                      allAssets={balances.data.allAssetsWithBalance}
+                      onAssetClicked={asset => {
+                        setAsset(asset)
+                      }}
+                    >
+                      {onOpen => (
+                        <Button
+                          size="sm"
+                          rightIcon={<ChevronDownIcon boxSize={4} />}
+                          aria-label="select token"
+                          onClick={onOpen}
+                          variant="link"
+                        >
+                          Select an asset
+                        </Button>
+                      )}
+                    </AssetSelector>
+                  </Box>
+                </HStack>
+              )
+            }}
+          >
+            {asset ? (
+              <VStack
+                marginTop="0 !important"
+                w="100%"
+                bgColor="gray.100"
+                px={2}
+                py={2}
+                rounded="md"
+                alignItems="flex-start"
               >
-                {onOpen => (
-                  <Button
-                    size="sm"
-                    rightIcon={<ChevronDownIcon boxSize={4} />}
-                    aria-label="select token"
-                    onClick={onOpen}
-                    variant="link"
-                  >
-                    Select an asset
-                  </Button>
-                )}
-              </AssetSelector>
-            </Box>
-          </HStack>
-
-          {asset ? (
-            <VStack
-              marginTop="0 !important"
-              w="100%"
-              bgColor="gray.100"
-              px={2}
-              py={2}
-              rounded="md"
-              alignItems="flex-start"
-            >
-              <HStack spacing={1}>
-                <Image src={cubePng} borderRadius="full" boxSize={9} />
-                <Text fontSize="xl">{asset.symbol}</Text>
-              </HStack>
-            </VStack>
-          ) : null}
+                <HStack spacing={1}>
+                  <Image src={cubePng} borderRadius="full" boxSize={9} />
+                  <Text fontSize="xl">{asset.symbol}</Text>
+                </HStack>
+              </VStack>
+            ) : null}
+          </FieldWrapper>
 
           <FieldWrapper
             isRequired
