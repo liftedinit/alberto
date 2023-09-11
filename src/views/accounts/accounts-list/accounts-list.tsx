@@ -19,7 +19,6 @@ import {
   Text,
   useToast,
   useDisclosure,
-  usePageContainerProvider,
   useBreakpointValue,
   VStack,
   useDebounce,
@@ -32,19 +31,12 @@ import {
 } from "features/accounts"
 
 export function AccountsList() {
-  const [, setContainerProps] = usePageContainerProvider()
   const [name, setName] = React.useState("")
   const debouncedName = useDebounce(name)
   const { update, count: accountCount } = useAccountStore(s => ({
     update: s.update,
     count: s.byId.size,
   }))
-
-  React.useLayoutEffect(() => {
-    setContainerProps({
-      w: { base: "auto", md: "md" },
-    })
-  }, [setContainerProps])
 
   if (!accountCount) return <NoAccountsPrompt />
   return (
