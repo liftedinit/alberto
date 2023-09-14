@@ -114,8 +114,8 @@ export function useSendAssetForm({
   const [asset, setAsset] = React.useState(() =>
     assetAddress
       ? balances?.data?.allAssetsWithBalance?.find(
-          asset => asset.identity === assetAddress,
-        )
+        asset => asset.identity === assetAddress,
+      )
       : undefined,
   )
   const toast = useToast()
@@ -391,11 +391,14 @@ export function SendAssetForm({
 
           <FieldWrapper
             isRequired
-            error={errors?.amount?.message}
             label={() => {
               return (
-                <Flex alignItems="stretch" justifyContent="space-between">
-                  <FormLabel htmlFor="amount">Amount</FormLabel>
+                <HStack
+                  w="100%"
+                  justifyContent="space-between"
+                  alignItems="stretch"
+                >
+                  <FormLabel htmlFor="asset">Asset</FormLabel>
                   <Box>
                     <AssetSelector
                       ownedAssets={balances.data.ownedAssetsWithBalance}
@@ -417,6 +420,35 @@ export function SendAssetForm({
                       )}
                     </AssetSelector>
                   </Box>
+                </HStack>
+              )
+            }}
+          >
+            {asset ? (
+              <VStack
+                marginTop="0 !important"
+                w="100%"
+                bgColor="gray.100"
+                px={2}
+                py={2}
+                rounded="md"
+                alignItems="flex-start"
+              >
+                <HStack spacing={1}>
+                  <Image src={cubePng} borderRadius="full" boxSize={9} />
+                  <Text fontSize="xl">{asset.symbol}</Text>
+                </HStack>
+              </VStack>
+            ) : null}
+          </FieldWrapper>
+
+          <FieldWrapper
+            isRequired
+            error={errors?.amount?.message}
+            label={() => {
+              return (
+                <Flex alignItems="stretch" justifyContent="space-between">
+                  <FormLabel htmlFor="amount">Amount</FormLabel>
                 </Flex>
               )
             }}
@@ -445,30 +477,24 @@ export function SendAssetForm({
               />
               <VStack alignItems="flex-end" spacing={0}>
                 {asset ? (
-                  <>
-                    <HStack spacing={1}>
-                      <Image src={cubePng} borderRadius="full" boxSize={9} />
-                      <Text fontSize="xl">{asset.symbol}</Text>
-                    </HStack>
-                    <HStack>
-                      <Text whiteSpace="nowrap" fontSize="xs">
-                        Balance: {amountFormatter(asset.balance)}
-                      </Text>
-                      <Button
-                        variant="link"
-                        colorScheme="red"
-                        size="xs"
-                        onClick={() => {
-                          formMethods.setValue(
-                            "amount",
-                            amountFormatter(asset.balance),
-                          )
-                        }}
-                      >
-                        Max
-                      </Button>
-                    </HStack>
-                  </>
+                  <HStack>
+                    <Text whiteSpace="nowrap" fontSize="xs">
+                      Balance: {amountFormatter(asset.balance)}
+                    </Text>
+                    <Button
+                      variant="link"
+                      colorScheme="red"
+                      size="xs"
+                      onClick={() => {
+                        formMethods.setValue(
+                          "amount",
+                          amountFormatter(asset.balance),
+                        )
+                      }}
+                    >
+                      Max
+                    </Button>
+                  </HStack>
                 ) : null}
               </VStack>
             </HStack>

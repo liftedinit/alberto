@@ -1,13 +1,6 @@
 import React from "react"
 import { useParams } from "react-router-dom"
-import {
-  Box,
-  SlideFade,
-  Tabs,
-  TabList,
-  Tab,
-  usePageContainerProvider,
-} from "@liftedinit/ui"
+import { Box, SlideFade, Tabs, TabList, Tab } from "@liftedinit/ui"
 import { Assets } from "views/home/assets"
 import { TxnList } from "features/transactions"
 import { MultisigSettings } from "../multisig-settings/multisig-settings"
@@ -34,13 +27,6 @@ export function AccountDetails() {
   const [activeTabIdx, setActiveTabIdx] = React.useState(0)
   let tabs = Object.values(TabNames).slice(0, hasMultisig ? undefined : -1)
   const activeTabName = tabs[activeTabIdx]
-  const [, setContainerProps] = usePageContainerProvider()
-
-  React.useLayoutEffect(() => {
-    setContainerProps({
-      w: { base: "full" },
-    })
-  }, [setContainerProps])
 
   return (
     <Box pb={4} w="full">
