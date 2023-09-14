@@ -81,6 +81,7 @@ export function AddAccountModal({
               setAddMethod(methodType)
             }}
             onSuccess={onSuccess}
+            services={services}
           />
         </ScaleFade>
       )}
