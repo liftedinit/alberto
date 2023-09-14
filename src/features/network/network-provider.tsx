@@ -35,10 +35,10 @@ export function NetworkProvider({ children }: React.PropsWithChildren<{}>) {
     const eventNetworks =
       activeNetwork?.name.toLowerCase() === "manifest ledger" // FIXME: Filtering by the network name is dumb. Improve me.
         ? legacyNetworks?.map(params => {
-            const network = new Network(params.url, anonIdentity)
-            network.apply([Account, Events])
-            return network
-          })
+          const network = new Network(params.url, anonIdentity)
+          network.apply([Account, Events])
+          return network
+        })
         : []
     return [queryNetwork, cmdNetwork, eventNetworks] as [
       Network,
@@ -56,4 +56,20 @@ export function NetworkProvider({ children }: React.PropsWithChildren<{}>) {
 
 export function useNetworkContext() {
   return React.useContext(NetworkContext)
+}
+
+export async function getServices(network: Network | undefined): Promise<Set<string>> {
+  if (!network || !network.base) {
+    return new Set<string>();
+  }
+  const { endpoints } = await network.base.endpoints();
+  const services = endpoints
+    .map((endpoint: string) => endpoint.split(".")[0])
+    .reduce((acc: Set<string>, val: string) => acc.add(val), new Set<string>());
+  return services;
+}
+
+export async function hasService(network: Network | undefined, service: string): Promise<boolean> {
+  const services = await getServices(network);
+  return services.has(service);
 }

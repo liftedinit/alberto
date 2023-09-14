@@ -10,7 +10,9 @@ import {
   Tabs,
   VStack,
 } from "@liftedinit/ui"
-import React from "react"
+import { useNetworkContext } from "features/network"
+import { getServices } from "features/network/network-provider"
+import React, { useEffect, useState } from "react"
 
 import { SocialLogin } from "../social-login"
 import { CreateAccount } from "./create-account"
@@ -44,6 +46,14 @@ export function AddAccountModal({
   const [addMethod, setAddMethod] = React.useState<AddMethodState>("")
   const [showDefaultFooter, setShowDefaultFooter] =
     React.useState<boolean>(true)
+
+  const [network] = useNetworkContext()
+  const [services, setServices] = useState<Set<string>>(new Set())
+  useEffect(() => {
+    ; (async () => {
+      setServices(await getServices(network))
+    })()
+  }, [network])
 
   function onSuccess() {
     onClose()
@@ -87,13 +97,13 @@ export function AddAccountModal({
           )}
           {(addMethod === AddAccountMethodTypes.importAuthenticator ||
             addMethod === AddAccountMethodTypes.createAuthenticator) && (
-            <HardwareAuthenticator
-              addMethod={addMethod}
-              setAddMethod={setAddMethod}
-              onSuccess={onSuccess}
-              setShowDefaultFooter={setShowDefaultFooter}
-            />
-          )}
+              <HardwareAuthenticator
+                addMethod={addMethod}
+                setAddMethod={setAddMethod}
+                onSuccess={onSuccess}
+                setShowDefaultFooter={setShowDefaultFooter}
+              />
+            )}
           {showDefaultFooter && (
             <Modal.Footer>
               <Flex justifyContent="flex-end">
@@ -117,9 +127,11 @@ enum TabNames {
 function AddAccountMethods({
   onAddMethodClick,
   onSuccess,
+  services,
 }: {
   onAddMethodClick: (method: AddAccountMethodTypes) => void
   onSuccess: () => void
+  services: Set<string>
 }) {
   const [activeTab, setActiveTab] = React.useState(TabNames.create)
   const tabs = ["Create New", "Import"]
@@ -143,10 +155,16 @@ function AddAccountMethods({
         </Tabs>
         <SocialLogin onSuccess={onSuccess} />
         {activeTab === TabNames.create && (
-          <CreateAccountOptions onAddMethodClick={onAddMethodClick} />
+          <CreateAccountOptions
+            onAddMethodClick={onAddMethodClick}
+            services={services}
+          />
         )}
         {activeTab === TabNames.import && (
-          <ImportAcountOptions onAddMethodClick={onAddMethodClick} />
+          <ImportAcountOptions
+            onAddMethodClick={onAddMethodClick}
+            services={services}
+          />
         )}
       </Modal.Body>
       <Modal.Footer />
@@ -164,26 +182,31 @@ const createCards = [
     label: "Hardware Authenticator",
     title: "create new with hardware authenticator",
     onClickArg: AddAccountMethodTypes.createAuthenticator,
+    requires: "idstore",
   },
 ]
 
 function CreateAccountOptions({
   onAddMethodClick,
+  services,
 }: {
   onAddMethodClick: (method: AddAccountMethodTypes) => void
+  services: Set<string>
 }) {
   return (
     <VStack alignItems="flex-start" w="full">
-      {createCards.map((c, idx) => {
-        return (
-          <AddAccountCard
-            key={idx}
-            label={c.label}
-            title={c.title}
-            onClick={() => onAddMethodClick(c.onClickArg)}
-          />
-        )
-      })}
+      {createCards
+        .filter(c => !c.requires || services.has(c.requires))
+        .map((c, idx) => {
+          return (
+            <AddAccountCard
+              key={idx}
+              label={c.label}
+              title={c.title}
+              onClick={() => onAddMethodClick(c.onClickArg)}
+            />
+          )
+        })}
     </VStack>
   )
 }
@@ -203,25 +226,30 @@ const importCards = [
     label: "Hardware Authenticator",
     title: "import with hardware authenticator",
     onClickArg: AddAccountMethodTypes.importAuthenticator,
+    requires: "idstore",
   },
 ]
 function ImportAcountOptions({
   onAddMethodClick,
+  services,
 }: {
   onAddMethodClick: (method: AddAccountMethodTypes) => void
+  services: Set<string>
 }) {
   return (
     <VStack alignItems="flex-start" w="full">
-      {importCards.map((c, idx) => {
-        return (
-          <AddAccountCard
-            key={idx}
-            label={c.label}
-            title={c.title}
-            onClick={() => onAddMethodClick(c.onClickArg)}
-          />
-        )
-      })}
+      {importCards
+        .filter(c => !c.requires || services.has(c.requires))
+        .map((c, idx) => {
+          return (
+            <AddAccountCard
+              key={idx}
+              label={c.label}
+              title={c.title}
+              onClick={() => onAddMethodClick(c.onClickArg)}
+            />
+          )
+        })}
     </VStack>
   )
 }
