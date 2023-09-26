@@ -29,7 +29,7 @@ enum TabNames {
 }
 
 export function Home(props: { modalDisclosure?: UseDisclosureProps }) {
-  const onOpenAddAccount = props.modalDisclosure?.onOpen || (() => { })
+  const onOpenAddAccount = props.modalDisclosure?.onOpen || (() => {})
   const isBase = useIsBaseBreakpoint()
   const [network] = useNetworkContext()
   const account = useAccountsStore(s => s.byId.get(s.activeId))

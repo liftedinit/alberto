@@ -6,8 +6,8 @@ import {
   ListOrderType,
 } from "@liftedinit/many-js"
 import { useMutation, useQueryClient } from "react-query"
-import { arrayBufferToBase64 } from "@liftedinit/ui"
-import React, { useEffect } from "react"
+import { arrayBufferToBase64, usePrevious } from "@liftedinit/ui"
+import React, { useEffect, useReducer } from "react"
 
 const PAGE_SIZE = 11
 
@@ -45,13 +45,61 @@ interface TransactionsListArgs {
   count?: number
 }
 
+const actionTypes = {
+  FETCH_INIT: "FETCH_INIT",
+  FETCH_SUCCESS: "FETCH_SUCCESS",
+  FETCH_FAILURE: "FETCH_FAILURE",
+  SET_TXNIDS: "SET_TXNIDS",
+}
+
+const dataFetchReducer = (state: any, action: any) => {
+  switch (action.type) {
+    case actionTypes.FETCH_INIT:
+      return { ...state, isLoading: true, isError: false }
+    case actionTypes.FETCH_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        data: action.payload,
+      }
+    case actionTypes.FETCH_FAILURE:
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+        error: action.payload,
+      }
+    case actionTypes.SET_TXNIDS:
+      return { ...state, txnIds: action.payload }
+    default:
+      throw new Error(`Unhandled action type: ${action.type}`)
+  }
+}
+
 // TODO: Aggregating data from multiple backends should be handled (and cached) by another system.
 //       We should only query this other system from the frontend.
 export function useTransactionsList({
   address,
   filter = {},
   count: reqCount = PAGE_SIZE,
-}: TransactionsListArgs) {
+  enabled = true,
+}: TransactionsListArgs & { enabled?: boolean }) {
+  console.log(
+    "Listing transaction with address: ",
+    address,
+    filter,
+    reqCount,
+    enabled,
+  )
+  const [state, dispatch] = useReducer(dataFetchReducer, {
+    data: [],
+    isLoading: true,
+    isError: false,
+    error: null,
+    txnIds: [],
+  })
+
   const [data, setData] = React.useState<any[]>([])
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState(Error)
@@ -63,7 +111,8 @@ export function useTransactionsList({
   useEffect(() => {
     const fetchQueries = async () => {
       try {
-        setLoading(true)
+        dispatch({ type: actionTypes.FETCH_INIT })
+        // setLoading(true)
         const backends = [
           ...(activeNetwork ? [activeNetwork] : []),
           ...(legacyNetworks || []),
@@ -138,41 +187,73 @@ export function useTransactionsList({
           counter = reqCount - resultData.length
           delete filters.txnIdRange // Remove the filter, if any
         }
-        setData(resultData)
-        setLoading(false)
+        // setData(resultData)
+        // setLoading(false)
+        dispatch({ type: actionTypes.FETCH_SUCCESS, payload: resultData })
       } catch (err) {
-        setError(err as Error)
-        setLoading(false)
+        dispatch({ type: actionTypes.FETCH_FAILURE, payload: err })
+        // setError(err as Error)
+        // setLoading(false)
       }
     }
-    fetchQueries()
-  }, [address, reqCount, activeNetwork, legacyNetworks, txnIds])
+    if (enabled) fetchQueries()
+  }, [address, reqCount, activeNetwork, legacyNetworks, state.txnIds])
 
   const hasNextPage = data.length === PAGE_SIZE
   const visibleTxnsWithId = hasNextPage ? data.slice(0, PAGE_SIZE - 1) : data
 
   return {
-    error: error?.message,
-    isError: error,
-    isLoading: loading,
-    hasNextPage,
-    currPageCount: txnIds.length,
+    ...state,
+    hasNextPage: state.data.length === PAGE_SIZE,
+    currPageCount: state.txnIds.length,
     prevBtnProps: {
-      disabled: txnIds.length === 0,
+      disabled: state.txnIds.length === 0,
       onClick: () => {
-        setTxnIds(s => s.slice(1))
+        dispatch({
+          type: actionTypes.SET_TXNIDS,
+          payload: state.txnIds.slice(1),
+        })
       },
     },
     nextBtnProps: {
-      disabled: !hasNextPage,
+      disabled: !state.hasNextPage,
       onClick: () => {
-        const lastTxn = data[PAGE_SIZE - 1]
-        setTxnIds(s => [lastTxn.id, ...s])
+        const lastTxn = state.data[PAGE_SIZE - 1]
+        dispatch({
+          type: actionTypes.SET_TXNIDS,
+          payload: [lastTxn.id, ...state.txnIds],
+        })
       },
     },
     data: {
-      count: data.length,
-      transactions: visibleTxnsWithId ?? [],
+      count: state.data.length,
+      transactions: state.hasNextPage
+        ? state.data.slice(0, PAGE_SIZE - 1)
+        : state.data,
     },
   }
+  // return {
+  //   error: error?.message,
+  //   isError: error,
+  //   isLoading: loading,
+  //   hasNextPage,
+  //   currPageCount: txnIds.length,
+  //   prevBtnProps: {
+  //     disabled: txnIds.length === 0,
+  //     onClick: () => {
+  //       setTxnIds(s => s.slice(1))
+  //     },
+  //   },
+  //   nextBtnProps: {
+  //     disabled: !hasNextPage,
+  //     onClick: () => {
+  //       const lastTxn = data[PAGE_SIZE - 1]
+  //       setTxnIds(s => [lastTxn.id, ...s])
+  //     },
+  //   },
+  //   data: {
+  //     count: data.length,
+  //     transactions: visibleTxnsWithId ?? [],
+  //   },
+  // }
 }

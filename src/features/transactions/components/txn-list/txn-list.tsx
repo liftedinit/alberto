@@ -13,6 +13,7 @@ import {
 } from "@liftedinit/ui"
 import { useTransactionsList } from "features/transactions/queries"
 import { TxnListItem } from "./txn-list-item"
+import { TxnExport } from "./txn-export"
 
 export function TxnList({
   address,
@@ -21,6 +22,7 @@ export function TxnList({
   address: string
   filter?: Omit<ListFilterArgs, "txnIdRange">
 }) {
+  console.log("TxnList Rendering: ", address, filter)
   const queryData = useTransactionsList({
     address,
     filter,
@@ -60,22 +62,28 @@ export function TxnList({
         <Center position="absolute" left={0} right={0}>
           <Spinner size="lg" />
         </Center>
-      ) : null}
-      <TableContainer>
-        <Table size="sm">
-          <Tbody>
-            {transactions.map((t: Event & { _id: string }) => {
-              return (
-                <TxnListItem
-                  transaction={t}
-                  key={t._id + t.time}
-                  address={address}
-                />
-              )
-            })}
-          </Tbody>
-        </Table>
-      </TableContainer>
+      ) : (
+        <TableContainer>
+          <Table size="sm">
+            <Tbody>
+              {transactions.map((t: Event & { _id: string }) => {
+                return (
+                  <TxnListItem
+                    transaction={t}
+                    key={t._id + t.time}
+                    address={address}
+                  />
+                )
+              })}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      )}
+      {/*{transactions.length !== 0 && (*/}
+      {/*  <Flex mt={2} gap={2} justifyContent="flex-start">*/}
+      {/*    <TxnExport address={address} />*/}
+      {/*  </Flex>*/}
+      {/*)}*/}
       {(currPageCount > 0 || hasNextPage) && (
         <Flex mt={2} gap={2} justifyContent="flex-end">
           <Button
