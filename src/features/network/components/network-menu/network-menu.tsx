@@ -177,6 +177,7 @@ function NetworkDetailsModal({
   network?: [NetworkId, NetworkInfo]
 }) {
   const IS_UPDATE = !!network
+  const IS_MANIFEST = network?.[1].name === "Manifest Ledger"
   const [formValues, setFormValues] = React.useState({
     name: "",
     url: "",
@@ -281,7 +282,7 @@ function NetworkDetailsModal({
                 variant="filled"
                 onChange={onChange}
                 value={formValues.name}
-                disabled={formValues.name === "Manifest Ledger"}
+                disabled={IS_MANIFEST}
               />
             </FormControl>
             <FormControl isRequired>
@@ -297,7 +298,7 @@ function NetworkDetailsModal({
             </FormControl>
           </Stack>
         </form>
-        {IS_UPDATE && (
+        {IS_UPDATE && !IS_MANIFEST && (
           <form id="remove-network-form">
             <FormControl mt={3}>
               <FormLabel color="red" htmlFor="deleteUrl">
