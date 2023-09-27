@@ -24,6 +24,7 @@ const initialNetworks: NetworkInfo[] = [
     name: "Manifest Ledger (Alpha 1)",
     url: "/api/legacy",
     filter: "legacy",
+    parent: "Manifest Ledger", // The parent network of the legacy network
   },
 ]
 
@@ -49,8 +50,10 @@ export const useNetworkStore = create<NetworksState & NetworksActions>(
         return s.networks.get(s.activeId)!
       },
       getLegacyNetworks: () => {
+        const activeNetwork = get().getActiveNetwork()
         return Array.from(get().networks.values()).filter(
-          ({ filter }) => filter === "legacy",
+          ({ filter, parent }) =>
+            filter === "legacy" && parent?.includes(activeNetwork.name),
         )
       },
       getNetworks: () => {

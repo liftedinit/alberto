@@ -4,6 +4,7 @@ export interface NetworkInfo {
   name: string
   url: string
   filter?: string
+  parent?: string
 }
 
 export interface NetworksState {
