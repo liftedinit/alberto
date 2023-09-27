@@ -1,4 +1,4 @@
-import React from "react"
+import React, { createContext, ReactNode, useContext, useMemo } from "react"
 import {
   Network,
   Ledger,
@@ -11,49 +11,46 @@ import {
 import { useNetworkStore } from "./store"
 import { useAccountsStore } from "features/accounts"
 
-const NetworkContext = React.createContext<[Network?, Network?, Network[]?]>([
-  undefined, // Query network
-  undefined, // Legacy networks
-  undefined, // Command network
-])
+interface INetworkContext {
+  query?: Network
+  command?: Network
+  legacy?: Network[] // Legacy networks are past networks that are no longer active. They are used to query for past events.
+}
 
-export function NetworkProvider({ children }: React.PropsWithChildren<{}>) {
-  const activeNetwork = useNetworkStore(state => state.getActiveNetwork())
-  const legacyNetworks = useNetworkStore(state => state.getLegacyNetworks())
-  const activeAccount = useAccountsStore(state =>
-    state.byId.get(state.activeId),
-  )!
+export const NetworkContext = createContext<INetworkContext>({})
 
-  const network = React.useMemo(() => {
-    const anonIdentity = new AnonymousIdentity()
-    const identity = activeAccount?.identity ?? anonIdentity
-    const url = activeNetwork?.url || ""
-    const queryNetwork = new Network(url, anonIdentity)
-    queryNetwork.apply([Ledger, IdStore, Account, Events, Base])
-    const cmdNetwork = new Network(url, identity)
-    cmdNetwork.apply([Ledger, IdStore, Account])
-    const eventNetworks =
-      activeNetwork?.name.toLowerCase() === "manifest ledger" // FIXME: Filtering by the network name is dumb. Improve me.
-        ? legacyNetworks?.map(params => {
-            const network = new Network(params.url, anonIdentity)
-            network.apply([Account, Events])
-            return network
-          })
-        : []
-    return [queryNetwork, cmdNetwork, eventNetworks] as [
-      Network,
-      Network,
-      Network[],
-    ]
-  }, [activeNetwork, legacyNetworks, activeAccount])
+export function NetworkProvider({ children }: { children: ReactNode }) {
+  const network = useNetworkStore().getActiveNetwork()
+  const legacy_networks = useNetworkStore().getLegacyNetworks()
+  const account = useAccountsStore(s => s.byId.get(s.activeId))
+
+  const url = network.url
+  const legacy_urls = legacy_networks?.map(n => n.url)
+
+  const context = useMemo(() => {
+    const anonymous = new AnonymousIdentity()
+    const identity = account?.identity ?? anonymous
+
+    const query = new Network(url, anonymous)
+    query.apply([Ledger, IdStore, Account, Events, Base])
+
+    const legacy = legacy_urls?.map(url => {
+      const n = new Network(url, anonymous)
+      n.apply([Account, Events])
+      return n
+    })
+
+    const command = new Network(url, identity)
+    command.apply([Ledger, IdStore, Account])
+
+    return { query, command, legacy }
+  }, [account, url, legacy_urls])
 
   return (
-    <NetworkContext.Provider value={network}>
+    <NetworkContext.Provider value={context}>
       {children}
     </NetworkContext.Provider>
   )
 }
 
-export function useNetworkContext() {
-  return React.useContext(NetworkContext)
-}
+export const useNetworkContext = () => useContext(NetworkContext)

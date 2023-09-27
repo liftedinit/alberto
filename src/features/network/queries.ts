@@ -4,7 +4,7 @@ import { LedgerInfo, NetworkAttributes } from "@liftedinit/many-js"
 import { useNetworkContext } from "./network-provider"
 
 export function useLedgerInfo({ address }: { address: string }) {
-  const [network] = useNetworkContext()
+  const { query: network } = useNetworkContext()
   return useQuery<LedgerInfo, Error>({
     queryKey: ["ledger.info", address, network?.url],
     queryFn: async () => await network?.ledger.info(),
@@ -14,7 +14,7 @@ export function useLedgerInfo({ address }: { address: string }) {
 }
 
 export function useNetworkStatus() {
-  const [n] = useNetworkContext()
+  const { query: n } = useNetworkContext()
   const { data } = useQuery({
     queryKey: ["network", "attributes", n?.url],
     queryFn: async () => {

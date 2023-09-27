@@ -1,14 +1,13 @@
 export type NetworkId = number
 
-export interface NetworkParams {
-  id?: NetworkId
+export interface NetworkInfo {
   name: string
   url: string
   filter?: string
 }
 
 export interface NetworksState {
-  activeId?: NetworkId
-  byId: Map<NetworkId, NetworkParams>
+  networks: Map<NetworkId, NetworkInfo>
+  activeId: NetworkId
   nextId: NetworkId
 }
