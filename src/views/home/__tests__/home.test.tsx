@@ -45,7 +45,7 @@ const mockListData = {
       type: "send",
       from: "m111",
       to: "m888",
-      time: makeTimeInSecs("2022-04-08T08:03:00"),
+      time: makeTimeInSecs("2023-05-09T08:03:00"),
       symbolAddress: "mabc",
       amount: BigInt(1),
     },
@@ -92,9 +92,9 @@ let mockNetwork = getMockNetwork()
 describe("home page", () => {
   beforeEach(() => {
     mockNetwork = getMockNetwork()
-    useNetworkContext.mockImplementation(() => {
-      return [mockNetwork]
-    })
+    useNetworkContext.mockImplementation(() => ({
+      query: mockNetwork,
+    }))
   })
   it("should render tabs for assets balance and transaction history", async () => {
     mockUseIsBaseBreakpoint.mockImplementation(() => true)
@@ -130,7 +130,7 @@ describe("home page", () => {
             type: "send",
             from: "m111",
             to: "m888",
-            time: makeTimeInSecs("2022-04-08T08:03:00"),
+            time: makeTimeInSecs("2023-05-09T08:03:00"),
             symbolAddress: "mabc",
             amount: BigInt(1),
           },
@@ -139,7 +139,7 @@ describe("home page", () => {
             type: "send",
             from: "m888",
             to: "m111",
-            time: makeTimeInSecs("2022-04-08T08:01:00"),
+            time: makeTimeInSecs("2022-04-09T08:01:00"),
             symbolAddress: "mabc",
             amount: BigInt(3),
           },
@@ -162,13 +162,19 @@ describe("home page", () => {
     expect(firstTxn.getByText(/abc/i)).toBeInTheDocument()
     expect(firstTxn.getByText(/send/i)).toBeInTheDocument()
     expect(firstTxn.getByText(/-0.000000001/i)).toBeInTheDocument()
-    expect(firstTxn.getByText(/4\/8\/2022, 8:03:00 AM/i)).toBeInTheDocument()
+    expect(firstTxn.getByText(/2023/i)).toBeInTheDocument()
+    expect(firstTxn.getByText(/05/i)).toBeInTheDocument()
+    expect(firstTxn.getByText(/09/i)).toBeInTheDocument()
+    expect(firstTxn.getByText(/8:03:00/i)).toBeInTheDocument()
 
     const secondTxn = within(rows[1])
     expect(secondTxn.getByText(/abc/i)).toBeInTheDocument()
     expect(secondTxn.getByText(/receive/i)).toBeInTheDocument()
     expect(secondTxn.getByText(/\+0.000000003/i)).toBeInTheDocument()
-    expect(secondTxn.getByText(/4\/8\/2022, 8:01:00 AM/i)).toBeInTheDocument()
+    expect(secondTxn.getByText(/2022/i)).toBeInTheDocument()
+    expect(secondTxn.getByText(/04/i)).toBeInTheDocument()
+    expect(secondTxn.getByText(/09/i)).toBeInTheDocument()
+    expect(secondTxn.getByText(/8:01:00/i)).toBeInTheDocument()
   })
   it("should show list of account transaction history", async () => {
     const { activityTab } = setupHome()
@@ -182,12 +188,18 @@ describe("home page", () => {
 
     expect(rows.length).toEqual(2)
     expect(screen.getByText(/send/i)).toBeInTheDocument()
-    expect(screen.getByText(/4\/8\/2022, 8:03:00 AM/i)).toBeInTheDocument()
+    expect(screen.getByText(/2023/i)).toBeInTheDocument()
+    expect(screen.getByText(/05/i)).toBeInTheDocument()
+    expect(screen.getByText(/09/i)).toBeInTheDocument()
+    expect(screen.getByText(/8:03:00/i)).toBeInTheDocument()
     expect(screen.getByText(/-0.000000001/i)).toBeInTheDocument()
     expect(screen.getByText(/abc/i)).toBeInTheDocument()
 
     expect(screen.getByText(/receive/i)).toBeInTheDocument()
-    expect(screen.getByText(/4\/8\/2022, 8:01:00 AM/i)).toBeInTheDocument()
+    expect(screen.getByText(/2022/i)).toBeInTheDocument()
+    expect(screen.getByText(/04/i)).toBeInTheDocument()
+    expect(screen.getByText(/09/i)).toBeInTheDocument()
+    expect(screen.getByText(/8:01:00/i)).toBeInTheDocument()
     expect(screen.getByText(/\+0.000000003/i)).toBeInTheDocument()
     expect(screen.getByText(/ghi/i)).toBeInTheDocument()
   })

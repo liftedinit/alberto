@@ -11,7 +11,7 @@ import {
 import { useNetworkStore } from "./store"
 import { useAccountsStore } from "features/accounts"
 
-interface INetworkContext {
+export interface INetworkContext {
   query?: Network
   command?: Network
   legacy?: Network[] // Legacy networks are past networks that are no longer active. They are used to query for past events.
