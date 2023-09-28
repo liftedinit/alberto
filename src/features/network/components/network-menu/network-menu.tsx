@@ -197,7 +197,8 @@ function NetworkDetailsModal({
     const name = formValues.name.trim()
     const url = formValues.url.trim()
     if (IS_UPDATE) {
-      networkStore.updateNetwork(network[0], { name, url })
+      const [networkId, networkInfo] = network
+      networkStore.updateNetwork(networkId, { ...networkInfo, name, url })
       toast({
         title: "Update Network",
         description: "Network was updated.",
