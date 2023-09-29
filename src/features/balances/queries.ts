@@ -8,7 +8,7 @@ type UseBalancesOpts = {
 }
 
 export function useBalances({ address }: UseBalancesOpts) {
-  const [network] = useNetworkContext()
+  const { query: network } = useNetworkContext()
 
   const ledgerInfoQuery = useLedgerInfo({ address })
   const ledgerInfoSymbols = ledgerInfoQuery?.data?.symbols ?? new Map()

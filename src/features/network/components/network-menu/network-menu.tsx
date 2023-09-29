@@ -25,9 +25,9 @@ import {
   useToast,
   useDisclosure,
 } from "@liftedinit/ui"
-import { NetworkId, NetworkParams } from "../../types"
+import { NetworkId, NetworkInfo } from "../../types"
 
-type EditNetwork = [NetworkId, NetworkParams]
+type EditNetwork = [NetworkId, NetworkInfo]
 
 export function NetworkMenu() {
   const [editingNetwork, setEditingNetwork] = React.useState<
@@ -38,11 +38,10 @@ export function NetworkMenu() {
     setEditingNetwork(network)
     onOpen()
   }
-  const { activeNetwork, networks, setActiveId } = useNetworkStore(s => ({
-    networks: s.getNetworks(),
-    activeNetwork: s.getActiveNetwork(),
-    setActiveId: s.setActiveId,
-  }))
+  const networkStore = useNetworkStore()
+  const activeNetworkId = networkStore.activeId
+  const activeNetwork = networkStore.getActiveNetwork()
+  const networks = networkStore.getNetworks()
 
   return (
     <Flex alignItems="center" justifyContent="flex-end" minW="100px">
@@ -68,20 +67,20 @@ export function NetworkMenu() {
           <Box overflow="auto" maxHeight="40vh">
             {activeNetwork ? (
               <NetworkMenuItem
-                activeId={activeNetwork.id!}
-                id={activeNetwork.id!}
-                network={activeNetwork!}
+                activeId={activeNetworkId}
+                id={activeNetworkId}
+                network={activeNetwork}
                 onEditNetwork={onEditNetwork}
               />
             ) : null}
-            {networks.map(network =>
-              network.id === activeNetwork?.id ? null : (
+            {Array.from(networks).map(([id, network]) =>
+              id === activeNetworkId ? null : (
                 <NetworkMenuItem
-                  key={network.id}
-                  activeId={activeNetwork?.id!}
-                  id={network.id!}
+                  key={id}
+                  activeId={activeNetworkId}
+                  id={id}
                   network={network}
-                  setActiveId={setActiveId}
+                  setActiveId={networkStore.setActiveId}
                   onEditNetwork={onEditNetwork}
                 />
               ),
@@ -119,7 +118,7 @@ function NetworkMenuItem({
 }: {
   activeId: NetworkId
   id: NetworkId
-  network: NetworkParams
+  network: NetworkInfo
   setActiveId?: (id: NetworkId) => void
   onEditNetwork: (network: EditNetwork) => void
 }) {
@@ -175,23 +174,17 @@ function NetworkDetailsModal({
 }: {
   isOpen: boolean
   onClose: () => void
-  network?: [NetworkId, NetworkParams]
+  network?: [NetworkId, NetworkInfo]
 }) {
   const IS_UPDATE = !!network
+  const IS_MANIFEST = network?.[1].name === "Manifest Ledger"
   const [formValues, setFormValues] = React.useState({
     name: "",
     url: "",
   })
   const [deleteUrl, setDeleteUrl] = React.useState("")
   const toast = useToast()
-  const { createNetwork, updateNetwork, deleteNetwork, byId } = useNetworkStore(
-    ({ createNetwork, updateNetwork, deleteNetwork, byId }) => ({
-      createNetwork,
-      updateNetwork,
-      deleteNetwork,
-      byId,
-    }),
-  )
+  const networkStore = useNetworkStore()
   function onChange(e: React.FormEvent<HTMLInputElement>) {
     const { name, value } = e.currentTarget
     setFormValues(s => ({
@@ -204,7 +197,8 @@ function NetworkDetailsModal({
     const name = formValues.name.trim()
     const url = formValues.url.trim()
     if (IS_UPDATE) {
-      updateNetwork(network[0], { name, url })
+      const [networkId, networkInfo] = network
+      networkStore.updateNetwork(networkId, { ...networkInfo, name, url })
       toast({
         title: "Update Network",
         description: "Network was updated.",
@@ -214,8 +208,8 @@ function NetworkDetailsModal({
       return
     }
 
-    const exists = Array.from(byId).some(
-      ([, networkParams]) => networkParams.url === url,
+    const exists = Array.from(networkStore.getNetworks()).some(
+      ([, info]) => info.url === url,
     )
     if (exists) {
       toast({
@@ -226,7 +220,7 @@ function NetworkDetailsModal({
       return
     }
 
-    createNetwork({ name, url })
+    networkStore.createNetwork({ name, url })
     toast({
       title: "Add Network",
       description: "New network added. This network is now active.",
@@ -236,8 +230,8 @@ function NetworkDetailsModal({
   }
 
   function onDelete(id: NetworkId) {
-    if (!byId.has(id)) return
-    deleteNetwork(id)
+    if (!networkStore.getNetworks().has(id)) return
+    networkStore.deleteNetwork(id)
     toast({
       title: "Remove Network",
       description: "Network was removed.",
@@ -289,7 +283,7 @@ function NetworkDetailsModal({
                 variant="filled"
                 onChange={onChange}
                 value={formValues.name}
-                disabled={formValues.name === "Manifest Ledger"}
+                disabled={IS_MANIFEST}
               />
             </FormControl>
             <FormControl isRequired>
@@ -305,7 +299,7 @@ function NetworkDetailsModal({
             </FormControl>
           </Stack>
         </form>
-        {IS_UPDATE && (
+        {IS_UPDATE && !IS_MANIFEST && (
           <form id="remove-network-form">
             <FormControl mt={3}>
               <FormLabel color="red" htmlFor="deleteUrl">

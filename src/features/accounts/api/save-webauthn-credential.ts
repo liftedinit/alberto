@@ -1,9 +1,9 @@
 import { useMutation } from "react-query"
 import { useNetworkContext } from "features/network"
-import { IdStore, Network, WebAuthnIdentity } from "@liftedinit/many-js"
+import { WebAuthnIdentity } from "@liftedinit/many-js"
 
 export function useSaveWebauthnCredential() {
-  const [network] = useNetworkContext()
+  const { command: n } = useNetworkContext()
   return useMutation<
     { phrase: string },
     Error,
@@ -13,10 +13,7 @@ export function useSaveWebauthnCredential() {
       cosePublicKey: ArrayBuffer
       identity: WebAuthnIdentity
     }
-  >(async ({ address, credentialId, cosePublicKey, identity }) => {
-    const n = new Network(network?.url ?? "", identity)
-    n.apply([IdStore])
-    const res = await n?.idStore.store(address, credentialId, cosePublicKey)
-    return res
+  >(async ({ address, credentialId, cosePublicKey }) => {
+    return await n?.idStore.store(address, credentialId, cosePublicKey)
   })
 }

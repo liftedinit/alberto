@@ -12,7 +12,7 @@ import React, { useEffect } from "react"
 const PAGE_SIZE = 11
 
 export function useCreateSendTxn() {
-  const [, network] = useNetworkContext()
+  const { command: network } = useNetworkContext()
   const queryClient = useQueryClient()
   return useMutation<
     unknown,
@@ -25,8 +25,7 @@ export function useCreateSendTxn() {
       amount: bigint
       symbol: string
     }) => {
-      const res = network?.ledger.send(vars)
-      return res
+      return network?.ledger.send(vars)
     },
     {
       onSuccess: () => {
@@ -56,7 +55,7 @@ export function useTransactionsList({
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState(Error)
   const [txnIds, setTxnIds] = React.useState<ArrayBuffer[]>([])
-  const [activeNetwork, , legacyNetworks] = useNetworkContext()
+  const { query: activeNetwork, legacy: legacyNetworks } = useNetworkContext()
 
   const filterRef = React.useRef(filter)
 
