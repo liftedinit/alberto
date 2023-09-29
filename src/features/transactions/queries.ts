@@ -1,12 +1,5 @@
-import { useNetworkContext, useNetworkStore } from "features/network"
-import {
-  AnonymousIdentity,
-  BoundType,
-  Event,
-  Events,
-  ListOrderType,
-  Network,
-} from "@liftedinit/many-js"
+import { useNetworkContext } from "features/network"
+import { BoundType, Event, ListOrderType, Network } from "@liftedinit/many-js"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useMemo, useState } from "react"
 import { arrayBufferToBase64 } from "@liftedinit/ui"
@@ -39,28 +32,11 @@ export function useCreateSendTxn() {
 }
 
 export function useSingleTransactionList(txId: ArrayBuffer | undefined) {
-  const networkStore = useNetworkStore()
+  const { query: activeNetwork, legacy: legacyNetworks } = useNetworkContext()
 
-  // Get the active network
-  const activeNetworkUrl = networkStore.getActiveNetwork().url
-  const activeNetwork = useMemo(() => {
-    const n = new Network(activeNetworkUrl, new AnonymousIdentity())
-    n.apply([Events])
-    return n
-  }, [activeNetworkUrl])
-
-  // Get the legacy networks belonging to the active network
-  const legacyNetworksUrl = useMemo(
-    () => networkStore.getLegacyNetworks().map(n => n.url),
-    [networkStore],
-  )
-  const legacyNetworks = useMemo(() => {
-    const n = legacyNetworksUrl.map(
-      url => new Network(url, new AnonymousIdentity()),
-    )
-    n.map(n => n.apply([Events]))
-    return n
-  }, [legacyNetworksUrl])
+  if (activeNetwork === undefined) {
+    throw new Error("activeNetwork is undefined")
+  }
 
   const { data, isError, error, isLoading } = useQuery<Event[], Error>(
     ["list", txId],
@@ -68,7 +44,7 @@ export function useSingleTransactionList(txId: ArrayBuffer | undefined) {
       try {
         if (!txId) return []
 
-        const networks = [activeNetwork, ...legacyNetworks]
+        const networks = [activeNetwork, ...(legacyNetworks ?? [])]
         for (const network of networks) {
           const response = await network.events?.list({
             count: 1,
@@ -115,28 +91,12 @@ export function useTransactionsList(
 ) {
   const [pageData, setPageData] = useState<ArrayBuffer[]>([])
 
-  const networkStore = useNetworkStore()
+  const { query: activeNetwork, legacy } = useNetworkContext()
+  const legacyNetworks = useMemo(() => legacy, [legacy])
 
-  // Get the active network
-  const activeNetworkUrl = networkStore.getActiveNetwork().url
-  const activeNetwork = useMemo(() => {
-    const n = new Network(activeNetworkUrl, new AnonymousIdentity())
-    n.apply([Events])
-    return n
-  }, [activeNetworkUrl])
-
-  // Get the legacy networks belonging to the active network
-  const legacyNetworksUrl = useMemo(
-    () => networkStore.getLegacyNetworks().map(n => n.url),
-    [networkStore],
-  )
-  const legacyNetworks = useMemo(() => {
-    const n = legacyNetworksUrl.map(
-      url => new Network(url, new AnonymousIdentity()),
-    )
-    n.map(n => n.apply([Events]))
-    return n
-  }, [legacyNetworksUrl])
+  if (activeNetwork === undefined) {
+    throw new Error("activeNetwork is undefined")
+  }
 
   // Check if a transaction exists in the given network
   // This is a workaround for https://github.com/liftedinit/many-rs/issues/404
@@ -217,7 +177,7 @@ export function useTransactionsList(
     accumulatedData = await fetchEvents(activeNetwork, accumulatedData, txFrom)
 
     // If not enough data, loop over legacyNetworks
-    for (const network of legacyNetworks) {
+    for (const network of legacyNetworks ?? []) {
       if (accumulatedData.length >= PAGE_SIZE) break
 
       accumulatedData = await fetchEvents(network, accumulatedData, txFrom)
@@ -245,7 +205,7 @@ export function useTransactionsList(
     error: error?.message,
     isLoading,
     hasNextPage,
-    currPageCount: result.slice(-PAGE_SIZE - 1).length,
+    currPageCount: result.slice(0, PAGE_SIZE - 1).length,
     prevBtnProps: {
       disabled: pageData.length === 0,
       onClick: () => {
@@ -261,7 +221,7 @@ export function useTransactionsList(
     },
     data: {
       count: data?.length || 0,
-      transactions: result?.slice(-PAGE_SIZE - 1) || [],
+      transactions: result?.slice(0, PAGE_SIZE - 1) || [],
     },
   }
 }
