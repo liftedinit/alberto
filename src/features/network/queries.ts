@@ -26,13 +26,12 @@ export function useNetworkStatus() {
 
   return React.useMemo(() => {
     function getAttribute(attribute: NetworkAttributes) {
-      const found = data?.attributes?.find((attr: NetworkAttributes) => {
+      return data?.attributes?.find((attr: NetworkAttributes) => {
         if (Array.isArray(attr)) {
           return attr[0] === attribute
         }
         return attr === attribute
       })
-      return found
     }
 
     function getFeatures(attribute: number[] = [], targets: number[] = []) {
@@ -40,8 +39,7 @@ export function useNetworkStatus() {
       if (Array.isArray(attribute)) {
         const onlyFeatures = attribute.slice(1)
         targets.forEach(feat => {
-          const found = onlyFeatures.includes(feat)
-          result[feat] = found
+          result[feat] = onlyFeatures.includes(feat)
         })
       }
       return result

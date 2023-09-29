@@ -1,13 +1,15 @@
-import { useNetworkContext } from "features/network"
+import { useNetworkContext, useNetworkStore } from "features/network"
 import {
+  AnonymousIdentity,
   BoundType,
   Event,
-  ListFilterArgs,
+  Events,
   ListOrderType,
+  Network,
 } from "@liftedinit/many-js"
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import { useMemo, useState } from "react"
 import { arrayBufferToBase64 } from "@liftedinit/ui"
-import React, { useEffect } from "react"
 
 const PAGE_SIZE = 11
 
@@ -36,142 +38,230 @@ export function useCreateSendTxn() {
   )
 }
 
-interface TransactionsListArgs {
-  address?: string
-  filter?: Omit<ListFilterArgs, "txnIdRange"> & {
-    txnIdRange?: ({ boundType: BoundType; value: ArrayBuffer } | undefined)[]
-  }
-  count?: number
-}
+export function useSingleTransactionList(txId: ArrayBuffer | undefined) {
+  const networkStore = useNetworkStore()
 
-// TODO: Aggregating data from multiple backends should be handled (and cached) by another system.
-//       We should only query this other system from the frontend.
-export function useTransactionsList({
-  address,
-  filter = {},
-  count: reqCount = PAGE_SIZE,
-}: TransactionsListArgs) {
-  const [data, setData] = React.useState<any[]>([])
-  const [loading, setLoading] = React.useState(true)
-  const [error, setError] = React.useState(Error)
-  const [txnIds, setTxnIds] = React.useState<ArrayBuffer[]>([])
-  const { query: activeNetwork, legacy: legacyNetworks } = useNetworkContext()
+  // Get the active network
+  const activeNetworkUrl = networkStore.getActiveNetwork().url
+  const activeNetwork = useMemo(() => {
+    const n = new Network(activeNetworkUrl, new AnonymousIdentity())
+    n.apply([Events])
+    return n
+  }, [activeNetworkUrl])
 
-  const filterRef = React.useRef(filter)
+  // Get the legacy networks belonging to the active network
+  const legacyNetworksUrl = useMemo(
+    () => networkStore.getLegacyNetworks().map(n => n.url),
+    [networkStore],
+  )
+  const legacyNetworks = useMemo(() => {
+    const n = legacyNetworksUrl.map(
+      url => new Network(url, new AnonymousIdentity()),
+    )
+    n.map(n => n.apply([Events]))
+    return n
+  }, [legacyNetworksUrl])
 
-  useEffect(() => {
-    const fetchQueries = async () => {
+  const { data, isError, error, isLoading } = useQuery<Event[], Error>(
+    ["list", txId],
+    async () => {
       try {
-        setLoading(true)
-        const backends = [
-          ...(activeNetwork ? [activeNetwork] : []),
-          ...(legacyNetworks || []),
-        ]
-        let resultData: Event[] = []
+        if (!txId) return []
 
-        // Filter by account address and any filter given by the user
-        const filters = {
-          accounts: address,
-          ...filterRef.current,
-        }
-
-        let checkTx = false // Flag to check if txnIds[0] exists in the current backend
-
-        // txnIds[0] is the last (hidden) transaction from the previous page / the first transaction of the next page
-        // Create a filter that will look that this transaction exists in the current endpoint
-        // This is a workaround for https://github.com/liftedinit/many-rs/issues/404
-        if (txnIds.length > 0) {
-          filters.txnIdRange = [
-            { boundType: BoundType.inclusive, value: txnIds[0] },
-            { boundType: BoundType.inclusive, value: txnIds[0] },
-          ]
-          checkTx = true
-        }
-
-        let counter = reqCount
-        for (const backend of backends) {
-          // Get the data from the current endpoint
-          let response = await backend.events?.list({
-            count: counter,
+        const networks = [activeNetwork, ...legacyNetworks]
+        for (const network of networks) {
+          const response = await network.events?.list({
+            count: 1,
+            filters: {
+              txnIdRange: [
+                { boundType: BoundType.inclusive, value: txId },
+                { boundType: BoundType.inclusive, value: txId },
+              ],
+            },
             order: ListOrderType.descending,
-            filters,
           })
-          const response_length = response?.events.length
-
-          // The current backend has no data; try the next one
-          if (response_length === 0 && checkTx) {
-            continue
-          } else if (response_length === 1 && checkTx) {
-            // txnIds[0] exists in the current backend; query the backend again for the remaining transactions
-            checkTx = false
-            filters.txnIdRange = [
-              undefined,
-              { boundType: BoundType.inclusive, value: txnIds[0] },
-            ]
-            response = await backend.events?.list({
-              count: counter,
-              order: ListOrderType.descending,
-              filters,
-            })
+          if (response?.events?.length === 1) {
+            return response.events
           }
-
-          resultData = resultData.concat(
-            response?.events.map((t: Event) => ({
-              ...t,
-              time: t.time * 1000,
-              _id: arrayBufferToBase64(t.id),
-            })) || [],
-          )
-
-          // At this point the current backend has some data. Do we have enough?
-          if (
-            response?.events.length === reqCount ||
-            resultData.length === reqCount
-          ) {
-            // We have enough data for the current page, break
-            break
-          }
-
-          // At this point we have some data but not enough for the current page
-          // Try to get the remaining data from the next backend
-          counter = reqCount - resultData.length
-          delete filters.txnIdRange // Remove the filter, if any
         }
-        setData(resultData)
-        setLoading(false)
+        return []
       } catch (err) {
-        setError(err as Error)
-        setLoading(false)
+        throw err
       }
-    }
-    fetchQueries()
-  }, [address, reqCount, activeNetwork, legacyNetworks, txnIds])
+    },
+  )
 
-  const hasNextPage = data.length === PAGE_SIZE
-  const visibleTxnsWithId = hasNextPage ? data.slice(0, PAGE_SIZE - 1) : data
+  const result =
+    data?.map((t: Event) => ({
+      ...t,
+      time: t.time * 1000,
+      _id: arrayBufferToBase64(t.id),
+    })) || []
 
   return {
+    isError,
     error: error?.message,
-    isError: error,
-    isLoading: loading,
+    isLoading,
+    data: {
+      count: result?.length || 0,
+      transactions: result?.slice(1) || [],
+    },
+  }
+}
+
+export function useTransactionsList(
+  address: string,
+  symbol: string | undefined,
+) {
+  const [pageData, setPageData] = useState<ArrayBuffer[]>([])
+
+  const networkStore = useNetworkStore()
+
+  // Get the active network
+  const activeNetworkUrl = networkStore.getActiveNetwork().url
+  const activeNetwork = useMemo(() => {
+    const n = new Network(activeNetworkUrl, new AnonymousIdentity())
+    n.apply([Events])
+    return n
+  }, [activeNetworkUrl])
+
+  // Get the legacy networks belonging to the active network
+  const legacyNetworksUrl = useMemo(
+    () => networkStore.getLegacyNetworks().map(n => n.url),
+    [networkStore],
+  )
+  const legacyNetworks = useMemo(() => {
+    const n = legacyNetworksUrl.map(
+      url => new Network(url, new AnonymousIdentity()),
+    )
+    n.map(n => n.apply([Events]))
+    return n
+  }, [legacyNetworksUrl])
+
+  // Check if a transaction exists in the given network
+  // This is a workaround for https://github.com/liftedinit/many-rs/issues/404
+  const hasEvent = async (network: Network, id: ArrayBuffer) => {
+    try {
+      const response = await network.events?.list({
+        count: 1,
+        filters: {
+          txnIdRange: [
+            { boundType: BoundType.inclusive, value: id },
+            { boundType: BoundType.inclusive, value: id },
+          ],
+        },
+        order: ListOrderType.descending,
+      })
+      return response?.events?.length === 1
+    } catch (err) {
+      throw err
+    }
+  }
+
+  const fetchEvents = async (
+    network: Network,
+    accumulatedData: Event[] = [],
+    txFrom: ArrayBuffer | undefined,
+  ) => {
+    if (accumulatedData.length >= PAGE_SIZE) return accumulatedData
+    let filters = {}
+
+    if (symbol !== undefined) {
+      filters = {
+        ...filters,
+        accounts: [address, symbol],
+      }
+    } else {
+      filters = {
+        ...filters,
+        accounts: address,
+      }
+    }
+
+    try {
+      // If we have a transaction id, check if it exists in the current network
+      if (txFrom) {
+        // If it exists, create a filter that will look for this transaction
+        // This is a workaround for https://github.com/liftedinit/many-rs/issues/404
+        if (await hasEvent(network, txFrom)) {
+          filters = {
+            ...filters,
+            txnIdRange: [
+              undefined,
+              { boundType: BoundType.inclusive, value: txFrom },
+            ],
+          }
+        }
+        // If it doesn't exist, return the accumulated data and check on the next network
+        else {
+          return [...accumulatedData]
+        }
+      }
+
+      const response = await network.events?.list({
+        count: PAGE_SIZE - accumulatedData.length, // Fetch only the remaining required amount
+        filters,
+        order: ListOrderType.descending,
+      })
+
+      return [...accumulatedData, ...(response?.events || [])]
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const fetchData = async () => {
+    let txFrom = pageData[0]
+    let accumulatedData: Event[] = []
+
+    accumulatedData = await fetchEvents(activeNetwork, accumulatedData, txFrom)
+
+    // If not enough data, loop over legacyNetworks
+    for (const network of legacyNetworks) {
+      if (accumulatedData.length >= PAGE_SIZE) break
+
+      accumulatedData = await fetchEvents(network, accumulatedData, txFrom)
+    }
+
+    return accumulatedData
+  }
+
+  const { data, isError, error, isLoading } = useQuery<Event[], Error>(
+    ["list", address, activeNetwork, legacyNetworks, pageData],
+    fetchData,
+  )
+
+  const result =
+    data?.map((t: Event) => ({
+      ...t,
+      time: t.time * 1000,
+      _id: arrayBufferToBase64(t.id),
+    })) || []
+
+  const hasNextPage = result.length === PAGE_SIZE
+
+  return {
+    isError,
+    error: error?.message,
+    isLoading,
     hasNextPage,
-    currPageCount: txnIds.length,
+    currPageCount: result.slice(-PAGE_SIZE - 1).length,
     prevBtnProps: {
-      disabled: txnIds.length === 0,
+      disabled: pageData.length === 0,
       onClick: () => {
-        setTxnIds(s => s.slice(1))
+        setPageData(s => s.slice(1))
       },
     },
     nextBtnProps: {
       disabled: !hasNextPage,
       onClick: () => {
-        const lastTxn = data[PAGE_SIZE - 1]
-        setTxnIds(s => [lastTxn.id, ...s])
+        const lastTxn = result[PAGE_SIZE - 1]
+        setPageData(s => [lastTxn.id, ...s])
       },
     },
     data: {
-      count: data.length,
-      transactions: visibleTxnsWithId ?? [],
+      count: data?.length || 0,
+      transactions: result?.slice(-PAGE_SIZE - 1) || [],
     },
   }
 }

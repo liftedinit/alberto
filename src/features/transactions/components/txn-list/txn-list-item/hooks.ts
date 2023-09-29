@@ -13,6 +13,7 @@ import {
   BurnEvent,
   MintEvent,
   MultisigTransactionInfo,
+  TokenCreateEvent,
 } from "@liftedinit/many-js"
 import {
   CheckCircleIcon,
@@ -68,6 +69,28 @@ export function useSendTxn({
     toOrFromAddress,
     contactName,
     symbol: symbols.get(symbolAddress),
+  }
+}
+
+export function useTokenCreateTxn({
+  address,
+  txn,
+}: {
+  address: string
+  txn: TokenCreateEvent
+}) {
+  const { summary } = txn
+  const TxnIcon = PlusCircleIcon
+  const title = "create token"
+
+  const name = summary.name
+  const symbol = summary.symbol
+
+  return {
+    title,
+    TxnIcon,
+    name,
+    symbol,
   }
 }
 

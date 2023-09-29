@@ -1,4 +1,4 @@
-import { ListFilterArgs, Event } from "@liftedinit/many-js"
+import { Event } from "@liftedinit/many-js"
 import {
   Button,
   ChevronRightIcon,
@@ -16,15 +16,12 @@ import { TxnListItem } from "./txn-list-item"
 
 export function TxnList({
   address,
-  filter = {},
+  symbol,
 }: {
   address: string
-  filter?: Omit<ListFilterArgs, "txnIdRange">
+  symbol?: string
 }) {
-  const queryData = useTransactionsList({
-    address,
-    filter,
-  })
+  const queryData = useTransactionsList(address, symbol)
   const {
     data,
     isLoading,
