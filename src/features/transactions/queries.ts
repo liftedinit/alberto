@@ -31,12 +31,21 @@ export function useCreateSendTxn() {
   )
 }
 
-export function useSingleTransactionList(txId: ArrayBuffer | undefined) {
-  const { query: activeNetwork, legacy: legacyNetworks } = useNetworkContext()
+const processRawEvents = (events?: Event[]) => {
+  return (
+    events?.map((t: Event) => ({
+      ...t,
+      time: t.time * 1000,
+      _id: arrayBufferToBase64(t.id),
+    })) || []
+  )
+}
 
-  if (activeNetwork === undefined) {
-    throw new Error("activeNetwork is undefined")
-  }
+export function useSingleTransactionList(txId: ArrayBuffer | undefined) {
+  const { query: activeNetwork, legacy } = useNetworkContext()
+  const legacyNetworks = useMemo(() => legacy, [legacy])
+
+  if (!activeNetwork) throw new Error("activeNetwork is undefined")
 
   const { data, isError, error, isLoading } = useQuery<Event[], Error>(
     ["list", txId],
@@ -67,20 +76,15 @@ export function useSingleTransactionList(txId: ArrayBuffer | undefined) {
     },
   )
 
-  const result =
-    data?.map((t: Event) => ({
-      ...t,
-      time: t.time * 1000,
-      _id: arrayBufferToBase64(t.id),
-    })) || []
+  const result = processRawEvents(data)
 
   return {
     isError,
     error: error?.message,
     isLoading,
     data: {
-      count: result?.length || 0,
-      transactions: result?.slice(1) || [],
+      count: result.length,
+      transactions: result,
     },
   }
 }
@@ -94,9 +98,7 @@ export function useTransactionsList(
   const { query: activeNetwork, legacy } = useNetworkContext()
   const legacyNetworks = useMemo(() => legacy, [legacy])
 
-  if (activeNetwork === undefined) {
-    throw new Error("activeNetwork is undefined")
-  }
+  if (!activeNetwork) throw new Error("activeNetwork is undefined")
 
   // Check if a transaction exists in the given network
   // This is a workaround for https://github.com/liftedinit/many-rs/issues/404
@@ -191,12 +193,7 @@ export function useTransactionsList(
     fetchData,
   )
 
-  const result =
-    data?.map((t: Event) => ({
-      ...t,
-      time: t.time * 1000,
-      _id: arrayBufferToBase64(t.id),
-    })) || []
+  const result = processRawEvents(data)
 
   const hasNextPage = result.length === PAGE_SIZE
 
@@ -220,8 +217,8 @@ export function useTransactionsList(
       },
     },
     data: {
-      count: data?.length || 0,
-      transactions: result?.slice(0, PAGE_SIZE - 1) || [],
+      count: result.length,
+      transactions: result.slice(0, PAGE_SIZE - 1),
     },
   }
 }
