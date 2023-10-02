@@ -9,6 +9,7 @@ import {
   AddRolesEvent,
   RemoveRolesEvent,
   MintEvent,
+  TokenCreateEvent,
 } from "@liftedinit/many-js"
 import { multisigTxnTypes } from "features/accounts"
 import { MultisigTxnListItem } from "./multisig-txn-list-item"
@@ -18,6 +19,7 @@ import { AddFeaturesTxnListItem } from "./add-features-txn-list-item"
 import { SetDescriptionTxnListItem } from "./set-description-txn-list-item"
 import { EditRolesTxnListItem } from "./edit-roles-txn-list-item"
 import { MintBurnTxnListItem } from "./mint-burn-txn-list-item"
+import { TokenCreateTxnListItem } from "./token-create-txn-list-item"
 
 type EditRolesEvent = AddRolesEvent | RemoveRolesEvent
 
@@ -50,7 +52,15 @@ export function TxnListItem({
     )
   } else if (isMultisigTxnType(transaction.type)) {
     return <MultisigTxnListItem txn={transaction as MultisigEvent} />
+  } else if (txnTypeName === EventType.tokenCreate) {
+    return (
+      <TokenCreateTxnListItem
+        address={address}
+        txn={transaction as TokenCreateEvent}
+      />
+    )
   }
+
   console.error("txn list item not implemented:", transaction.type, transaction)
   return null
 }

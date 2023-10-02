@@ -37,12 +37,7 @@ export function AssetDetails({ asset, setAsset, address }: Props) {
       <Heading size="md" mb={3}>
         Activity
       </Heading>
-      <TxnList
-        filter={{
-          symbols: asset.identity,
-        }}
-        address={address}
-      />
+      <TxnList address={address} symbol={asset.identity} />
     </>
   )
 }

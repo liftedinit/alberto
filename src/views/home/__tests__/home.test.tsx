@@ -8,6 +8,7 @@ import {
 } from "test/test-utils"
 import * as UseIsBaseBreakpoint from "@liftedinit/ui/dist/hooks/use-is-base-breakpoint"
 import { useNetworkContext } from "features/network/network-provider"
+import { useNetworkStore } from "features/network/store"
 import { useAccountsStore } from "features/accounts"
 import { Home } from "views/home"
 import {
@@ -21,6 +22,13 @@ jest.mock("features/network/network-provider", () => {
   return {
     ...jest.requireActual("features/network/network-provider"),
     useNetworkContext: jest.fn(),
+  }
+})
+
+jest.mock("features/network/store", () => {
+  return {
+    ...jest.requireActual("features/network/store"),
+    useNetworkStore: jest.fn(),
   }
 })
 
@@ -94,6 +102,10 @@ describe("home page", () => {
     mockNetwork = getMockNetwork()
     useNetworkContext.mockImplementation(() => ({
       query: mockNetwork,
+    }))
+    useNetworkStore.mockImplementation(() => ({
+      getActiveNetwork: () => mockNetwork,
+      getLegacyNetworks: () => [],
     }))
   })
   it("should render tabs for assets balance and transaction history", async () => {
