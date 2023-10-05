@@ -19,7 +19,7 @@ export type CreateAccountFormData = {
 }
 
 export function useCreateAccount() {
-  const [, n] = useNetworkContext()
+  const { command: n } = useNetworkContext()
   return useMutation<CreateAccountResponse, Error, CreateAccountFormData>(
     async (vars: CreateAccountFormData) => {
       const name = vars.accountSettings.name
@@ -34,8 +34,7 @@ export function useCreateAccount() {
         new Map(),
       )
       const features = makeFeatures(vars.features, vars.featureSettings)
-      const res = await n?.account.create({ name, roles, features })
-      return res
+      return await n?.account.create({ name, roles, features })
     },
   )
 }

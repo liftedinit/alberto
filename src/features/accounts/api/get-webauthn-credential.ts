@@ -6,15 +6,14 @@ import { RecoverOptions } from "../types"
  * get webauthn account data from k-v store during import/recovery
  */
 export function useGetWebauthnCredential() {
-  const [queryNetwork] = useNetworkContext()
+  const { query } = useNetworkContext()
   return useMutation(
     async ({ getFrom, value }: { getFrom: RecoverOptions; value: string }) => {
       const getFn =
         getFrom === RecoverOptions.phrase
-          ? queryNetwork?.idStore.getFromRecallPhrase
-          : queryNetwork?.idStore.getFromAddress
-      const res = await getFn(value)
-      return res
+          ? query?.idStore.getFromRecallPhrase
+          : query?.idStore.getFromAddress
+      return await getFn(value)
     },
   )
 }

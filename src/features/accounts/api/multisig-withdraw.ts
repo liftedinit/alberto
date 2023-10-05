@@ -3,7 +3,7 @@ import { useNetworkContext } from "features/network"
 
 export function useMultisigWithdraw(token: ArrayBuffer) {
   const queryClient = useQueryClient()
-  const [, n] = useNetworkContext()
+  const { command: n } = useNetworkContext()
   return useMutation<undefined, Error>(
     async () => {
       return await n?.account.multisigWithdraw(token)

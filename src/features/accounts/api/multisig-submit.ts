@@ -13,9 +13,8 @@ type SubmitData = {
   expireInSecs?: number
 }
 export function useMultisigSubmit() {
-  const [, n] = useNetworkContext()
+  const { command: n } = useNetworkContext()
   return useMutation<undefined, Error, SubmitData>(async vars => {
-    const res = await n?.account.submitMultisigTxn(EventType.send, vars)
-    return res
+    return await n?.account.submitMultisigTxn(EventType.send, vars)
   })
 }
