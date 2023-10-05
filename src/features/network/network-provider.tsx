@@ -55,7 +55,7 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
     command.apply([Ledger, IdStore, Account])
 
     return { query, command, legacy, services }
-  }, [account, url, legacy_urls])
+  }, [account, url, legacy_urls, services])
 
   useEffect(() => {
     async function updateServices() {
