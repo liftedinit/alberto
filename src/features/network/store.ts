@@ -1,99 +1,108 @@
 import create from "zustand"
+import { NetworkId, NetworkInfo, NetworksState } from "./types"
 import { persist } from "zustand/middleware"
 import localforage from "localforage"
 import { replacer, reviver } from "shared"
-import { NetworkId, NetworkParams, NetworksState } from "./types"
 
-const devDomains = ["localhost", "liftedinit.tech"]
-
-const initialState = {
-  activeId: 0,
-  nextId: 3,
-  byId: new Map([
-    [0, { name: "Manifest Ledger", url: "/api", filter: "alberto" }],
-    [1, { name: "END Ledger", url: "/api-end", filter: "end-labs" }],
-    [
-      2,
-      { name: "Legacy Manifest Ledger", url: "/api/legacy", filter: "legacy" },
-    ], // Hidden from UI
-  ]),
-}
-
-interface NetworkActions {
-  getNetworks: () => NetworkParams[]
-  getActiveNetwork: () => NetworkParams | undefined
-  getLegacyNetworks: () => NetworkParams[]
-  createNetwork: (n: NetworkParams) => void
+interface NetworksActions {
   setActiveId: (id: NetworkId) => void
-  updateNetwork: (id: NetworkId, n: NetworkParams) => void
+  getActiveNetwork: () => NetworkInfo
+  getLegacyNetworks: () => NetworkInfo[]
+  getNetworks: () => Map<NetworkId, NetworkInfo>
+  createNetwork: (n: NetworkInfo) => void
+  updateNetwork: (id: NetworkId, n: NetworkInfo) => void
   deleteNetwork: (id: NetworkId) => void
 }
 
-export const useNetworkStore = create<NetworksState & NetworkActions>(
+const initialNetworks: NetworkInfo[] = [
+  {
+    name: "Manifest Ledger",
+    url: "/api",
+    filter: "alberto",
+  },
+  {
+    name: "Manifest Ledger (Alpha 1)",
+    url: "/api/legacy",
+    filter: "legacy",
+    parent: "Manifest Ledger", // The parent network of the legacy network
+  },
+]
+
+const networksMap: Map<NetworkId, NetworkInfo> = new Map(
+  initialNetworks.map((network, index) => [index, network]),
+)
+
+const devDomains = ["localhost", "liftedinit.tech"]
+
+export const useNetworkStore = create<NetworksState & NetworksActions>(
   persist(
     (set, get) => ({
-      ...initialState,
-      getNetworks: () => {
-        const hostname = window.location.hostname
-        const networks = Array.from(get().byId)
-          .map(([id, network]) => ({ id, ...network }))
-          .sort(({ name: a }, { name: b }) =>
-            a.toLowerCase() < b.toLowerCase() ? -1 : 1,
-          )
-          .filter(
-            ({ filter }) =>
-              !filter ||
-              hostname.includes(filter) ||
-              devDomains.some(domain => hostname.includes(domain)),
-          )
-        return networks
+      networks: networksMap,
+      activeId: 0,
+      nextId: initialNetworks.length,
+      setActiveId: (id: NetworkId) =>
+        set(state => ({
+          ...state,
+          activeId: id,
+        })),
+      getActiveNetwork: () => {
+        const s = get()
+        return s.networks.get(s.activeId)!
       },
       getLegacyNetworks: () => {
-        return Array.from(get().byId)
-          .map(([id, network]) => ({ id, ...network }))
-          .filter(({ filter }) => filter === "legacy")
+        const activeNetwork = get().getActiveNetwork()
+        return Array.from(get().networks.values()).filter(
+          ({ filter, parent }) =>
+            filter === "legacy" && parent?.includes(activeNetwork.name),
+        )
       },
-      getActiveNetwork: () => {
-        const networks = get().getNetworks()
-        const activeNetwork = networks.find(({ id }) => id === get().activeId)
-        return activeNetwork ?? networks[0]
+      getNetworks: () => {
+        const hostname = window.location.hostname
+        const filteredMap: Map<NetworkId, NetworkInfo> = new Map()
+        get().networks.forEach((network, id) => {
+          if (
+            !network.filter ||
+            hostname.includes(network.filter) ||
+            devDomains.some(domain => hostname.includes(domain))
+          ) {
+            filteredMap.set(id, network)
+          }
+        })
+        return filteredMap
       },
-      createNetwork: (networkParams: NetworkParams) =>
-        set(state => {
-          const id = state.nextId
+      createNetwork: (n: NetworkInfo) => {
+        set(s => {
+          const networks = s.networks
+          networks.set(s.nextId, n)
           return {
-            nextId: id + 1,
-            activeId: id,
-            byId: new Map(state.byId).set(id, networkParams),
+            ...s,
+            activeId: s.nextId,
+            nextId: s.nextId + 1,
+            networks,
           }
-        }),
-      updateNetwork: (id: NetworkId, networkParams: NetworkParams) =>
-        set(state => {
-          const newById = new Map(state.byId)
-          newById.set(id, networkParams)
+        })
+      },
+      updateNetwork: (id: NetworkId, n: NetworkInfo) => {
+        set(s => {
+          const networks = s.networks
+          networks.set(id, n)
           return {
-            ...state,
-            byId: newById,
+            ...s,
+            networks,
           }
-        }),
-      deleteNetwork: (id: NetworkId) =>
-        // @ts-ignore
-        set(state => {
-          const byId = new Map(state.byId)
-          byId.delete(id)
+        })
+      },
+      deleteNetwork: (id: NetworkId) => {
+        set(s => {
+          const networks = s.networks
+          networks.delete(id)
           return {
-            ...state,
-            activeId: state.activeId === id ? undefined : state.activeId,
-            byId,
+            ...s,
+            activeId: s.activeId === id ? 0 : s.activeId,
+            networks,
           }
-        }),
-      setActiveId: (id: NetworkId) =>
-        set(state => {
-          return {
-            ...state,
-            activeId: id,
-          }
-        }),
+        })
+      },
     }),
     {
       name: "ALBERTO.NETWORKS",

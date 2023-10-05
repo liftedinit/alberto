@@ -7,6 +7,15 @@ import {
   within,
 } from "test/test-utils"
 import { NetworkMenu } from "../network-menu"
+import { toast } from "@liftedinit/ui"
+
+jest.mock("@liftedinit/ui", () => {
+  const originalModule = jest.requireActual("@liftedinit/ui")
+  return {
+    ...originalModule,
+    toast: jest.fn(),
+  }
+})
 
 describe("NetworkMenu", () => {
   afterEach(cleanup)
@@ -22,26 +31,24 @@ describe("NetworkMenu", () => {
     expect(within(activeNetwork).getByText("test-network")).toBeInTheDocument()
   })
 
+  it("should edit a network", async () => {
+    const activeNetwork = setupNetworkMenu()
+
+    // Edit network
+    await createNetwork("test-network2", "test-network2/api")
+    await editNetwork("-edited", "-edited")
+    expect(
+      within(activeNetwork).getByText(/test-network2-edited/i),
+    ).toBeInTheDocument()
+  })
+
   it("should remove a network", async () => {
     setupNetworkMenu()
 
     // Create and remove a new network
-    await createNetwork("test-network", "test-network/api")
-    await removeNetwork("test-network/api")
-    expect(screen.queryByText(/test-network/i)).not.toBeInTheDocument()
-  })
-
-  it("should edit a network", async () => {
-    const activeNetwork = setupNetworkMenu()
-
-    // Create a new network
-    await createNetwork("test-network", "test-network/api")
-
-    // Edit network
-    await editNetwork("-edited", "-edited")
-    expect(
-      within(activeNetwork).getByText(/test-network-edited/i),
-    ).toBeInTheDocument()
+    await createNetwork("test-network3", "test-network3/api")
+    await removeNetwork("test-network3/api")
+    expect(screen.queryByText(/test-network3/i)).not.toBeInTheDocument()
   })
 })
 

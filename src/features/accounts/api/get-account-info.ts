@@ -8,7 +8,7 @@ import {
 import { useAccountsStore } from "../stores"
 
 export function useGetAccountInfo(accountAddress?: string) {
-  const [n] = useNetworkContext()
+  const { query: n } = useNetworkContext()
   const activeIdentity = useAccountsStore(s => s.byId.get(s.activeId))
   const address = activeIdentity?.address
 

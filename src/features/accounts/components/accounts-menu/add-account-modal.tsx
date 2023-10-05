@@ -11,8 +11,7 @@ import {
   VStack,
 } from "@liftedinit/ui"
 import { useNetworkContext } from "features/network"
-import { getServices } from "features/network/network-provider"
-import React, { useEffect, useState } from "react"
+import React from "react"
 
 import { SocialLogin } from "../social-login"
 import { CreateAccount } from "./create-account"
@@ -47,14 +46,6 @@ export function AddAccountModal({
   const [showDefaultFooter, setShowDefaultFooter] =
     React.useState<boolean>(true)
 
-  const [network] = useNetworkContext()
-  const [services, setServices] = useState<Set<string>>(new Set())
-  useEffect(() => {
-    ; (async () => {
-      setServices(await getServices(network))
-    })()
-  }, [network])
-
   function onSuccess() {
     onClose()
   }
@@ -81,7 +72,6 @@ export function AddAccountModal({
               setAddMethod(methodType)
             }}
             onSuccess={onSuccess}
-            services={services}
           />
         </ScaleFade>
       )}
@@ -128,11 +118,9 @@ enum TabNames {
 function AddAccountMethods({
   onAddMethodClick,
   onSuccess,
-  services,
 }: {
   onAddMethodClick: (method: AddAccountMethodTypes) => void
   onSuccess: () => void
-  services: Set<string>
 }) {
   const [activeTab, setActiveTab] = React.useState(TabNames.create)
   const tabs = ["Create New", "Import"]
@@ -156,16 +144,10 @@ function AddAccountMethods({
         </Tabs>
         <SocialLogin onSuccess={onSuccess} />
         {activeTab === TabNames.create && (
-          <CreateAccountOptions
-            onAddMethodClick={onAddMethodClick}
-            services={services}
-          />
+          <CreateAccountOptions onAddMethodClick={onAddMethodClick} />
         )}
         {activeTab === TabNames.import && (
-          <ImportAcountOptions
-            onAddMethodClick={onAddMethodClick}
-            services={services}
-          />
+          <ImportAcountOptions onAddMethodClick={onAddMethodClick} />
         )}
       </Modal.Body>
       <Modal.Footer />
@@ -189,11 +171,10 @@ const createCards = [
 
 function CreateAccountOptions({
   onAddMethodClick,
-  services,
 }: {
   onAddMethodClick: (method: AddAccountMethodTypes) => void
-  services: Set<string>
 }) {
+  const { services } = useNetworkContext()
   return (
     <VStack alignItems="flex-start" w="full">
       {createCards
@@ -232,11 +213,10 @@ const importCards = [
 ]
 function ImportAcountOptions({
   onAddMethodClick,
-  services,
 }: {
   onAddMethodClick: (method: AddAccountMethodTypes) => void
-  services: Set<string>
 }) {
+  const { services } = useNetworkContext()
   return (
     <VStack alignItems="flex-start" w="full">
       {importCards

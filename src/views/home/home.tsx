@@ -29,9 +29,9 @@ enum TabNames {
 }
 
 export function Home(props: { modalDisclosure?: UseDisclosureProps }) {
-  const onOpenAddAccount = props.modalDisclosure?.onOpen || (() => { })
+  const onOpenAddAccount = props.modalDisclosure?.onOpen || (() => {})
   const isBase = useIsBaseBreakpoint()
-  const [network] = useNetworkContext()
+  const { query: network } = useNetworkContext()
   const account = useAccountsStore(s => s.byId.get(s.activeId))
   const address = account?.address ?? ""
   const [activeTab, setActiveTab] = React.useState<TabNames>(TabNames.assets)

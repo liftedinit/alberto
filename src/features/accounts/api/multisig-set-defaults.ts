@@ -7,7 +7,7 @@ type MultisigDefaults = {
   expireInSecs: number
 }
 export function useMultisigSetDefaults(account: string) {
-  const [, n] = useNetworkContext()
+  const { command: n } = useNetworkContext()
   const queryClient = useQueryClient()
   return useMutation<undefined, Error, MultisigDefaults>(
     async ({
@@ -15,13 +15,12 @@ export function useMultisigSetDefaults(account: string) {
       executeAutomatically,
       expireInSecs,
     }: MultisigDefaults) => {
-      const res = await n?.account.multisigSetDefaults({
+      return await n?.account.multisigSetDefaults({
         account,
         threshold,
         executeAutomatically,
         expireInSecs,
       })
-      return res
     },
     {
       onSuccess: () => {
