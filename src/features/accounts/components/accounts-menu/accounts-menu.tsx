@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import { useEffect, useState } from "react"
 import {
   AnonymousIdentity,
   ANON_IDENTITY,
@@ -32,7 +32,6 @@ import { AddAccountModal } from "./add-account-modal"
 import { EditAccountModal } from "./edit-account-modal"
 import { Account, AccountId } from "../../types"
 import { useNetworkContext } from "features/network"
-import { hasService } from "features/network/network-provider"
 
 export type AccountItemWithIdDisplayStrings = [
   AccountId,
@@ -67,18 +66,17 @@ export function AccountsMenu() {
     }),
   )
 
-  const [editAccount, setEditAccount] = React.useState<
+  const [editAccount, setEditAccount] = useState<
     [number, Account] | undefined
   >()
 
   const toast = useToast()
-  const [network] = useNetworkContext()
+  const { services } = useNetworkContext()
   useEffect(() => {
     ; (async () => {
       const isWebAuthnIdentity =
         activeAccount?.identity instanceof WebAuthnIdentity
-      const hasIdStore = await hasService(network, "idstore")
-      if (isWebAuthnIdentity && !hasIdStore) {
+      if (isWebAuthnIdentity && !services.has("idstore")) {
         setActiveId(0) // reset to Anonymous
         toast({
           status: "warning",
@@ -88,7 +86,7 @@ export function AccountsMenu() {
         })
       }
     })()
-  }, [activeAccount, network, setActiveId, toast])
+  }, [activeAccount, services, setActiveId, toast])
 
   function onEditClick(acct: [number, Account]) {
     setEditAccount(acct)
