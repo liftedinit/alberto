@@ -22,7 +22,10 @@ export function TxnList({
   address: string
   symbol?: string
 }) {
-  const queryData = useTransactionsList(address, symbol)
+  const accounts = symbol ? [address, symbol] : [address]
+  const queryData = useTransactionsList({
+    accounts,
+  })
   const {
     data,
     isLoading,
@@ -75,11 +78,11 @@ export function TxnList({
           </Table>
         </TableContainer>
       )}
-      {/*{transactions.length !== 0 && (*/}
-      {/*  <Flex mt={2} gap={2} justifyContent="flex-start">*/}
-      {/*    <TxnExport address={address} />*/}
-      {/*  </Flex>*/}
-      {/*)}*/}
+      {transactions.length !== 0 && (
+        <Flex mt={2} gap={2} justifyContent="flex-start">
+          <TxnExport address={address} symbol={symbol} />
+        </Flex>
+      )}
       {(currPageCount > 0 || hasNextPage) && (
         <Flex mt={2} gap={2} justifyContent="flex-end">
           <Button

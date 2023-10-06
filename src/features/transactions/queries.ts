@@ -33,13 +33,11 @@ export function useCreateSendTxn() {
 }
 
 const processRawEvents = (events?: Event[]) => {
-  return (
-    events?.map((t: Event) => ({
-      ...t,
-      time: t.time * 1000,
-      _id: arrayBufferToBase64(t.id),
-    })) || []
-  )
+  return (events?.map((t: Event) => ({
+    ...t,
+    time: t.time * 1000,
+    _id: arrayBufferToBase64(t.id),
+  })) || []) as ProcessedEvent[]
 }
 
 // Check if a transaction exists in the given network
@@ -123,6 +121,8 @@ interface PageState {
   lastTxn: ArrayBuffer[]
   lastNetworkId: number[]
 }
+
+export type ProcessedEvent = Event & { _id: string; time: number }
 
 export function useTransactionsList({
   accounts,
@@ -257,7 +257,7 @@ export function useAllTransactionsList({
   count = MAX_PAGE_SIZE,
 }: {
   accounts?: string[]
-  count: number
+  count?: number
 }) {
   const { query: activeNetwork, legacy } = useNetworkContext()
 
