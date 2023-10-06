@@ -66,7 +66,7 @@ export function TxnExport({
         w={{ base: "full", md: "auto" }}
         onClick={exportTransactions}
       >
-        Export
+        Export History
       </Button>
     </>
   )

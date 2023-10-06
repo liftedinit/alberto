@@ -78,31 +78,41 @@ export function TxnList({
           </Table>
         </TableContainer>
       )}
-      {transactions.length !== 0 && (
-        <Flex mt={2} gap={2} justifyContent="flex-start">
-          <TxnExport address={address} symbol={symbol} />
-        </Flex>
-      )}
-      {(currPageCount > 0 || hasNextPage) && (
-        <Flex mt={2} gap={2} justifyContent="flex-end">
-          <Button
-            leftIcon={<ChevronLeftIcon boxSize={5} />}
-            lineHeight="normal"
-            size="sm"
-            w={{ base: "full", md: "auto" }}
-            {...prevBtnProps}
-          >
-            Prev
-          </Button>
-          <Button
-            rightIcon={<ChevronRightIcon boxSize={5} />}
-            lineHeight="normal"
-            size="sm"
-            w={{ base: "full", md: "auto" }}
-            {...nextBtnProps}
-          >
-            Next
-          </Button>
+
+      {(transactions.length !== 0 || currPageCount > 0 || hasNextPage) && (
+        <Flex
+          mt={2}
+          gap={2}
+          justifyContent="space-between"
+          alignItems="center"
+          width="100%"
+        >
+          {transactions.length !== 0 && (
+            <TxnExport address={address} symbol={symbol} />
+          )}
+
+          {(currPageCount > 0 || hasNextPage) && (
+            <Flex gap={2} justifyContent="flex-end">
+              <Button
+                leftIcon={<ChevronLeftIcon boxSize={5} />}
+                lineHeight="normal"
+                size="sm"
+                w={{ base: "full", md: "auto" }}
+                {...prevBtnProps}
+              >
+                Prev
+              </Button>
+              <Button
+                rightIcon={<ChevronRightIcon boxSize={5} />}
+                lineHeight="normal"
+                size="sm"
+                w={{ base: "full", md: "auto" }}
+                {...nextBtnProps}
+              >
+                Next
+              </Button>
+            </Flex>
+          )}
         </Flex>
       )}
     </>
