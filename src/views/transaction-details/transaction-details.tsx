@@ -13,9 +13,9 @@ import {
 import {
   MultisigActions,
   SubmittedMultisigTxnDetails,
-  useTransactionsList,
+  useSingleTransactionList,
 } from "features/transactions"
-import { BoundType, MultisigSubmitEvent } from "@liftedinit/many-js"
+import { MultisigSubmitEvent } from "@liftedinit/many-js"
 
 export function TransactionDetails() {
   return (
@@ -49,24 +49,7 @@ function TxnDetails() {
     data,
     isLoading,
     error: txnListError,
-  } = useTransactionsList({
-    filter: {
-      ...(txnIdBytes
-        ? {
-            txnIdRange: [
-              {
-                boundType: BoundType.inclusive,
-                value: txnIdBytes,
-              },
-              {
-                boundType: BoundType.inclusive,
-                value: txnIdBytes,
-              },
-            ],
-          }
-        : {}),
-    },
-  })
+  } = useSingleTransactionList(txnIdBytes)
   const txn = data?.transactions?.[0] as MultisigSubmitEvent
 
   if (txnListError) {

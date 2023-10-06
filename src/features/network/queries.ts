@@ -4,7 +4,7 @@ import { LedgerInfo, NetworkAttributes } from "@liftedinit/many-js"
 import { useNetworkContext } from "./network-provider"
 
 export function useLedgerInfo({ address }: { address: string }) {
-  const [network] = useNetworkContext()
+  const { query: network } = useNetworkContext()
   return useQuery<LedgerInfo, Error>({
     queryKey: ["ledger.info", address, network?.url],
     queryFn: async () => await network?.ledger.info(),
@@ -14,7 +14,7 @@ export function useLedgerInfo({ address }: { address: string }) {
 }
 
 export function useNetworkStatus() {
-  const [n] = useNetworkContext()
+  const { query: n } = useNetworkContext()
   const { data } = useQuery({
     queryKey: ["network", "attributes", n?.url],
     queryFn: async () => {
@@ -26,13 +26,12 @@ export function useNetworkStatus() {
 
   return React.useMemo(() => {
     function getAttribute(attribute: NetworkAttributes) {
-      const found = data?.attributes?.find((attr: NetworkAttributes) => {
+      return data?.attributes?.find((attr: NetworkAttributes) => {
         if (Array.isArray(attr)) {
           return attr[0] === attribute
         }
         return attr === attribute
       })
-      return found
     }
 
     function getFeatures(attribute: number[] = [], targets: number[] = []) {
@@ -40,8 +39,7 @@ export function useNetworkStatus() {
       if (Array.isArray(attribute)) {
         const onlyFeatures = attribute.slice(1)
         targets.forEach(feat => {
-          const found = onlyFeatures.includes(feat)
-          result[feat] = found
+          result[feat] = onlyFeatures.includes(feat)
         })
       }
       return result

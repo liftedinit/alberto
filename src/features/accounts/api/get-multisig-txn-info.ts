@@ -10,7 +10,7 @@ type MultisigInfoFromNetworks = {
 }
 
 export function useGetMultisigTxnInfo(token?: ArrayBuffer) {
-  const [n, , l] = useNetworkContext()
+  const { query: n, legacy: l } = useNetworkContext()
   // Create a network list from n and l, excluding undefined values and empty arrays
   // `n` is the active network
   // `l` is the legacy network list
