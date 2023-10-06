@@ -1,6 +1,6 @@
 import { ProcessedEvent, useAllTransactionsList } from "../../../queries"
 import { Button, Center, Spinner, Text } from "@liftedinit/ui"
-import { EventType, MintEvent, SendEvent } from "@liftedinit/many-js"
+import { BurnEvent, EventType, MintEvent, SendEvent } from "@liftedinit/many-js"
 
 export function TxnExport({
   address,
@@ -22,9 +22,16 @@ export function TxnExport({
       extractTxDetails({ address, event }),
     )
 
-    const header = ["id", "date", "time", "type", "from", "to", "amount"].join(
-      ",",
-    )
+    const header = [
+      "id",
+      "date",
+      "time",
+      "type",
+      "from",
+      "to",
+      "amount",
+      "symbol",
+    ].join(",")
     const rows = filteredRows
       .filter(event => event !== undefined) // Skip unsupported events
       .map(event => {
@@ -73,6 +80,7 @@ interface TxDetails {
   from: string
   to: string
   amount: bigint
+  symbol: string
 }
 
 function extractTxDetails({
@@ -85,10 +93,12 @@ function extractTxDetails({
   const dateTime = new Date(event.time)
   const localDate = dateTime.toLocaleDateString()
   const localTime = dateTime.toLocaleTimeString()
+  const type = event.type
 
-  switch (event.type) {
+  switch (type) {
     case EventType.send:
       const sendEvent = event as SendEvent
+      const sendSymbol = sendEvent.symbolAddress
       let sendAmount = sendEvent.amount
       if (sendEvent.to !== address) {
         sendAmount = -sendAmount
@@ -97,22 +107,39 @@ function extractTxDetails({
         id: event._id,
         date: localDate,
         time: localTime,
-        type: sendEvent.type,
+        type,
         from: sendEvent.from,
         to: sendEvent.to,
         amount: sendAmount,
+        symbol: sendSymbol,
       }
     case EventType.mint:
       const mintEvent = event as MintEvent
-      const amount = BigInt(mintEvent.amounts[address])
+      const mintAmount = BigInt(mintEvent.amounts[address])
+      const mintSymbol = mintEvent.symbolAddress
       return {
         id: event._id,
         date: localDate,
         time: localTime,
-        type: mintEvent.type,
+        type,
         from: "",
         to: address,
-        amount,
+        amount: mintAmount,
+        symbol: mintSymbol,
+      }
+    case EventType.burn:
+      const burnEvent = event as BurnEvent
+      const burnAmount = -BigInt(burnEvent.amounts[address])
+      const burnSymbol = burnEvent.symbolAddress
+      return {
+        id: event._id,
+        date: localDate,
+        time: localTime,
+        type,
+        from: address,
+        to: "",
+        amount: burnAmount,
+        symbol: burnSymbol,
       }
     default:
       console.debug("Unsupported event type", event.type)
