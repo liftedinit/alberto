@@ -49,7 +49,7 @@ function TxnDetails() {
     data,
     isLoading,
     error: txnListError,
-  } = useSingleTransactionList(txnIdBytes)
+  } = useSingleTransactionList({ txId: txnIdBytes })
   const txn = data?.transactions?.[0] as MultisigSubmitEvent
 
   if (txnListError) {
