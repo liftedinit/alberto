@@ -106,12 +106,25 @@ export function useMintBurnTxn({
 
   const isMint = txn.type === EventType.mint
   const { amounts, symbolAddress } = txn as MintEvent
+
+  // Try getting the amount for the current address. If it doesn't exist, then
+  // it means that the address initiated the mint/burn but was not the recipient
+  const maybeAmount = amounts[address]
+  let displayAmount: string
+  let amount: bigint
+  if (maybeAmount !== undefined) {
+    amount = BigInt(amounts[address])
+  } else {
+    // If the address is not a recipient, then we need to sum up all the amounts
+    amount = Object.values(amounts).reduce(
+      (acc, amount) => acc + BigInt(amount),
+      BigInt(0),
+    )
+  }
+  displayAmount = `${isMint ? "+" : "-"}${amountFormatter(amount)}`
   const TxnIcon = isMint ? PlusCircleIcon : MinusCircleIcon
   const iconColor = isMint ? "green.500" : "red"
   const title = isMint ? "mint" : "burn"
-  const amount = BigInt(amounts[address])
-
-  const displayAmount = `${isMint ? "+" : "-"}${amountFormatter(amount)}`
 
   return {
     title,
