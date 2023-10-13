@@ -96,10 +96,6 @@ const fetchEvents = async ({
           ],
         }
       }
-      // If it doesn't exist, return the accumulated data and check on the next network
-      else {
-        return []
-      }
     }
 
     const response = await network.events?.list({

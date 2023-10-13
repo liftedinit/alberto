@@ -21,7 +21,8 @@ export function TxnList({
   address: string
   symbol?: string
 }) {
-  const queryData = useTransactionsList(address, symbol)
+  let accounts = symbol ? [address, symbol] : [address]
+  const queryData = useTransactionsList({ accounts })
   const {
     data,
     isLoading,
