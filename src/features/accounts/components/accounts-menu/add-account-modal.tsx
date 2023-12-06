@@ -10,6 +10,7 @@ import {
   Tabs,
   VStack,
 } from "@liftedinit/ui"
+import { useNetworkContext } from "features/network"
 import React from "react"
 
 import { SocialLogin } from "../social-login"
@@ -87,13 +88,13 @@ export function AddAccountModal({
           )}
           {(addMethod === AddAccountMethodTypes.importAuthenticator ||
             addMethod === AddAccountMethodTypes.createAuthenticator) && (
-            <HardwareAuthenticator
-              addMethod={addMethod}
-              setAddMethod={setAddMethod}
-              onSuccess={onSuccess}
-              setShowDefaultFooter={setShowDefaultFooter}
-            />
-          )}
+              <HardwareAuthenticator
+                addMethod={addMethod}
+                setAddMethod={setAddMethod}
+                onSuccess={onSuccess}
+                setShowDefaultFooter={setShowDefaultFooter}
+              />
+            )}
           {showDefaultFooter && (
             <Modal.Footer>
               <Flex justifyContent="flex-end">
@@ -164,6 +165,7 @@ const createCards = [
     label: "Hardware Authenticator",
     title: "create new with hardware authenticator",
     onClickArg: AddAccountMethodTypes.createAuthenticator,
+    requires: "idstore",
   },
 ]
 
@@ -172,18 +174,21 @@ function CreateAccountOptions({
 }: {
   onAddMethodClick: (method: AddAccountMethodTypes) => void
 }) {
+  const { services } = useNetworkContext()
   return (
     <VStack alignItems="flex-start" w="full">
-      {createCards.map((c, idx) => {
-        return (
-          <AddAccountCard
-            key={idx}
-            label={c.label}
-            title={c.title}
-            onClick={() => onAddMethodClick(c.onClickArg)}
-          />
-        )
-      })}
+      {createCards
+        .filter(c => !c.requires || services.has(c.requires))
+        .map((c, idx) => {
+          return (
+            <AddAccountCard
+              key={idx}
+              label={c.label}
+              title={c.title}
+              onClick={() => onAddMethodClick(c.onClickArg)}
+            />
+          )
+        })}
     </VStack>
   )
 }
@@ -203,6 +208,7 @@ const importCards = [
     label: "Hardware Authenticator",
     title: "import with hardware authenticator",
     onClickArg: AddAccountMethodTypes.importAuthenticator,
+    requires: "idstore",
   },
 ]
 function ImportAcountOptions({
@@ -210,18 +216,21 @@ function ImportAcountOptions({
 }: {
   onAddMethodClick: (method: AddAccountMethodTypes) => void
 }) {
+  const { services } = useNetworkContext()
   return (
     <VStack alignItems="flex-start" w="full">
-      {importCards.map((c, idx) => {
-        return (
-          <AddAccountCard
-            key={idx}
-            label={c.label}
-            title={c.title}
-            onClick={() => onAddMethodClick(c.onClickArg)}
-          />
-        )
-      })}
+      {importCards
+        .filter(c => !c.requires || services.has(c.requires))
+        .map((c, idx) => {
+          return (
+            <AddAccountCard
+              key={idx}
+              label={c.label}
+              title={c.title}
+              onClick={() => onAddMethodClick(c.onClickArg)}
+            />
+          )
+        })}
     </VStack>
   )
 }

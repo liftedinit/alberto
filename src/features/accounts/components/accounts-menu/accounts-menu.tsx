@@ -1,4 +1,4 @@
-import React from "react"
+import { useEffect, useState } from "react"
 import {
   AnonymousIdentity,
   ANON_IDENTITY,
@@ -26,10 +26,12 @@ import {
   useDisclosure,
   VStack,
   UsbIcon,
+  useToast,
 } from "@liftedinit/ui"
 import { AddAccountModal } from "./add-account-modal"
 import { EditAccountModal } from "./edit-account-modal"
 import { Account, AccountId } from "../../types"
+import { useNetworkContext } from "features/network"
 
 export type AccountItemWithIdDisplayStrings = [
   AccountId,
@@ -64,9 +66,27 @@ export function AccountsMenu() {
     }),
   )
 
-  const [editAccount, setEditAccount] = React.useState<
+  const [editAccount, setEditAccount] = useState<
     [number, Account] | undefined
   >()
+
+  const toast = useToast()
+  const { services } = useNetworkContext()
+  useEffect(() => {
+    ; (async () => {
+      const isWebAuthnIdentity =
+        activeAccount?.identity instanceof WebAuthnIdentity
+      if (isWebAuthnIdentity && !services.has("idstore")) {
+        setActiveId(0) // reset to Anonymous
+        toast({
+          status: "warning",
+          title: "Unsupported Identity",
+          description:
+            "Selected Neighborhood does not support Hardware Authenticators",
+        })
+      }
+    })()
+  }, [activeAccount, services, setActiveId, toast])
 
   function onEditClick(acct: [number, Account]) {
     setEditAccount(acct)
