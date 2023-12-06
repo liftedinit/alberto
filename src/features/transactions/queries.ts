@@ -94,10 +94,6 @@ const fetchEvents = async ({
           ],
         }
       }
-      // If it doesn't exist, return the accumulated data and check on the next network
-      else {
-        return []
-      }
     }
 
     const response = await network.events?.list({
@@ -212,161 +208,43 @@ export function useTransactionsList({
   }
 }
 
-export function useSingleTransactionList(txId: ArrayBuffer | undefined) {
+export function useSingleTransactionList({ txId }: { txId?: ArrayBuffer }) {
   const { query: activeNetwork, legacy } = useNetworkContext()
   const legacyNetworks = useMemo(() => legacy, [legacy])
-  const accountsMemo = useMemo(() => accounts, [accounts])
 
   if (!activeNetwork) throw new Error("activeNetwork is undefined")
 
   const networks = [activeNetwork, ...(legacyNetworks ?? [])]
 
   const { data, isError, error, isLoading } = useQuery<Event[], Error>(
-    ["list", txId],
+    ["events", "list", txId],
     async () => {
-      try {
-        if (!txId) return []
-
-        const networks = [activeNetwork, ...(legacyNetworks ?? [])]
-        for (const network of networks) {
-          const response = await network.events?.list({
-            count: 1,
-            filters: {
-              txnIdRange: [
-                { boundType: BoundType.inclusive, value: txId },
-                { boundType: BoundType.inclusive, value: txId },
-              ],
-            },
-            order: ListOrderType.descending,
-          })
-          if (response?.events?.length === 1) {
-            return response.events
-          }
+      if (!txId) return []
+      for (const network of networks) {
+        const events = await fetchEvents({
+          network,
+          txFrom: txId,
+          count: 1,
+        })
+        if (events.length === 1) {
+          return events
         }
-        return []
-      } catch (err) {
-        throw err
       }
+
+      return []
     },
   )
 
-  const result = processRawEvents(data?.events)
-
-  const hasNextPage = result.length >= count
+  const result = processRawEvents(data)
 
   return {
     isError,
     error: error?.message,
     isLoading,
-    hasNextPage,
-    currPageCount: result.slice(0, count - 1).length,
-    prevBtnProps: {
-      disabled: pageData.lastTxn?.length === 0,
-      onClick: () => {
-        setPageData(s => ({
-          lastTxn: s.lastTxn.slice(1),
-          lastNetworkId: s.lastNetworkId.slice(1),
-        }))
-      },
-    },
-    nextBtnProps: {
-      disabled: !hasNextPage,
-      onClick: () => {
-        const lastTxn = result[count - 1]
-        const lastNetworkId = data?.indices[count - 1] || 0
-        setPageData(s => ({
-          lastTxn: [lastTxn.id, ...s.lastTxn],
-          lastNetworkId: [lastNetworkId, ...s.lastNetworkId],
-        }))
-      },
-    },
     data: {
       count: result.length,
-      transactions: result.slice(0, count - 1),
+      transactions: result,
     },
-  }
-}
-
-export function useTransactionsList(
-  address: string,
-  symbol: string | undefined,
-) {
-  const [pageData, setPageData] = useState<ArrayBuffer[]>([])
-
-  const { query: activeNetwork, legacy } = useNetworkContext()
-
-  if (!activeNetwork) throw new Error("activeNetwork is undefined")
-
-  // Check if a transaction exists in the given network
-  // This is a workaround for https://github.com/liftedinit/many-rs/issues/404
-  const hasEvent = async (network: Network, id: ArrayBuffer) => {
-    try {
-      const response = await network.events?.list({
-        count: 1,
-        filters: {
-          txnIdRange: [
-            { boundType: BoundType.inclusive, value: id },
-            { boundType: BoundType.inclusive, value: id },
-          ],
-        },
-        order: ListOrderType.descending,
-      })
-      return response?.events?.length === 1
-    } catch (err) {
-      throw err
-    }
-  }
-
-  const fetchEvents = async (
-    network: Network,
-    accumulatedData: Event[] = [],
-    txFrom: ArrayBuffer | undefined,
-  ) => {
-    if (accumulatedData.length >= PAGE_SIZE) return accumulatedData
-    let filters = {}
-
-    if (symbol !== undefined) {
-      filters = {
-        ...filters,
-        accounts: [address, symbol],
-      }
-    } else {
-      filters = {
-        ...filters,
-        accounts: address,
-      }
-    }
-
-    try {
-      // If we have a transaction id, check if it exists in the current network
-      if (txFrom) {
-        // If it exists, create a filter that will look for this transaction
-        // This is a workaround for https://github.com/liftedinit/many-rs/issues/404
-        if (await hasEvent(network, txFrom)) {
-          filters = {
-            ...filters,
-            txnIdRange: [
-              undefined,
-              { boundType: BoundType.inclusive, value: txFrom },
-            ],
-          }
-        }
-        // If it doesn't exist, return the accumulated data and check on the next network
-        else {
-          return [...accumulatedData]
-        }
-      }
-
-      const response = await network.events?.list({
-        count: PAGE_SIZE - accumulatedData.length, // Fetch only the remaining required amount
-        filters,
-        order: ListOrderType.descending,
-      })
-
-      return [...accumulatedData, ...(response?.events || [])]
-    } catch (error) {
-      throw error
-    }
   }
 }
 
@@ -375,7 +253,7 @@ export function useAllTransactionsList({
   count = MAX_PAGE_SIZE,
 }: {
   accounts?: string[]
-  count: number
+  count?: number
 }) {
   const { query: activeNetwork, legacy } = useNetworkContext()
 
