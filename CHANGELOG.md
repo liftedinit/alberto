@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] - 2023-12-06
+
+### Features
+
+- Transaction history exporter ([#146](https://github.com/liftedinit/alberto/issues/146))
+
 ## [0.1.2] - 2023-10-13
 
 ### Bug Fixes
