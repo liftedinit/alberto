@@ -72,7 +72,7 @@ const mockListData = {
 const mockBalanceData = {
   balances: new Map([
     ["mabc", BigInt(1000000)],
-    ["mghi", BigInt(5000000)],
+    ["mghi", BigInt(6000000)],
   ]),
 }
 
@@ -114,14 +114,14 @@ describe("home page", () => {
     expect(assetsTab).toBeInTheDocument()
     expect(activityTab).toBeInTheDocument()
   })
-  it("should list the balances of each token the account holds", async function () {
+  it("should list the balances of each token the account holds", async function() {
     setupHome()
 
-    expect(screen.getByText(/abc/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/abc/i)[0]).toBeInTheDocument()
     expect(screen.getByText("0.001")).toBeInTheDocument()
 
-    expect(screen.getByText(/ghi/i)).toBeInTheDocument()
-    expect(screen.getByText("0.005")).toBeInTheDocument()
+    expect(screen.getAllByText(/ghi/i)[0]).toBeInTheDocument()
+    expect(screen.getByText("0.006")).toBeInTheDocument()
   })
   it("should display an error message", async () => {
     mockNetwork.ledger.balance = jest.fn().mockImplementation(async arg => {
@@ -164,14 +164,12 @@ describe("home page", () => {
     const assets = await screen.findAllByLabelText(/asset list item/i)
     userEvent.click(assets[0])
     expect(screen.getByText(/0.001 abc/i)).toBeInTheDocument()
-    await waitFor(() =>
-      expect(mockNetwork.events.list).toHaveBeenCalledTimes(1),
-    )
+    await waitFor(() => expect(mockNetwork.events.list).toHaveBeenCalled())
     const rows = await screen.findAllByRole("row")
     expect(rows.length).toBe(2)
 
     const firstTxn = within(rows[0])
-    expect(firstTxn.getByText(/abc/i)).toBeInTheDocument()
+    expect(firstTxn.getAllByText(/abc/i)[0]).toBeInTheDocument()
     expect(firstTxn.getByText(/send/i)).toBeInTheDocument()
     expect(firstTxn.getByText(/-0.000000001/i)).toBeInTheDocument()
     expect(firstTxn.getByText(/2023/i)).toBeInTheDocument()
@@ -180,7 +178,7 @@ describe("home page", () => {
     expect(firstTxn.getByText(/8:03:00/i)).toBeInTheDocument()
 
     const secondTxn = within(rows[1])
-    expect(secondTxn.getByText(/abc/i)).toBeInTheDocument()
+    expect(secondTxn.getAllByText(/abc/i)[0]).toBeInTheDocument()
     expect(secondTxn.getByText(/receive/i)).toBeInTheDocument()
     expect(secondTxn.getByText(/\+0.000000003/i)).toBeInTheDocument()
     expect(secondTxn.getByText(/2022/i)).toBeInTheDocument()
@@ -192,9 +190,7 @@ describe("home page", () => {
     const { activityTab } = setupHome()
     userEvent.click(activityTab)
 
-    await waitFor(() =>
-      expect(mockNetwork.events.list).toHaveBeenCalledTimes(1),
-    )
+    await waitFor(() => expect(mockNetwork.events.list).toHaveBeenCalled())
 
     const rows = screen.getAllByRole("row")
 
@@ -205,7 +201,7 @@ describe("home page", () => {
     expect(screen.getByText(/9/i)).toBeInTheDocument()
     expect(screen.getByText(/8:03:00/i)).toBeInTheDocument()
     expect(screen.getByText(/-0.000000001/i)).toBeInTheDocument()
-    expect(screen.getByText(/abc/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/abc/i)[0]).toBeInTheDocument()
 
     expect(screen.getByText(/receive/i)).toBeInTheDocument()
     expect(screen.getByText(/2022/i)).toBeInTheDocument()
@@ -213,7 +209,7 @@ describe("home page", () => {
     expect(screen.getByText(/9/i)).toBeInTheDocument()
     expect(screen.getByText(/8:01:00/i)).toBeInTheDocument()
     expect(screen.getByText(/\+0.000000003/i)).toBeInTheDocument()
-    expect(screen.getByText(/ghi/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/ghi/i)[0]).toBeInTheDocument()
   })
 })
 

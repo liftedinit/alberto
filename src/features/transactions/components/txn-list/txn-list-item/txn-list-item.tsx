@@ -26,13 +26,21 @@ type EditRolesEvent = AddRolesEvent | RemoveRolesEvent
 export function TxnListItem({
   transaction,
   address,
+  balance,
 }: {
   transaction: Event
   address: string
+  balance?: bigint
 }) {
   const txnTypeName = transaction.type as EventType
   if (txnTypeName === EventType.send) {
-    return <SendTxnListItem txn={transaction as SendEvent} address={address} />
+    return (
+      <SendTxnListItem
+        txn={transaction as SendEvent}
+        address={address}
+        balance={balance}
+      />
+    )
   } else if (txnTypeName === EventType.accountCreate) {
     return <CreateAccountTxnListItem txn={transaction as CreateAccountEvent} />
   } else if (txnTypeName === EventType.accountAddFeatures) {
@@ -48,7 +56,11 @@ export function TxnListItem({
     return <EditRolesTxnListItem txn={transaction as EditRolesEvent} />
   } else if (txnTypeName === EventType.mint || txnTypeName === EventType.burn) {
     return (
-      <MintBurnTxnListItem txn={transaction as MintEvent} address={address} />
+      <MintBurnTxnListItem
+        txn={transaction as MintEvent}
+        address={address}
+        balance={balance}
+      />
     )
   } else if (isMultisigTxnType(transaction.type)) {
     return <MultisigTxnListItem txn={transaction as MultisigEvent} />

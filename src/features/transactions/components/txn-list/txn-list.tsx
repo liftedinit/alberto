@@ -11,9 +11,14 @@ import {
   TableContainer,
   Text,
 } from "@liftedinit/ui"
-import { useTransactionsList } from "features/transactions/queries"
+import {
+  calculateBalances,
+  useAllTransactionsList,
+  useTransactionsList,
+} from "features/transactions/queries"
 import { TxnListItem } from "./txn-list-item"
 import { TxnExport } from "./txn-export"
+import { useBalances } from "features/balances"
 
 export function TxnList({
   address,
@@ -38,6 +43,17 @@ export function TxnList({
   } = queryData
 
   const { count, transactions } = data
+  const { data: allTxns } = useAllTransactionsList({ accounts })
+  const { data: balances } = useBalances({ address })
+
+  let txnBalances = new Map()
+  if (allTxns && balances) {
+    txnBalances = calculateBalances(
+      allTxns.transactions,
+      balances.ownedAssetsWithBalance,
+      address,
+    )
+  }
 
   if (isError && error) {
     return (
@@ -71,6 +87,7 @@ export function TxnList({
                     transaction={t}
                     key={t._id + t.time}
                     address={address}
+                    balance={txnBalances.get(t._id)}
                   />
                 )
               })}
