@@ -1,8 +1,17 @@
 import { useNetworkContext } from "features/network"
-import { BoundType, Event, ListOrderType, Network } from "@liftedinit/many-js"
+import {
+  BoundType,
+  BurnEvent,
+  Event,
+  ListOrderType,
+  MintEvent,
+  Network,
+  SendEvent,
+} from "@liftedinit/many-js"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useMemo, useState } from "react"
 import { arrayBufferToBase64 } from "@liftedinit/ui"
+import { Asset } from "features/balances"
 
 const PAGE_SIZE = 11
 const MAX_PAGE_SIZE = 100
@@ -303,4 +312,44 @@ export function useAllTransactionsList({
       transactions: result,
     },
   }
+}
+
+export function calculateBalances(
+  transactions: ProcessedEvent[],
+  balances: Asset[],
+  address: string,
+): Map<string, bigint> {
+  const txnBalances = new Map()
+  const running = new Map()
+
+  balances.forEach(({ identity, balance }) => running.set(identity, balance))
+  transactions.forEach(txn => {
+    if (["send", "mint", "burn"].includes(txn.type)) {
+      const { id, symbolAddress } = txn as SendEvent
+      const balance = running.get(symbolAddress) ?? BigInt(0)
+      txnBalances.set(arrayBufferToBase64(id), balance)
+      let updated
+
+      switch (txn.type) {
+        case "send": {
+          const { amount, from } = txn as SendEvent
+          updated = from === address ? balance + amount : balance - amount
+          break
+        }
+        case "mint": {
+          const { amounts } = txn as MintEvent
+          updated = balance + amounts[address]
+          break
+        }
+        case "burn": {
+          const { amounts } = txn as BurnEvent
+          updated = balance - amounts[address]
+          break
+        }
+      }
+
+      running.set(symbolAddress, updated)
+    }
+  })
+  return txnBalances
 }

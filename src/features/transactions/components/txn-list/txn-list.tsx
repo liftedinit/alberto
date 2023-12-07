@@ -1,4 +1,4 @@
-import { Event, SendEvent } from "@liftedinit/many-js"
+import { Event } from "@liftedinit/many-js"
 import {
   Button,
   ChevronRightIcon,
@@ -10,9 +10,9 @@ import {
   Tbody,
   TableContainer,
   Text,
-  arrayBufferToBase64,
 } from "@liftedinit/ui"
 import {
+  calculateBalances,
   useAllTransactionsList,
   useTransactionsList,
 } from "features/transactions/queries"
@@ -46,26 +46,13 @@ export function TxnList({
   const { data: allTxns } = useAllTransactionsList({ accounts })
   const { data: balances } = useBalances({ address })
 
-  const txnBalances: Map<string, bigint> = new Map()
+  let txnBalances = new Map()
   if (allTxns && balances) {
-    const running: Map<string, bigint> = new Map()
-    balances.ownedAssetsWithBalance.forEach(({ identity, balance }) =>
-      running.set(identity, balance),
+    txnBalances = calculateBalances(
+      allTxns.transactions,
+      balances.ownedAssetsWithBalance,
+      address,
     )
-    allTxns.transactions.forEach(txn => {
-      switch (txn.type) {
-        case "send": {
-          const { id, symbolAddress: symbol, amount, from } = txn as SendEvent
-          const balance = running.get(symbol) ?? BigInt(0)
-          txnBalances.set(arrayBufferToBase64(id), balance)
-          const updated = from === address ? balance - amount : balance + amount
-          running.set(symbol, updated)
-          break
-        }
-        default:
-          break
-      }
-    })
   }
 
   if (isError && error) {
