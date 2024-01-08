@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] - 2024-01-08
+
+### Bug Fixes
+
+- Upgrade to webpack 5 and latest many-js ([#158](https://github.com/liftedinit/alberto/issues/158))
+
+### Build
+
+- Bump @babel/traverse from 7.17.3 to 7.23.7 ([#150](https://github.com/liftedinit/alberto/issues/150))
+
+### Miscellaneous Tasks
+
+- Bump many-js to 0.2.0 ([#151](https://github.com/liftedinit/alberto/issues/151))
+- Bump lifted-ui and ts-jest ([#152](https://github.com/liftedinit/alberto/issues/152))
+- Update lifted-ui again ([#153](https://github.com/liftedinit/alberto/issues/153))
+- Move react-scripts to devDependencies ([#154](https://github.com/liftedinit/alberto/issues/154))
+- Npm audit fix ([#155](https://github.com/liftedinit/alberto/issues/155))
+- More devDependencies ([#156](https://github.com/liftedinit/alberto/issues/156))
+
 ## [0.1.3] - 2023-12-06
 
 ### Features
