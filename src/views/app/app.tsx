@@ -11,6 +11,7 @@ import {
   Splash,
   TransactionDetails,
   Layout,
+  TokenMigration,
 } from "views"
 import { useDisclosure } from "@liftedinit/ui"
 import { AddAccountModal } from "../../features/accounts"
@@ -49,6 +50,7 @@ export function App() {
           <Route path="transactions/:txnId" element={<TransactionDetails />} />
           <Route path="contacts" element={<Contacts />} />
           <Route path="send" element={<SendAsset />} />
+          <Route path="token-migration" element={<TokenMigration />} />
         </Route>
       </Routes>
       <AddAccountModal isOpen={isAddAccountOpen} onClose={onCloseAddAccount} />
