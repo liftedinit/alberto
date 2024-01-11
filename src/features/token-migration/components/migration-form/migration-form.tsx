@@ -1,38 +1,50 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Box, Progress } from "@liftedinit/ui"
-import { Step1 } from "./step1"
-import { Step2 } from "./step2"
-import { Step3 } from "./step3"
-import { Step4 } from "./step4" // Import your Step1 component
+import { AddressStep } from "./address-step"
+import { AmountAssetStep } from "./amount-asset-step"
+import { DestinationAddressStep } from "./destination-address-step"
+import { UserAddressStep } from "./user-address-step"
+import { ConfirmationStep } from "./confirmation-step"
+
+export enum StepNames {
+  ADDRESS,
+  USER_ADDRESS,
+  AMOUNT_ASSET,
+  DESTINATION_ADDRESS,
+  CONFIRMATION,
+}
 
 function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-interface FormData {
+export interface FormData {
   assetAmount: number
   assetType: string
   destinationAddress: string
   userAddress: string
+  accountAddress: string
 }
 
-export const MigrationForm = () => {
-  const [currentStep, setCurrentStep] = useState(1)
-  const [formData, setFormData] = useState<FormData>({
+function defaultValues(): FormData {
+  return {
     assetAmount: 0,
     assetType: "",
     destinationAddress: "",
-    userAddress: "mafxfifpnhkgdm3er55tlqnbvlvhr777w5heyxu77rgih5fart", // TODO: Fetch this programmatically
-  })
+    userAddress: "",
+    accountAddress: "",
+  }
+}
+
+export const MigrationForm = () => {
+  const [currentStep, setCurrentStep] = useState(StepNames.ADDRESS)
+  const [formData, setFormData] = useState<FormData>(defaultValues())
   const [submissionStatus, setSubmissionStatus] = useState<string[]>([
     "Preparing migration...",
   ])
 
-  // Go to the next step
-  const nextStep = () => setCurrentStep(currentStep + 1)
-
-  // Go to the previous step
-  const prevStep = () => setCurrentStep(currentStep - 1)
+  const nextStep = (nextStep: StepNames) => setCurrentStep(nextStep)
+  const prevStep = (prevStep: StepNames) => setCurrentStep(prevStep)
 
   const handleFormData = (values: Partial<FormData>) => {
     setFormData({ ...formData, ...values })
@@ -63,41 +75,62 @@ export const MigrationForm = () => {
 
   const handleSubmit = async () => {
     console.log("Final Submission Data:", formData)
-    setCurrentStep(4) // Move to the submission tracking step
+    // setCurrentStep(4) // Move to the submission tracking step
     await performSubmission() // Function that performs the submission and updates status
     // Handle the final submission logic here
   }
 
+  useEffect(() => {
+    console.log(StepNames[currentStep], formData)
+  }, [currentStep])
+
   // Render the current step
   const renderStep = () => {
     switch (currentStep) {
-      case 1:
+      case StepNames.ADDRESS:
         return (
-          <Step1
+          <AddressStep
             nextStep={nextStep}
             setFormData={handleFormData}
-            initialValues={formData}
+            initialValues={{ address: "" }}
           />
         )
-      case 2:
+      case StepNames.AMOUNT_ASSET:
         return (
-          <Step2
+          <AmountAssetStep
             nextStep={nextStep}
             prevStep={prevStep}
             setFormData={handleFormData}
             initialValues={formData}
           />
         )
-      case 3:
+      case StepNames.DESTINATION_ADDRESS:
         return (
-          <Step3
+          <DestinationAddressStep
+            nextStep={nextStep}
+            prevStep={prevStep}
+            setFormData={handleFormData}
+            initialValues={formData}
+          />
+        )
+      case StepNames.USER_ADDRESS:
+        return (
+          <UserAddressStep
+            nextStep={nextStep}
+            prevStep={prevStep}
+            setFormData={handleFormData}
+            initialValues={formData}
+          />
+        )
+      case StepNames.CONFIRMATION:
+        return (
+          <ConfirmationStep
             prevStep={prevStep}
             handleSubmit={handleSubmit}
+            setFormData={handleFormData}
             formData={formData}
           />
         )
-      case 4:
-        return <Step4 submissionStatus={submissionStatus} />
       default:
         return <div>Unknown step</div>
     }
@@ -105,9 +138,8 @@ export const MigrationForm = () => {
 
   return (
     <Box>
-      <Progress value={(currentStep / 3) * 100} mb={4} />
+      {/*<Progress value={(currentStep / 3) * 100} mb={4} />*/}
       {renderStep()}
-      {/* Render navigation buttons if needed */}
     </Box>
   )
 }

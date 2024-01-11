@@ -1,49 +1,51 @@
-import React from "react"
-import { Formik, Form, Field, FormikProps } from "formik"
+import { Field, Form, Formik } from "formik"
 import * as Yup from "yup"
 import {
   Box,
   Button,
   FormControl,
   FormLabel,
+  Icon,
   Input,
   Text,
-  Icon,
   Tooltip,
 } from "@liftedinit/ui"
 import { FaInfoCircle } from "react-icons/fa"
+import { StepNames } from "./migration-form"
 
-interface Step2Props {
-  nextStep: () => void
-  prevStep: () => void
-  setFormData: (values: any) => void // Adjust the type to match your form data structure
-  initialValues: any // Use the appropriate type for your initial form values
+interface FormValues {
+  destinationAddress: string
 }
 
-const Step2ValidationSchema = Yup.object().shape({
+interface DestinationAddressStepProps {
+  nextStep: (nextStep: StepNames) => void
+  prevStep: (prevStep: StepNames) => void
+  setFormData: (values: any) => void
+  initialValues: FormValues
+}
+
+const DestinationAddressStepValidationSchema = Yup.object().shape({
   destinationAddress: Yup.string()
     .matches(/^manifest[a-zA-Z0-9]{39}$/, "Invalid address format")
     .required("Required"),
 })
 
-export const Step2 = ({
+export const DestinationAddressStep = ({
   nextStep,
   prevStep,
   setFormData,
   initialValues,
-}: Step2Props) => {
+}: DestinationAddressStepProps) => {
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={Step2ValidationSchema}
+      validationSchema={DestinationAddressStepValidationSchema}
       onSubmit={values => {
         setFormData(values)
-        nextStep()
+        nextStep(StepNames.CONFIRMATION)
       }}
     >
-      {(
-        { errors, touched }: FormikProps<any>, // Use the appropriate type for FormikProps
-      ) => (
+      {({ errors, touched }) => (
         <Form>
           <Box p={4}>
             <FormControl
@@ -54,7 +56,7 @@ export const Step2 = ({
               <FormLabel htmlFor="destinationAddress">
                 Destination Address
                 <Tooltip
-                  label="This is your address on the new chain where to migrate the tokens to."
+                  label="This is the destination address to migrate the token to."
                   fontSize="md"
                 >
                   <span>
@@ -67,12 +69,20 @@ export const Step2 = ({
                 id="destinationAddress"
                 name="destinationAddress"
               />
-              {errors.destinationAddress && touched.destinationAddress && (
-                <Text color="red.500">{errors.destinationAddress}</Text>
-              )}
+              {errors.destinationAddress && touched.destinationAddress ? (
+                <Text color="red.500" fontSize="sm">
+                  {errors.destinationAddress}
+                </Text>
+              ) : null}
             </FormControl>
-
-            <Button mt={4} colorScheme="blue" onClick={prevStep}>
+            <Button
+              mt={4}
+              colorScheme="blue"
+              onClick={() => {
+                setFormData({ assetAmount: 0, assetType: "" }) // TODO: Refactor this
+                prevStep(StepNames.AMOUNT_ASSET)
+              }}
+            >
               Back
             </Button>
             <Button mt={4} ml={2} colorScheme="blue" type="submit">
