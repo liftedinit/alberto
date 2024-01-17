@@ -18,6 +18,7 @@ import {
   Event,
   BlockchainTransaction,
 } from "@liftedinit/many-js"
+import { Big } from "big.js"
 
 export enum StepNames {
   ADDRESS,
@@ -29,8 +30,9 @@ export enum StepNames {
 }
 
 export interface FormData {
-  assetAmount: number
-  assetType: string
+  assetAmount: Big
+  assetSymbol: string
+  assetTicker: string
   destinationAddress: string
   userAddress: string
   accountAddress: string
@@ -38,8 +40,9 @@ export interface FormData {
 
 function defaultValues(): FormData {
   return {
-    assetAmount: 0,
-    assetType: "",
+    assetAmount: Big(0),
+    assetSymbol: "",
+    assetTicker: "",
     destinationAddress: "",
     userAddress: "",
     accountAddress: "",
@@ -165,11 +168,13 @@ export const MigrationForm = () => {
     }
   }
 
+  const handleMultisigTokenSending = async () => {}
+
   const getTokenPayload = () => ({
     from: formData.userAddress,
     to: ILLEGAL_IDENTITY,
-    amount: BigInt(formData.assetAmount),
-    symbol: formData.assetType,
+    amount: BigInt(formData.assetAmount.times(1e9).toString()), // TODO: Get the precision programmatically
+    symbol: formData.assetSymbol,
     memo: [memo, formData.destinationAddress],
   })
 
@@ -232,7 +237,11 @@ export const MigrationForm = () => {
   const performSubmission = async () => {
     addSubmissionStatus("Processing migration on the MANY chain...")
 
-    if (!formData.accountAddress) await handleTokenSending()
+    if (!formData.accountAddress) {
+      await handleTokenSending()
+    } else {
+      await handleMultisigTokenSending()
+    }
   }
 
   const handleSubmit = async () => {
@@ -257,6 +266,7 @@ export const MigrationForm = () => {
             nextStep={nextStep}
             prevStep={prevStep}
             setFormData={handleFormData}
+            formData={formData}
             initialValues={formData}
           />
         )

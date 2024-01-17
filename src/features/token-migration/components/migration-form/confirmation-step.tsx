@@ -27,10 +27,10 @@ export const ConfirmationStep = ({
         <strong>User Address:</strong> {formData.userAddress}
       </Text>
       <Text mb={2}>
-        <strong>Asset Amount:</strong> {formData.assetAmount}
+        <strong>Asset Amount:</strong> {formData.assetAmount.toString()}
       </Text>
       <Text mb={2}>
-        <strong>Asset Type:</strong> {formData.assetType}
+        <strong>Asset Type:</strong> {formData.assetTicker}
       </Text>
       <Text mb={2}>
         <strong>Destination Address:</strong> {formData.destinationAddress}

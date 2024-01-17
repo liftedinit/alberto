@@ -70,6 +70,10 @@ export const DestinationAddressStep = ({
                 </Tooltip>
               </FormLabel>
               <Field
+                bgColor="gray.100"
+                fontFamily="monospace"
+                fontSize="md"
+                rounded="md"
                 as={Input}
                 id="destinationAddress"
                 name="destinationAddress"

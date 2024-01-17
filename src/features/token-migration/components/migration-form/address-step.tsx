@@ -139,6 +139,12 @@ export const AddressStep = ({
             <FormControl isInvalid={!!(errors.address && touched.address)}>
               <FormLabel htmlFor="address">User/Account Address</FormLabel>
               <Field
+                bgColor="gray.100"
+                borderColor={errors?.address ? "red.500" : undefined}
+                borderWidth={errors?.address ? "2px" : undefined}
+                fontFamily="monospace"
+                fontSize="md"
+                rounded="md"
                 as={Select}
                 id="address"
                 name="address"
