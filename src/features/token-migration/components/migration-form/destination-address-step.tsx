@@ -12,6 +12,7 @@ import {
 } from "@liftedinit/ui"
 import { FaInfoCircle } from "react-icons/fa"
 import { StepNames } from "./migration-form"
+import React from "react"
 
 interface FormValues {
   destinationAddress: string
@@ -48,6 +49,10 @@ export const DestinationAddressStep = ({
       {({ errors, touched }) => (
         <Form>
           <Box p={4}>
+            <Text mb={4}>
+              Enter the destination address on the new chain, e.g.,{" "}
+              <em>manifest1abcqj48...f34qabc.</em>
+            </Text>
             <FormControl
               isInvalid={
                 !!(errors.destinationAddress && touched.destinationAddress)

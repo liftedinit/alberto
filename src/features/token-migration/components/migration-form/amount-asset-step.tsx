@@ -11,7 +11,6 @@ import {
   Text,
 } from "@liftedinit/ui"
 import { StepNames } from "./migration-form"
-import { number } from "yup"
 
 interface FormValues {
   assetAmount: number
@@ -26,7 +25,12 @@ interface AmountAssetStepProps {
   initialValues: FormValues
 }
 
-const assetTypes = ["MFX", "BITCH", "GRAY"] // TODO: Fetch this programmatically
+// TODO: Fetch asset types programmatically
+enum AssetTypes {
+  MFX = "mqbfbahksdwaqeenayy2gxke32hgb7aq4ao4wt745lsfs6wiaaaaqnz",
+  BITCH = "TODO",
+  GRAY = "TODO",
+}
 
 const AmountAssetStepValidationSchema = Yup.object().shape({
   assetAmount: Yup.number()
@@ -54,6 +58,9 @@ export const AmountAssetStep = ({
       {({ errors, touched }) => (
         <Form>
           <Box p={4}>
+            <Text mb={4}>
+              Enter the asset amount and asset type to migrate to the new chain.
+            </Text>
             <FormControl
               isInvalid={!!(errors.assetAmount && touched.assetAmount)}
             >
@@ -77,8 +84,8 @@ export const AmountAssetStep = ({
                 name="assetType"
                 placeholder="Select asset type"
               >
-                {assetTypes.map((type, index) => (
-                  <option key={index} value={type} disabled={type !== "MFX"}>
+                {Object.entries(AssetTypes).map(([type, address], index) => (
+                  <option key={index} value={address} disabled={type !== "MFX"}>
                     {type}
                   </option>
                 ))}

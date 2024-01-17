@@ -24,7 +24,7 @@ export function TxnList({
 }) {
   const accounts = symbol ? [address, symbol] : [address]
   const queryData = useTransactionsList({
-    accounts,
+    filters: { accounts },
   })
   const {
     data,

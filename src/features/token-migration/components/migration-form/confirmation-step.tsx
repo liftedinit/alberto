@@ -19,12 +19,22 @@ export const ConfirmationStep = ({
     <Box p={4}>
       <Text mb={2}>Confirmation</Text>
       {formData.accountAddress !== "" ? (
-        <Text mb={2}>Account Address: {formData.accountAddress}</Text>
+        <Text mb={2}>
+          <strong>Account Address:</strong> {formData.accountAddress}
+        </Text>
       ) : null}
-      <Text mb={2}>User Address: {formData.userAddress}</Text>
-      <Text mb={2}>Asset Amount: {formData.assetAmount}</Text>
-      <Text mb={2}>Asset Type: {formData.assetType}</Text>
-      <Text mb={2}>Destination Address: {formData.destinationAddress}</Text>
+      <Text mb={2}>
+        <strong>User Address:</strong> {formData.userAddress}
+      </Text>
+      <Text mb={2}>
+        <strong>Asset Amount:</strong> {formData.assetAmount}
+      </Text>
+      <Text mb={2}>
+        <strong>Asset Type:</strong> {formData.assetType}
+      </Text>
+      <Text mb={2}>
+        <strong>Destination Address:</strong> {formData.destinationAddress}
+      </Text>
 
       <Button
         mt={4}

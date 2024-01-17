@@ -5,13 +5,12 @@ import {
   Button,
   FormControl,
   FormLabel,
-  Icon,
-  Input,
+  Select,
   Text,
-  Tooltip,
 } from "@liftedinit/ui"
-import { FaInfoCircle } from "react-icons/fa"
-import { StepNames } from "./migration-form"
+import { StepNames, FormData } from "./migration-form"
+import { Account, useAccountsStore, useGetAccountInfo } from "../../../accounts"
+import { useEffect, useState } from "react"
 
 interface FormValues {
   userAddress: string
@@ -21,6 +20,7 @@ interface UserAddressStepProps {
   nextStep: (nextStep: StepNames) => void
   prevStep: (prevStep: StepNames) => void
   setFormData: (values: any) => void
+  formData: FormData
   initialValues: FormValues
 }
 
@@ -34,8 +34,29 @@ export const UserAddressStep = ({
   nextStep,
   prevStep,
   setFormData,
+  formData,
   initialValues,
 }: UserAddressStepProps) => {
+  const [commonAddresses, setCommonAddresses] = useState<Account[]>([])
+  const [isLoaded, setIsLoaded] = useState(false)
+  const { data: accountInfo, isSuccess } = useGetAccountInfo(
+    formData.accountAddress,
+  )
+  const accountUsers = isSuccess
+    ? [...(accountInfo?.accountInfo?.roles?.keys() ?? [])]
+    : []
+  const identityById = useAccountsStore(s => s.byId)
+
+  useEffect(() => {
+    const matchingAccounts = Array.from(identityById.values()).filter(
+      identity => accountUsers.includes(identity.address),
+    )
+    if (matchingAccounts.length > 0) {
+      setCommonAddresses(matchingAccounts)
+    }
+    setIsLoaded(true)
+  }, [isSuccess, identityById])
+
   return (
     <Formik
       initialValues={initialValues}
@@ -49,21 +70,32 @@ export const UserAddressStep = ({
       {({ errors, touched }) => (
         <Form>
           <Box p={4}>
+            <Text mb={4}>
+              Select the user address associated to the account.
+            </Text>
+            <Text mb={4}>
+              <strong>Note:</strong> TODO
+            </Text>
             <FormControl
               isInvalid={!!(errors.userAddress && touched.userAddress)}
             >
               <FormLabel htmlFor="userAddress">
                 User address associated to the account
-                <Tooltip
-                  label="The user address associated to the account."
-                  fontSize="md"
-                >
-                  <span>
-                    <Icon as={FaInfoCircle} ml={2} w={4} h={4} />
-                  </span>
-                </Tooltip>
               </FormLabel>
-              <Field as={Input} id="userAddress" name="userAddress" />
+              <Field
+                as={Select}
+                id="userAddress"
+                name="userAddress"
+                placeholder="Select user"
+              >
+                {isLoaded
+                  ? commonAddresses.map(account => (
+                      <option key={account.address} value={account.address}>
+                        User: {account.address} ({account.name})
+                      </option>
+                    ))
+                  : null}
+              </Field>
               {errors.userAddress && touched.userAddress ? (
                 <Text color="red.500">{errors.userAddress}</Text>
               ) : null}

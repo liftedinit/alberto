@@ -1,5 +1,12 @@
 import { useNetworkContext } from "features/network"
-import { BoundType, Event, ListOrderType, Network } from "@liftedinit/many-js"
+import {
+  BlockchainBlock,
+  BoundType,
+  Event,
+  ListOrderType,
+  Memo,
+  Network,
+} from "@liftedinit/many-js"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useMemo, useState } from "react"
 import { arrayBufferToBase64 } from "@liftedinit/ui"
@@ -7,19 +14,42 @@ import { arrayBufferToBase64 } from "@liftedinit/ui"
 const PAGE_SIZE = 11
 const MAX_PAGE_SIZE = 100
 
+export function useGetBlock(height?: number, hash?: ArrayBuffer) {
+  const { query: network } = useNetworkContext()
+  return useQuery<BlockchainBlock, Error>({
+    queryKey: ["block", "get", network],
+    queryFn: async () => {
+      return network?.blockchain.block({ height, hash })
+    },
+    enabled: height !== undefined || hash !== undefined,
+  })
+}
+
+export function useGetEvents(filters: Record<string, any>) {
+  const { query: network } = useNetworkContext()
+  return useQuery<{ count: number; events: Event[] }, Error>({
+    queryKey: ["events", "list", network],
+    queryFn: async () => {
+      return network?.events.list(filters)
+    },
+    enabled: Object.keys(filters).length > 0,
+  })
+}
+
 export function useCreateSendTxn() {
   const { command: network } = useNetworkContext()
   const queryClient = useQueryClient()
   return useMutation<
     unknown,
     Error,
-    { to: string; amount: bigint; symbol: string }
+    { from?: string; to: string; amount: bigint; symbol: string; memo?: Memo }
   >(
     async (vars: {
       from?: string
       to: string
       amount: bigint
       symbol: string
+      memo?: Memo
     }) => {
       return network?.ledger.send(vars)
     },
@@ -27,6 +57,7 @@ export function useCreateSendTxn() {
       onSuccess: () => {
         queryClient.invalidateQueries(["balances"])
         queryClient.invalidateQueries(["events", "list"])
+        queryClient.invalidateQueries(["block", "get"])
       },
     },
   )
@@ -63,22 +94,15 @@ const hasEvent = async (network: Network, id: ArrayBuffer) => {
 const fetchEvents = async ({
   network,
   txFrom,
-  accounts,
   count = PAGE_SIZE,
+  filters = {},
 }: {
   network: Network
   txFrom?: ArrayBuffer
-  accounts?: string[]
   count?: number
+  filters?: Record<any, any>
 }): Promise<Event[]> => {
-  let filters = {}
-
-  if (accounts) {
-    filters = {
-      ...filters,
-      accounts,
-    }
-  }
+  let mergedFilters = { ...filters }
 
   try {
     // If we have a transaction id, check if it exists in the current network
@@ -86,8 +110,8 @@ const fetchEvents = async ({
       // If it exists, create a filter that will look for this transaction
       // This is a workaround for https://github.com/liftedinit/many-rs/issues/404
       if (await hasEvent(network, txFrom)) {
-        filters = {
-          ...filters,
+        mergedFilters = {
+          ...mergedFilters,
           txnIdRange: [
             undefined,
             { boundType: BoundType.inclusive, value: txFrom },
@@ -98,7 +122,7 @@ const fetchEvents = async ({
 
     const response = await network.events?.list({
       count,
-      filters,
+      filters: mergedFilters,
       order: ListOrderType.descending,
     })
 
@@ -121,11 +145,11 @@ interface PageState {
 export type ProcessedEvent = Event & { _id: string; time: number }
 
 export function useTransactionsList({
-  accounts,
   count = PAGE_SIZE,
+  filters = {},
 }: {
-  accounts?: string[]
   count?: number
+  filters?: Record<any, any>
 }) {
   const [pageData, setPageData] = useState<PageState>({
     lastTxn: [],
@@ -134,7 +158,6 @@ export function useTransactionsList({
 
   const { query: activeNetwork, legacy } = useNetworkContext()
   const legacyNetworks = useMemo(() => legacy, [legacy])
-  const accountsMemo = useMemo(() => accounts, [accounts])
 
   if (!activeNetwork) throw new Error("activeNetwork is undefined")
 
@@ -151,8 +174,8 @@ export function useTransactionsList({
       const data = await fetchEvents({
         network,
         txFrom,
-        accounts: accountsMemo,
         count,
+        filters,
       })
       const indices = Array(data.length).fill(i)
       accumulatedIndex = [...accumulatedIndex, ...indices]
@@ -167,7 +190,7 @@ export function useTransactionsList({
   }
 
   const { data, isError, error, isLoading } = useQuery<IndexedEvents, Error>(
-    ["events", "list", accounts, activeNetwork, legacyNetworks, pageData],
+    ["events", "list", activeNetwork, legacyNetworks, pageData],
     fetchData,
   )
 
@@ -249,10 +272,10 @@ export function useSingleTransactionList({ txId }: { txId?: ArrayBuffer }) {
 }
 
 export function useAllTransactionsList({
-  accounts,
+  filters = {},
   count = MAX_PAGE_SIZE,
 }: {
-  accounts?: string[]
+  filters?: Record<any, any>
   count?: number
 }) {
   const { query: activeNetwork, legacy } = useNetworkContext()
@@ -260,7 +283,6 @@ export function useAllTransactionsList({
   if (!activeNetwork) throw new Error("activeNetwork is undefined")
 
   const legacyNetworks = useMemo(() => legacy, [legacy])
-  const accountsMemo = useMemo(() => accounts, [accounts])
   const networks = [activeNetwork, ...(legacyNetworks ?? [])]
 
   const fetchData = async () => {
@@ -273,7 +295,7 @@ export function useAllTransactionsList({
         const data = await fetchEvents({
           network,
           txFrom,
-          accounts: accountsMemo,
+          filters,
           count,
         })
         accumulatedData = [...accumulatedData, ...data]
@@ -288,7 +310,7 @@ export function useAllTransactionsList({
   }
 
   const { data, isError, error, isLoading } = useQuery<Event[], Error>(
-    ["list", accounts, activeNetwork, legacyNetworks],
+    ["list", activeNetwork, legacyNetworks],
     fetchData,
   )
 
