@@ -190,7 +190,7 @@ export function useTransactionsList({
   }
 
   const { data, isError, error, isLoading } = useQuery<IndexedEvents, Error>(
-    ["events", "list", activeNetwork, legacyNetworks, pageData],
+    ["events", "list", filters, activeNetwork, legacyNetworks, pageData],
     fetchData,
   )
 
@@ -310,7 +310,7 @@ export function useAllTransactionsList({
   }
 
   const { data, isError, error, isLoading } = useQuery<Event[], Error>(
-    ["list", activeNetwork, legacyNetworks],
+    ["list", filters, activeNetwork, legacyNetworks],
     fetchData,
   )
 
