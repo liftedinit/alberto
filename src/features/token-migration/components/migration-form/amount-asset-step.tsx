@@ -62,12 +62,14 @@ export const AmountAssetStep = ({
   }, [balances])
 
   const AmountAssetStepValidationSchema = Yup.object().shape({
-    assetAmount: Yup.mixed()
+    assetAmount: Yup.string()
       .test(
-        "is-valid-amount",
-        "Amount must be greater than 0 and less or equal to balance",
-        value => {
-          return value && value > 0 && value <= currentMaxAmount
+        "is-amount-in-range",
+        "Amount must be greater than 0 and less than or equal to your balance",
+        function (value) {
+          if (value === undefined) return false
+          const bigValue = Big(value)
+          return bigValue.gt(0) && bigValue.lte(currentMaxAmount)
         },
       )
       .required("Required"),
@@ -80,8 +82,8 @@ export const AmountAssetStep = ({
       validationSchema={AmountAssetStepValidationSchema}
       onSubmit={values => {
         values.assetTicker = ownedAssetType.get(values.assetSymbol)
+        values.assetAmount = new Big(values.assetAmount)
         setFormData(values)
-        console.log(values)
         nextStep(StepNames.DESTINATION_ADDRESS)
       }}
     >
@@ -110,7 +112,7 @@ export const AmountAssetStep = ({
                   as={Input}
                   id="assetAmount"
                   name="assetAmount"
-                  type="number"
+                  type="string"
                 />
                 <HStack>
                   <Text whiteSpace="nowrap" fontSize="xs">
