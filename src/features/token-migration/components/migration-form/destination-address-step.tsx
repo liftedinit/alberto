@@ -11,8 +11,8 @@ import {
   Tooltip,
 } from "@liftedinit/ui"
 import { FaInfoCircle } from "react-icons/fa"
-import { StepNames } from "./migration-form"
 import React from "react"
+import { StepNames } from "./types"
 
 interface FormValues {
   destinationAddress: string

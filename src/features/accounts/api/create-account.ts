@@ -7,7 +7,7 @@ import {
 } from "@liftedinit/many-js"
 import { accountLedgerFeature, accountMultisigFeature } from "../types"
 
-export type CreateAccountFormData = {
+export type CreateAccountTokenMigrationFormData = {
   accountSettings: {
     name: string
     owners: { address: string; roles: string[] }[]
@@ -20,28 +20,30 @@ export type CreateAccountFormData = {
 
 export function useCreateAccount() {
   const { command: n } = useNetworkContext()
-  return useMutation<CreateAccountResponse, Error, CreateAccountFormData>(
-    async (vars: CreateAccountFormData) => {
-      const name = vars.accountSettings.name
-      const roles = vars.accountSettings.owners.reduce(
-        (
-          acc: Map<string, string[]>,
-          owner: { address: string; roles: string[] },
-        ) => {
-          acc.set(owner.address, owner.roles)
-          return acc
-        },
-        new Map(),
-      )
-      const features = makeFeatures(vars.features, vars.featureSettings)
-      return await n?.account.create({ name, roles, features })
-    },
-  )
+  return useMutation<
+    CreateAccountResponse,
+    Error,
+    CreateAccountTokenMigrationFormData
+  >(async (vars: CreateAccountTokenMigrationFormData) => {
+    const name = vars.accountSettings.name
+    const roles = vars.accountSettings.owners.reduce(
+      (
+        acc: Map<string, string[]>,
+        owner: { address: string; roles: string[] },
+      ) => {
+        acc.set(owner.address, owner.roles)
+        return acc
+      },
+      new Map(),
+    )
+    const features = makeFeatures(vars.features, vars.featureSettings)
+    return await n?.account.create({ name, roles, features })
+  })
 }
 
 function makeFeatures(
-  features: CreateAccountFormData["features"],
-  featureSettings: CreateAccountFormData["featureSettings"],
+  features: CreateAccountTokenMigrationFormData["features"],
+  featureSettings: CreateAccountTokenMigrationFormData["featureSettings"],
 ) {
   const result = []
   if (features[accountLedgerFeature]) {

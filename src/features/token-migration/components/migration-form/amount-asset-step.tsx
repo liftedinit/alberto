@@ -11,9 +11,9 @@ import {
   Select,
   Text,
 } from "@liftedinit/ui"
-import { FormData, StepNames } from "./migration-form"
 import { useBalances } from "../../../balances"
 import { Big } from "big.js"
+import { StepNames, TokenMigrationFormData } from "./types"
 
 interface FormValues {
   assetAmount: Big
@@ -26,7 +26,7 @@ interface AmountAssetStepProps {
   nextStep: (nextStep: StepNames) => void
   prevStep: (prevStep: StepNames) => void
   setFormData: (values: any) => void
-  formData: FormData
+  formData: TokenMigrationFormData
   initialValues: FormValues
 }
 
@@ -94,6 +94,37 @@ export const AmountAssetStep = ({
               Enter the asset amount and asset type to migrate to the new chain.
             </Text>
             <FormControl
+              isInvalid={!!(errors.assetSymbol && touched.assetSymbol)}
+            >
+              <FormLabel htmlFor="assetTicker">Asset Type</FormLabel>
+              <Field
+                bgColor="gray.100"
+                borderColor={errors?.assetSymbol ? "red.500" : undefined}
+                borderWidth={errors?.assetSymbol ? "2px" : undefined}
+                fontFamily="monospace"
+                fontSize="md"
+                rounded="md"
+                as={Select}
+                id="assetSymbol"
+                name="assetSymbol"
+                placeholder="Select asset type"
+                onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                  handleChange(event)
+                  setSelectedAsset(event.target.value)
+                  setCurrentMaxAmount(maxAmount.get(event.target.value))
+                }}
+              >
+                {Array.from(ownedAssetType).map(([address, type], index) => (
+                  <option key={index} value={address} disabled={type !== "MFX"}>
+                    {type}
+                  </option>
+                ))}
+              </Field>
+              {errors.assetTicker && touched.assetTicker ? (
+                <Text color="red.500">{errors.assetTicker}</Text>
+              ) : null}
+            </FormControl>
+            <FormControl
               isInvalid={!!(errors.assetAmount && touched.assetAmount)}
             >
               <FormLabel htmlFor="assetAmount">Asset Amount</FormLabel>
@@ -136,37 +167,6 @@ export const AmountAssetStep = ({
               ) : null}
             </FormControl>
 
-            <FormControl
-              isInvalid={!!(errors.assetSymbol && touched.assetSymbol)}
-            >
-              <FormLabel htmlFor="assetTicker">Asset Type</FormLabel>
-              <Field
-                bgColor="gray.100"
-                borderColor={errors?.assetSymbol ? "red.500" : undefined}
-                borderWidth={errors?.assetSymbol ? "2px" : undefined}
-                fontFamily="monospace"
-                fontSize="md"
-                rounded="md"
-                as={Select}
-                id="assetSymbol"
-                name="assetSymbol"
-                placeholder="Select asset type"
-                onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-                  handleChange(event)
-                  setSelectedAsset(event.target.value)
-                  setCurrentMaxAmount(maxAmount.get(event.target.value))
-                }}
-              >
-                {Array.from(ownedAssetType).map(([address, type], index) => (
-                  <option key={index} value={address} disabled={type !== "MFX"}>
-                    {type}
-                  </option>
-                ))}
-              </Field>
-              {errors.assetTicker && touched.assetTicker ? (
-                <Text color="red.500">{errors.assetTicker}</Text>
-              ) : null}
-            </FormControl>
             <Button
               mt={4}
               colorScheme="blue"

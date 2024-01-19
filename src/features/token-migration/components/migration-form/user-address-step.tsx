@@ -8,9 +8,9 @@ import {
   Select,
   Text,
 } from "@liftedinit/ui"
-import { StepNames, FormData } from "./migration-form"
 import { Account, useAccountsStore, useGetAccountInfo } from "../../../accounts"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { StepNames, TokenMigrationFormData } from "./types"
 
 interface FormValues {
   userAddress: string
@@ -20,7 +20,7 @@ interface UserAddressStepProps {
   nextStep: (nextStep: StepNames) => void
   prevStep: (prevStep: StepNames) => void
   setFormData: (values: any) => void
-  formData: FormData
+  formData: TokenMigrationFormData
   initialValues: FormValues
 }
 
@@ -45,17 +45,18 @@ export const UserAddressStep = ({
   const accountUsers = isSuccess
     ? [...(accountInfo?.accountInfo?.roles?.keys() ?? [])]
     : []
+  const memoizedAccountUsers = useMemo(() => accountUsers, [])
   const identityById = useAccountsStore(s => s.byId)
 
   useEffect(() => {
     const matchingAccounts = Array.from(identityById.values()).filter(
-      identity => accountUsers.includes(identity.address),
+      identity => memoizedAccountUsers.includes(identity.address),
     )
     if (matchingAccounts.length > 0) {
       setCommonAddresses(matchingAccounts)
     }
     setIsLoaded(true)
-  }, [isSuccess, identityById])
+  }, [isSuccess, identityById, memoizedAccountUsers])
 
   return (
     <Formik
@@ -104,7 +105,10 @@ export const UserAddressStep = ({
               mt={4}
               colorScheme="blue"
               onClick={() => {
-                setFormData({ accountAddress: "", userAddress: "" }) // TODO: Refactor this
+                setFormData({
+                  accountAddress: "",
+                  userAddress: "",
+                }) // TODO: Refactor this
                 prevStep(StepNames.ADDRESS)
               }}
             >

@@ -1,12 +1,12 @@
 import React from "react"
 import { Box, Button, Text } from "@chakra-ui/react"
-import { FormData, StepNames } from "./migration-form"
+import { StepNames, TokenMigrationFormData } from "./types"
 
 interface ConfirmationStepProps {
   prevStep: (prevStep: StepNames) => void
   handleSubmit: () => void
   setFormData: (values: any) => void
-  formData: FormData
+  formData: TokenMigrationFormData
 }
 
 export const ConfirmationStep = ({

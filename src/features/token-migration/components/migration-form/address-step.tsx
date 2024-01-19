@@ -8,10 +8,10 @@ import {
   Select,
   Text,
 } from "@liftedinit/ui"
-import { IdentitiesAndAccounts, IdTypes, StepNames } from "./migration-form"
 import { useEffect, useMemo, useState } from "react"
 import { Account, useAccountsStore, useAccountStore } from "../../../accounts"
 import { useGetAccountsInfo } from "../../../accounts/api/get-account-info"
+import { IdentitiesAndAccounts, IdTypes, StepNames } from "./types"
 
 interface FormValues {
   address: string
