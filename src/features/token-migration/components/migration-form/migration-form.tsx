@@ -1,18 +1,21 @@
-import React, { useCallback, useEffect, useReducer } from "react"
+import React, { useCallback, useEffect, useMemo, useReducer } from "react"
 import { Box, HStack, Spinner, useToast } from "@liftedinit/ui"
 import { AddressStep } from "./address-step"
 import { AmountAssetStep } from "./amount-asset-step"
 import { DestinationAddressStep } from "./destination-address-step"
 import { UserAddressStep } from "./user-address-step"
 import { ConfirmationStep } from "./confirmation-step"
+import { useCreateSendTxn, useTransactionsList } from "../../../transactions"
 import {
-  useCreateSendTxn,
-  useGetBlock,
-  useGetEvents,
-} from "../../../transactions"
-import { ILLEGAL_IDENTITY } from "@liftedinit/many-js"
+  Event,
+  EventType,
+  ILLEGAL_IDENTITY,
+  ListOrderType,
+  MultisigSubmitEvent,
+  SendEvent,
+} from "@liftedinit/many-js"
 import { useMultisigSubmit } from "../../../accounts"
-import { processEvents, processBlock } from "./utils"
+import { processBlock } from "./utils"
 import { SendFunctionType, StepNames, TokenMigrationFormData } from "./types"
 import {
   reducer,
@@ -25,6 +28,38 @@ import {
   setFormData,
   setProcessingDone,
 } from "./migration-form-actions"
+import { useGetBlock } from "../../../network"
+import { extractEventDetails } from "./utils/processEvents"
+
+// Verify that the UUID matches the one in the event memo
+// Verify that the other chain destination address matches the one in the event memo
+// Verify the transaction destination address is the ILLEGAL address
+const isMatchingEvent = (e: Event, p: { [key: string]: any }) => {
+  if (
+    (e.type === EventType.send || e.type === EventType.accountMultisigSubmit) &&
+    "memo" in e &&
+    e.memo?.[0] === p.memo &&
+    e.memo?.[1] === p.destinationAddress
+  ) {
+    if (e.type === EventType.send) {
+      const se = e as SendEvent
+      return se.to === ILLEGAL_IDENTITY
+    } else if (e.type === EventType.accountMultisigSubmit) {
+      const ams = e as MultisigSubmitEvent
+      if (ams.transaction?.type === EventType.send) {
+        const se = ams.transaction as SendEvent
+        return se.to === ILLEGAL_IDENTITY
+      }
+    }
+  }
+  return false
+}
+
+function createIsMatchingEvent(p: { [key: string]: any }) {
+  return function (e: Event) {
+    return isMatchingEvent(e, p)
+  }
+}
 
 export const MigrationForm = () => {
   const toast = useToast()
@@ -42,21 +77,34 @@ export const MigrationForm = () => {
 
   const { mutateAsync: sendTokens } = useCreateSendTxn()
   const { mutateAsync: sendTokensMultisig } = useMultisigSubmit()
-  const { data: events } = useGetEvents(filters)
+  const { data: events } = useTransactionsList({
+    filters,
+    predicate: createIsMatchingEvent({
+      memo,
+      destinationAddress: formData.destinationAddress,
+    }),
+  })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const memoizedEvents = useMemo(
+    () => events.transactions,
+    [events.transactions],
+  )
   const { data: blocks } = useGetBlock(height)
 
   const nextStep = (nextStep: StepNames) => dispatch(setCurrentStep(nextStep))
   const prevStep = (prevStep: StepNames) => dispatch(setCurrentStep(prevStep))
 
   useEffect(() => {
-    const isReady =
-      events && formData.destinationAddress !== "" && txHash === ""
-    if (isReady) {
+    if (
+      memoizedEvents &&
+      memoizedEvents.length === 1 &&
+      formData.destinationAddress !== "" &&
+      memo !== "" &&
+      txHash === ""
+    ) {
       try {
-        const { blockHeight, eventNumber } = processEvents(
-          events.events,
-          memo,
-          formData.destinationAddress,
+        const { blockHeight, eventNumber } = extractEventDetails(
+          memoizedEvents[0].id,
         )
         dispatch(setHeight(blockHeight))
         dispatch(setEventNumber(eventNumber))
@@ -69,7 +117,7 @@ export const MigrationForm = () => {
         })
       }
     }
-  }, [events, formData.destinationAddress, memo, toast, txHash])
+  }, [formData.destinationAddress, memo, memoizedEvents, txHash, toast])
 
   useEffect(() => {
     if (blocks && eventNumber && eventNumber > 0 && txHash === "") {
@@ -105,15 +153,15 @@ export const MigrationForm = () => {
       try {
         await sendFunction(getTokenPayload(), {
           onSuccess: () => {
-            const accounts =
-              formData.accountAddress !== ""
-                ? [
-                    formData.accountAddress,
-                    formData.userAddress,
-                    ILLEGAL_IDENTITY,
-                  ]
-                : [formData.userAddress, ILLEGAL_IDENTITY]
-            dispatch(setFilters({ accounts }))
+            dispatch(
+              setFilters({
+                accounts:
+                  formData.accountAddress !== "" // TODO: Fix this
+                    ? [formData.accountAddress]
+                    : [formData.userAddress],
+                order: ListOrderType.descending,
+              }),
+            ) // Accounts filtering in the backend is an OR, not an AND
           },
           onError: error => {
             toast({
@@ -132,7 +180,7 @@ export const MigrationForm = () => {
         })
       }
     },
-    [formData.accountAddress, formData.userAddress, getTokenPayload, toast],
+    [getTokenPayload, toast],
   )
 
   const handleFormData = (values: Partial<TokenMigrationFormData>) => {
@@ -213,7 +261,11 @@ export const MigrationForm = () => {
               <h1>Migration Done!</h1>
             ) : (
               <HStack>
-                <h1>Processing...</h1> <Spinner />
+                <h1>
+                  Processing... The operation can take a couple of minutes. Do
+                  not refresh or close this page.
+                </h1>{" "}
+                <Spinner />
               </HStack>
             )}
           </>

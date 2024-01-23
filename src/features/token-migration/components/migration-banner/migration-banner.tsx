@@ -24,7 +24,7 @@ export function MigrationBanner() {
         your tokens to the new chain{" "}
         <Link
           as={RouterLink}
-          to="/token-migration"
+          to="/token-migration-portal"
           color={"blue.600"}
           fontWeight={"medium"}
         >

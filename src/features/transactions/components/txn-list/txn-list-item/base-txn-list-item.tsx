@@ -9,7 +9,7 @@ export function BaseTxnListItem({
   actorName,
   actorAddress,
   txnDetails,
-}: {
+}: Readonly<{
   icon: React.ReactNode
   txnTypeName: string
   txnTime: number
@@ -17,29 +17,27 @@ export function BaseTxnListItem({
   actorName?: string
   actorAddress?: string
   txnDetails?: React.ReactNode
-}) {
+}>) {
   return (
     <TxnItemRow
       first={
         <TxnFirstCol icon={icon} txnTime={txnTime} txnTypeName={txnTypeName} />
       }
       second={
-        <>
-          <VStack alignItems="flex-start" spacing={0}>
-            {actionLabel && <Text fontSize="xs">{actionLabel}</Text>}
-            {actorName && <Text fontWeight="medium">{actorName}</Text>}
-            {actorAddress && (
-              <AddressText
-                addressText={actorAddress}
-                iconProps={{ boxSize: 4 }}
-                bgColor={undefined}
-                px={0}
-                py={0}
-                fontSize="sm"
-              />
-            )}
-          </VStack>
-        </>
+        <VStack alignItems="flex-start" spacing={0}>
+          {actionLabel && <Text fontSize="xs">{actionLabel}</Text>}
+          {actorName && <Text fontWeight="medium">{actorName}</Text>}
+          {actorAddress && (
+            <AddressText
+              addressText={actorAddress}
+              iconProps={{ boxSize: 4 }}
+              bgColor={undefined}
+              px={0}
+              py={0}
+              fontSize="sm"
+            />
+          )}
+        </VStack>
       }
       third={txnDetails}
     />
@@ -50,11 +48,11 @@ export function TxnFirstCol({
   icon,
   txnTypeName,
   txnTime,
-}: {
+}: Readonly<{
   icon: React.ReactNode
   txnTypeName: string
   txnTime: number
-}) {
+}>) {
   return (
     <HStack>
       {icon}
@@ -65,11 +63,11 @@ export function TxnFirstCol({
     </HStack>
   )
 }
-function TxnTime({ txnTime }: { txnTime: number }) {
+function TxnTime({ txnTime }: Readonly<{ txnTime: number }>) {
   return <Text fontSize="xs">{new Date(txnTime)?.toLocaleString()}</Text>
 }
 
-function TxnTypeName({ name }: { name: string }) {
+function TxnTypeName({ name }: Readonly<{ name: string }>) {
   return (
     <Text lineHeight="normal" casing="capitalize">
       {name}
@@ -83,13 +81,13 @@ export function TxnItemRow({
   secondProps = {},
   third,
   rowProps,
-}: {
+}: Readonly<{
   first: React.ReactNode
   second?: React.ReactNode
   secondProps?: Record<string, unknown>
   rowProps?: Record<string, unknown>
   third?: React.ReactNode
-}) {
+}>) {
   return (
     <Tr aria-label="transaction list item" {...rowProps}>
       <Td>{first}</Td>

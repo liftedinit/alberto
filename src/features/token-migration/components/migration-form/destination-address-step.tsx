@@ -13,6 +13,7 @@ import {
 import { FaInfoCircle } from "react-icons/fa"
 import React from "react"
 import { StepNames } from "./types"
+import { DestinationAddressRegex } from "./utils/destinationAddress"
 
 interface FormValues {
   destinationAddress: string
@@ -27,7 +28,7 @@ interface DestinationAddressStepProps {
 
 const DestinationAddressStepValidationSchema = Yup.object().shape({
   destinationAddress: Yup.string()
-    .matches(/^manifest[a-zA-Z0-9]{39}$/, "Invalid address format")
+    .matches(DestinationAddressRegex, "Invalid address format")
     .required("Required"),
 })
 

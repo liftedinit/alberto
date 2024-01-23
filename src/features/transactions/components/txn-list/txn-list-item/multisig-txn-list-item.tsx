@@ -87,7 +87,11 @@ export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
   )
 }
 
-function MultisigTxnDetails({ multisigTxn }: { multisigTxn: MultisigEvent }) {
+export function MultisigTxnDetails({
+  multisigTxn,
+}: {
+  multisigTxn: MultisigEvent
+}) {
   if (multisigTxn.type === EventType.accountMultisigSetDefaults) {
     return (
       <BaseTxnDetails>

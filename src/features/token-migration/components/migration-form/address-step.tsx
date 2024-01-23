@@ -9,9 +9,8 @@ import {
   Text,
 } from "@liftedinit/ui"
 import { useEffect, useMemo, useState } from "react"
-import { Account, useAccountsStore, useAccountStore } from "../../../accounts"
-import { useGetAccountsInfo } from "../../../accounts/api/get-account-info"
 import { IdentitiesAndAccounts, IdTypes, StepNames } from "./types"
+import { useCombinedAccountInfo } from "../../../accounts/queries"
 
 interface FormValues {
   address: string
@@ -33,43 +32,6 @@ const detectAddressType = (address: string) => {
   return address.length === 50 ? "userAddress" : "accountAddress"
 }
 
-const getUpdatedAccountsAndIdentities = (
-  identityById: Map<number, Account>,
-  accountById: Map<string, string>,
-) => {
-  const updatedAccountsAndIdentities = new Map()
-  identityById.forEach((identity, id) => {
-    const address = identity.address
-    if (address.length === 50) {
-      updatedAccountsAndIdentities.set(address, {
-        idType: IdTypes.USER,
-        address,
-        id,
-        name: identity.name,
-      })
-    }
-  })
-
-  accountById.forEach((info, account) => {
-    updatedAccountsAndIdentities.set(account, {
-      idType: IdTypes.ACCOUNT,
-      address: account,
-      name: info,
-    })
-  })
-
-  return updatedAccountsAndIdentities
-}
-
-const getCombinedData = (info: any[], accountKeys: string[]) => {
-  const combinedData = new Map()
-  info.forEach((infoData, index) => {
-    const accountId = accountKeys[index]
-    combinedData.set(accountId, infoData.accountInfo.description)
-  })
-  return combinedData
-}
-
 export const AddressStep = ({
   nextStep,
   setFormData,
@@ -83,34 +45,16 @@ export const AddressStep = ({
     Map<string, IdentitiesAndAccounts>
   >(new Map())
   const [isLoaded, setIsLoaded] = useState(false)
-  const identityById = useAccountsStore(s => s.byId)
-  const accountById = useAccountStore(s => s.byId)
-  const accountKeys = useMemo(
-    () => Array.from(accountById.keys()),
-    [accountById],
+  const combinedAccountAndIdentities = useCombinedAccountInfo()
+  const memoizedCombinedAccountAndIdentities = useMemo(
+    () => combinedAccountAndIdentities,
+    [combinedAccountAndIdentities],
   )
-
-  const allAccountInfos = useGetAccountsInfo(accountKeys)
-  const allQueriesCompleted = allAccountInfos.every(
-    queryResult => queryResult.isSuccess,
-  )
-  const info = useMemo(() => {
-    return allQueriesCompleted
-      ? allAccountInfos.map(queryResult => queryResult.data)
-      : []
-  }, [allAccountInfos, allQueriesCompleted])
-  const combinedData = useMemo(() => {
-    return getCombinedData(info, accountKeys)
-  }, [allQueriesCompleted]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    const updatedAccountsAndIdentities = getUpdatedAccountsAndIdentities(
-      identityById,
-      combinedData,
-    )
-    setAccountsAndIdentities(updatedAccountsAndIdentities)
+    setAccountsAndIdentities(memoizedCombinedAccountAndIdentities)
     setIsLoaded(true)
-  }, [identityById, combinedData])
+  }, [memoizedCombinedAccountAndIdentities])
 
   const handleSubmit = (values: FormValues) => {
     const addressType = detectAddressType(values.address)

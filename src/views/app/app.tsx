@@ -11,10 +11,13 @@ import {
   Splash,
   TransactionDetails,
   Layout,
-  TokenMigration,
 } from "views"
 import { useDisclosure } from "@liftedinit/ui"
 import { AddAccountModal } from "../../features/accounts"
+import { TokenMigrationPortal } from "../token-migration/token-migration-portal"
+import { TokenMigrationMenu } from "../token-migration/token-migration-menu"
+import { MigrationForm } from "../../features/token-migration"
+import { MigrationList } from "../../features/token-migration/components/migration-list"
 
 const ONE_SECOND = 1 * 1000
 
@@ -50,7 +53,14 @@ export function App() {
           <Route path="transactions/:txnId" element={<TransactionDetails />} />
           <Route path="contacts" element={<Contacts />} />
           <Route path="send" element={<SendAsset />} />
-          <Route path="token-migration" element={<TokenMigration />} />
+          <Route
+            path="token-migration-portal"
+            element={<TokenMigrationPortal />}
+          >
+            <Route index element={<TokenMigrationMenu />} />
+            <Route path="new-migration" element={<MigrationForm />} />
+            <Route path="migration-history" element={<MigrationList />} />
+          </Route>
         </Route>
       </Routes>
       <AddAccountModal isOpen={isAddAccountOpen} onClose={onCloseAddAccount} />

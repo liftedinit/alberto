@@ -1,6 +1,5 @@
 import { useNetworkContext } from "features/network"
 import {
-  BlockchainBlock,
   BoundType,
   Event,
   ListOrderType,
@@ -13,28 +12,6 @@ import { arrayBufferToBase64 } from "@liftedinit/ui"
 
 const PAGE_SIZE = 11
 const MAX_PAGE_SIZE = 100
-
-export function useGetBlock(height?: number, hash?: ArrayBuffer) {
-  const { query: network } = useNetworkContext()
-  return useQuery<BlockchainBlock, Error>({
-    queryKey: ["block", "get", network],
-    queryFn: async () => {
-      return network?.blockchain.block({ height, hash })
-    },
-    enabled: height !== undefined || hash !== undefined,
-  })
-}
-
-export function useGetEvents(filters: Record<string, any>) {
-  const { query: network } = useNetworkContext()
-  return useQuery<{ count: number; events: Event[] }, Error>({
-    queryKey: ["events", "list", network],
-    queryFn: async () => {
-      return network?.events.list(filters)
-    },
-    enabled: Object.keys(filters).length > 0,
-  })
-}
 
 export function useCreateSendTxn() {
   const { command: network } = useNetworkContext()
@@ -146,10 +123,12 @@ export type ProcessedEvent = Event & { _id: string; time: number }
 
 export function useTransactionsList({
   count = PAGE_SIZE,
-  filters = {},
+  filters,
+  predicate,
 }: {
   count?: number
-  filters?: Record<any, any>
+  filters: Record<any, any>
+  predicate?: (e: Event) => boolean
 }) {
   const [pageData, setPageData] = useState<PageState>({
     lastTxn: [],
@@ -177,9 +156,11 @@ export function useTransactionsList({
         count,
         filters,
       })
-      const indices = Array(data.length).fill(i)
+      // TODO: Fix the use-case where filteredData is empty but there are still valid transactions on the current network
+      const filteredData = predicate ? data.filter(predicate) : data
+      const indices = Array(filteredData.length).fill(i)
       accumulatedIndex = [...accumulatedIndex, ...indices]
-      accumulatedData = [...accumulatedData, ...data]
+      accumulatedData = [...accumulatedData, ...filteredData]
       if (accumulatedData.length >= count) break
     }
 
@@ -192,6 +173,9 @@ export function useTransactionsList({
   const { data, isError, error, isLoading } = useQuery<IndexedEvents, Error>(
     ["events", "list", filters, activeNetwork, legacyNetworks, pageData],
     fetchData,
+    {
+      enabled: Object.keys(filters).length > 0,
+    },
   )
 
   const result = processRawEvents(data?.events)

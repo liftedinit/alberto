@@ -45,6 +45,7 @@ export const UserAddressStep = ({
   const accountUsers = isSuccess
     ? [...(accountInfo?.accountInfo?.roles?.keys() ?? [])]
     : []
+  // eslint-disable-next-line
   const memoizedAccountUsers = useMemo(() => accountUsers, [])
   const identityById = useAccountsStore(s => s.byId)
 
