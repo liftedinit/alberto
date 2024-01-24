@@ -65,6 +65,8 @@ export function AppMenu() {
       pathname: "/token-migration-portal",
       activeIcon: ExchangeIcon,
       icon: ExchangeIcon,
+      matcher: (pathname: string, currentPathname: string) =>
+        pathname.startsWith(currentPathname),
     },
   ])
   const stackProps: StackProps = isBase

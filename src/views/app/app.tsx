@@ -17,6 +17,7 @@ import { AddAccountModal } from "../../features/accounts"
 import { TokenMigrationPortal, TokenMigrationMenu } from "../token-migration"
 import { MigrationForm } from "../../features/token-migration"
 import { MigrationList } from "../../features/token-migration/components/migration-list"
+import { MigrationDetails } from "../../features/token-migration/components/migration-details"
 
 const ONE_SECOND = 1 * 1000
 
@@ -59,6 +60,10 @@ export function App() {
             <Route index element={<TokenMigrationMenu />} />
             <Route path="new-migration" element={<MigrationForm />} />
             <Route path="migration-history" element={<MigrationList />} />
+            <Route
+              path="migration-details/:eventId"
+              element={<MigrationDetails />}
+            />
           </Route>
         </Route>
       </Routes>

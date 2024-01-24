@@ -6,6 +6,7 @@ export const initialState = {
   filters: {},
   height: undefined,
   eventNumber: undefined,
+  eventId: undefined,
   memo: "",
   txHash: "",
   processingDone: false,
@@ -17,6 +18,7 @@ interface MigrationFormState {
   filters: Record<string, any>
   height: number | undefined
   eventNumber: number | undefined
+  eventId: ArrayBuffer | undefined
   memo: string
   txHash: string
   processingDone: boolean
@@ -28,6 +30,7 @@ enum MigrationFormActionTypes {
   SET_FILTERS = "SET_FILTERS",
   SET_HEIGHT = "SET_HEIGHT",
   SET_EVENT_NUMBER = "SET_EVENT_NUMBER",
+  SET_EVENT_ID = "SET_EVENT_ID",
   SET_MEMO = "SET_MEMO",
   SET_TX_HASH = "SET_TX_HASH",
   SET_PROCESSING_DONE = "SET_PROCESSING_DONE",
@@ -44,6 +47,10 @@ type MigrationFormAction =
   | {
       type: MigrationFormActionTypes.SET_EVENT_NUMBER
       payload: number | undefined
+    }
+  | {
+      type: MigrationFormActionTypes.SET_EVENT_ID
+      payload: ArrayBuffer | undefined
     }
   | { type: MigrationFormActionTypes.SET_MEMO; payload: string }
   | { type: MigrationFormActionTypes.SET_TX_HASH; payload: string }
@@ -68,6 +75,9 @@ export const reducer = (
 
     case MigrationFormActionTypes.SET_EVENT_NUMBER:
       return { ...state, eventNumber: action.payload }
+
+    case MigrationFormActionTypes.SET_EVENT_ID:
+      return { ...state, eventId: action.payload }
 
     case MigrationFormActionTypes.SET_MEMO:
       return { ...state, memo: action.payload }
@@ -128,4 +138,11 @@ export const setProcessingDone = (
 ): MigrationFormAction => ({
   type: MigrationFormActionTypes.SET_PROCESSING_DONE,
   payload: processingDone,
+})
+
+export const setEventId = (
+  eventId: ArrayBuffer | undefined,
+): MigrationFormAction => ({
+  type: MigrationFormActionTypes.SET_EVENT_ID,
+  payload: eventId,
 })

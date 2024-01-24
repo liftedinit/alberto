@@ -14,6 +14,7 @@ import {
   initialState,
   reducer,
   setCurrentStep,
+  setEventId,
   setEventNumber,
   setFilters,
   setFormData,
@@ -27,8 +28,10 @@ import {
   createIsMatchingEvent,
   extractEventDetails,
 } from "./utils/processEvents"
+import { useNavigate } from "react-router-dom"
 
 export const MigrationForm = () => {
+  const navigate = useNavigate()
   const toast = useToast()
   const identityStore = useAccountsStore()
   const [state, dispatch] = useReducer(reducer, initialState)
@@ -38,6 +41,7 @@ export const MigrationForm = () => {
     filters,
     height,
     eventNumber,
+    eventId,
     txHash,
     processingDone,
     memo,
@@ -63,6 +67,16 @@ export const MigrationForm = () => {
   const prevStep = (prevStep: StepNames) => dispatch(setCurrentStep(prevStep))
 
   useEffect(() => {
+    if (processingDone && eventId !== undefined) {
+      navigate(
+        `/token-migration-portal/migration-details/${Buffer.from(
+          eventId,
+        ).toString("hex")}`,
+      )
+    }
+  }, [processingDone, navigate, eventId])
+
+  useEffect(() => {
     if (
       memoizedEvents &&
       memoizedEvents.length === 1 &&
@@ -76,6 +90,7 @@ export const MigrationForm = () => {
         if (e.type === EventType.accountMultisigSubmit) {
           eventNumber = eventNumber - 1
         }
+        dispatch(setEventId(e.id))
         dispatch(setHeight(blockHeight))
         dispatch(setEventNumber(eventNumber))
       } catch (processError) {
@@ -250,13 +265,10 @@ export const MigrationForm = () => {
       case StepNames.PROCESSING:
         return (
           <>
-            {processingDone ? (
-              <h1>Migration Done!</h1>
-            ) : (
+            {!processingDone && (
               <HStack>
                 <h1>
-                  Processing... The operation can take a couple of minutes. Do
-                  not refresh or close this page.
+                  Processing... The operation can take a couple of seconds.
                 </h1>{" "}
                 <Spinner />
               </HStack>

@@ -1,37 +1,48 @@
 import { Box, Breadcrumb, Container, SlideFade } from "@liftedinit/ui"
 import { Layout } from "views"
-import { Outlet, useLocation } from "react-router-dom"
+import { Outlet, useParams, useLocation } from "react-router-dom"
+function BreadcrumbItem({
+  path,
+  label,
+}: Readonly<{ path: string; label: string }>) {
+  const location = useLocation()
+  const startsWith = location.pathname.startsWith(path)
+  const isCurrentPage = location.pathname === path
+
+  // If there's no match, don't render anything
+  if (!startsWith) {
+    return null
+  }
+
+  return (
+    <Breadcrumb.BreadcrumbItem key={path} isCurrentPage={isCurrentPage}>
+      <Breadcrumb.BreadcrumbLink to={path}>{label}</Breadcrumb.BreadcrumbLink>
+    </Breadcrumb.BreadcrumbItem>
+  )
+}
 
 function TokenMigrationPortalHeader() {
-  const location = useLocation()
-  const path = location.pathname.split("/")
-  const isNewMigration = path.includes("new-migration")
-  const isMigrationHistory = path.includes("migration-history")
+  // const { eventId } = useParams()
+
+  const breadcrumbs = [
+    { path: "/token-migration-portal", label: "Token Migration Portal" },
+    {
+      path: "/token-migration-portal/new-migration",
+      label: "Create New Migration",
+    },
+    {
+      path: "/token-migration-portal/migration-history",
+      label: "Migration History",
+    },
+    {
+      path: "/token-migration-portal/migration-details",
+      label: "Migration Details",
+    },
+  ]
 
   return (
     <Breadcrumb my={4} data-testid={"token-migration-portal-header-breadcrumb"}>
-      <Breadcrumb.BreadcrumbItem>
-        <Breadcrumb.BreadcrumbLink
-          to="/token-migration-portal"
-          isCurrentPage={!isNewMigration}
-        >
-          Token Migration Portal
-        </Breadcrumb.BreadcrumbLink>
-      </Breadcrumb.BreadcrumbItem>
-      {isNewMigration && (
-        <Breadcrumb.BreadcrumbItem isCurrentPage>
-          <Breadcrumb.BreadcrumbLink to="/token-migration-portal/new-migration">
-            Create New Migration
-          </Breadcrumb.BreadcrumbLink>
-        </Breadcrumb.BreadcrumbItem>
-      )}
-      {isMigrationHistory && (
-        <Breadcrumb.BreadcrumbItem isCurrentPage>
-          <Breadcrumb.BreadcrumbLink to="/token-migration-portal/migration-history">
-            Migration History
-          </Breadcrumb.BreadcrumbLink>
-        </Breadcrumb.BreadcrumbItem>
-      )}
+      {breadcrumbs.map(({ path, label }) => BreadcrumbItem({ path, label }))}
     </Breadcrumb>
   )
 }
