@@ -1,6 +1,6 @@
 import { Big } from "big.js"
 import { UseMutateAsyncFunction } from "@tanstack/react-query"
-import { Memo } from "../../../../../../many-js/src"
+import { Memo } from "@liftedinit/many-js"
 
 export enum StepNames {
   ADDRESS,
