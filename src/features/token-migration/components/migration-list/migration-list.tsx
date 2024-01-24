@@ -43,6 +43,7 @@ export const MigrationList: React.FC = () => {
   const [currentSelection, setCurrentSelection] = useState("")
   const [filters, setFilters] = useState<Record<string, any>>({})
 
+  // TODO: Consolidate this predicate with the one in utils/processEvents.tsx
   const isMatchingEvent = (e: Event) => {
     if (
       (e.type === EventType.send ||
@@ -73,6 +74,7 @@ export const MigrationList: React.FC = () => {
     hasNextPage,
     nextBtnProps,
     prevBtnProps,
+    isLoading,
   } = useTransactionsList({ filters, predicate: isMatchingEvent })
   const eventsMemo = useMemo(() => events.transactions, [events.transactions])
 
@@ -84,7 +86,7 @@ export const MigrationList: React.FC = () => {
       setFilters({
         accounts: [event.target.value],
         order: ListOrderType.descending,
-      }) // Accounts filtering in the backend is an OR, not an AND
+      }) // Accounts filtering in the backend is an OR, not an AND. It's useless to add more accounts to the filter.
     }
   }
 
@@ -119,7 +121,7 @@ export const MigrationList: React.FC = () => {
             )
           : null}
       </Select>
-      {currentSelection !== "" && eventsMemo.length === 0 ? (
+      {currentSelection !== "" && isLoading && eventsMemo.length === 0 ? (
         <Box pt={4}>
           <Center>
             <HStack>
@@ -139,7 +141,13 @@ export const MigrationList: React.FC = () => {
             </Tbody>
           </Table>
         </TableContainer>
-      ) : null}
+      ) : (
+        <Box pt={4}>
+          <Center>
+            <Text>No transaction found.</Text>
+          </Center>
+        </Box>
+      )}
       {currentSelection !== "" && (currPageCount > 0 || hasNextPage) && (
         <Flex gap={2} justifyContent="flex-end">
           <Button

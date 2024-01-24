@@ -37,6 +37,7 @@ export const AddressStep = ({
   setFormData,
   initialValues,
 }: AddressStepProps) => {
+  // The next step to go to based on the address type
   const nextStepLookup = {
     userAddress: () => nextStep(StepNames.AMOUNT_ASSET),
     accountAddress: () => nextStep(StepNames.USER_ADDRESS),

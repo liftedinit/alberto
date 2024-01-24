@@ -6,7 +6,7 @@ export const initialState = {
   filters: {},
   height: undefined,
   eventNumber: undefined,
-  memo: crypto.randomUUID(),
+  memo: "",
   txHash: "",
   processingDone: false,
 }
@@ -28,6 +28,7 @@ enum MigrationFormActionTypes {
   SET_FILTERS = "SET_FILTERS",
   SET_HEIGHT = "SET_HEIGHT",
   SET_EVENT_NUMBER = "SET_EVENT_NUMBER",
+  SET_MEMO = "SET_MEMO",
   SET_TX_HASH = "SET_TX_HASH",
   SET_PROCESSING_DONE = "SET_PROCESSING_DONE",
 }
@@ -44,6 +45,7 @@ type MigrationFormAction =
       type: MigrationFormActionTypes.SET_EVENT_NUMBER
       payload: number | undefined
     }
+  | { type: MigrationFormActionTypes.SET_MEMO; payload: string }
   | { type: MigrationFormActionTypes.SET_TX_HASH; payload: string }
   | { type: MigrationFormActionTypes.SET_PROCESSING_DONE; payload: boolean }
 
@@ -54,6 +56,7 @@ export const reducer = (
   switch (action.type) {
     case MigrationFormActionTypes.SET_CURRENT_STEP:
       return { ...state, currentStep: action.payload }
+
     case MigrationFormActionTypes.SET_FORM_DATA:
       return { ...state, formData: { ...state.formData, ...action.payload } }
 
@@ -65,6 +68,9 @@ export const reducer = (
 
     case MigrationFormActionTypes.SET_EVENT_NUMBER:
       return { ...state, eventNumber: action.payload }
+
+    case MigrationFormActionTypes.SET_MEMO:
+      return { ...state, memo: action.payload }
 
     case MigrationFormActionTypes.SET_TX_HASH:
       return { ...state, txHash: action.payload }
@@ -105,6 +111,11 @@ export const setEventNumber = (
 ): MigrationFormAction => ({
   type: MigrationFormActionTypes.SET_EVENT_NUMBER,
   payload: eventNumber,
+})
+
+export const setMemo = (memo: string): MigrationFormAction => ({
+  type: MigrationFormActionTypes.SET_MEMO,
+  payload: memo,
 })
 
 export const setTxHash = (txHash: string): MigrationFormAction => ({

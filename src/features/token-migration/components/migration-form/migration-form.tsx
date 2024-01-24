@@ -6,63 +6,31 @@ import { DestinationAddressStep } from "./destination-address-step"
 import { UserAddressStep } from "./user-address-step"
 import { ConfirmationStep } from "./confirmation-step"
 import { useCreateSendTxn, useTransactionsList } from "../../../transactions"
-import {
-  Event,
-  EventType,
-  ILLEGAL_IDENTITY,
-  ListOrderType,
-  MultisigSubmitEvent,
-  SendEvent,
-} from "@liftedinit/many-js"
-import { useMultisigSubmit } from "../../../accounts"
+import { EventType, ILLEGAL_IDENTITY, ListOrderType } from "@liftedinit/many-js"
+import { useAccountsStore, useMultisigSubmit } from "../../../accounts"
 import { processBlock } from "./utils"
 import { SendFunctionType, StepNames, TokenMigrationFormData } from "./types"
 import {
-  reducer,
   initialState,
+  reducer,
   setCurrentStep,
-  setHeight,
   setEventNumber,
-  setTxHash,
   setFilters,
   setFormData,
+  setHeight,
+  setMemo,
   setProcessingDone,
+  setTxHash,
 } from "./migration-form-actions"
 import { useGetBlock } from "../../../network"
-import { extractEventDetails } from "./utils/processEvents"
-
-// Verify that the UUID matches the one in the event memo
-// Verify that the other chain destination address matches the one in the event memo
-// Verify the transaction destination address is the ILLEGAL address
-const isMatchingEvent = (e: Event, p: { [key: string]: any }) => {
-  if (
-    (e.type === EventType.send || e.type === EventType.accountMultisigSubmit) &&
-    "memo" in e &&
-    e.memo?.[0] === p.memo &&
-    e.memo?.[1] === p.destinationAddress
-  ) {
-    if (e.type === EventType.send) {
-      const se = e as SendEvent
-      return se.to === ILLEGAL_IDENTITY
-    } else if (e.type === EventType.accountMultisigSubmit) {
-      const ams = e as MultisigSubmitEvent
-      if (ams.transaction?.type === EventType.send) {
-        const se = ams.transaction as SendEvent
-        return se.to === ILLEGAL_IDENTITY
-      }
-    }
-  }
-  return false
-}
-
-function createIsMatchingEvent(p: { [key: string]: any }) {
-  return function (e: Event) {
-    return isMatchingEvent(e, p)
-  }
-}
+import {
+  createIsMatchingEvent,
+  extractEventDetails,
+} from "./utils/processEvents"
 
 export const MigrationForm = () => {
   const toast = useToast()
+  const identityStore = useAccountsStore()
   const [state, dispatch] = useReducer(reducer, initialState)
   const {
     currentStep,
@@ -103,9 +71,11 @@ export const MigrationForm = () => {
       txHash === ""
     ) {
       try {
-        const { blockHeight, eventNumber } = extractEventDetails(
-          memoizedEvents[0].id,
-        )
+        const e = memoizedEvents[0]
+        let { blockHeight, eventNumber } = extractEventDetails(e.id)
+        if (e.type === EventType.accountMultisigSubmit) {
+          eventNumber = eventNumber - 1
+        }
         dispatch(setHeight(blockHeight))
         dispatch(setEventNumber(eventNumber))
       } catch (processError) {
@@ -117,7 +87,8 @@ export const MigrationForm = () => {
         })
       }
     }
-  }, [formData.destinationAddress, memo, memoizedEvents, txHash, toast])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.destinationAddress, memo, memoizedEvents, txHash])
 
   useEffect(() => {
     if (blocks && eventNumber && eventNumber > 0 && txHash === "") {
@@ -156,7 +127,7 @@ export const MigrationForm = () => {
             dispatch(
               setFilters({
                 accounts:
-                  formData.accountAddress !== "" // TODO: Fix this
+                  formData.accountAddress !== ""
                     ? [formData.accountAddress]
                     : [formData.userAddress],
                 order: ListOrderType.descending,
@@ -180,7 +151,8 @@ export const MigrationForm = () => {
         })
       }
     },
-    [getTokenPayload, toast],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [getTokenPayload],
   )
 
   const handleFormData = (values: Partial<TokenMigrationFormData>) => {
@@ -199,10 +171,31 @@ export const MigrationForm = () => {
     sendTokensMultisig,
   ])
 
-  const handleSubmit = async () => {
+  useEffect(() => {
+    if (memo !== "" && currentStep === StepNames.PROCESSING) {
+      performSubmission().then(() => {
+        dispatch(setProcessingDone(true))
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [memo, currentStep])
+
+  const handleSubmit = () => {
+    // Set the current store user to the user address so the selected user can sign the transaction
+    const userId = identityStore.getId(formData.userAddress)
+    if (userId !== undefined) {
+      identityStore.setActiveId(userId)
+    } else {
+      toast({
+        status: "error",
+        title: "User address not found",
+        description: `Unable to find user address ${formData.userAddress} in the store.`,
+      })
+      return
+    }
+
+    dispatch(setMemo(crypto.randomUUID()))
     dispatch(setCurrentStep(StepNames.PROCESSING))
-    await performSubmission()
-    dispatch(setProcessingDone(true))
   }
 
   // Render the current step
