@@ -19,7 +19,7 @@
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^4.5.8",
-    "@liftedinit/many-js": "file:../many-js",
+    "@liftedinit/many-js": "^0.3.0",
     "@liftedinit/ui": "github:liftedinit/lifted-ui",
     "@tanstack/react-query": "^4.36.1",
     "@web3auth/openlogin-adapter": "^2.1.3",
