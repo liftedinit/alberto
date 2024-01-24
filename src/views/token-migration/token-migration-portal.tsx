@@ -9,7 +9,7 @@ function TokenMigrationPortalHeader() {
   const isMigrationHistory = path.includes("migration-history")
 
   return (
-    <Breadcrumb my={4}>
+    <Breadcrumb my={4} data-testid={"token-migration-portal-header-breadcrumb"}>
       <Breadcrumb.BreadcrumbItem>
         <Breadcrumb.BreadcrumbLink
           to="/token-migration-portal"

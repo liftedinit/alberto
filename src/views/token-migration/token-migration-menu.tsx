@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 
 export function TokenMigrationMenu() {
   return (
-    <VStack>
+    <VStack data-testid="token-migration-menu">
       <Button as={Link} to={"new-migration"}>
         Create new migration
       </Button>

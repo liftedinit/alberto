@@ -14,8 +14,7 @@ import {
 } from "views"
 import { useDisclosure } from "@liftedinit/ui"
 import { AddAccountModal } from "../../features/accounts"
-import { TokenMigrationPortal } from "../token-migration/token-migration-portal"
-import { TokenMigrationMenu } from "../token-migration/token-migration-menu"
+import { TokenMigrationPortal, TokenMigrationMenu } from "../token-migration"
 import { MigrationForm } from "../../features/token-migration"
 import { MigrationList } from "../../features/token-migration/components/migration-list"
 

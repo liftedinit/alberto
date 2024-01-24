@@ -28,7 +28,9 @@ enum TabNames {
   activity = "Activity",
 }
 
-export function Home(props: { modalDisclosure?: UseDisclosureProps }) {
+export function Home(
+  props: Readonly<{ modalDisclosure?: UseDisclosureProps }>,
+) {
   const onOpenAddAccount = props.modalDisclosure?.onOpen || (() => {})
   const isBase = useIsBaseBreakpoint()
   const { query: network } = useNetworkContext()
@@ -87,21 +89,19 @@ export function Home(props: { modalDisclosure?: UseDisclosureProps }) {
             </Tabs>
 
             {isAnonymous ? (
-              <>
-                <VStack flexDir="column" my={10} spacing={4}>
-                  <Text fontWeight="medium">
-                    Create or add your account to begin.
-                  </Text>
+              <VStack flexDir="column" my={10} spacing={4}>
+                <Text fontWeight="medium">
+                  Create or add your account to begin.
+                </Text>
 
-                  <Button
-                    onClick={onOpenAddAccount}
-                    leftIcon={<PlusIcon />}
-                    colorScheme="brand.teal"
-                  >
-                    Add Account
-                  </Button>
-                </VStack>
-              </>
+                <Button
+                  onClick={onOpenAddAccount}
+                  leftIcon={<PlusIcon />}
+                  colorScheme="brand.teal"
+                >
+                  Add Account
+                </Button>
+              </VStack>
             ) : (
               <SlideFade in key={activeTab}>
                 {isTabActive(TabNames.assets) && <Assets address={address} />}
