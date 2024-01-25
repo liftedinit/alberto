@@ -6,7 +6,7 @@ import { DestinationAddressStep } from "./destination-address-step"
 import { UserAddressStep } from "./user-address-step"
 import { ConfirmationStep } from "./confirmation-step"
 import { useCreateSendTxn, useTransactionsList } from "../../../transactions"
-import { EventType, ILLEGAL_IDENTITY, ListOrderType } from "@liftedinit/many-js"
+import { ILLEGAL_IDENTITY, ListOrderType } from "@liftedinit/many-js"
 import { useAccountsStore, useMultisigSubmit } from "../../../accounts"
 import { processBlock } from "./utils"
 import { SendFunctionType, StepNames, TokenMigrationFormData } from "./types"
@@ -86,10 +86,7 @@ export const MigrationForm = () => {
     ) {
       try {
         const e = memoizedEvents[0]
-        let { blockHeight, eventNumber } = extractEventDetails(e.id)
-        if (e.type === EventType.accountMultisigSubmit) {
-          eventNumber = eventNumber - 1
-        }
+        let { blockHeight, eventNumber } = extractEventDetails(e.id, e.type)
         dispatch(setEventId(e.id))
         dispatch(setHeight(blockHeight))
         dispatch(setEventNumber(eventNumber))

@@ -19,9 +19,16 @@ import { useGetBlock } from "../../../network"
 import { useEffect, useState } from "react"
 import { processBlock } from "../migration-form/utils"
 import { Thead } from "@chakra-ui/react"
+import { useSingleTransactionList } from "../../../transactions"
 
 export function MigrationDetails() {
   const { eventId } = useParams()
+  const [txId, setTxId] = useState<ArrayBuffer | undefined>(undefined)
+  const {
+    data: events,
+    isLoading,
+    isError,
+  } = useSingleTransactionList({ txId })
   const [blockHeight, setBlockHeight] = useState<number | undefined>(undefined)
   const [eventNumber, setEventNumber] = useState<number | undefined>(undefined)
   const [txHash, setTxHash] = useState<string | undefined>(undefined)
@@ -33,16 +40,33 @@ export function MigrationDetails() {
 
   useEffect(() => {
     if (eventId !== undefined) {
-      const bufEventId = Buffer.from(eventId, "hex")
+      setTxId(Buffer.from(eventId, "hex").buffer)
+    }
+  }, [eventId])
+
+  useEffect(() => {
+    if (
+      !isLoading &&
+      !isError &&
+      events.transactions.length === 1 &&
+      txId !== undefined &&
+      eventId !== undefined &&
+      Buffer.from(events.transactions[0].id).toString("hex") === eventId
+    ) {
       try {
-        const { blockHeight, eventNumber } = extractEventDetails(bufEventId)
+        console.log("Processing event...")
+        const event = events.transactions[0]
+        const { blockHeight, eventNumber } = extractEventDetails(
+          txId,
+          event.type,
+        )
         setBlockHeight(blockHeight)
         setEventNumber(eventNumber)
       } catch (e) {
         setError(e as Error)
       }
     }
-  }, [eventId])
+  }, [eventId, events.transactions, isError, isLoading, txId])
 
   useEffect(() => {
     if (blocks !== undefined && eventNumber !== undefined) {
