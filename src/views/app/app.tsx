@@ -61,7 +61,7 @@ export function App() {
             <Route path="new-migration" element={<MigrationForm />} />
             <Route path="migration-history" element={<MigrationList />} />
             <Route
-              path="migration-details/:eventId"
+              path="migration-history/:eventId"
               element={<MigrationDetails />}
             />
           </Route>

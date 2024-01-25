@@ -69,7 +69,7 @@ export const MigrationForm = () => {
   useEffect(() => {
     if (processingDone && eventId !== undefined) {
       navigate(
-        `/token-migration-portal/migration-details/${Buffer.from(
+        `/token-migration-portal/migration-history/${Buffer.from(
           eventId,
         ).toString("hex")}`,
       )

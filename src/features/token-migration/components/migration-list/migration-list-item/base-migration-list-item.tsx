@@ -2,6 +2,8 @@ import {
   AddressText,
   amountFormatter,
   HStack,
+  Icon,
+  Link,
   Td,
   Text,
   Tr,
@@ -9,10 +11,14 @@ import {
 } from "@liftedinit/ui"
 import React from "react"
 import { useGetContactName } from "../../../../contacts"
+import { HiDotsHorizontal } from "react-icons/hi" // TODO: This should be in @liftedinit/ui
+import { IconProps } from "@chakra-ui/react"
+import { Link as RouterLink } from "react-router-dom"
 
 interface BaseMigrationListItemProps {
   icon: React.ReactNode
   type: string
+  eventId: ArrayBuffer
   time: number
   from: string
   to: string
@@ -21,10 +27,17 @@ interface BaseMigrationListItemProps {
   symbol?: string
   details?: React.ReactNode
 }
+
+// TODO: This should be in @liftedinit/ui
+export function DotsIcon(props: Readonly<IconProps>) {
+  return <Icon as={HiDotsHorizontal} {...props} />
+}
+
 export function BaseMigrationListItem(
   props: Readonly<BaseMigrationListItemProps>,
 ) {
-  const { icon, type, time, from, to, uuid, details, amount, symbol } = props
+  const { icon, type, eventId, time, from, to, uuid, details, amount, symbol } =
+    props
   const getContactName = useGetContactName()
   const fromName = getContactName(from)
 
@@ -77,7 +90,17 @@ export function BaseMigrationListItem(
         <Text>{amountFormatter(amount)}</Text>
         {symbol && <Text>{symbol}</Text>}
       </Td>
-      {details && <Td>{details}</Td>}
+      <Td>{details ? details : null}</Td>
+      <Td>
+        <Link
+          as={RouterLink}
+          to={`/token-migration-portal/migration-history/${Buffer.from(
+            eventId,
+          ).toString("hex")}`}
+        >
+          <DotsIcon />
+        </Link>
+      </Td>
     </Tr>
   )
 }

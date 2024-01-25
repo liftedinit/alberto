@@ -18,6 +18,7 @@ export function SendMigrationListItem({
   return (
     <BaseMigrationListItem
       icon={<SendOutlineIcon />}
+      eventId={event.id}
       type={event.type}
       time={event.time}
       from={event.from}

@@ -48,6 +48,7 @@ export function MultisigSubmitMigrationListItem({
   return (
     <BaseMigrationListItem
       icon={<PendingIcon />}
+      eventId={event.id}
       type={event.type}
       time={event.time}
       from={internalSend.from}

@@ -28,6 +28,7 @@ export function MigrationDetails() {
     data: events,
     isLoading,
     isError,
+    error: transactionError,
   } = useSingleTransactionList({ txId })
   const [blockHeight, setBlockHeight] = useState<number | undefined>(undefined)
   const [eventNumber, setEventNumber] = useState<number | undefined>(undefined)
@@ -40,7 +41,11 @@ export function MigrationDetails() {
 
   useEffect(() => {
     if (eventId !== undefined) {
-      setTxId(Buffer.from(eventId, "hex").buffer)
+      const eventIdBuffer = Buffer.from(eventId, "hex").buffer
+      if (eventIdBuffer.byteLength !== 6) {
+        setError(new Error("Invalid event id"))
+      }
+      setTxId(eventIdBuffer)
     }
   }, [eventId])
 
@@ -54,7 +59,6 @@ export function MigrationDetails() {
       Buffer.from(events.transactions[0].id).toString("hex") === eventId
     ) {
       try {
-        console.log("Processing event...")
         const event = events.transactions[0]
         const { blockHeight, eventNumber } = extractEventDetails(
           txId,
@@ -65,8 +69,10 @@ export function MigrationDetails() {
       } catch (e) {
         setError(e as Error)
       }
+    } else if (isError) {
+      setError(new Error(`Unable to fetch transaction: ${transactionError}`))
     }
-  }, [eventId, events.transactions, isError, isLoading, txId])
+  }, [eventId, events.transactions, isError, isLoading, transactionError, txId])
 
   useEffect(() => {
     if (blocks !== undefined && eventNumber !== undefined) {

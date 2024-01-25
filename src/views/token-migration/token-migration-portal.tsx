@@ -1,6 +1,6 @@
 import { Box, Breadcrumb, Container, SlideFade } from "@liftedinit/ui"
 import { Layout } from "views"
-import { Outlet, useLocation } from "react-router-dom"
+import { Outlet, useLocation, useParams } from "react-router-dom"
 function BreadcrumbItem({
   path,
   label,
@@ -22,7 +22,7 @@ function BreadcrumbItem({
 }
 
 function TokenMigrationPortalHeader() {
-  // const { eventId } = useParams()
+  const { eventId } = useParams()
 
   const breadcrumbs = [
     { path: "/token-migration-portal", label: "Token Migration Portal" },
@@ -35,8 +35,8 @@ function TokenMigrationPortalHeader() {
       label: "Migration History",
     },
     {
-      path: "/token-migration-portal/migration-details",
-      label: "Migration Details",
+      path: `/token-migration-portal/migration-history/${eventId}`,
+      label: `${eventId}`,
     },
   ]
 
