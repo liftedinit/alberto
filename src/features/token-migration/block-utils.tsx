@@ -4,7 +4,10 @@ const transactionToHash = (transaction: BlockchainTransaction) => {
   return Buffer.from(transaction.transactionIdentifier.hash).toString("hex")
 }
 
-export const processBlock = (block: BlockchainBlock, eventNumber: number) => {
+export const extractTransactionHash = (
+  block: BlockchainBlock,
+  eventNumber: number,
+) => {
   if (block.transactions.length === 0) {
     throw new Error("No transactions found in the block.")
   }

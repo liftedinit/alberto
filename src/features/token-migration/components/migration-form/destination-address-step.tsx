@@ -13,7 +13,7 @@ import {
 import { FaInfoCircle } from "react-icons/fa"
 import React from "react"
 import { StepNames } from "./types"
-import { DestinationAddressRegex } from "./utils/destinationAddress"
+import { DestinationAddressRegex } from "../../destination-address"
 
 interface FormValues {
   destinationAddress: string

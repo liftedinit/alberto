@@ -13,14 +13,11 @@ import {
   AlertDescription,
   AddressText,
   Button,
-  ButtonProps,
   Box,
   CheckCircleIcon,
-  CopyToClipboard,
   DataField,
   Flex,
   HStack,
-  LinkIcon,
   Modal,
   SettingsOutlineIcon,
   SimpleGrid,
@@ -43,6 +40,7 @@ import {
 import { useMultisigActions, useMultisigTxn, useSendTxn } from "./hooks"
 import { BaseTxnListItem } from "./base-txn-list-item"
 import { BaseTxnDetails } from "./base-txn-details"
+import { ShareLocationButton } from "../../../../utils/share-button"
 
 export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
   const { time, token } = txn
@@ -312,7 +310,13 @@ export function SubmittedMultisigTxnDetails({
         value={executeAutomatically ? "Yes" : "No"}
       />
 
-      {base64TxnId ? <ShareTxnButton base64TxnId={base64TxnId} mt={6} /> : null}
+      {base64TxnId ? (
+        <ShareLocationButton
+          path={`/#/transactions/${base64TxnId}`}
+          label={"Share this transaction"}
+          mt={6}
+        />
+      ) : null}
     </>
   )
 }
@@ -622,32 +626,6 @@ export function makeApproversMap(
       hasApproved: boolean | undefined
       contactName?: string
     }[],
-  )
-}
-
-export function ShareTxnButton({
-  base64TxnId,
-  ...props
-}: ButtonProps & {
-  base64TxnId: string
-}) {
-  return (
-    <CopyToClipboard
-      msg="Link copied!"
-      toCopy={window.location.origin + `/#/transactions/${base64TxnId}`}
-    >
-      {({ onCopy }) => (
-        <Button
-          size="sm"
-          variant="link"
-          onClick={onCopy}
-          leftIcon={<LinkIcon boxSize={4} />}
-          {...props}
-        >
-          Share this transaction
-        </Button>
-      )}
-    </CopyToClipboard>
   )
 }
 

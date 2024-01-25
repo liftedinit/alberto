@@ -16,18 +16,10 @@ import {
   Tbody,
   Text,
 } from "@liftedinit/ui"
-import {
-  Event,
-  EventType,
-  ILLEGAL_IDENTITY,
-  ListOrderType,
-  MultisigSubmitEvent,
-  SendEvent,
-} from "@liftedinit/many-js"
-import validator from "validator"
-import { DestinationAddressRegex } from "../migration-form/utils/destinationAddress"
+import { ILLEGAL_IDENTITY, ListOrderType } from "@liftedinit/many-js"
 import { MigrationListItem } from "./migration-list-item"
 import { useTransactionsList } from "../../../transactions"
+import { createIsMatchingEvent } from "../../event-validation"
 
 export const MigrationList: React.FC = () => {
   const [accountsAndIdentities, setAccountsAndIdentities] = useState<
@@ -43,31 +35,6 @@ export const MigrationList: React.FC = () => {
   const [currentSelection, setCurrentSelection] = useState("")
   const [filters, setFilters] = useState<Record<string, any>>({})
 
-  // TODO: Consolidate this predicate with the one in utils/processEvents.tsx
-  const isMatchingEvent = (e: Event) => {
-    if (
-      (e.type === EventType.send ||
-        e.type === EventType.accountMultisigSubmit) &&
-      "memo" in e &&
-      e.memo?.length === 2 &&
-      typeof e.memo[0] === "string" &&
-      validator.isUUID(e.memo[0]) &&
-      typeof e.memo[1] === "string" &&
-      DestinationAddressRegex.test(e.memo[1])
-    ) {
-      if (e.type === EventType.send) {
-        const se = e as SendEvent
-        return se.from === currentSelection && se.to === ILLEGAL_IDENTITY
-      } else if (e.type === EventType.accountMultisigSubmit) {
-        const ams = e as MultisigSubmitEvent
-        if (ams.transaction?.type === EventType.send) {
-          const se = ams.transaction as SendEvent
-          return se.from === currentSelection && se.to === ILLEGAL_IDENTITY
-        }
-      }
-    }
-    return false
-  }
   const {
     data: events,
     currPageCount,
@@ -75,7 +42,13 @@ export const MigrationList: React.FC = () => {
     nextBtnProps,
     prevBtnProps,
     isLoading,
-  } = useTransactionsList({ filters, predicate: isMatchingEvent })
+  } = useTransactionsList({
+    filters,
+    predicate: createIsMatchingEvent({
+      from: currentSelection,
+      to: ILLEGAL_IDENTITY,
+    }),
+  })
   const eventsMemo = useMemo(() => events.transactions, [events.transactions])
 
   const handleSelectionChange = (

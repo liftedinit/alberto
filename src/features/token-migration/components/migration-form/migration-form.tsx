@@ -8,7 +8,6 @@ import { ConfirmationStep } from "./confirmation-step"
 import { useCreateSendTxn, useTransactionsList } from "../../../transactions"
 import { ILLEGAL_IDENTITY, ListOrderType } from "@liftedinit/many-js"
 import { useAccountsStore, useMultisigSubmit } from "../../../accounts"
-import { processBlock } from "./utils"
 import { SendFunctionType, StepNames, TokenMigrationFormData } from "./types"
 import {
   initialState,
@@ -24,12 +23,26 @@ import {
   setTxHash,
 } from "./migration-form-actions"
 import { useGetBlock } from "../../../network"
-import {
-  createIsMatchingEvent,
-  extractEventDetails,
-} from "./utils/processEvents"
+import { extractEventDetails } from "../../event-details"
 import { useNavigate } from "react-router-dom"
+import { createIsMatchingEvent } from "../../event-validation"
+import { extractTransactionHash } from "../../block-utils"
 
+// Token migration form component
+// The flow is as follows:
+// 1. User enters the account/user address
+// 2. User enters the account user address (optional, only if account address is entered in 1.)
+// 3. User enters the amount and the asset symbol
+// 4. User enters the destination address
+// 5. User confirms the transaction
+// 6. The transaction is processed
+//   6.1 The transaction is sent to the backend
+//   6.2 The transaction is sent to the blockchain
+//   6.3 The transaction log (event) is retrieved
+//   6.4 The transaction block height and event number are retrieved from the (event) log
+//   6.5 The block containing the transaction is retrieved from the blockchain
+//   6.6 The transaction hash is retrieved from the block
+// 7. The transaction is completed and the user is redirected to the migration detail page
 export const MigrationForm = () => {
   const navigate = useNavigate()
   const toast = useToast()
@@ -46,6 +59,7 @@ export const MigrationForm = () => {
     processingDone,
     memo,
   } = state
+  const [error, setError] = React.useState<Error | undefined>(undefined)
 
   const { mutateAsync: sendTokens } = useCreateSendTxn()
   const { mutateAsync: sendTokensMultisig } = useMultisigSubmit()
@@ -54,6 +68,7 @@ export const MigrationForm = () => {
     predicate: createIsMatchingEvent({
       memo,
       destinationAddress: formData.destinationAddress,
+      to: ILLEGAL_IDENTITY,
     }),
   })
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -63,9 +78,19 @@ export const MigrationForm = () => {
   )
   const { data: blocks } = useGetBlock(height)
 
+  // Handle the form next and previous steps
   const nextStep = (nextStep: StepNames) => dispatch(setCurrentStep(nextStep))
   const prevStep = (prevStep: StepNames) => dispatch(setCurrentStep(prevStep))
 
+  if (error) {
+    toast({
+      status: "error",
+      title: "Processing error",
+      description: `Unable to process transaction: ${error}`,
+    })
+  }
+
+  // Redirect the user to the migration detail when the transaction is completed
   useEffect(() => {
     if (processingDone && eventId !== undefined) {
       navigate(
@@ -76,6 +101,8 @@ export const MigrationForm = () => {
     }
   }, [processingDone, navigate, eventId])
 
+  // Process the transaction details when the transaction log is available
+  // We need the transaction ID, the block height and the event number to get the transaction hash
   useEffect(() => {
     if (
       memoizedEvents &&
@@ -91,33 +118,25 @@ export const MigrationForm = () => {
         dispatch(setHeight(blockHeight))
         dispatch(setEventNumber(eventNumber))
       } catch (processError) {
-        const err = processError as Error
-        toast({
-          status: "error",
-          title: "Processing error",
-          description: `Unable to process block events: ${err}`,
-        })
+        setError(processError as Error)
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.destinationAddress, memo, memoizedEvents, txHash])
 
+  // Extract the transaction hash from the block as soon as the block is available
   useEffect(() => {
     if (blocks && eventNumber && eventNumber > 0 && txHash === "") {
       try {
-        const hash = processBlock(blocks, eventNumber)
-        dispatch(setTxHash(hash))
+        dispatch(setTxHash(extractTransactionHash(blocks, eventNumber)))
       } catch (hashError) {
-        const err = hashError as Error
-        toast({
-          status: "error",
-          title: "Processing error",
-          description: `Unable to process block: ${err}`,
-        })
+        setError(hashError as Error)
       }
     }
   }, [blocks, eventNumber, toast, txHash])
 
+  // The migration payload
+  // The payload is the same for both send and multisig submit
   const getTokenPayload = useCallback(() => {
     return {
       from:
@@ -131,11 +150,15 @@ export const MigrationForm = () => {
     }
   }, [formData, memo])
 
+  // Perform the token transaction on the MANY chain
+  // The send function is either sendTokens or sendTokensMultisig depending on the form data
   const handleTokenTransaction = useCallback(
     async (sendFunction: SendFunctionType) => {
       try {
         await sendFunction(getTokenPayload(), {
           onSuccess: () => {
+            // We want to retrieve the transaction log as soon as the transaction is completed
+            // We need to set the log filters to the user address or the account address
             dispatch(
               setFilters({
                 accounts:
@@ -146,31 +169,22 @@ export const MigrationForm = () => {
               }),
             ) // Accounts filtering in the backend is an OR, not an AND
           },
-          onError: error => {
-            toast({
-              status: "error",
-              title: "User transaction error",
-              description: `Unable to send tokens: ${error.message}`,
-            })
-          },
+          onError: error => setError(error),
         })
       } catch (error) {
-        const err = error as Error
-        toast({
-          status: "error",
-          title: "Transaction preparation error",
-          description: `Unexpected error during token migration preparation: ${err.message}`,
-        })
+        setError(error as Error)
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [getTokenPayload],
   )
 
+  // Modify the form data
   const handleFormData = (values: Partial<TokenMigrationFormData>) => {
     dispatch(setFormData(values))
   }
 
+  // Determine the send function to use based on the form data and perform the token transaction
   const performSubmission = useCallback(async () => {
     const sendFunction = formData.accountAddress
       ? sendTokensMultisig
@@ -183,6 +197,7 @@ export const MigrationForm = () => {
     sendTokensMultisig,
   ])
 
+  // Set a flag when all the processing is done
   useEffect(() => {
     if (memo !== "" && currentStep === StepNames.PROCESSING) {
       performSubmission().then(() => {
@@ -192,21 +207,22 @@ export const MigrationForm = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [memo, currentStep])
 
+  // Handle the form submission
+  // Set the current store user to the user address so the selected user can sign the transaction
   const handleSubmit = () => {
-    // Set the current store user to the user address so the selected user can sign the transaction
     const userId = identityStore.getId(formData.userAddress)
     if (userId !== undefined) {
       identityStore.setActiveId(userId)
     } else {
-      toast({
-        status: "error",
-        title: "User address not found",
-        description: `Unable to find user address ${formData.userAddress} in the store.`,
-      })
+      setError(
+        new Error(
+          `Unable to find user address ${formData.userAddress} in the store`,
+        ),
+      )
       return
     }
 
-    dispatch(setMemo(crypto.randomUUID()))
+    dispatch(setMemo(crypto.randomUUID())) // Each migration is assigned a UUID for traceability purposes
     dispatch(setCurrentStep(StepNames.PROCESSING))
   }
 
