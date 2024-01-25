@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom"
 import {
   Center,
-  HStack,
   Spinner,
   VStack,
   Text,
@@ -10,7 +9,6 @@ import {
   AlertTitle,
   AlertDescription,
   Box,
-  Flex,
   Table,
   Tbody,
   Tr,
@@ -20,7 +18,6 @@ import { extractEventDetails } from "../migration-form/utils/processEvents"
 import { useGetBlock } from "../../../network"
 import { useEffect, useState } from "react"
 import { processBlock } from "../migration-form/utils"
-import { Spacer } from "@chakra-ui/react"
 
 export function MigrationDetails() {
   const { eventId } = useParams()
@@ -28,6 +25,8 @@ export function MigrationDetails() {
   const [eventNumber, setEventNumber] = useState<number | undefined>(undefined)
   const [txHash, setTxHash] = useState<string | undefined>(undefined)
   const [error, setError] = useState<Error | undefined>(undefined)
+  // TODO: Use setNewChainConfirmation to show the confirmation of the new chain
+  // eslint-disable-next-line
   const [newChainConfirmation, setNewChainConfirmation] = useState(false)
   const { data: blocks } = useGetBlock(blockHeight)
 

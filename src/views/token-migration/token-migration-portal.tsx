@@ -1,6 +1,6 @@
 import { Box, Breadcrumb, Container, SlideFade } from "@liftedinit/ui"
 import { Layout } from "views"
-import { Outlet, useParams, useLocation } from "react-router-dom"
+import { Outlet, useLocation } from "react-router-dom"
 function BreadcrumbItem({
   path,
   label,
