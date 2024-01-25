@@ -8,16 +8,17 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
-  Box,
   Table,
   Tbody,
   Tr,
   Td,
+  Th,
 } from "@liftedinit/ui"
 import { extractEventDetails } from "../migration-form/utils/processEvents"
 import { useGetBlock } from "../../../network"
 import { useEffect, useState } from "react"
 import { processBlock } from "../migration-form/utils"
+import { Thead } from "@chakra-ui/react"
 
 export function MigrationDetails() {
   const { eventId } = useParams()
@@ -31,7 +32,7 @@ export function MigrationDetails() {
   const { data: blocks } = useGetBlock(blockHeight)
 
   useEffect(() => {
-    if (eventId) {
+    if (eventId !== undefined) {
       const bufEventId = Buffer.from(eventId, "hex")
       try {
         const { blockHeight, eventNumber } = extractEventDetails(bufEventId)
@@ -44,7 +45,7 @@ export function MigrationDetails() {
   }, [eventId])
 
   useEffect(() => {
-    if (blocks && eventNumber) {
+    if (blocks !== undefined && eventNumber !== undefined) {
       try {
         const hash = processBlock(blocks, eventNumber)
         setTxHash(hash)
@@ -62,8 +63,19 @@ export function MigrationDetails() {
           <AlertTitle mr={2}>Unexpected Error!</AlertTitle>
           <AlertDescription>{error.message}</AlertDescription>
         </Alert>
-      ) : (
-        <Table variant="unstyled">
+      ) : null}
+
+      <Table variant="unstyled">
+        {!error && (
+          <Thead>
+            <Tr>
+              <Th>
+                <Text fontSize={"xl"}>MANY Chain</Text>
+              </Th>
+            </Tr>
+          </Thead>
+        )}
+        {!error && txHash && (
           <Tbody>
             <Tr>
               <Td>
@@ -106,19 +118,41 @@ export function MigrationDetails() {
               </Td>
             </Tr>
           </Tbody>
-        </Table>
+        )}
+      </Table>
+
+      {!error && !txHash && (
+        <Center py={6}>
+          <VStack>
+            <Text mb={3}>
+              Waiting migration confirmation from the MANY chain...
+            </Text>
+            <Spinner color="blue.500" size={"xl"} />
+          </VStack>
+        </Center>
       )}
 
-      {!error && !newChainConfirmation ? (
+      <Table variant="unstyled">
+        {!error && (
+          <Thead>
+            <Tr>
+              <Th>
+                <Text fontSize={"xl"}>New Chain</Text>
+              </Th>
+            </Tr>
+          </Thead>
+        )}
+      </Table>
+      {!error && !newChainConfirmation && (
         <Center py={6}>
-          <Box>
+          <VStack>
             <Text mb={3}>
               Waiting migration confirmation from the new chain...
             </Text>
-            <Spinner color="blue.500" />
-          </Box>
+            <Spinner color="blue.500" size={"xl"} />
+          </VStack>
         </Center>
-      ) : null}
+      )}
     </VStack>
   )
 }
