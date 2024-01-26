@@ -73,7 +73,7 @@ export function AccountsMenu() {
   const toast = useToast()
   const { services } = useNetworkContext()
   useEffect(() => {
-    ; (async () => {
+    ;(async () => {
       const isWebAuthnIdentity =
         activeAccount?.identity instanceof WebAuthnIdentity
       if (isWebAuthnIdentity && !services.has("idstore")) {
@@ -104,10 +104,11 @@ export function AccountsMenu() {
           aria-label="active account menu trigger"
           bgColor="white"
           shadow="md"
+          data-testid={"accounts-menu-button"}
         >
           <Text isTruncated>{activeAccount?.name}</Text>
         </MenuButton>
-        <MenuList maxW="100vw" zIndex={2}>
+        <MenuList maxW="100vw" zIndex={2} data-testid={"accounts-menu-list"}>
           <MenuOptionGroup title="Accounts" />
           <Box overflow="auto" maxHeight="40vh" data-testid="wallet menu list">
             {activeAccount ? (
@@ -228,6 +229,7 @@ function AccountMenuItem({
       </VStack>
       {
         <IconButton
+          data-testid={`edit-account-${accountData.name}`}
           variant="ghost"
           aria-label={`edit account ${accountData.name}`}
           icon={<EditIcon boxSize={5} />}

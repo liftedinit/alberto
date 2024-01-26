@@ -68,8 +68,12 @@ export const AmountAssetStep = ({
         "Amount must be greater than 0 and less than or equal to your balance",
         function (value) {
           if (value === undefined) return false
-          const bigValue = Big(value)
-          return bigValue.gt(0) && bigValue.lte(currentMaxAmount)
+          try {
+            const bigValue = Big(value)
+            return bigValue.gt(0) && bigValue.lte(currentMaxAmount)
+          } catch (error) {
+            return false
+          }
         },
       )
       .required("Required"),

@@ -5,7 +5,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom"
 import { TokenMigrationMenu } from "../token-migration-menu"
 
 describe("TokenMigrationPortal View", () => {
-  test("renders TokenMigrationPortal view without crashing", () => {
+  test("renders TokenMigrationPortal and TokenMigrationMenu without crashing", () => {
     render(
       <MemoryRouter initialEntries={["/token-migration-portal"]}>
         <Routes>

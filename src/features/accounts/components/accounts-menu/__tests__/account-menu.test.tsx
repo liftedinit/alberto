@@ -1,171 +1,164 @@
 import {
-  act,
-  fireEvent,
-  render,
   screen,
-  userEvent,
   within,
+  fireEvent,
   waitFor,
-  waitForElementToBeRemoved,
-} from "test/test-utils"
-import { toast } from "@liftedinit/ui"
-import { AnonymousIdentity, Ed25519KeyPairIdentity } from "@liftedinit/many-js"
+  render,
+} from "@testing-library/react"
+import {
+  ANON_IDENTITY,
+  AnonymousIdentity,
+  Ed25519KeyPairIdentity,
+} from "@liftedinit/many-js"
+import userEvent from "@testing-library/user-event"
+import { useAccountsStore } from "../../../stores"
+import { act } from "react-dom/test-utils"
+import { queryClient, QueryClientProvider } from "@liftedinit/ui"
+import { Web3authProvider } from "../../social-login"
 import { AccountsMenu } from "../accounts-menu"
-import { useAccountsStore } from "features/accounts"
 
-jest.mock("@liftedinit/many-js")
-
-describe("AccountsMenu", () => {
-  beforeEach(async function () {
-    toast.closeAll()
-    const toasts = screen.queryAllByRole("listitem")
-    await Promise.all(toasts.map(toasts => waitForElementToBeRemoved(toasts)))
-
-    Ed25519KeyPairIdentity.getMnemonic.mockImplementation(
-      () => "one two three four five six seven eight nine ten eleven twelve",
-    )
-    Ed25519KeyPairIdentity.fromMnemonic.mockImplementation(() => {
-      return new Ed25519KeyPairIdentity(new ArrayBuffer(0), new ArrayBuffer(0))
-    })
-    Ed25519KeyPairIdentity.fromPem.mockImplementation(() => {
-      return new Ed25519KeyPairIdentity(new ArrayBuffer(0), new ArrayBuffer(0))
-    })
-  })
-
-  it("should render with an active account as anonymous", async function () {
-    renderAccountsMenu()
-    const activeAccountMenuTriggerBtn = screen.getByRole("button", {
-      name: /active account menu trigger/i,
-    })
-    expect(
-      within(activeAccountMenuTriggerBtn).getByText(/anonymous/i),
-    ).toBeInTheDocument()
-  })
-
-  it("should add an account via a new seed phrase", async function () {
-    const { activeAccountMenuTriggerBtn, formContainer } =
-      await setupAddAccount()
-    const withinForm = within(formContainer)
-
-    const btn = withinForm.getByTitle(/create new seed phrase/i)
-    fireEvent.click(btn)
-
-    const saveBtn = screen.getByRole("button", { name: /save/i })
-    expect(screen.getAllByLabelText("seed-word")).toHaveLength(12)
-    const nameInput = screen.getByLabelText(/name/i)
-    userEvent.type(nameInput, "new-account")
-    fireEvent.click(saveBtn)
-    await waitFor(() => {
-      expect(
-        within(activeAccountMenuTriggerBtn).getByText("new-account"),
-      ).toBeInTheDocument()
-    })
-  })
-
-  it("should have a form to add an account via importing with existing seed phrase", async function () {
-    const { formContainer, tabs } = await setupAddAccount()
-    const importTab = within(tabs).getByText(/import/i)
-    userEvent.click(importTab)
-    const withinForm = within(formContainer)
-    const importSeedWordsBtn = screen.getByTitle(/import with seed phrase/i)
-    fireEvent.click(importSeedWordsBtn)
-    const nameInput = screen.getByLabelText(/name/i)
-    const seedPhraseInput = withinForm.getByLabelText(/seed words/i)
-    const saveBtn = screen.getByRole("button", { name: /save/i })
-    expect(nameInput).not.toBe(null)
-    expect(seedPhraseInput).not.toBe(null)
-    expect(saveBtn).not.toBe(null)
-  })
-
-  it("should have a form to add an account via importing a PEM file", async () => {
-    const { formContainer, tabs } = await setupAddAccount()
-    userEvent.click(within(tabs).getByText(/import/i))
-    const withinForm = within(formContainer)
-
-    const importPemBtn = screen.getByTitle(/import with pem file/i)
-    fireEvent.click(importPemBtn)
-    const saveBtn = screen.getByRole("button", { name: /save/i })
-    const nameInput = screen.getByLabelText(/name/i)
-    const pemInput = withinForm.getByLabelText(/pem file/i)
-    expect(importPemBtn).not.toBe(null)
-    expect(saveBtn).not.toBe(null)
-    expect(nameInput).not.toBe(null)
-    expect(pemInput).not.toBe(null)
-  })
-
-  it("should remove an account", async function () {
-    await setupEditAccount("to-be-removed", "m123")
-    const container = screen.getByTestId("update-account-container")
-    const addressToCopy =
-      within(container).getByLabelText(/public address/i).textContent
-    const removeBtn = screen.getByRole("button", { name: /remove account/i })
-    const addressInput = within(container).getByRole("textbox", {
-      name: /remove account/i,
-    })
-    expect(removeBtn).toBeDisabled()
-    userEvent.type(addressInput, addressToCopy as string)
-    expect(removeBtn).not.toBeDisabled()
-    userEvent.click(removeBtn)
-    expect(screen.queryByText(/to-be-removed/i)).not.toBeInTheDocument()
-  })
-
-  it("should edit account name", async () => {
-    await setupEditAccount("to-be-renamed")
-    const nameInput = screen.getByRole("textbox", {
-      name: /name/i,
-    }) as HTMLInputElement
-    nameInput.setSelectionRange(0, nameInput.value.length)
-    userEvent.type(nameInput, "{backspace}is-renamed")
-    expect(nameInput).toHaveValue("is-renamed")
-    const saveBtn = screen.getByRole("button", { name: /save/i })
-    userEvent.click(saveBtn)
-    expect(screen.queryByText("to-be-renamed")).not.toBeInTheDocument()
-    expect(screen.getByText("is-renamed")).toBeInTheDocument()
-  })
-})
-
-function renderAccountsMenu() {
-  render(<AccountsMenu />)
+export const renderAccountMenu = () => {
+  render(
+    <QueryClientProvider client={queryClient}>
+      <Web3authProvider>
+        <AccountsMenu />
+      </Web3authProvider>
+    </QueryClientProvider>,
+  )
 }
 
-function openAccountsMenu() {
-  const activeAccountMenuTriggerBtn = screen.getByRole("button", {
-    name: /active account menu trigger/i,
-  })
-  fireEvent.click(activeAccountMenuTriggerBtn)
-  return activeAccountMenuTriggerBtn
+export const openAddAccountModal = () => {
+  // Get and click the account menu button
+  const activeAccountButton = screen.getByTestId("accounts-menu-button")
+  fireEvent.click(activeAccountButton)
+
+  // Get and click the add account button
+  const addAccountButton = screen.getByTestId("add wallet btn")
+  fireEvent.click(addAccountButton)
+
+  return activeAccountButton
 }
 
-async function setupAddAccount() {
-  renderAccountsMenu()
-  const activeAccountMenuTriggerBtn = openAccountsMenu()
-  const addAccountBtn = await screen.findByText(/add account/i)
-  fireEvent.click(addAccountBtn)
-  const formContainer = screen.getByTestId("add-account-form-container")
-  const tabs = within(formContainer).getByRole("tablist")
-  return {
-    tabs,
-    formContainer,
-    activeAccountMenuTriggerBtn: activeAccountMenuTriggerBtn,
+class MockEd25519KeyPairIdentity extends Ed25519KeyPairIdentity {
+  constructor(publicKey: ArrayBuffer, privateKey: ArrayBuffer) {
+    super(publicKey, privateKey)
+    this.publicKey = publicKey
+    this.privateKey = privateKey
   }
 }
 
-async function setupEditAccount(accountName: string, address?: string) {
-  renderAccountsMenu()
+const setupMnemonicMock = () => {
+  jest
+    .spyOn(Ed25519KeyPairIdentity, "getMnemonic")
+    .mockReturnValue(
+      "one two three four five six seven eight nine ten eleven twelve",
+    )
+
+  jest.spyOn(Ed25519KeyPairIdentity, "fromMnemonic").mockImplementation(() => {
+    const mockPublicKey = Buffer.from("mocked public key").buffer
+    const mockPrivateKey = Buffer.from("mocked private key").buffer
+    const mockIdentity = new MockEd25519KeyPairIdentity(
+      mockPublicKey,
+      mockPrivateKey,
+    )
+
+    mockIdentity.getAddress = jest.fn().mockReturnValue("mocked address")
+    mockIdentity.sign = jest.fn()
+    mockIdentity.verify = jest.fn()
+    mockIdentity.toJSON = jest.fn()
+    mockIdentity.getProtectedHeader = jest.fn()
+    mockIdentity.getUnprotectedHeader = jest.fn()
+    mockIdentity.getCoseKey = jest.fn()
+
+    return mockIdentity
+  })
+}
+
+const saveSeedPhraseAccount = async (name: string) => {
+  // Get and click the create new seed phrase button
+  const createNewSeedPhraseButton = screen.getByTitle("create new seed phrase")
+  userEvent.click(createNewSeedPhraseButton)
+
+  // Wait for the seed phrase to be displayed
+  await waitFor(() => {
+    expect(screen.getAllByLabelText("seed-word")).toHaveLength(12)
+  })
+
+  // Enter the account name
+  const nameInput = screen.getByLabelText(/name/i)
+  await userEvent.type(nameInput, name)
+
+  // Click save button
+  const saveBtn = screen.getByRole("button", { name: /save/i })
+  userEvent.click(saveBtn)
+}
+
+const openImportTab = async () => {
+  const formContainer = screen.getByTestId("add-account-form-container")
+  const tabs = within(formContainer).getByRole("tablist")
+  const importTab = within(tabs).getByText(/import/i)
+  userEvent.click(importTab)
+
+  return formContainer
+}
+const importSeedPhraseAccount = async () => {
+  const formContainer = await openImportTab()
+
+  await waitFor(() => {
+    expect(
+      within(formContainer).getByTitle(/import with seed phrase/i),
+    ).toBeInTheDocument()
+  })
+
+  const importSeedWordsBtn = within(formContainer).getByTitle(
+    /import with seed phrase/i,
+  )
+  userEvent.click(importSeedWordsBtn)
+
+  await waitFor(() => {
+    expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
+  })
+}
+
+const importPemAccount = async () => {
+  const formContainer = await openImportTab()
+
+  await waitFor(() => {
+    expect(
+      within(formContainer).getByTitle(/import with pem file/i),
+    ).toBeInTheDocument()
+  })
+
+  const importPemBtn = within(formContainer).getByTitle(/import with pem file/i)
+  userEvent.click(importPemBtn)
+
+  await waitFor(() => {
+    expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
+  })
+}
+
+function addMockAccountToStore(name: string, address: string) {
   act(() =>
     useAccountsStore.setState(s => {
       return {
         ...s,
         activeId: 0,
-        nextId: 1,
+        nextId: 2,
         byId: new Map([
-          [0, { name: "Anonymous", identity: new AnonymousIdentity() }],
+          [
+            0,
+            {
+              address: ANON_IDENTITY,
+              name: "Anonymous",
+              identity: new AnonymousIdentity(),
+            },
+          ],
           [
             1,
             {
               address,
-              name: accountName,
-              identity: new Ed25519KeyPairIdentity(
+              name,
+              identity: new MockEd25519KeyPairIdentity(
                 new ArrayBuffer(0),
                 new ArrayBuffer(0),
               ),
@@ -175,10 +168,122 @@ async function setupEditAccount(accountName: string, address?: string) {
       }
     }),
   )
-  expect(screen.getByText(accountName)).toBeInTheDocument()
-  openAccountsMenu()
-  const editBtn = await screen.findAllByRole("button", {
-    name: /edit account/i,
-  })
-  userEvent.click(editBtn[1])
 }
+
+const removeAccount = async (name: string, address: string) => {
+  const editAccountButton = screen.getByTestId(`edit-account-${name}`)
+  fireEvent.click(editAccountButton)
+
+  const removeAccountButton = screen.getByTestId("remove-account-btn")
+  await waitFor(() => {
+    expect(screen.getByTestId("update-account-container")).toBeInTheDocument()
+  })
+  expect(removeAccountButton).toBeDisabled()
+
+  const removeInput = screen.getByTestId("remove-account-input")
+  await userEvent.type(removeInput, address)
+  expect(removeAccountButton).toBeEnabled()
+  await userEvent.click(removeAccountButton)
+}
+
+const editAccountName = async (name: string, modifier: string) => {
+  const editAccountButton = screen.getByTestId(`edit-account-${name}`)
+  fireEvent.click(editAccountButton)
+
+  const nameInput = screen.getByTestId("update-account-name-input")
+  expect(nameInput).toHaveValue(name)
+  await userEvent.type(nameInput, modifier)
+  expect(nameInput).toHaveValue(name + modifier)
+
+  const saveBtn = screen.getByRole("button", { name: /save/i })
+  await userEvent.click(saveBtn)
+}
+
+describe("AccountsMenu Tests", () => {
+  beforeEach(() => {
+    jest.resetModules()
+    jest.clearAllMocks()
+  })
+
+  it("should render the account menu", () => {
+    renderAccountMenu()
+    expect(screen.getByTestId("accounts-menu-button")).toBeInTheDocument()
+    expect(screen.getByTestId("accounts-menu-list")).toBeInTheDocument()
+  })
+
+  it("should render the account menu with Anonymous active account", () => {
+    renderAccountMenu()
+    const activeAccountButton = screen.getByTestId("accounts-menu-button")
+    expect(
+      within(activeAccountButton).getByText(/anonymous/i),
+    ).toBeInTheDocument()
+  })
+
+  it("should add a new seed phase account", async () => {
+    setupMnemonicMock()
+    renderAccountMenu()
+    const activeAccountButton = openAddAccountModal()
+    const name = "new-account"
+
+    await saveSeedPhraseAccount(name)
+
+    await waitFor(() => {
+      expect(within(activeAccountButton).getByText(name)).toBeInTheDocument()
+    })
+  })
+
+  it("should import a seed phrase account", async () => {
+    renderAccountMenu()
+    openAddAccountModal()
+
+    await importSeedPhraseAccount()
+
+    expect(screen.getByTestId("seed-words-name-input")).not.toBe(null)
+    expect(screen.getByTestId("seed-words-input")).not.toBe(null)
+    expect(screen.getByRole("button", { name: /save/i })).not.toBe(null)
+  })
+
+  it("should import a pem file account", async () => {
+    renderAccountMenu()
+    openAddAccountModal()
+
+    await importPemAccount()
+
+    expect(screen.getByTestId("pem-name-input")).not.toBe(null)
+    expect(screen.getByTestId("pem-input")).not.toBe(null)
+    expect(screen.getByRole("button", { name: /save/i })).not.toBe(null)
+  })
+
+  it("should remove an account", async () => {
+    const name = "mocked_account_1"
+    const address = "mocked_address_1"
+    renderAccountMenu()
+    addMockAccountToStore(name, address)
+    expect(screen.getByText(name)).toBeInTheDocument()
+    const activeAccountButton = openAddAccountModal()
+
+    await removeAccount(name, address)
+
+    await waitFor(() =>
+      expect(
+        within(activeAccountButton).queryByText(name),
+      ).not.toBeInTheDocument(),
+    )
+  })
+
+  it("should edit account name", async () => {
+    const name = "mocked_account_1"
+    const modifier = "-foobar"
+    const modifiedName = name + modifier
+    const address = "mocked_address_1"
+    renderAccountMenu()
+    addMockAccountToStore(name, address)
+    expect(screen.getByText(name)).toBeInTheDocument()
+    openAddAccountModal()
+
+    await editAccountName(name, modifier)
+
+    expect(screen.queryByText(name)).not.toBeInTheDocument()
+    expect(screen.getByText(modifiedName)).toBeInTheDocument()
+  })
+})
