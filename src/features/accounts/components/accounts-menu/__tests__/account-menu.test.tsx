@@ -6,11 +6,7 @@ import {
   render,
   waitForElementToBeRemoved,
 } from "@testing-library/react"
-import {
-  ANON_IDENTITY,
-  AnonymousIdentity,
-  Ed25519KeyPairIdentity,
-} from "@liftedinit/many-js"
+import { Ed25519KeyPairIdentity } from "@liftedinit/many-js"
 import userEvent from "@testing-library/user-event"
 import { useAccountsStore } from "../../../stores"
 import { act } from "react-dom/test-utils"
@@ -26,6 +22,12 @@ export const renderAccountMenu = () => {
       </Web3authProvider>
     </QueryClientProvider>,
   )
+}
+
+interface MockAccount {
+  name: string
+  address: string
+  identity: MockEd25519KeyPairIdentity
 }
 
 export const openAddAccountModal = () => {
@@ -46,6 +48,15 @@ class MockEd25519KeyPairIdentity extends Ed25519KeyPairIdentity {
     this.publicKey = publicKey
     this.privateKey = privateKey
   }
+}
+
+const mockAccount1 = {
+  name: "mocked_account_1",
+  address: "mocked_address_1",
+  identity: new MockEd25519KeyPairIdentity(
+    new ArrayBuffer(0),
+    new ArrayBuffer(0),
+  ),
 }
 
 const setupMnemonicMock = () => {
@@ -138,31 +149,22 @@ const importPemAccount = async () => {
   })
 }
 
-function addMockAccountToStore(name: string, address: string) {
+function addAccountToStore(account: MockAccount) {
   act(() =>
     useAccountsStore.setState(s => {
+      const nextId = s.nextId + 1
       return {
         ...s,
         activeId: 0,
-        nextId: 2,
+        nextId: nextId,
         byId: new Map([
+          ...s.byId.entries(),
           [
-            0,
+            nextId,
             {
-              address: ANON_IDENTITY,
-              name: "Anonymous",
-              identity: new AnonymousIdentity(),
-            },
-          ],
-          [
-            1,
-            {
-              address,
-              name,
-              identity: new MockEd25519KeyPairIdentity(
-                new ArrayBuffer(0),
-                new ArrayBuffer(0),
-              ),
+              address: account.address,
+              name: account.name,
+              identity: account.identity,
             },
           ],
         ]),
@@ -171,8 +173,8 @@ function addMockAccountToStore(name: string, address: string) {
   )
 }
 
-const removeAccount = async (name: string, address: string) => {
-  const editAccountButton = screen.getByTestId(`edit-account-${name}`)
+const removeAccount = async (account: MockAccount) => {
+  const editAccountButton = screen.getByTestId(`edit-account-${account.name}`)
   fireEvent.click(editAccountButton)
 
   const removeAccountButton = screen.getByTestId("remove-account-btn")
@@ -182,19 +184,19 @@ const removeAccount = async (name: string, address: string) => {
   expect(removeAccountButton).toBeDisabled()
 
   const removeInput = screen.getByTestId("remove-account-input")
-  await userEvent.type(removeInput, address)
+  await userEvent.type(removeInput, account.address)
   expect(removeAccountButton).toBeEnabled()
   await userEvent.click(removeAccountButton)
 }
 
-const editAccountName = async (name: string, modifier: string) => {
-  const editAccountButton = screen.getByTestId(`edit-account-${name}`)
+const editAccountName = async (account: MockAccount, modifier: string) => {
+  const editAccountButton = screen.getByTestId(`edit-account-${account.name}`)
   fireEvent.click(editAccountButton)
 
   const nameInput = screen.getByTestId("update-account-name-input")
-  expect(nameInput).toHaveValue(name)
+  expect(nameInput).toHaveValue(account.name)
   await userEvent.type(nameInput, modifier)
-  expect(nameInput).toHaveValue(name + modifier)
+  expect(nameInput).toHaveValue(account.name + modifier)
 
   const saveBtn = screen.getByRole("button", { name: /save/i })
   await userEvent.click(saveBtn)
@@ -260,35 +262,31 @@ describe("AccountsMenu Tests", () => {
   })
 
   it("should remove an account", async () => {
-    const name = "mocked_account_1"
-    const address = "mocked_address_1"
     renderAccountMenu()
-    addMockAccountToStore(name, address)
-    expect(screen.getByText(name)).toBeInTheDocument()
+    addAccountToStore(mockAccount1)
+    expect(screen.getByText(mockAccount1.name)).toBeInTheDocument()
     const activeAccountButton = openAddAccountModal()
 
-    await removeAccount(name, address)
+    await removeAccount(mockAccount1)
 
     await waitFor(() =>
       expect(
-        within(activeAccountButton).queryByText(name),
+        within(activeAccountButton).queryByText(mockAccount1.name),
       ).not.toBeInTheDocument(),
     )
   })
 
   it("should edit account name", async () => {
-    const name = "mocked_account_1"
     const modifier = "-foobar"
-    const modifiedName = name + modifier
-    const address = "mocked_address_1"
+    const modifiedName = mockAccount1.name + modifier
     renderAccountMenu()
-    addMockAccountToStore(name, address)
-    expect(screen.getByText(name)).toBeInTheDocument()
+    addAccountToStore(mockAccount1)
+    expect(screen.getByText(mockAccount1.name)).toBeInTheDocument()
     openAddAccountModal()
 
-    await editAccountName(name, modifier)
+    await editAccountName(mockAccount1, modifier)
 
-    expect(screen.queryByText(name)).not.toBeInTheDocument()
+    expect(screen.queryByText(mockAccount1.name)).not.toBeInTheDocument()
     expect(screen.getByText(modifiedName)).toBeInTheDocument()
   })
 })
