@@ -4,6 +4,7 @@ import {
   fireEvent,
   waitFor,
   render,
+  waitForElementToBeRemoved,
 } from "@testing-library/react"
 import {
   ANON_IDENTITY,
@@ -13,7 +14,7 @@ import {
 import userEvent from "@testing-library/user-event"
 import { useAccountsStore } from "../../../stores"
 import { act } from "react-dom/test-utils"
-import { queryClient, QueryClientProvider } from "@liftedinit/ui"
+import { queryClient, QueryClientProvider, toast } from "@liftedinit/ui"
 import { Web3authProvider } from "../../social-login"
 import { AccountsMenu } from "../accounts-menu"
 
@@ -200,7 +201,11 @@ const editAccountName = async (name: string, modifier: string) => {
 }
 
 describe("AccountsMenu Tests", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    toast.closeAll()
+    const toasts = screen.queryAllByRole("listitem")
+    await Promise.all(toasts.map(toasts => waitForElementToBeRemoved(toasts)))
+
     jest.resetModules()
     jest.clearAllMocks()
   })
