@@ -32,8 +32,7 @@ export function Home(
   props: Readonly<{ modalDisclosure?: UseDisclosureProps }>,
 ) {
   const onOpenAddAccount = props.modalDisclosure?.onOpen || (() => {})
-  // const isBase = useIsBaseBreakpoint()
-  const isBase = true
+  const isBase = useIsBaseBreakpoint()
   const { query: network } = useNetworkContext()
   const account = useAccountsStore(s => s.byId.get(s.activeId))
   const address = account?.address ?? ""
