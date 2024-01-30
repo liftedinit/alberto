@@ -17,13 +17,13 @@ const clickButton = async (buttonName: string) => {
     name: new RegExp(buttonName, "i"),
   })
   // eslint-disable-next-line testing-library/no-unnecessary-act
-  await act(async () => userEvent.click(button[0]))
+  await act(async () => await userEvent.click(button[0]))
 }
 
 const typeInput = async (label: string, value: string) => {
   const input = screen.getByLabelText(new RegExp(label, "i"))
   // eslint-disable-next-line testing-library/no-unnecessary-act
-  await act(async () => userEvent.type(input, value))
+  await act(async () => await userEvent.type(input, value))
 }
 
 const createNetwork = async (name: string, url: string) => {
