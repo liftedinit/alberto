@@ -63,7 +63,7 @@ export function TxnList({
         </Center>
       ) : (
         <TableContainer>
-          <Table size="sm">
+          <Table data-testid={"txn-table"} size="sm">
             <Tbody>
               {transactions.map((t: Event & { _id: string }) => {
                 return (

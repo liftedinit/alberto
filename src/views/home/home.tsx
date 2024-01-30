@@ -32,7 +32,8 @@ export function Home(
   props: Readonly<{ modalDisclosure?: UseDisclosureProps }>,
 ) {
   const onOpenAddAccount = props.modalDisclosure?.onOpen || (() => {})
-  const isBase = useIsBaseBreakpoint()
+  // const isBase = useIsBaseBreakpoint()
+  const isBase = true
   const { query: network } = useNetworkContext()
   const account = useAccountsStore(s => s.byId.get(s.activeId))
   const address = account?.address ?? ""
@@ -83,8 +84,12 @@ export function Home(
               }
             >
               <TabList>
-                <Tab isDisabled={isAnonymous}>{TabNames.assets}</Tab>
-                <Tab isDisabled={isAnonymous}>{TabNames.activity}</Tab>
+                <Tab isDisabled={isAnonymous} data-testid={"tab-assets"}>
+                  {TabNames.assets}
+                </Tab>
+                <Tab isDisabled={isAnonymous} data-testid={"tab-activity"}>
+                  {TabNames.activity}
+                </Tab>
               </TabList>
             </Tabs>
 

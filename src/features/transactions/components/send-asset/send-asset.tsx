@@ -114,8 +114,8 @@ export function useSendAssetForm({
   const [asset, setAsset] = React.useState(() =>
     assetAddress
       ? balances?.data?.allAssetsWithBalance?.find(
-        asset => asset.identity === assetAddress,
-      )
+          asset => asset.identity === assetAddress,
+        )
       : undefined,
   )
   const toast = useToast()
@@ -412,6 +412,7 @@ export function SendAssetForm({
                           size="sm"
                           rightIcon={<ChevronDownIcon boxSize={4} />}
                           aria-label="select token"
+                          data-testid={"select-token-btn"}
                           onClick={onOpen}
                           variant="link"
                         >

@@ -1,95 +1,92 @@
-import {
-  render,
-  screen,
-  within,
-  waitForElementToBeRemoved,
-  fireEvent,
-  userEvent,
-} from "test/test-utils"
-import { amountFormatter, toast } from "@liftedinit/ui"
-import { useBalances } from "features/balances/queries"
-import { useCreateSendTxn } from "features/transactions/queries"
-import { SendAsset } from "views"
+import { renderChildren } from "../../../test/render"
+import { SendAsset } from "../send-asset"
+import { fireEvent, screen, within } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
+import { addAccountToStore } from "../../../test/account-store"
+import { MockEd25519KeyPairIdentity } from "../../../test/types"
+import { mockNetwork } from "../../../test/network-store"
+import { act } from "react-dom/test-utils"
 
-jest.mock("features/balances/queries")
-jest.mock("features/transactions/queries")
+jest.mock("features/network/network-provider", () => {
+  return {
+    ...jest.requireActual("features/network/network-provider"),
+    useNetworkContext: () => ({
+      query: mockNetwork(),
+    }),
+  }
+})
 
-const ownedAssetsWithBalance = [
-  { symbol: "ABC", balance: BigInt(1000000), identity: "mabc" },
-  { symbol: "DEF", balance: BigInt(2000000), identity: "mdef" },
-  { symbol: "GHI", balance: BigInt(3000000), identity: "mghi" },
-]
-describe("<SendAsset />", () => {
-  beforeEach(async () => {
-    toast.closeAll()
-    const toasts = screen.queryAllByRole("listitem")
-    await Promise.all(toasts.map(toasts => waitForElementToBeRemoved(toasts)))
-    useBalances.mockImplementation(() => ({
-      isFetching: false,
-      isError: false,
-      errors: [],
-      data: { ownedAssetsWithBalance },
-    }))
-    useCreateSendTxn.mockImplementation(() => ({
-      mutate: jest.fn((_, opts) => {
-        opts?.onSuccess()
-      }),
-    }))
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useLocation: jest.fn(),
+}))
+
+const mockAccount1 = {
+  name: "test",
+  address: "m111",
+  identity: new MockEd25519KeyPairIdentity(
+    new ArrayBuffer(0),
+    new ArrayBuffer(0),
+  ),
+}
+
+// TODO: This test suite outputs
+//
+//       Warning: Can't perform a React state update on an unmounted component.
+//       This is a no-op, but it indicates a memory leak in your application.
+//       To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
+//
+// We need to figure out how to fix this. See https://stackoverflow.com/questions/53949393/cant-perform-a-react-state-update-on-an-unmounted-component
+// The test suite still passes
+describe("Send Asset", () => {
+  it("should render without crashing", () => {
+    renderChildren(<SendAsset />)
   })
-  it("should show a list of owned tokens and balance when selecting a token", () => {
-    setupSendAsset()
-    const selectTokenBtn = screen.getByRole("button", { name: /select token/i })
-    userEvent.click(selectTokenBtn)
-    const tokensList = screen.getAllByRole("button", { name: /select asset/i })
-    expect(tokensList.length).toBe(3)
-    ownedAssetsWithBalance.forEach(asset => {
-      expect(
-        screen.getByText(new RegExp(asset.symbol, "i")),
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText(amountFormatter(asset.balance)),
-      ).toBeInTheDocument()
-    })
+  it("should show a list of owned tokens and balance when selecting a token", async () => {
+    renderChildren(<SendAsset />)
+    addAccountToStore(mockAccount1)
+    const selectTokenBtn = screen.getByTestId("select-token-btn")
+    await userEvent.click(selectTokenBtn)
+    const assetItems = screen.getAllByTestId("select-asset-btn")
+    expect(assetItems.length).toBe(2)
+    expect(screen.getByText(/abc/i)).toBeInTheDocument()
+    expect(screen.getByText(/0.001/i)).toBeInTheDocument()
+    expect(screen.getByText(/ghi/i)).toBeInTheDocument()
+    expect(screen.getByText(/0.005/i)).toBeInTheDocument()
   })
-  it("should have a form to send tokens", async function () {
-    setupSendAsset()
+  it("should show a form to send tokens", async function () {
+    renderChildren(<SendAsset />)
+    addAccountToStore(mockAccount1)
     const toInput = screen.getByRole("textbox", { name: /to/i })
     const nextBtn = screen.getByRole("button", { name: /next/i })
     const amountInput = screen.getByRole("textbox", { name: /amount/i })
     const selectTokenBtn = screen.getByRole("button", { name: /select token/i })
-    userEvent.click(selectTokenBtn)
+
+    await act(async () => userEvent.click(selectTokenBtn))
     const assets = screen.getAllByLabelText(/select asset/i)
     const firstAsset = assets[0]
-    const { symbol: selectedAssetSymbol } = ownedAssetsWithBalance[0]
     const form = screen.getByLabelText("send form")
-    userEvent.click(firstAsset)
-    expect(
-      within(form).getByText(new RegExp(selectedAssetSymbol, "i")),
-    ).toBeInTheDocument()
+    await act(async () => userEvent.click(firstAsset))
+    expect(within(form).getByText(/abc/i)).toBeInTheDocument()
     expect(
       within(form).getByText(new RegExp("balance: 0.001", "i")),
     ).toBeInTheDocument()
-
     fireEvent.change(toInput, {
       target: { value: "oaffbahksdwaqeenayy2gxke32hgb7aq4ao4wt745lsfs6wijp" },
     })
     fireEvent.change(amountInput, {
       target: { value: "5" },
     })
-    userEvent.click(nextBtn)
+    await act(async () => userEvent.click(nextBtn))
     await screen.findByTestId("approve-txn")
     const confirmCheckbox = screen.getByTestId("approve-txn")
     const sendBtn = screen.getByRole("button", { name: /send/i })
     expect(sendBtn).toBeDisabled()
-    userEvent.click(confirmCheckbox)
+    await act(async () => userEvent.click(confirmCheckbox))
     expect(sendBtn).not.toBeDisabled()
-    userEvent.click(sendBtn)
+    await act(async () => userEvent.click(sendBtn))
     expect(toInput).toHaveValue("")
     expect(amountInput).toHaveValue("")
     expect(selectTokenBtn).toBeInTheDocument()
   })
 })
-
-function setupSendAsset() {
-  render(<SendAsset />)
-}

@@ -3,31 +3,28 @@ import {
   within,
   fireEvent,
   waitFor,
-  render,
   waitForElementToBeRemoved,
 } from "@testing-library/react"
-import { Ed25519KeyPairIdentity } from "@liftedinit/many-js"
 import userEvent from "@testing-library/user-event"
-import { useAccountsStore } from "../../../stores"
-import { act } from "react-dom/test-utils"
-import { queryClient, QueryClientProvider, toast } from "@liftedinit/ui"
-import { Web3authProvider } from "../../social-login"
 import { AccountsMenu } from "../accounts-menu"
+import { renderChildren } from "../../../../../test/render"
+import { toast } from "@liftedinit/ui"
+import {
+  MockAccount,
+  MockEd25519KeyPairIdentity,
+} from "../../../../../test/types"
+import {
+  addAccountToStore,
+  setupMnemonicMock,
+} from "../../../../../test/account-store"
 
-export const renderAccountMenu = () => {
-  render(
-    <QueryClientProvider client={queryClient}>
-      <Web3authProvider>
-        <AccountsMenu />
-      </Web3authProvider>
-    </QueryClientProvider>,
-  )
-}
-
-interface MockAccount {
-  name: string
-  address: string
-  identity: MockEd25519KeyPairIdentity
+const mockAccount1 = {
+  name: "m1234",
+  address: "m4565",
+  identity: new MockEd25519KeyPairIdentity(
+    new ArrayBuffer(0),
+    new ArrayBuffer(0),
+  ),
 }
 
 export const openAddAccountModal = () => {
@@ -40,50 +37,6 @@ export const openAddAccountModal = () => {
   fireEvent.click(addAccountButton)
 
   return activeAccountButton
-}
-
-class MockEd25519KeyPairIdentity extends Ed25519KeyPairIdentity {
-  constructor(publicKey: ArrayBuffer, privateKey: ArrayBuffer) {
-    super(publicKey, privateKey)
-    this.publicKey = publicKey
-    this.privateKey = privateKey
-  }
-}
-
-const mockAccount1 = {
-  name: "mocked_account_1",
-  address: "mocked_address_1",
-  identity: new MockEd25519KeyPairIdentity(
-    new ArrayBuffer(0),
-    new ArrayBuffer(0),
-  ),
-}
-
-const setupMnemonicMock = () => {
-  jest
-    .spyOn(Ed25519KeyPairIdentity, "getMnemonic")
-    .mockReturnValue(
-      "one two three four five six seven eight nine ten eleven twelve",
-    )
-
-  jest.spyOn(Ed25519KeyPairIdentity, "fromMnemonic").mockImplementation(() => {
-    const mockPublicKey = Buffer.from("mocked public key").buffer
-    const mockPrivateKey = Buffer.from("mocked private key").buffer
-    const mockIdentity = new MockEd25519KeyPairIdentity(
-      mockPublicKey,
-      mockPrivateKey,
-    )
-
-    mockIdentity.getAddress = jest.fn().mockReturnValue("mocked address")
-    mockIdentity.sign = jest.fn()
-    mockIdentity.verify = jest.fn()
-    mockIdentity.toJSON = jest.fn()
-    mockIdentity.getProtectedHeader = jest.fn()
-    mockIdentity.getUnprotectedHeader = jest.fn()
-    mockIdentity.getCoseKey = jest.fn()
-
-    return mockIdentity
-  })
 }
 
 const saveSeedPhraseAccount = async (name: string) => {
@@ -149,30 +102,6 @@ const importPemAccount = async () => {
   })
 }
 
-function addAccountToStore(account: MockAccount) {
-  act(() =>
-    useAccountsStore.setState(s => {
-      const nextId = s.nextId + 1
-      return {
-        ...s,
-        activeId: 0,
-        nextId: nextId,
-        byId: new Map([
-          ...s.byId.entries(),
-          [
-            nextId,
-            {
-              address: account.address,
-              name: account.name,
-              identity: account.identity,
-            },
-          ],
-        ]),
-      }
-    }),
-  )
-}
-
 const removeAccount = async (account: MockAccount) => {
   const editAccountButton = screen.getByTestId(`edit-account-${account.name}`)
   fireEvent.click(editAccountButton)
@@ -209,17 +138,18 @@ describe("AccountsMenu Tests", () => {
     await Promise.all(toasts.map(toasts => waitForElementToBeRemoved(toasts)))
 
     jest.resetModules()
+    jest.resetAllMocks()
     jest.clearAllMocks()
   })
 
-  it("should render the account menu", () => {
-    renderAccountMenu()
+  it("should renderChildren the account menu", () => {
+    renderChildren(<AccountsMenu />)
     expect(screen.getByTestId("accounts-menu-button")).toBeInTheDocument()
     expect(screen.getByTestId("accounts-menu-list")).toBeInTheDocument()
   })
 
-  it("should render the account menu with Anonymous active account", () => {
-    renderAccountMenu()
+  it("should renderChildren the account menu with Anonymous active account", () => {
+    renderChildren(<AccountsMenu />)
     const activeAccountButton = screen.getByTestId("accounts-menu-button")
     expect(
       within(activeAccountButton).getByText(/anonymous/i),
@@ -228,7 +158,7 @@ describe("AccountsMenu Tests", () => {
 
   it("should add a new seed phase account", async () => {
     setupMnemonicMock()
-    renderAccountMenu()
+    renderChildren(<AccountsMenu />)
     const activeAccountButton = openAddAccountModal()
     const name = "new-account"
 
@@ -240,7 +170,7 @@ describe("AccountsMenu Tests", () => {
   })
 
   it("should import a seed phrase account", async () => {
-    renderAccountMenu()
+    renderChildren(<AccountsMenu />)
     openAddAccountModal()
 
     await importSeedPhraseAccount()
@@ -251,7 +181,7 @@ describe("AccountsMenu Tests", () => {
   })
 
   it("should import a pem file account", async () => {
-    renderAccountMenu()
+    renderChildren(<AccountsMenu />)
     openAddAccountModal()
 
     await importPemAccount()
@@ -262,10 +192,10 @@ describe("AccountsMenu Tests", () => {
   })
 
   it("should remove an account", async () => {
-    renderAccountMenu()
+    renderChildren(<AccountsMenu />)
     addAccountToStore(mockAccount1)
-    expect(screen.getByText(mockAccount1.name)).toBeInTheDocument()
     const activeAccountButton = openAddAccountModal()
+    expect(screen.getAllByText(mockAccount1.name)).toHaveLength(2)
 
     await removeAccount(mockAccount1)
 
@@ -279,14 +209,14 @@ describe("AccountsMenu Tests", () => {
   it("should edit account name", async () => {
     const modifier = "-foobar"
     const modifiedName = mockAccount1.name + modifier
-    renderAccountMenu()
+    renderChildren(<AccountsMenu />)
     addAccountToStore(mockAccount1)
-    expect(screen.getByText(mockAccount1.name)).toBeInTheDocument()
     openAddAccountModal()
+    expect(screen.getAllByText(mockAccount1.name)).toHaveLength(2)
 
     await editAccountName(mockAccount1, modifier)
 
     expect(screen.queryByText(mockAccount1.name)).not.toBeInTheDocument()
-    expect(screen.getByText(modifiedName)).toBeInTheDocument()
+    expect(screen.getAllByText(modifiedName)).toHaveLength(2)
   })
 })
