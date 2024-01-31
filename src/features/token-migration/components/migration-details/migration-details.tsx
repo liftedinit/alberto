@@ -77,7 +77,7 @@ export function MigrationDetails() {
     } else if (isError) {
       setError(new Error(`Unable to fetch transaction: ${transactionError}`))
     }
-  }, [eventId, events.transactions, isError, isLoading, transactionError, txId])
+  }, [eventId, events, isError, isLoading, transactionError, txId])
 
   useEffect(() => {
     if (blocks !== undefined && eventNumber !== undefined) {
