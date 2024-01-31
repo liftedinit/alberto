@@ -1,5 +1,5 @@
 import { App } from "views"
-import { renderChildren } from "../../test/render"
+import { renderChildren } from "test/render"
 import { screen, waitForElementToBeRemoved } from "@testing-library/react"
 
 describe("App", () => {

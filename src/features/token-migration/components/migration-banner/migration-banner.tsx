@@ -16,6 +16,7 @@ export function MigrationBanner() {
       alignItems="center"
       justifyContent="center"
       p={2}
+      data-testid="migration-banner"
     >
       <AlertIcon />
       <AlertTitle>Migrate your tokens today!</AlertTitle>

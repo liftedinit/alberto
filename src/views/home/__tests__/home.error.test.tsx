@@ -1,9 +1,9 @@
 import { screen } from "@testing-library/react"
-import { mockErrorNetwork } from "../../../test/network-store"
-import { addAccountToStore } from "../../../test/account-store"
-import { renderChildren } from "../../../test/render"
-import { Home } from "../home"
-import { MockEd25519KeyPairIdentity } from "../../../test/types"
+import { mockErrorNetwork } from "test/network-store"
+import { addAccountToStore } from "test/account-store"
+import { renderChildren } from "test/render"
+import { Home } from "views/home"
+import { MockEd25519KeyPairIdentity } from "test/types"
 const mockAccount1 = {
   name: "test",
   address: "m111",

@@ -4,12 +4,12 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react"
-import { Home } from "../home"
-import { renderChildren } from "../../../test/render"
-import { addAccountToStore } from "../../../test/account-store"
-import { MockEd25519KeyPairIdentity } from "../../../test/types"
+import { Home } from "views/home"
+import { renderChildren } from "test/render"
+import { addAccountToStore } from "test/account-store"
+import { MockEd25519KeyPairIdentity } from "test/types"
 import { base64ToArrayBuffer, toast } from "@liftedinit/ui"
-import { mockNetwork } from "../../../test/network-store"
+import { mockNetwork } from "test/network-store"
 import userEvent from "@testing-library/user-event"
 
 const privKey =

@@ -6,17 +6,11 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { AccountsMenu } from "../accounts-menu"
-import { renderChildren } from "../../../../../test/render"
+import { AccountsMenu } from "features/accounts/components/accounts-menu"
+import { renderChildren } from "test/render"
 import { toast } from "@liftedinit/ui"
-import {
-  MockAccount,
-  MockEd25519KeyPairIdentity,
-} from "../../../../../test/types"
-import {
-  addAccountToStore,
-  setupMnemonicMock,
-} from "../../../../../test/account-store"
+import { MockAccount, MockEd25519KeyPairIdentity } from "test/types"
+import { addAccountToStore, setupMnemonicMock } from "test/account-store"
 
 const mockAccount1 = {
   name: "m1234",

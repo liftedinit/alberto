@@ -14,13 +14,13 @@ import {
   Td,
   Th,
 } from "@liftedinit/ui"
-import { extractEventDetails } from "../../event-details"
-import { useGetBlock } from "../../../network"
 import { useEffect, useState } from "react"
-import { extractTransactionHash } from "../../block-utils"
 import { Thead } from "@chakra-ui/react"
-import { useSingleTransactionList } from "../../../transactions"
-import { ShareLocationButton } from "../../../utils/share-button"
+import { useSingleTransactionList } from "features/transactions/queries"
+import { ShareLocationButton } from "features/utils/share-button"
+import { extractTransactionHash } from "features/token-migration/block-utils"
+import { useGetBlock } from "features/network/queries"
+import { extractEventDetails } from "features/token-migration/event-details"
 
 export function MigrationDetails() {
   const { eventId } = useParams()
@@ -42,7 +42,11 @@ export function MigrationDetails() {
 
   useEffect(() => {
     if (eventId !== undefined) {
-      const eventIdBuffer = Buffer.from(eventId, "hex").buffer
+      const buf = Buffer.from(eventId, "hex")
+      const eventIdBuffer = buf.buffer.slice(
+        buf.byteOffset,
+        buf.byteOffset + buf.byteLength,
+      )
       if (eventIdBuffer.byteLength !== 6) {
         setError(new Error("Invalid event id"))
       }
@@ -88,7 +92,7 @@ export function MigrationDetails() {
 
   return (
     <>
-      <VStack spacing={5} align="stretch">
+      <VStack spacing={5} align="stretch" data-testid={"migration-details"}>
         {error ? (
           <Alert status="error">
             <AlertIcon />
