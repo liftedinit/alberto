@@ -51,7 +51,8 @@ const removeNetwork = async (removeInputValue: string) => {
 }
 
 describe("NetworkMenu", () => {
-  // afterEach(cleanup)
+  jest.setTimeout(15000)
+
   it("should render with default manifest network", () => {
     renderChildren(<NetworkMenu />)
     expect(screen.getAllByText(/manifest/i).length).toBe(3)
@@ -65,7 +66,6 @@ describe("NetworkMenu", () => {
     expect(within(activeNetwork).getByText("test-network")).toBeInTheDocument()
   })
   it("should edit a network", async () => {
-    jest.setTimeout(15000)
     renderChildren(<NetworkMenu />)
     const activeNetwork = await createNetwork(
       "test-network-2",
@@ -77,7 +77,6 @@ describe("NetworkMenu", () => {
     ).toBeInTheDocument()
   })
   it("should remove a network", async () => {
-    jest.setTimeout(15000)
     renderChildren(<NetworkMenu />)
     const activeNetwork = await createNetwork(
       "test-network-3",
