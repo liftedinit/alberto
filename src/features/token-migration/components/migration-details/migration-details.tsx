@@ -78,7 +78,8 @@ export function MigrationDetails() {
     } else if (isTxError) {
       setError(new Error(`Unable to fetch transaction: ${transactionError}`))
     }
-  }, [eventId, events, isTxLoading, transactionError, txId])
+    // eslint-disable-next-line
+  }, [eventId, events, isTxError, isTxLoading, transactionError, txId])
 
   useEffect(() => {
     if (
@@ -93,6 +94,7 @@ export function MigrationDetails() {
         setError(e as Error)
       }
     }
+    // eslint-disable-next-line
   }, [blocks, eventNumber])
 
   return (
