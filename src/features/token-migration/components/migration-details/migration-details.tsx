@@ -27,8 +27,8 @@ export function MigrationDetails() {
   const [txId, setTxId] = useState<ArrayBuffer | undefined>(undefined)
   const {
     data: events,
-    isLoading,
-    isError,
+    isLoading: isTxLoading,
+    isError: isTxError,
     error: transactionError,
   } = useSingleTransactionList({ txId })
   const [blockHeight, setBlockHeight] = useState<number | undefined>(undefined)
@@ -56,8 +56,9 @@ export function MigrationDetails() {
 
   useEffect(() => {
     if (
-      !isLoading &&
-      !isError &&
+      !isTxLoading &&
+      !isTxError &&
+      error === undefined &&
       events.transactions.length === 1 &&
       txId !== undefined &&
       eventId !== undefined &&
@@ -74,13 +75,17 @@ export function MigrationDetails() {
       } catch (e) {
         setError(e as Error)
       }
-    } else if (isError) {
+    } else if (isTxError) {
       setError(new Error(`Unable to fetch transaction: ${transactionError}`))
     }
-  }, [eventId, events, isError, isLoading, transactionError, txId])
+  }, [eventId, events, isTxLoading, transactionError, txId])
 
   useEffect(() => {
-    if (blocks !== undefined && eventNumber !== undefined) {
+    if (
+      blocks !== undefined &&
+      eventNumber !== undefined &&
+      error === undefined
+    ) {
       try {
         const hash = extractTransactionHash(blocks, eventNumber)
         setTxHash(hash)

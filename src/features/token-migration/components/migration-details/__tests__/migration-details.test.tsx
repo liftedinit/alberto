@@ -6,45 +6,60 @@ import { useParams } from "react-router-dom"
 import { useSingleTransactionList } from "features/transactions/queries"
 import { useGetBlock } from "features/network/queries"
 
+const mockEventId = "6a9900000001"
+const mockTxHash = "012345"
 const blockHeight = 27291
 
-const createMockData = () => {
-  const mockId = "6a9900000001"
-  const mockHash = "012345"
-  const mockHash2 = "012344"
-  const mockTxHash = "012341"
-
+const createMockEvent = (eventId: string) => {
   return {
-    eventId: mockId,
-    txHash: mockTxHash,
-    arrBufId: hexToArrBuf(mockId),
-    arrBufHash: hexToArrBuf(mockHash),
-    arrBufHash2: hexToArrBuf(mockHash2),
-    arrBufTxHash: hexToArrBuf(mockTxHash),
+    id: hexToArrBuf(eventId),
+    type: "send",
+    time: 1234567890,
+    amount: BigInt(123),
+    from: "m111",
+    to: "m222",
+    symbolAddress: "mabc",
+    _id: eventId,
+    _time: 1234567890000,
   }
 }
-const mockData = createMockData()
+const createMockSingleTxList = (transactions: any[]) => {
+  return {
+    data: {
+      count: transactions.length,
+      transactions,
+    },
+    isLoading: false,
+    isError: false,
+    error: undefined,
+  }
+}
 
-const mockSingleTxList = {
-  data: {
-    count: 1,
-    transactions: [
-      {
-        id: mockData.arrBufId,
-        type: "send",
-        time: 1234567890,
-        amount: BigInt(123),
-        from: "m111",
-        to: "m222",
-        symbolAddress: "mabc",
-        _id: mockData.eventId,
-        _time: 1234567890000,
-      },
-    ],
-  },
-  isLoading: false,
-  isError: false,
-  error: undefined,
+const createMockTxList = (eventId: string[]) => {
+  const transactions = eventId.map(id => createMockEvent(id))
+  return createMockSingleTxList(transactions)
+}
+
+const createMockTx = (txHash: string) => {
+  return {
+    transactionIdentifier: {
+      hash: hexToArrBuf(txHash),
+    },
+  }
+}
+const createMockBlockResult = (transactions: any[]) => {
+  return {
+    data: {
+      transactions,
+    },
+    isLoading: false,
+    isError: false,
+    error: undefined,
+  }
+}
+const createMockBlock = (txHashs: string[]) => {
+  const transactions = txHashs.map(hash => createMockTx(hash))
+  return createMockBlockResult(transactions)
 }
 
 const mockSingleTxListError = {
@@ -54,48 +69,9 @@ const mockSingleTxListError = {
   error: "this is an error",
 }
 
-const mockBlock = {
-  data: {
-    blockIdentifier: {
-      hash: mockData.arrBufHash,
-      height: blockHeight,
-    },
-    parentBlockIdentifier: {
-      hash: mockData.arrBufHash2,
-      height: blockHeight - 1,
-    },
-    totalTxs: 1,
-    transactions: [
-      {
-        transactionIdentifier: {
-          hash: mockData.arrBufTxHash,
-        },
-      },
-    ],
-  },
-  isLoading: false,
-  isError: false,
-  error: undefined,
-}
-
 const mockBlockError = {
   data: {
     transactions: [],
-  },
-  isLoading: false,
-  isError: true,
-  error: "this is another error",
-}
-
-const mockBlockError2 = {
-  data: {
-    transactions: [
-      {
-        transactionIdentifier: {
-          hash: mockData.arrBufTxHash,
-        },
-      },
-    ],
   },
   isLoading: false,
   isError: true,
@@ -124,9 +100,11 @@ jest.mock("features/network/queries", () => {
 // TODO: Test New Chain details when implemented
 describe("MigrationDetails", () => {
   beforeEach(() => {
-    useParams.mockImplementation(() => ({ eventId: mockData.eventId }))
-    useGetBlock.mockImplementation(() => mockBlock)
-    useSingleTransactionList.mockImplementation(() => mockSingleTxList)
+    useParams.mockImplementation(() => ({ eventId: mockEventId }))
+    useGetBlock.mockImplementation(() => createMockBlock([mockTxHash]))
+    useSingleTransactionList.mockImplementation(() =>
+      createMockTxList([mockEventId]),
+    )
   })
   afterEach(() => {
     useParams.mockRestore()
@@ -136,9 +114,9 @@ describe("MigrationDetails", () => {
   it("renders MigrationDetails with MANY migration details", () => {
     renderChildren(<MigrationDetails />)
     expect(screen.getByTestId("migration-details")).toBeInTheDocument()
-    expect(screen.getByText(mockData.eventId)).toBeInTheDocument()
+    expect(screen.getByText(mockEventId)).toBeInTheDocument()
     expect(screen.getByText(blockHeight)).toBeInTheDocument()
-    expect(screen.getByText(mockData.txHash)).toBeInTheDocument()
+    expect(screen.getByText(mockTxHash)).toBeInTheDocument()
   })
   it("renders an error message when eventId is invalid", () => {
     useParams.mockImplementation(() => ({ eventId: "invalid_id" }))
@@ -159,14 +137,17 @@ describe("MigrationDetails", () => {
       screen.getByText("No transactions found in the block."),
     ).toBeInTheDocument()
   })
-  // TODO: Fix
-  // it("renders an error message when eventNumber is out of bounds", () => {
-  //   useParams.mockImplementation(() => ({ eventId: "6a9900000005" }))
-  //   renderChildren(<MigrationDetails />)
-  //   expect(
-  //     screen.getByText(
-  //       "Event number 5 is out of bounds for the transactions array.",
-  //     ),
-  //   ).toBeInTheDocument()
-  // })
+  it("renders an error message when eventNumber is out of bounds", () => {
+    useParams.mockImplementation(() => ({ eventId: "6a9900000005" }))
+    useSingleTransactionList.mockImplementation(() =>
+      createMockTxList(["6a9900000005"]),
+    )
+
+    renderChildren(<MigrationDetails />)
+    expect(
+      screen.getByText(
+        "Event number 5 is out of bounds for the transactions array.",
+      ),
+    ).toBeInTheDocument()
+  })
 })
