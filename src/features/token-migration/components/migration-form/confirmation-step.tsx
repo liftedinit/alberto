@@ -16,7 +16,7 @@ export const ConfirmationStep = ({
   formData,
 }: ConfirmationStepProps) => {
   return (
-    <Box p={4}>
+    <Box p={4} data-testid="confirmation-box">
       <Text mb={2}>Confirmation</Text>
       {formData.accountAddress !== "" ? (
         <Text mb={2}>
@@ -37,6 +37,7 @@ export const ConfirmationStep = ({
       </Text>
 
       <Button
+        data-testid="back-btn"
         mt={4}
         colorScheme="blue"
         onClick={() => {

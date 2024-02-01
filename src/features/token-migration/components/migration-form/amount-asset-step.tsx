@@ -11,7 +11,7 @@ import {
   Select,
   Text,
 } from "@liftedinit/ui"
-import { useBalances } from "../../../balances"
+import { useBalances } from "features/balances"
 import { Big } from "big.js"
 import { StepNames, TokenMigrationFormData } from "./types"
 
@@ -112,6 +112,7 @@ export const AmountAssetStep = ({
                 id="assetSymbol"
                 name="assetSymbol"
                 placeholder="Select asset type"
+                data-testid="assetSymbol"
                 onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                   handleChange(event)
                   setSelectedAsset(event.target.value)
@@ -119,13 +120,20 @@ export const AmountAssetStep = ({
                 }}
               >
                 {Array.from(ownedAssetType).map(([address, type], index) => (
-                  <option key={index} value={address} disabled={type !== "MFX"}>
+                  <option
+                    key={index}
+                    value={address}
+                    disabled={type !== "MFX"}
+                    data-testid="symbol-option"
+                  >
                     {type}
                   </option>
                 ))}
               </Field>
               {errors.assetTicker && touched.assetTicker ? (
-                <Text color="red.500">{errors.assetTicker}</Text>
+                <Text color="red.500" data-testid="error-assetSymbol">
+                  {errors.assetTicker}
+                </Text>
               ) : null}
             </FormControl>
             <FormControl
@@ -148,6 +156,7 @@ export const AmountAssetStep = ({
                   id="assetAmount"
                   name="assetAmount"
                   type="string"
+                  data-testid="assetAmount"
                 />
                 <HStack>
                   <Text whiteSpace="nowrap" fontSize="xs">
@@ -167,11 +176,14 @@ export const AmountAssetStep = ({
                 </HStack>
               </HStack>
               {errors.assetAmount && touched.assetAmount ? (
-                <Text color="red.500">{errors.assetAmount}</Text>
+                <Text color="red.500" data-testid="error-assetAmount">
+                  {errors.assetAmount}
+                </Text>
               ) : null}
             </FormControl>
 
             <Button
+              data-testid="back-btn"
               mt={4}
               colorScheme="blue"
               onClick={() => {
@@ -185,7 +197,13 @@ export const AmountAssetStep = ({
             >
               Back
             </Button>
-            <Button mt={4} ml={2} colorScheme="blue" type="submit">
+            <Button
+              mt={4}
+              ml={2}
+              colorScheme="blue"
+              type="submit"
+              data-testid="next-btn"
+            >
               Next
             </Button>
           </Box>

@@ -5,9 +5,9 @@ import { AmountAssetStep } from "./amount-asset-step"
 import { DestinationAddressStep } from "./destination-address-step"
 import { UserAddressStep } from "./user-address-step"
 import { ConfirmationStep } from "./confirmation-step"
-import { useCreateSendTxn, useTransactionsList } from "../../../transactions"
+import { useCreateSendTxn, useTransactionsList } from "features/transactions"
 import { ILLEGAL_IDENTITY, ListOrderType } from "@liftedinit/many-js"
-import { useAccountsStore, useMultisigSubmit } from "../../../accounts"
+import { useAccountsStore, useMultisigSubmit } from "features/accounts"
 import { SendFunctionType, StepNames, TokenMigrationFormData } from "./types"
 import {
   initialState,
@@ -22,11 +22,11 @@ import {
   setProcessingDone,
   setTxHash,
 } from "./migration-form-actions"
-import { useGetBlock } from "../../../network"
-import { extractEventDetails } from "../../event-details"
+import { useGetBlock } from "features/network/queries"
+import { extractEventDetails } from "features/token-migration/event-details"
 import { useNavigate } from "react-router-dom"
-import { createIsMatchingEvent } from "../../event-validation"
-import { extractTransactionHash } from "../../block-utils"
+import { createIsMatchingEvent } from "features/token-migration/event-validation"
+import { extractTransactionHash } from "features/token-migration/block-utils"
 
 // Token migration form component
 // The flow is as follows:

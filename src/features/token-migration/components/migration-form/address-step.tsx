@@ -10,7 +10,7 @@ import {
 } from "@liftedinit/ui"
 import { useEffect, useMemo, useState } from "react"
 import { IdentitiesAndAccounts, IdTypes, StepNames } from "./types"
-import { useCombinedAccountInfo } from "../../../accounts/queries"
+import { useCombinedAccountInfo } from "features/accounts/queries"
 
 interface FormValues {
   address: string
@@ -93,12 +93,17 @@ export const AddressStep = ({
                 as={Select}
                 id="address"
                 name="address"
+                data-testid="address"
                 placeholder="Select Account/User"
               >
                 {isLoaded
                   ? Array.from(accountsAndIdentities.values()).map(
                       ({ idType, address, name }) => (
-                        <option key={address} value={address}>
+                        <option
+                          key={address}
+                          value={address}
+                          data-testid="form-option"
+                        >
                           {idType === IdTypes.USER ? "User" : "Account"}:{" "}
                           {address} {name ? `(${name})` : null}
                         </option>
@@ -107,11 +112,18 @@ export const AddressStep = ({
                   : null}
               </Field>
               {errors.address && touched.address ? (
-                <Text color="red.500">{errors.address}</Text>
+                <Text color="red.500" data-testid="error-address">
+                  {errors.address}
+                </Text>
               ) : null}
             </FormControl>
 
-            <Button mt={4} colorScheme="blue" type="submit">
+            <Button
+              mt={4}
+              colorScheme="blue"
+              type="submit"
+              data-testid="next-btn"
+            >
               Next
             </Button>
           </Box>

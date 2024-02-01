@@ -8,7 +8,7 @@ import {
   Select,
   Text,
 } from "@liftedinit/ui"
-import { Account, useAccountsStore, useGetAccountInfo } from "../../../accounts"
+import { Account, useAccountsStore, useGetAccountInfo } from "features/accounts"
 import { useEffect, useMemo, useState } from "react"
 import { StepNames, TokenMigrationFormData } from "./types"
 
@@ -88,6 +88,7 @@ export const UserAddressStep = ({
                 as={Select}
                 id="userAddress"
                 name="userAddress"
+                data-testid="userAddress"
                 placeholder="Select user"
               >
                 {isLoaded
@@ -103,6 +104,7 @@ export const UserAddressStep = ({
               ) : null}
             </FormControl>
             <Button
+              data-testid="back-btn"
               mt={4}
               colorScheme="blue"
               onClick={() => {

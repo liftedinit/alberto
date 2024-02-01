@@ -78,14 +78,20 @@ export const DestinationAddressStep = ({
                 as={Input}
                 id="destinationAddress"
                 name="destinationAddress"
+                data-testid="destinationAddress"
               />
               {errors.destinationAddress && touched.destinationAddress ? (
-                <Text color="red.500" fontSize="sm">
+                <Text
+                  color="red.500"
+                  fontSize="sm"
+                  data-testid="error-destinationAddress"
+                >
                   {errors.destinationAddress}
                 </Text>
               ) : null}
             </FormControl>
             <Button
+              data-testid="back-btn"
               mt={4}
               colorScheme="blue"
               onClick={() => {
@@ -95,7 +101,13 @@ export const DestinationAddressStep = ({
             >
               Back
             </Button>
-            <Button mt={4} ml={2} colorScheme="blue" type="submit">
+            <Button
+              mt={4}
+              ml={2}
+              colorScheme="blue"
+              type="submit"
+              data-testid="next-btn"
+            >
               Next
             </Button>
           </Box>
