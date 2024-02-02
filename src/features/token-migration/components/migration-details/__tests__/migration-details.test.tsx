@@ -4,12 +4,12 @@ import { screen } from "@testing-library/react"
 import { useParams } from "react-router-dom"
 import { useSingleTransactionList } from "features/transactions/queries"
 import { useGetBlock } from "features/network/queries"
-import { createMockTxList, mockSingleTxListError } from "test/transactions"
+import { createMockSendTxList, mockSingleTxListError } from "test/transactions"
 import { mockBlockError } from "test/block"
 import {
   mockUseBlock,
   mockUseParams,
-  mockUseSingleTransactionList,
+  mockUseSingleSendTransactionList,
 } from "features/token-migration/test-utils/mocks"
 
 const mockEventId = "6a9900000001"
@@ -40,7 +40,7 @@ describe("MigrationDetails", () => {
   beforeEach(() => {
     mockUseParams({ eventId: mockEventId })
     mockUseBlock(mockTxHash)
-    mockUseSingleTransactionList([mockEventId], "m111", "m222")
+    mockUseSingleSendTransactionList([mockEventId], "m111", "m222")
   })
   afterEach(jest.clearAllMocks)
   it("renders MigrationDetails with MANY migration details", () => {
@@ -77,7 +77,7 @@ describe("MigrationDetails", () => {
     mockP.mockImplementation(() => ({ eventId: "6a9900000005" }))
     const mockT = useSingleTransactionList as jest.Mock
     mockT.mockImplementation(() =>
-      createMockTxList(["6a9900000005"], "m111", "m222"),
+      createMockSendTxList(["6a9900000005"], "m111", "m222"),
     )
 
     renderChildren(<MigrationDetails />)

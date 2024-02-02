@@ -19,7 +19,7 @@ export const ConfirmationStep = ({
     <Box p={4} data-testid="confirmation-box">
       <Text mb={2}>Confirmation</Text>
       {formData.accountAddress !== "" ? (
-        <Text mb={2}>
+        <Text mb={2} data-testid="account-info">
           <strong>Account Address:</strong> {formData.accountAddress}
         </Text>
       ) : null}

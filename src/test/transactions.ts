@@ -1,6 +1,7 @@
 import { hexToArrBuf } from "./buffer"
+import { EventType } from "@liftedinit/many-js"
 
-const createMockEvent = (
+export const createMockSendEvent = (
   eventId: string,
   from: string,
   to: string,
@@ -8,7 +9,7 @@ const createMockEvent = (
 ) => {
   return {
     id: hexToArrBuf(eventId),
-    type: "send",
+    type: EventType.send,
     time: 1234567890,
     amount: BigInt(123),
     from,
@@ -19,6 +20,39 @@ const createMockEvent = (
     _time: 1234567890000,
   }
 }
+
+const createMockMultisigSubmitEvent = (
+  eventId: string,
+  account: string,
+  token: string,
+  submitter: string,
+  transaction: any,
+  memo?: string[],
+) => {
+  return {
+    // BaseEvent
+    id: hexToArrBuf(eventId),
+    type: EventType.accountMultisigSubmit,
+    time: 1234567890,
+
+    // MultisigEvent
+    account,
+    token: hexToArrBuf(token),
+
+    // MultisigSubmitEvent
+    executeAutomatically: true,
+    memo,
+    submitter,
+    threshold: 1,
+    expireDate: 2234567890,
+    transaction,
+
+    // ProcessedEvent
+    _id: eventId,
+    _time: 1234567890000,
+  }
+}
+
 const createMockSingleTxList = (transactions: any[]) => {
   return {
     data: {
@@ -30,15 +64,31 @@ const createMockSingleTxList = (transactions: any[]) => {
     error: undefined,
   }
 }
-export const createMockTxList = (
+export const createMockSendTxList = (
   eventId: string[],
   from: string,
   to: string,
   memo?: string[],
 ) => {
-  const transactions = eventId.map(id => createMockEvent(id, from, to, memo))
+  const transactions = eventId.map(id =>
+    createMockSendEvent(id, from, to, memo),
+  )
   return createMockSingleTxList(transactions)
 }
+
+export const createMockMultisigSubmitTxList = (
+  eventId: string[],
+  account: string,
+  token: string,
+  submitter: string,
+  transaction: any,
+) => {
+  const transactions = eventId.map(id =>
+    createMockMultisigSubmitEvent(id, account, token, submitter, transaction),
+  )
+  return createMockSingleTxList(transactions)
+}
+
 export const createMockTx = (txHash: string) => {
   return {
     transactionIdentifier: {

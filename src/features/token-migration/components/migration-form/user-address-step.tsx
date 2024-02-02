@@ -94,7 +94,11 @@ export const UserAddressStep = ({
               >
                 {isLoaded
                   ? commonAddresses.map(account => (
-                      <option key={account.address} value={account.address}>
+                      <option
+                        key={account.address}
+                        value={account.address}
+                        data-testid="user-option"
+                      >
                         User: {account.address} ({account.name})
                       </option>
                     ))
@@ -118,7 +122,13 @@ export const UserAddressStep = ({
             >
               Back
             </Button>
-            <Button mt={4} ml={2} colorScheme="blue" type="submit">
+            <Button
+              mt={4}
+              ml={2}
+              colorScheme="blue"
+              type="submit"
+              data-testid="next-btn"
+            >
               Next
             </Button>
           </Box>
