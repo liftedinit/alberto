@@ -18,8 +18,6 @@ import {
   mockUseTransactionList,
 } from "features/token-migration/test-utils/mocks"
 
-// TODO: Cleanup this test file.
-
 jest.mock("features/accounts/queries", () => {
   return {
     ...jest.requireActual("features/accounts/queries"),
@@ -182,8 +180,11 @@ describe("MigrationForm", () => {
     })
     it("should process the transaction", async () => {
       const navigate = jest.fn()
-      useNavigate.mockReturnValue(navigate)
-      useTransactionsList.mockReturnValue(
+      const mockN = useNavigate as jest.Mock
+      mockN.mockReturnValue(navigate)
+
+      const mockT = useTransactionsList as jest.Mock
+      mockT.mockReturnValue(
         createMockTxList(["6a9900000001"], "m111", ILLEGAL_IDENTITY, [
           "mockUUID",
           mockDestinationAddr,
@@ -239,7 +240,8 @@ describe("MigrationForm", () => {
 
   describe("Error handling", () => {
     it("should display an error message when the user address is not selected", async () => {
-      useCombinedAccountInfo.mockReturnValue(new Map())
+      const mock = useCombinedAccountInfo as jest.Mock
+      mock.mockReturnValue(new Map())
       renderChildren(<MigrationForm />)
       await advanceStep("error-address")
     })

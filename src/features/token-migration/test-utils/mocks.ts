@@ -2,10 +2,15 @@ import { useAccountsStore, useGetAccountInfo } from "features/accounts"
 import { IdTypes } from "features/token-migration/components/migration-form/types"
 import { useCombinedAccountInfo } from "features/accounts/queries"
 import { useBalances } from "features/balances"
-import { createMockTx } from "test/transactions"
+import { createMockTx, createMockTxList } from "test/transactions"
 import { useGetBlock } from "features/network/queries"
-import { useCreateSendTxn, useTransactionsList } from "features/transactions"
+import {
+  useCreateSendTxn,
+  useSingleTransactionList,
+  useTransactionsList,
+} from "features/transactions"
 import { randomUUID } from "crypto"
+import { useParams } from "react-router-dom"
 
 export const mockUseAccountsStore = () => {
   const mockById = new Map([
@@ -100,10 +105,9 @@ export const createMockBlock = (txHashs: string[]) => {
   const transactions = txHashs.map(hash => createMockTx(hash))
   return createMockBlockResult(transactions)
 }
-export const mockUseBlock = () => {
-  const mockTxHash = "01234"
+export const mockUseBlock = (hash: string = "012345") => {
   const mock = useGetBlock as unknown as jest.Mock
-  mock.mockImplementation(() => createMockBlock([mockTxHash]))
+  mock.mockImplementation(() => createMockBlock([hash]))
 }
 export const mockUseCreateSendTransaction = () => {
   const mock = useCreateSendTxn as unknown as jest.Mock
@@ -126,4 +130,18 @@ export const mockRandomUUID = () => {
   const mockUuid = "mockUUID"
   const mock = randomUUID as unknown as jest.Mock
   mock.mockReturnValue(mockUuid)
+}
+
+export const mockUseParams = (params: Record<string, string>) => {
+  const mock = useParams as unknown as jest.Mock
+  mock.mockImplementation(() => params)
+}
+
+export const mockUseSingleTransactionList = (
+  eventIds: string[],
+  from: string,
+  to: string,
+) => {
+  const mock = useSingleTransactionList as unknown as jest.Mock
+  mock.mockImplementation(() => createMockTxList(eventIds, from, to))
 }
