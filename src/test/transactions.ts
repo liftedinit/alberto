@@ -1,5 +1,4 @@
 import { hexToArrBuf } from "./buffer"
-import { useTransactionsList } from "../features/transactions"
 
 const createMockEvent = (
   eventId: string,
@@ -52,15 +51,4 @@ export const mockSingleTxListError = {
   isLoading: false,
   isError: true,
   error: "this is an error",
-}
-
-export const mockUseTransactionList = () => {
-  useTransactionsList.mockImplementation(() => ({
-    data: {
-      transactions: [],
-    },
-    isLoading: false,
-    isError: false,
-    error: undefined,
-  }))
 }

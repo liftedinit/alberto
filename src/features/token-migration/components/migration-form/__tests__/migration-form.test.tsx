@@ -5,15 +5,18 @@ import { screen } from "@testing-library/react"
 import { useCombinedAccountInfo } from "features/accounts/queries"
 import userEvent from "@testing-library/user-event"
 import { act } from "react-dom/test-utils"
-import { createMockTxList, mockUseTransactionList } from "test/transactions"
+import { createMockTxList } from "test/transactions"
 import { ILLEGAL_IDENTITY } from "@liftedinit/many-js"
-import { mockUseBlock } from "test/block"
 import { useNavigate } from "react-router-dom"
-import { mockUseCombinedAccountInfo } from "test/account"
-import { mockUseBalance } from "test/balance"
-import { mockUseAccountsStore } from "test/account-store"
-import { mockRandomUUID } from "test/uuid"
-import { mockUseCreateSendTransaction } from "test/send"
+import {
+  mockRandomUUID,
+  mockUseAccountsStore,
+  mockUseBalance,
+  mockUseBlock,
+  mockUseCombinedAccountInfo,
+  mockUseCreateSendTransaction,
+  mockUseTransactionList,
+} from "features/token-migration/test-utils/mocks"
 
 // TODO: Cleanup this test file.
 
@@ -226,10 +229,10 @@ describe("MigrationForm", () => {
       renderChildren(<MigrationForm />)
       await advanceStep("userAddress", advanceFromAddressToUserAddressStep)
     })
-    // TODO
     // it("should advance to the amount/asset step", async () => {
     //   renderChildren(<MigrationForm />)
-    //   await advanceFromAddressToUserAddressStep()
+    //   await advanceStep("userAddress", advanceFromAddressToUserAddressStep)
+    //   // await advanceStep("assetSymbol", advanceFromUserAddressToAmountStep)
     //   expect(screen.getByTestId("assetSymbol")).toBeInTheDocument()
     // })
   })
