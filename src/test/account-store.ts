@@ -53,3 +53,23 @@ export function addAccountToStore(account: MockAccount) {
     }),
   )
 }
+
+export const mockUseAccountsStore = () => {
+  const mockById = new Map([
+    [
+      0,
+      {
+        name: "mockAcc",
+        identity: new ArrayBuffer(0),
+        address: "mqd7vxcf3l4aklypotgjmwy36y2kk2metkqidcizo4jnfttiaaaaqkt",
+      },
+    ],
+  ])
+  const mockGetId = jest.fn().mockReturnValue(1)
+  const mockSetActiveId = jest.fn().mockResolvedValue(1)
+  useAccountsStore.mockImplementation(() => ({
+    getId: mockGetId,
+    setActiveId: mockSetActiveId,
+    byId: mockById,
+  }))
+}

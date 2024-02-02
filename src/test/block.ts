@@ -1,4 +1,5 @@
 import { createMockTx } from "./transactions"
+import { useGetBlock } from "../features/network"
 
 const createMockBlockResult = (transactions: any[]) => {
   return {
@@ -21,4 +22,9 @@ export const mockBlockError = {
   isLoading: false,
   isError: true,
   error: "this is another error",
+}
+
+export const mockUseBlock = () => {
+  const mockTxHash = "01234"
+  useGetBlock.mockImplementation(() => createMockBlock([mockTxHash]))
 }
