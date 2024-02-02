@@ -27,6 +27,7 @@ import { extractEventDetails } from "features/token-migration/event-details"
 import { useNavigate } from "react-router-dom"
 import { createIsMatchingEvent } from "features/token-migration/event-validation"
 import { extractTransactionHash } from "features/token-migration/block-utils"
+import { randomUUID } from "crypto"
 
 // Token migration form component
 // The flow is as follows:
@@ -82,13 +83,15 @@ export const MigrationForm = () => {
   const nextStep = (nextStep: StepNames) => dispatch(setCurrentStep(nextStep))
   const prevStep = (prevStep: StepNames) => dispatch(setCurrentStep(prevStep))
 
-  if (error) {
-    toast({
-      status: "error",
-      title: "Processing error",
-      description: `Unable to process transaction: ${error}`,
-    })
-  }
+  useEffect(() => {
+    if (error) {
+      toast({
+        status: "error",
+        title: "Processing error",
+        description: `Unable to process transaction: ${error}`,
+      })
+    }
+  }, [error, toast])
 
   // Redirect the user to the migration detail when the transaction is completed
   useEffect(() => {
@@ -105,6 +108,9 @@ export const MigrationForm = () => {
   // We need the transaction ID, the block height and the event number to get the transaction hash
   useEffect(() => {
     if (
+      eventId === undefined &&
+      height === undefined &&
+      eventNumber === undefined &&
       memoizedEvents &&
       memoizedEvents.length === 1 &&
       formData.destinationAddress !== "" &&
@@ -126,7 +132,12 @@ export const MigrationForm = () => {
 
   // Extract the transaction hash from the block as soon as the block is available
   useEffect(() => {
-    if (blocks && eventNumber && eventNumber > 0 && txHash === "") {
+    if (
+      blocks !== undefined &&
+      eventNumber &&
+      eventNumber > 0 &&
+      txHash === ""
+    ) {
       try {
         dispatch(setTxHash(extractTransactionHash(blocks, eventNumber)))
       } catch (hashError) {
@@ -222,7 +233,7 @@ export const MigrationForm = () => {
       return
     }
 
-    dispatch(setMemo(crypto.randomUUID())) // Each migration is assigned a UUID for traceability purposes
+    dispatch(setMemo(randomUUID())) // Each migration is assigned a UUID for traceability purposes
     dispatch(setCurrentStep(StepNames.PROCESSING))
   }
 

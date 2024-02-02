@@ -47,7 +47,13 @@ export const ConfirmationStep = ({
       >
         Back
       </Button>
-      <Button mt={4} ml={2} colorScheme="blue" onClick={handleSubmit}>
+      <Button
+        mt={4}
+        ml={2}
+        colorScheme="blue"
+        onClick={handleSubmit}
+        data-testid="next-btn"
+      >
         Submit
       </Button>
     </Box>

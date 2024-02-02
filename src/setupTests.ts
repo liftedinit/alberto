@@ -12,3 +12,6 @@ global.TextDecoder = TextDecoder
 
 //https://github.com/chakra-ui/chakra-ui/discussions/5558
 jest.spyOn(mediaQueryHooks, "useBreakpointValue")
+
+// The migration-form test requires the crypto module
+global.crypto = require("crypto-browserify")

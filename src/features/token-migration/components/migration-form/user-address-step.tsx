@@ -47,7 +47,8 @@ export const UserAddressStep = ({
     : []
   // eslint-disable-next-line
   const memoizedAccountUsers = useMemo(() => accountUsers, [])
-  const identityById = useAccountsStore(s => s.byId)
+  const accStore = useAccountsStore()
+  const identityById = accStore.byId
 
   useEffect(() => {
     const matchingAccounts = Array.from(identityById.values()).filter(
