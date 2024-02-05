@@ -10,6 +10,8 @@ import {
   mockBlockHeight,
   mockHash,
   mockInvalidEventId,
+  mockLongBlockHeight,
+  mockLongEventId,
   mockSendEventId,
   mockUseBlock,
   mockUseParams,
@@ -54,6 +56,19 @@ describe("MigrationDetails", () => {
     expect(screen.getByTestId("migration-details")).toBeInTheDocument()
     expect(screen.getByText(mockSendEventId)).toBeInTheDocument()
     expect(screen.getByText(mockBlockHeight)).toBeInTheDocument()
+    expect(screen.getByText(mockHash)).toBeInTheDocument()
+  })
+  it("renders MigrationDetails with long event id and big block height", () => {
+    mockUseParams({ eventId: mockLongEventId })
+    mockUseSingleSendTransactionList(
+      [mockLongEventId],
+      mockUserAddr,
+      mockUserAddr2,
+    )
+    renderChildren(<MigrationDetails />)
+    expect(screen.getByTestId("migration-details")).toBeInTheDocument()
+    expect(screen.getByText(mockLongEventId)).toBeInTheDocument()
+    expect(screen.getByText(mockLongBlockHeight)).toBeInTheDocument()
     expect(screen.getByText(mockHash)).toBeInTheDocument()
   })
   it("renders an error message when eventId is invalid", () => {

@@ -47,7 +47,7 @@ export function MigrationDetails() {
         buf.byteOffset,
         buf.byteOffset + buf.byteLength,
       )
-      if (eventIdBuffer.byteLength !== 6) {
+      if (eventIdBuffer.byteLength < 6) {
         setError(new Error("Invalid event id"))
       }
       setTxId(eventIdBuffer)

@@ -41,6 +41,8 @@ export const mockDestinationAddr =
   "manifest194dewhjkvt4rw8ccwnz36ljfuhe8r4kzs84sl9"
 export const mockSendEventId = "6a9900000001"
 export const mockInvalidEventId = "6a9900000005"
+export const mockLongEventId = "568bd900000001"
+export const mockLongBlockHeight = 5671899
 export const mockUuid = "09b10a35-74e4-4936-b428-efa16c097578"
 const mockSendTx = createMockSendEvent(
   mockSendEventId,

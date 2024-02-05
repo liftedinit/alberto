@@ -27,7 +27,7 @@ import { extractEventDetails } from "features/token-migration/event-details"
 import { useNavigate } from "react-router-dom"
 import { createIsMatchingEvent } from "features/token-migration/event-validation"
 import { extractTransactionHash } from "features/token-migration/block-utils"
-import { randomUUID } from "crypto"
+import { v4 as uuidv4 } from "uuid"
 
 // Token migration form component
 // The flow is as follows:
@@ -233,7 +233,7 @@ export const MigrationForm = () => {
       return
     }
 
-    dispatch(setMemo(randomUUID())) // Each migration is assigned a UUID for traceability purposes
+    dispatch(setMemo(uuidv4())) // Each migration is assigned a UUID for traceability purposes
     dispatch(setCurrentStep(StepNames.PROCESSING))
   }
 
