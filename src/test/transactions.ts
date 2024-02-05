@@ -21,7 +21,7 @@ export const createMockSendEvent = (
   }
 }
 
-const createMockMultisigSubmitEvent = (
+export const createMockMultisigSubmitEvent = (
   eventId: string,
   account: string,
   token: string,

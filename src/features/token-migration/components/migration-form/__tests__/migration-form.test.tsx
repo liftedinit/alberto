@@ -18,7 +18,15 @@ import {
   mockUseCombinedAccountInfo,
   mockUseCreateSendTransaction,
   mockUseGetAccountInfo,
-  mockUseTransactionList,
+  mockEmptyUseTransactionList,
+  mockUserAddr,
+  mockAccountAddr,
+  mockDestinationAddr,
+  mockAsset,
+  mockSendEventId,
+  mockMultisigEventId,
+  mockUuid,
+  mockToken,
 } from "features/token-migration/test-utils/mocks"
 
 jest.mock("features/accounts/queries", () => {
@@ -75,11 +83,6 @@ jest.mock("react-router-dom", () => ({
   useNavigate: jest.fn(),
 }))
 
-const mockUserAddr = "mah7vxcf3l4aklypotgjmwy36y2kk2metkqidcizo4jnfttild"
-const mockAccountAddr =
-  "mqd7vxcf3l4aklypotgjmwy36y2kk2metkqidcizo4jnfttiaaaaqkt"
-const mockDestinationAddr = "manifest194dewhjkvt4rw8ccwnz36ljfuhe8r4kzs84sl9"
-
 const advanceToNextStep = async (acc: string) => {
   const options = screen.getAllByTestId("form-option")
   expect(options.length).toBe(2)
@@ -109,7 +112,9 @@ const advanceFromAmountToDestinationStep = async () => {
   expect(options.length).toBe(1)
 
   const symbolField = screen.getByTestId("assetSymbol")
-  await act(async () => await userEvent.selectOptions(symbolField, ["MFX"]))
+  await act(
+    async () => await userEvent.selectOptions(symbolField, [mockAsset.symbol]),
+  )
 
   const amountField = screen.getByTestId("assetAmount")
   await act(async () => await userEvent.type(amountField, "1"))
@@ -155,7 +160,7 @@ describe("MigrationForm", () => {
 
   describe("User flow", () => {
     beforeEach(() => {
-      mockUseTransactionList()
+      mockEmptyUseTransactionList()
       mockUseCreateSendTransaction()
       mockUseBlock()
       mockUseCombinedAccountInfo()
@@ -202,10 +207,12 @@ describe("MigrationForm", () => {
 
       const mockT = useTransactionsList as jest.Mock
       mockT.mockReturnValue(
-        createMockSendTxList(["6a9900000001"], "m111", ILLEGAL_IDENTITY, [
-          "mockUUID",
-          mockDestinationAddr,
-        ]),
+        createMockSendTxList(
+          [mockSendEventId],
+          mockUserAddr,
+          ILLEGAL_IDENTITY,
+          [mockUuid, mockDestinationAddr],
+        ),
       )
 
       renderChildren(<MigrationForm />)
@@ -222,7 +229,7 @@ describe("MigrationForm", () => {
       await act(async () => await userEvent.click(nextBtn))
 
       expect(navigate).toHaveBeenCalledWith(
-        "/token-migration-portal/migration-history/6a9900000001",
+        `/token-migration-portal/migration-history/${mockSendEventId}`,
       )
     })
     it("start to finish to start", async () => {
@@ -245,7 +252,7 @@ describe("MigrationForm", () => {
   })
   describe("Account flow", () => {
     beforeEach(() => {
-      mockUseTransactionList()
+      mockEmptyUseTransactionList()
       mockUseCreateSendTransaction()
       mockUseBlock()
       mockUseCombinedAccountInfo()
@@ -283,16 +290,16 @@ describe("MigrationForm", () => {
       const mockN = useNavigate as jest.Mock
       mockN.mockReturnValue(navigate)
       const mockSendTx = createMockSendTxList(
-        ["6a9900000001"],
-        "m111",
+        [mockSendEventId],
+        mockUserAddr,
         ILLEGAL_IDENTITY,
-        ["mockUUID", mockDestinationAddr],
+        [mockUuid, mockDestinationAddr],
       )
       const mockMultisigSubmitTx = createMockMultisigSubmitTxList(
-        ["6a9900000002"],
+        [mockMultisigEventId],
         mockAccountAddr,
-        "010101",
-        "m111",
+        mockToken,
+        mockUserAddr,
         mockSendTx,
       )
 
@@ -313,13 +320,13 @@ describe("MigrationForm", () => {
       await act(async () => await userEvent.click(nextBtn))
 
       expect(navigate).toHaveBeenCalledWith(
-        "/token-migration-portal/migration-history/6a9900000002",
+        `/token-migration-portal/migration-history/${mockMultisigEventId}`,
       )
     })
   })
   describe("Error handling", () => {
     beforeEach(() => {
-      mockUseTransactionList()
+      mockEmptyUseTransactionList()
       mockUseCreateSendTransaction()
       mockUseBlock()
       mockUseCombinedAccountInfo()

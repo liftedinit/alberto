@@ -7,14 +7,16 @@ import { useGetBlock } from "features/network/queries"
 import { createMockSendTxList, mockSingleTxListError } from "test/transactions"
 import { mockBlockError } from "test/block"
 import {
+  mockBlockHeight,
+  mockHash,
+  mockInvalidEventId,
+  mockSendEventId,
   mockUseBlock,
   mockUseParams,
+  mockUserAddr,
+  mockUserAddr2,
   mockUseSingleSendTransactionList,
 } from "features/token-migration/test-utils/mocks"
-
-const mockEventId = "6a9900000001"
-const mockTxHash = "012345"
-const blockHeight = 27291
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -38,17 +40,21 @@ jest.mock("features/network/queries", () => {
 // TODO: Test New Chain details when implemented
 describe("MigrationDetails", () => {
   beforeEach(() => {
-    mockUseParams({ eventId: mockEventId })
-    mockUseBlock(mockTxHash)
-    mockUseSingleSendTransactionList([mockEventId], "m111", "m222")
+    mockUseParams({ eventId: mockSendEventId })
+    mockUseBlock(mockHash)
+    mockUseSingleSendTransactionList(
+      [mockSendEventId],
+      mockUserAddr,
+      mockUserAddr2,
+    )
   })
   afterEach(jest.clearAllMocks)
   it("renders MigrationDetails with MANY migration details", () => {
     renderChildren(<MigrationDetails />)
     expect(screen.getByTestId("migration-details")).toBeInTheDocument()
-    expect(screen.getByText(mockEventId)).toBeInTheDocument()
-    expect(screen.getByText(blockHeight)).toBeInTheDocument()
-    expect(screen.getByText(mockTxHash)).toBeInTheDocument()
+    expect(screen.getByText(mockSendEventId)).toBeInTheDocument()
+    expect(screen.getByText(mockBlockHeight)).toBeInTheDocument()
+    expect(screen.getByText(mockHash)).toBeInTheDocument()
   })
   it("renders an error message when eventId is invalid", () => {
     const mock = useParams as jest.Mock
@@ -74,10 +80,10 @@ describe("MigrationDetails", () => {
   })
   it("renders an error message when eventNumber is out of bounds", () => {
     const mockP = useParams as jest.Mock
-    mockP.mockImplementation(() => ({ eventId: "6a9900000005" }))
+    mockP.mockImplementation(() => ({ eventId: mockInvalidEventId }))
     const mockT = useSingleTransactionList as jest.Mock
     mockT.mockImplementation(() =>
-      createMockSendTxList(["6a9900000005"], "m111", "m222"),
+      createMockSendTxList([mockInvalidEventId], mockUserAddr, mockUserAddr2),
     )
 
     renderChildren(<MigrationDetails />)

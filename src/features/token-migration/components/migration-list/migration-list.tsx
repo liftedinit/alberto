@@ -82,11 +82,16 @@ export const MigrationList: React.FC = () => {
         placeholder="Select Account/User"
         value={currentSelection}
         onChange={handleSelectionChange}
+        data-testid="account-select"
       >
         {isAccountAndIdentitiesLoaded
           ? Array.from(accountsAndIdentities.values()).map(
               ({ idType, address, name }) => (
-                <option key={address} value={address}>
+                <option
+                  key={address}
+                  value={address}
+                  data-testid="address-option"
+                >
                   {idType === IdTypes.USER ? "User" : "Account"}: {address}{" "}
                   {name ? `(${name})` : null}
                 </option>
