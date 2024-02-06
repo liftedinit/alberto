@@ -17,12 +17,12 @@ interface NetworksActions {
 const initialNetworks: NetworkInfo[] = [
   {
     name: "Manifest Ledger",
-    url: "https://alberto.app/api",
+    url: "/api",
     filter: "alberto",
   },
   {
     name: "Manifest Ledger (Alpha 1)",
-    url: "https://alberto.app/api/legacy",
+    url: "/api/legacy",
     filter: "legacy",
     parent: "Manifest Ledger", // The parent network of the legacy network
   },

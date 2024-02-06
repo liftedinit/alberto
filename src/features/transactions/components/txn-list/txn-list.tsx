@@ -18,10 +18,10 @@ import { TxnExport } from "./txn-export"
 export function TxnList({
   address,
   symbol,
-}: {
+}: Readonly<{
   address: string
   symbol?: string
-}) {
+}>) {
   const accounts = symbol ? [address, symbol] : [address]
   const queryData = useTransactionsList({
     filters: { accounts },

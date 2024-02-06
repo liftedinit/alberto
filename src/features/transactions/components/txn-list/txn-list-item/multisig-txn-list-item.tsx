@@ -40,9 +40,9 @@ import {
 import { useMultisigActions, useMultisigTxn, useSendTxn } from "./hooks"
 import { BaseTxnListItem } from "./base-txn-list-item"
 import { BaseTxnDetails } from "./base-txn-details"
-import { ShareLocationButton } from "../../../../utils/share-button"
+import { ShareLocationButton } from "features/utils/share-button"
 
-export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
+export function MultisigTxnListItem({ txn }: Readonly<{ txn: MultisigEvent }>) {
   const { time, token } = txn
   const { actionLabel, actorAddress, txnLabel, TxnIcon, iconProps } =
     useMultisigTxn(txn)
@@ -87,9 +87,9 @@ export function MultisigTxnListItem({ txn }: { txn: MultisigEvent }) {
 
 export function MultisigTxnDetails({
   multisigTxn,
-}: {
+}: Readonly<{
   multisigTxn: MultisigEvent
-}) {
+}>) {
   if (multisigTxn.type === EventType.accountMultisigSetDefaults) {
     return (
       <BaseTxnDetails>
@@ -120,11 +120,11 @@ function MultisigSetDefaultsTxnDetailsModal({
   multisigTxn,
   isOpen,
   onClose,
-}: {
+}: Readonly<{
   multisigTxn: MultisigSetDefaultsEvent
   isOpen: boolean
   onClose: () => void
-}) {
+}>) {
   const { hours, minutes, seconds } = getHoursMinutesSecondsFromSeconds(
     multisigTxn.expireInSecs,
   )
@@ -157,11 +157,11 @@ function MultisigTxnDetailsModal({
   multisigTxn,
   isOpen,
   onClose,
-}: {
+}: Readonly<{
   multisigTxn: MultisigEvent
   isOpen: boolean
   onClose: () => void
-}) {
+}>) {
   const { token, account } = multisigTxn
 
   return (
@@ -187,9 +187,9 @@ function MultisigTxnDetailsModal({
 }
 export function SubmittedMultisigTxnDetails({
   multisigTxn,
-}: {
+}: Readonly<{
   multisigTxn: MultisigEvent
-}) {
+}>) {
   const { token, time, id, account } = multisigTxn
 
   const base64TxnId = id ? encodeURIComponent(arrayBufferToBase64Url(id)) : null
@@ -324,10 +324,10 @@ export function SubmittedMultisigTxnDetails({
 export function SubmittedTxnData({
   address,
   transaction,
-}: {
+}: Readonly<{
   address: string
   transaction: Omit<Event, "id" | "time"> | undefined
-}) {
+}>) {
   if (transaction?.type === EventType.send) {
     return (
       <SubmittedSendTxn
@@ -342,10 +342,10 @@ export function SubmittedTxnData({
 function SubmittedSendTxn({
   address,
   transaction,
-}: {
+}: Readonly<{
   address: string
   transaction: SendEvent
-}) {
+}>) {
   const {
     title,
     TxnIcon,
@@ -395,13 +395,13 @@ function SubmittedSendTxn({
 
 export function ApproversList({
   approvers,
-}: {
+}: Readonly<{
   approvers: {
     address: string
     hasApproved: boolean | undefined
     contactName?: string
   }[]
-}) {
+}>) {
   return (
     <>
       {approvers?.map(({ address, hasApproved, contactName }) => {
@@ -439,11 +439,11 @@ export function MultisigActions({
   accountAddress,
   txnToken,
   onActionDone: onDone,
-}: {
+}: Readonly<{
   accountAddress: string
   txnToken: ArrayBuffer
   onActionDone?: (status: "success" | "warning") => void
-}) {
+}>) {
   const toast = useToast()
   const activeIdentityAddress = useAccountsStore(s =>
     s.byId.get(s.activeId),
