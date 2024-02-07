@@ -6,12 +6,6 @@ import {
 import { IdTypes } from "features/token-migration/components/migration-form/types"
 import { useCombinedAccountInfo } from "features/accounts/queries"
 import { useBalances } from "features/balances"
-import {
-  createMockTx,
-  createMockSendTxList,
-  createMockSendEvent,
-  createMockMultisigSubmitEvent,
-} from "test/transactions"
 import { useGetBlock } from "features/network/queries"
 import {
   useCreateSendTxn,
@@ -19,7 +13,8 @@ import {
   useTransactionsList,
 } from "features/transactions"
 import { useParams } from "react-router-dom"
-import { ILLEGAL_IDENTITY } from "@liftedinit/many-js"
+import { EventType, ILLEGAL_IDENTITY } from "@liftedinit/many-js"
+import { hexToArrBuf } from "../../../test/buffer"
 
 const mockUserName = "mockUser"
 const mockAccountName = "mockAccount"
@@ -44,11 +39,102 @@ export const mockInvalidEventId = "6a9900000005"
 export const mockLongEventId = "568bd900000001"
 export const mockLongBlockHeight = 5671899
 export const mockUuid = "09b10a35-74e4-4936-b428-efa16c097578"
+export const createMockSendEvent = (
+  eventId: string,
+  from: string,
+  to: string,
+) => {
+  return {
+    id: hexToArrBuf(eventId),
+    type: EventType.send,
+    time: 1234567890,
+    amount: BigInt(123),
+    from,
+    to,
+    memo: [mockUuid, mockDestinationAddr],
+    symbolAddress: "mabc",
+    _id: eventId,
+    _time: 1234567890000,
+  }
+}
+export const createMockMultisigSubmitEvent = (
+  eventId: string,
+  account: string,
+  token: string,
+  submitter: string,
+  transaction: any,
+) => {
+  return {
+    // BaseEvent
+    id: hexToArrBuf(eventId),
+    type: EventType.accountMultisigSubmit,
+    time: 1234567890,
+
+    // MultisigEvent
+    account,
+    token: hexToArrBuf(token),
+
+    // MultisigSubmitEvent
+    executeAutomatically: true,
+    memo: [mockUuid, mockDestinationAddr],
+    submitter,
+    threshold: 1,
+    expireDate: 2234567890,
+    transaction,
+
+    // ProcessedEvent
+    _id: eventId,
+    _time: 1234567890000,
+  }
+}
+const createMockSingleTxList = (transactions: any[]) => {
+  return {
+    data: {
+      count: transactions.length,
+      transactions,
+    },
+    isLoading: false,
+    isError: false,
+    error: undefined,
+  }
+}
+export const createMockSendTxList = (
+  eventId: string[],
+  from: string,
+  to: string,
+) => {
+  const transactions = eventId.map(id => createMockSendEvent(id, from, to))
+  return createMockSingleTxList(transactions)
+}
+export const createMockMultisigSubmitTxList = (
+  eventId: string[],
+  account: string,
+  token: string,
+  submitter: string,
+  transaction: any,
+) => {
+  const transactions = eventId.map(id =>
+    createMockMultisigSubmitEvent(id, account, token, submitter, transaction),
+  )
+  return createMockSingleTxList(transactions)
+}
+export const createMockTx = (txHash: string) => {
+  return {
+    transactionIdentifier: {
+      hash: hexToArrBuf(txHash),
+    },
+  }
+}
+export const mockSingleTxListError = {
+  data: undefined,
+  isLoading: false,
+  isError: true,
+  error: "this is an error",
+}
 const mockSendTx = createMockSendEvent(
   mockSendEventId,
   mockUserAddr,
   ILLEGAL_IDENTITY,
-  [mockUuid, mockDestinationAddr],
 )
 export const mockToken = "010101"
 export const mockMultisigEventId = "6a9900000002"

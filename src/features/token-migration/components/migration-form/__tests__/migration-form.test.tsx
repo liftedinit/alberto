@@ -5,10 +5,6 @@ import { screen } from "@testing-library/react"
 import { useCombinedAccountInfo } from "features/accounts/queries"
 import userEvent from "@testing-library/user-event"
 import { act } from "react-dom/test-utils"
-import {
-  createMockMultisigSubmitTxList,
-  createMockSendTxList,
-} from "test/transactions"
 import { ILLEGAL_IDENTITY } from "@liftedinit/many-js"
 import { useNavigate } from "react-router-dom"
 import {
@@ -27,6 +23,8 @@ import {
   mockMultisigEventId,
   mockUuid,
   mockToken,
+  createMockMultisigSubmitTxList,
+  createMockSendTxList,
 } from "features/token-migration/test-utils/mocks"
 
 jest.mock("features/accounts/queries", () => {
