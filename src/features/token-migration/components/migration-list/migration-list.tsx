@@ -82,6 +82,7 @@ export const MigrationList: React.FC = () => {
         placeholder="Select Account/User"
         value={currentSelection}
         onChange={handleSelectionChange}
+        aria-label={"user-account-address"}
         data-testid="account-select"
       >
         {isAccountAndIdentitiesLoaded

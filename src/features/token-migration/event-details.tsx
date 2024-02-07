@@ -1,5 +1,10 @@
-import { EventType } from "@liftedinit/many-js"
+import { Event, EventType } from "@liftedinit/many-js"
 import { bufferToNumber } from "./buffer-utils"
+import {
+  validateEventType,
+  validateMemoType,
+  ValidMigrationEventType,
+} from "./event-validation"
 
 // Extract block height and event number from the event ID
 export const extractEventDetails = (
@@ -21,4 +26,12 @@ export const extractEventDetails = (
   }
 
   return { blockHeight, eventNumber }
+}
+
+export const extractEventMemo = (event: Event) => {
+  if (validateEventType(event) && validateMemoType(event)) {
+    return (event as ValidMigrationEventType).memo as [string, string]
+  } else {
+    throw new Error("Invalid event type or memo type")
+  }
 }

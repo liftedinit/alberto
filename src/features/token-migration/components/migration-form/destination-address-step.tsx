@@ -78,6 +78,7 @@ export const DestinationAddressStep = ({
                 as={Input}
                 id="destinationAddress"
                 name="destinationAddress"
+                aria-label={"destination-address"}
                 data-testid="destinationAddress"
               />
               {errors.destinationAddress && touched.destinationAddress ? (

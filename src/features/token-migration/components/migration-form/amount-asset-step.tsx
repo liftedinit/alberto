@@ -112,6 +112,7 @@ export const AmountAssetStep = ({
                 id="assetSymbol"
                 name="assetSymbol"
                 placeholder="Select asset type"
+                aria-label={"select-asset-type"}
                 data-testid="assetSymbol"
                 onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                   handleChange(event)
@@ -157,6 +158,7 @@ export const AmountAssetStep = ({
                   name="assetAmount"
                   type="string"
                   data-testid="assetAmount"
+                  aria-label={"select-asset-amount"}
                 />
                 <HStack>
                   <Text whiteSpace="nowrap" fontSize="xs">

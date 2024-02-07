@@ -7,13 +7,13 @@ import {
 import validator from "validator"
 import { DestinationAddressRegex } from "./destination-address"
 
-type ValidMigrationEventType = SendEvent | MultisigSubmitEvent
+export type ValidMigrationEventType = SendEvent | MultisigSubmitEvent
 
-const validateEventType = (e: Event) => {
+export const validateEventType = (e: Event) => {
   return e.type === EventType.send || e.type === EventType.accountMultisigSubmit
 }
 
-const validateMemoType = (e: Event) => {
+export const validateMemoType = (e: Event) => {
   return (
     "memo" in e &&
     e.memo?.length === 2 &&

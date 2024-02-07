@@ -20,7 +20,10 @@ import { useSingleTransactionList } from "features/transactions/queries"
 import { ShareLocationButton } from "features/utils/share-button"
 import { extractTransactionHash } from "features/token-migration/block-utils"
 import { useGetBlock } from "features/network/queries"
-import { extractEventDetails } from "features/token-migration/event-details"
+import {
+  extractEventDetails,
+  extractEventMemo,
+} from "features/token-migration/event-details"
 
 export function MigrationDetails() {
   const { eventId } = useParams()
@@ -35,6 +38,10 @@ export function MigrationDetails() {
   const [eventNumber, setEventNumber] = useState<number | undefined>(undefined)
   const [txHash, setTxHash] = useState<string | undefined>(undefined)
   const [error, setError] = useState<Error | undefined>(undefined)
+  const [uuid, setUuid] = useState<string | undefined>(undefined)
+  const [destinationAddress, setDestinationAddress] = useState<
+    string | undefined
+  >(undefined)
   // TODO: Use setNewChainConfirmation to show the confirmation of the new chain
   // eslint-disable-next-line
   const [newChainConfirmation, setNewChainConfirmation] = useState(false)
@@ -70,6 +77,9 @@ export function MigrationDetails() {
           txId,
           event.type,
         )
+        const memo = extractEventMemo(event)
+        setUuid(memo[0])
+        setDestinationAddress(memo[1])
         setBlockHeight(blockHeight)
         setEventNumber(eventNumber)
       } catch (e) {
@@ -128,6 +138,28 @@ export function MigrationDetails() {
                 </Td>
                 <Td>
                   <Text fontSize="xl">{eventId}</Text>
+                </Td>
+              </Tr>
+              <Tr>
+                <Td>
+                  <Text fontSize="lg" fontWeight="bold" color="gray.600">
+                    UUID:
+                  </Text>
+                </Td>
+                <Td>
+                  <Text fontSize="xl" aria-label={"uuid"}>
+                    {uuid}
+                  </Text>
+                </Td>
+              </Tr>
+              <Tr>
+                <Td>
+                  <Text fontSize="lg" fontWeight="bold" color="gray.600">
+                    Destination address:
+                  </Text>
+                </Td>
+                <Td>
+                  <Text fontSize="xl">{destinationAddress}</Text>
                 </Td>
               </Tr>
               <Tr>

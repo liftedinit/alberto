@@ -90,6 +90,7 @@ export const UserAddressStep = ({
                 id="userAddress"
                 name="userAddress"
                 data-testid="userAddress"
+                aria-label={"user-address"}
                 placeholder="Select user"
               >
                 {isLoaded

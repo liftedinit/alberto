@@ -159,4 +159,15 @@ export class HomePage {
     expect(title).not.toBe(null)
     return title as string
   }
+
+  async removeLegacyNetwork() {
+    await this.openNetworkMenu()
+    await this.page.locator('[aria-label="edit network"]').last().click()
+    const removeBtn = this.page.locator("data-testid=remove network button")
+    await expect(removeBtn).toBeDisabled()
+    const url = await this.page.locator('input[name="url"]').inputValue()
+    await this.page.locator('input[name="deleteUrl"]').fill(url as string)
+    await expect(removeBtn).not.toBeDisabled()
+    await removeBtn.click()
+  }
 }

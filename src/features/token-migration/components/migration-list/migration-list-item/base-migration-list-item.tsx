@@ -84,7 +84,9 @@ export function BaseMigrationListItem(
       </Td>
       <Td>
         <Text fontSize="xs">UUID:</Text>
-        <Text fontSize={"xs"}>{uuid}</Text>
+        <Text fontSize={"xs"} aria-label={`${uuid}`}>
+          {uuid}
+        </Text>
       </Td>
       <Td>
         <Text>{amountFormatter(amount)}</Text>

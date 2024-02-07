@@ -95,7 +95,12 @@ export const MigrationForm = () => {
 
   // Redirect the user to the migration detail when the transaction is completed
   useEffect(() => {
+    console.log("Processing done: ", processingDone)
+    console.log("Event ID: ", eventId)
     if (processingDone && eventId !== undefined) {
+      console.log(
+        "Redirecting to migration detail!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
+      )
       navigate(
         `/token-migration-portal/migration-history/${Buffer.from(
           eventId,
@@ -107,6 +112,14 @@ export const MigrationForm = () => {
   // Process the transaction details when the transaction log is available
   // We need the transaction ID, the block height and the event number to get the transaction hash
   useEffect(() => {
+    console.log("Processing transaction details")
+    console.log("Event ID: ", eventId)
+    console.log("Height: ", height)
+    console.log("Event number: ", eventNumber)
+    console.log("Memoized events: ", memoizedEvents)
+    console.log("Destination address: ", formData.destinationAddress)
+    console.log("Memo: ", memo)
+    console.log("Transaction hash: ", txHash)
     if (
       eventId === undefined &&
       height === undefined &&
@@ -120,10 +133,12 @@ export const MigrationForm = () => {
       try {
         const e = memoizedEvents[0]
         let { blockHeight, eventNumber } = extractEventDetails(e.id, e.type)
+        console.log("Event details: ", e.id, e.type, blockHeight, eventNumber)
         dispatch(setEventId(e.id))
         dispatch(setHeight(blockHeight))
         dispatch(setEventNumber(eventNumber))
       } catch (processError) {
+        console.error(processError as Error)
         setError(processError as Error)
       }
     }
@@ -139,8 +154,10 @@ export const MigrationForm = () => {
       txHash === ""
     ) {
       try {
+        console.log("Extracting transaction hash from block")
         dispatch(setTxHash(extractTransactionHash(blocks, eventNumber)))
       } catch (hashError) {
+        console.error(hashError as Error)
         setError(hashError as Error)
       }
     }
@@ -170,6 +187,7 @@ export const MigrationForm = () => {
           onSuccess: () => {
             // We want to retrieve the transaction log as soon as the transaction is completed
             // We need to set the log filters to the user address or the account address
+            console.log("Transaction completed, setting filters")
             dispatch(
               setFilters({
                 accounts:
@@ -180,9 +198,13 @@ export const MigrationForm = () => {
               }),
             ) // Accounts filtering in the backend is an OR, not an AND
           },
-          onError: error => setError(error),
+          onError: error => {
+            console.error(error)
+            setError(error)
+          },
         })
       } catch (error) {
+        console.error(error as Error)
         setError(error as Error)
       }
     },
@@ -211,7 +233,9 @@ export const MigrationForm = () => {
   // Set a flag when all the processing is done
   useEffect(() => {
     if (memo !== "" && currentStep === StepNames.PROCESSING) {
+      console.log("Performing submission")
       performSubmission().then(() => {
+        console.log("Submission done")
         dispatch(setProcessingDone(true))
       })
     }
