@@ -201,7 +201,7 @@ export function useSendAssetForm({
   async function onSendTxn(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const formValues = getValues()
-    const bigIntAmount = parseNumberToBigInt(parseFloat(formValues.amount))
+    const bigIntAmount = parseNumberToBigInt(formValues.amount)
     if (accountAddress) {
       const newMultisigSettings = getNewMultisigSettings(
         multisigSettings as Map<string, unknown>,
