@@ -157,7 +157,7 @@ export const MigrationForm = () => {
           ? formData.accountAddress
           : formData.userAddress,
       to: ILLEGAL_IDENTITY,
-      amount: BigInt(formData.assetAmount.times(1e9).toString()), // TODO: Get the precision programmatically
+      amount: BigInt(formData.assetAmount.times("1e9").toFixed()), // TODO: Get the precision programmatically
       symbol: formData.assetSymbol,
       memo: [memo, formData.destinationAddress],
     }
