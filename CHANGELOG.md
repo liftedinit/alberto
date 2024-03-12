@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2024-03-12
+
+### Bug Fixes
+
+- Big number handling ([#161](https://github.com/liftedinit/alberto/issues/161))
+
 ## [0.2.0] - 2024-01-08
 
 ### Bug Fixes
