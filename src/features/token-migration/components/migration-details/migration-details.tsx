@@ -24,6 +24,16 @@ import {
   extractEventDetails,
   extractEventMemo,
 } from "features/token-migration/event-details"
+import env from "@beam-australia/react-env"
+
+const TALIB_URL = env("TALIB_URL")
+const statusMapping: { [key: number]: string } = {
+  1: "Created",
+  2: "Claimed",
+  3: "Migrating",
+  4: "Completed",
+  5: "Failed",
+}
 
 export function MigrationDetails() {
   const { eventId } = useParams()
@@ -42,10 +52,100 @@ export function MigrationDetails() {
   const [destinationAddress, setDestinationAddress] = useState<
     string | undefined
   >(undefined)
-  // TODO: Use setNewChainConfirmation to show the confirmation of the new chain
-  // eslint-disable-next-line
   const [newChainConfirmation, setNewChainConfirmation] = useState(false)
+  const [manifestHash, setManifestHash] = useState<string | undefined>(
+    undefined,
+  )
+  const [manifestAddress, setManifestAddress] = useState<string | undefined>(
+    undefined,
+  )
+  const [manifestDatetime, setManifestDatetime] = useState<string | undefined>(
+    undefined,
+  )
+  const [manifestError, setManifestError] = useState<string | undefined>(
+    undefined,
+  )
+  const [manifestStatus, setManifestStatus] = useState<number | undefined>(
+    undefined,
+  )
+  const [manifestUuid, setManifestUuid] = useState<string | undefined>(
+    undefined,
+  )
   const { data: blocks } = useGetBlock(blockHeight)
+
+  const pollNewChainConfirmation = async (
+    url: string,
+    interval = 1000,
+    timeout = 60000,
+  ) => {
+    const endTime = Number(new Date()) + timeout
+
+    const checkCondition = (
+      resolve: (value: any) => void,
+      reject: (reason: Error) => void,
+    ) => {
+      console.log("Polling...")
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            if (response.status === 404) {
+              // For a 404, throw an error that will be caught by the catch block
+              throw new Error("404")
+            } else {
+              // For other errors, throw a more generic error or handle differently
+              throw new Error("Request failed with status " + response.status)
+            }
+          }
+          return response.json()
+        })
+        .then(data => {
+          // Check the data for the value
+          if (data) {
+            const {
+              status,
+              uuid,
+              manifestAddress,
+              manifestDatetime,
+              manifestHash,
+              error,
+            } = data
+
+            setManifestAddress(manifestAddress)
+            setManifestError(error)
+            setManifestStatus(status)
+            setManifestUuid(uuid)
+
+            if (
+              statusMapping[status] === "Completed" ||
+              statusMapping[status] === "Failed"
+            ) {
+              setManifestDatetime(manifestDatetime)
+              setManifestHash(manifestHash)
+              setNewChainConfirmation(true)
+              resolve(data)
+            } else {
+              // Continue polling if the condition isn't met
+              setTimeout(checkCondition, interval, resolve, reject)
+            }
+          } else if (Number(new Date()) < endTime) {
+            // If the condition isn't met but the timeout hasn't elapsed, go again
+            setTimeout(checkCondition, interval, resolve, reject)
+          } else {
+            // Didn't match and too much time, reject!
+            reject(new Error("timed out"))
+          }
+        })
+        .catch(error => {
+          if (error.message === "404") {
+            setTimeout(checkCondition, interval, resolve, reject)
+          } else {
+            reject(error)
+          }
+        })
+    }
+
+    return new Promise(checkCondition)
+  }
 
   useEffect(() => {
     if (eventId !== undefined) {
@@ -106,6 +206,15 @@ export function MigrationDetails() {
     }
     // eslint-disable-next-line
   }, [blocks, eventNumber])
+
+  useEffect(() => {
+    if (txHash !== undefined && uuid !== undefined && !newChainConfirmation) {
+      const url = new URL(`migrations/${uuid}`, TALIB_URL)
+      pollNewChainConfirmation(url.toString()).catch(() => {
+        setError(new Error("Failed to poll new chain confirmation"))
+      })
+    }
+  }, [txHash, uuid, newChainConfirmation])
 
   return (
     <>
@@ -212,21 +321,92 @@ export function MigrationDetails() {
             <Thead>
               <Tr>
                 <Th>
-                  <Text fontSize={"xl"}>New Chain</Text>
+                  <Text fontSize={"xl"}>MANIFEST Chain</Text>
                 </Th>
               </Tr>
             </Thead>
           )}
         </Table>
-        {!error && !newChainConfirmation && (
+        {!error && !manifestStatus && (
           <Center py={6}>
             <VStack>
               <Text mb={3}>
-                Waiting migration confirmation from the new chain...
+                Waiting migration confirmation from the MANIFEST chain...
               </Text>
               <Spinner color="blue.500" size={"xl"} />
             </VStack>
           </Center>
+        )}
+        {!error && !manifestError && manifestStatus && (
+          <Table variant="unstyled">
+            <Tbody>
+              <Tr>
+                <Td>
+                  <Text fontSize="lg" fontWeight="bold" color="gray.600">
+                    Manifest Status:
+                  </Text>
+                </Td>
+                <Td>
+                  <Text fontSize="xl">{statusMapping[manifestStatus]}</Text>
+                </Td>
+              </Tr>
+              <Tr>
+                <Td>
+                  <Text fontSize="lg" fontWeight="bold" color="gray.600">
+                    Manifest UUID:
+                  </Text>
+                </Td>
+                <Td>
+                  <Text fontSize="xl">{manifestUuid}</Text>
+                </Td>
+              </Tr>
+              <Tr>
+                <Td>
+                  <Text fontSize="lg" fontWeight="bold" color="gray.600">
+                    Manifest Address:
+                  </Text>
+                </Td>
+                <Td>
+                  <Text fontSize="xl">{manifestAddress}</Text>
+                </Td>
+              </Tr>
+              <Tr>
+                <Td>
+                  <Text fontSize="lg" fontWeight="bold" color="gray.600">
+                    Manifest Hash:
+                  </Text>
+                </Td>
+                <Td>
+                  {manifestHash === undefined ? (
+                    <Spinner />
+                  ) : (
+                    <Text fontSize="xl">{manifestHash}</Text>
+                  )}
+                </Td>
+              </Tr>
+              <Tr>
+                <Td>
+                  <Text fontSize="lg" fontWeight="bold" color="gray.600">
+                    Manifest Datetime:
+                  </Text>
+                </Td>
+                <Td>
+                  {manifestDatetime === undefined ? (
+                    <Spinner />
+                  ) : (
+                    <Text fontSize="xl">{manifestDatetime}</Text>
+                  )}
+                </Td>
+              </Tr>
+            </Tbody>
+          </Table>
+        )}
+        {!error && manifestError && (
+          <Alert status="error">
+            <AlertIcon />
+            <AlertTitle mr={2}>Error</AlertTitle>
+            <AlertDescription>{manifestError}</AlertDescription>
+          </Alert>
         )}
       </VStack>
       {eventId !== undefined && (
