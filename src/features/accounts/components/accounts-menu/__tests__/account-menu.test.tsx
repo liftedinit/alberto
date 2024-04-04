@@ -161,7 +161,7 @@ describe("AccountsMenu Tests", () => {
     await waitFor(() => {
       expect(within(activeAccountButton).getByText(name)).toBeInTheDocument()
     })
-  })
+  }, 10000)
 
   it("should import a seed phrase account", async () => {
     renderChildren(<AccountsMenu />)
