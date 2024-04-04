@@ -75,8 +75,8 @@ export function MigrationDetails() {
 
   const pollNewChainConfirmation = async (
     url: string,
-    interval = 1000,
-    timeout = 60000,
+    interval = 1000, // 1 second
+    timeout = 120000, // 2 minutes
   ) => {
     const endTime = Number(new Date()) + timeout
 
@@ -84,7 +84,6 @@ export function MigrationDetails() {
       resolve: (value: any) => void,
       reject: (reason: Error) => void,
     ) => {
-      console.log("Polling...")
       fetch(url)
         .then(response => {
           if (!response.ok) {
