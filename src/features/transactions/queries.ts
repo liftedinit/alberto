@@ -125,10 +125,12 @@ export function useTransactionsList({
   count = PAGE_SIZE,
   filters,
   predicate,
+  keymod,
 }: {
   count?: number
   filters: Record<any, any>
   predicate?: (e: Event) => boolean
+  keymod?: any // Some data what will modify the useQuery cache
 }) {
   const [pageData, setPageData] = useState<PageState>({
     lastTxn: [],
@@ -171,7 +173,15 @@ export function useTransactionsList({
   }
 
   const { data, isError, error, isLoading } = useQuery<IndexedEvents, Error>(
-    ["events", "list", filters, activeNetwork, legacyNetworks, pageData],
+    [
+      "events",
+      "list",
+      filters,
+      activeNetwork,
+      legacyNetworks,
+      keymod,
+      pageData,
+    ],
     fetchData,
     {
       enabled: Object.keys(filters).length > 0,
