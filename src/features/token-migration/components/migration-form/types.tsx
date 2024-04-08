@@ -1,6 +1,4 @@
 import { Big } from "big.js"
-import { UseMutateAsyncFunction } from "@tanstack/react-query"
-import { Memo } from "@liftedinit/many-js"
 
 export enum StepNames {
   ADDRESS,
@@ -43,30 +41,3 @@ export interface IdentitiesAndAccounts {
   name?: string
   id?: number
 }
-
-export type SendFunction = UseMutateAsyncFunction<
-  unknown,
-  Error,
-  {
-    from?: string
-    to: string
-    amount: bigint
-    symbol: string
-    memo?: Memo
-  }
->
-export type MultiSigSendFunction = UseMutateAsyncFunction<
-  undefined,
-  Error,
-  {
-    from: string
-    to: string
-    amount: bigint
-    symbol: string
-    memo?: Memo
-    threshold?: number
-    executeAutomatically?: boolean
-    expireInSecs?: number
-  }
->
-export type SendFunctionType = SendFunction | MultiSigSendFunction

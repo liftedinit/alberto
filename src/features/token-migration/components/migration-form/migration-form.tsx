@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useReducer } from "react"
+import React, { useCallback, useEffect, useMemo } from "react"
 import { Box, HStack, Spinner, useToast } from "@liftedinit/ui"
 import { AddressStep } from "./address-step"
 import { AmountAssetStep } from "./amount-asset-step"
@@ -8,20 +8,7 @@ import { ConfirmationStep } from "./confirmation-step"
 import { useCreateSendTxn, useTransactionsList } from "features/transactions"
 import { ILLEGAL_IDENTITY, ListOrderType } from "@liftedinit/many-js"
 import { useAccountsStore, useMultisigSubmit } from "features/accounts"
-import { SendFunctionType, StepNames, TokenMigrationFormData } from "./types"
-import {
-  initialState,
-  reducer,
-  setCurrentStep,
-  setEventId,
-  setEventNumber,
-  setFilters,
-  setFormData,
-  setHeight,
-  setMemo,
-  setProcessingDone,
-  setTxHash,
-} from "./migration-form-actions"
+import { defaultValues, StepNames, TokenMigrationFormData } from "./types"
 import { useGetBlock } from "features/network/queries"
 import { extractEventDetails } from "features/token-migration/event-details"
 import { useNavigate } from "react-router-dom"
@@ -29,59 +16,60 @@ import { createIsMatchingEvent } from "features/token-migration/event-validation
 import { extractTransactionHash } from "features/token-migration/block-utils"
 import { v4 as uuidv4 } from "uuid"
 
-// Token migration form component
-// The flow is as follows:
-// 1. User enters the account/user address
-// 2. User enters the account user address (optional, only if account address is entered in 1.)
-// 3. User enters the amount and the asset symbol
-// 4. User enters the destination address
-// 5. User confirms the transaction
-// 6. The transaction is processed
-//   6.1 The transaction is sent to the backend
-//   6.2 The transaction is sent to the blockchain
-//   6.3 The transaction log (event) is retrieved
-//   6.4 The transaction block height and event number are retrieved from the (event) log
-//   6.5 The block containing the transaction is retrieved from the blockchain
-//   6.6 The transaction hash is retrieved from the block
-// 7. The transaction is completed and the user is redirected to the migration detail page
 export const MigrationForm = () => {
   const navigate = useNavigate()
   const toast = useToast()
   const identityStore = useAccountsStore()
-  const [state, dispatch] = useReducer(reducer, initialState)
-  const {
-    currentStep,
-    formData,
-    filters,
-    height,
-    eventNumber,
-    eventId,
-    txHash,
-    processingDone,
-    memo,
-  } = state
+  const [myCurrentStep, setMyCurrentStep] = React.useState<StepNames>(
+    StepNames.ADDRESS,
+  )
+  const [myFormData, setMyFormData] = React.useState<TokenMigrationFormData>(
+    defaultValues(),
+  )
+  const [myFilters, setMyFilters] = React.useState<Record<string, any>>({})
+  const [myHeight, setMyHeight] = React.useState<number | undefined>(undefined)
+  const [myEventNumber, setMyEventNumber] = React.useState<number | undefined>(
+    undefined,
+  )
+  const [myEventId, setMyEventId] = React.useState<ArrayBuffer | undefined>(
+    undefined,
+  )
+  const [myTxHash, setMyTxHash] = React.useState<string>("")
+  const [myProcessingDone, setMyProcessingDone] = React.useState<boolean>(false)
+  const [myMemo, setMyMemo] = React.useState<string>("")
   const [error, setError] = React.useState<Error | undefined>(undefined)
 
-  const { mutateAsync: sendTokens } = useCreateSendTxn()
-  const { mutateAsync: sendTokensMultisig } = useMultisigSubmit()
+  const { mutate: sendTokens } = useCreateSendTxn()
+  const { mutate: sendTokensMultisig } = useMultisigSubmit()
+
+  const memoizedMatchingEvent = useMemo(() => {
+    if (myMemo !== "" && myFormData.destinationAddress !== "") {
+      return createIsMatchingEvent({
+        memo: myMemo,
+        destinationAddress: myFormData.destinationAddress,
+        to: ILLEGAL_IDENTITY,
+      })
+    } else {
+      return () => false
+    }
+  }, [myMemo, myFormData.destinationAddress])
+  const memoizedFilters = useMemo(() => myFilters, [myFilters])
   const { data: events } = useTransactionsList({
-    filters,
-    predicate: createIsMatchingEvent({
-      memo,
-      destinationAddress: formData.destinationAddress,
-      to: ILLEGAL_IDENTITY,
-    }),
+    filters: memoizedFilters,
+    predicate: memoizedMatchingEvent,
+    keymod: myMemo,
   })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const memoizedEvents = useMemo(
     () => events.transactions,
     [events.transactions],
   )
-  const { data: blocks } = useGetBlock(height)
+  const { data: blocks } = useGetBlock(myHeight)
 
-  // Handle the form next and previous steps
-  const nextStep = (nextStep: StepNames) => dispatch(setCurrentStep(nextStep))
-  const prevStep = (prevStep: StepNames) => dispatch(setCurrentStep(prevStep))
+  const memoizedBlock = useMemo(() => blocks, [blocks])
+
+  // // Handle the form next and previous steps
+  const nextStep = (nextStep: StepNames) => setMyCurrentStep(nextStep)
+  const prevStep = (prevStep: StepNames) => setMyCurrentStep(prevStep)
 
   useEffect(() => {
     if (error) {
@@ -91,161 +79,113 @@ export const MigrationForm = () => {
         description: `Unable to process transaction: ${error}`,
       })
     }
-  }, [error, toast])
+    // eslint-disable-next-line
+  }, [error])
 
-  // Redirect the user to the migration detail when the transaction is completed
+  // Extract the event details from the event log
   useEffect(() => {
-    if (processingDone && eventId !== undefined) {
-      navigate(
-        `/token-migration-portal/migration-history/${Buffer.from(
-          eventId,
-        ).toString("hex")}`,
-      )
-    }
-  }, [processingDone, navigate, eventId])
-
-  // Process the transaction details when the transaction log is available
-  // We need the transaction ID, the block height and the event number to get the transaction hash
-  useEffect(() => {
-    if (
-      eventId === undefined &&
-      height === undefined &&
-      eventNumber === undefined &&
-      memoizedEvents &&
-      memoizedEvents.length === 1 &&
-      formData.destinationAddress !== "" &&
-      memo !== "" &&
-      txHash === ""
-    ) {
+    if (memoizedEvents.length === 1) {
       try {
         const e = memoizedEvents[0]
-        let { blockHeight, eventNumber } = extractEventDetails(e.id, e.type)
-        dispatch(setEventId(e.id))
-        dispatch(setHeight(blockHeight))
-        dispatch(setEventNumber(eventNumber))
+        const { blockHeight, eventNumber } = extractEventDetails(e.id, e.type)
+        setMyEventId(e.id)
+        setMyHeight(blockHeight)
+        setMyEventNumber(eventNumber)
       } catch (processError) {
         console.error(processError as Error)
         setError(processError as Error)
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.destinationAddress, memo, memoizedEvents, txHash])
+  }, [memoizedEvents])
 
-  // Extract the transaction hash from the block as soon as the block is available
   useEffect(() => {
-    if (
-      blocks !== undefined &&
-      eventNumber &&
-      eventNumber > 0 &&
-      txHash === ""
-    ) {
+    if (memoizedBlock && myEventNumber)
       try {
-        dispatch(setTxHash(extractTransactionHash(blocks, eventNumber)))
+        setMyTxHash(extractTransactionHash(memoizedBlock, myEventNumber))
+        setMyProcessingDone(true)
       } catch (hashError) {
         console.error(hashError as Error)
         setError(hashError as Error)
       }
-    }
-  }, [blocks, eventNumber, toast, txHash])
+  }, [memoizedBlock, myEventNumber])
 
-  // The migration payload
-  // The payload is the same for both send and multisig submit
-  const getTokenPayload = useCallback(() => {
-    return {
-      from:
-        formData.accountAddress !== ""
-          ? formData.accountAddress
-          : formData.userAddress,
+  // // Redirect the user to the migration detail when the transaction is completed
+  useEffect(() => {
+    if (myProcessingDone && myEventId && myTxHash !== "") {
+      const id = Buffer.from(myEventId).toString("hex")
+      navigate(`/token-migration-portal/migration-history/${id}`)
+    }
+    // eslint-disable-next-line
+  }, [myProcessingDone, myTxHash, myEventId])
+
+  // // Modify the form data
+  const handleFormData = (values: Partial<TokenMigrationFormData>) => {
+    setMyFormData(prevState => ({ ...prevState, ...values }))
+  }
+
+  // Determine the send function to use based on the form data and perform the token transaction
+  const performSubmission = useCallback(() => {
+    const from =
+      myFormData.accountAddress !== ""
+        ? myFormData.accountAddress
+        : myFormData.userAddress
+    const filter = { accounts: [from], order: ListOrderType.descending }
+    const payload = {
+      from,
       to: ILLEGAL_IDENTITY,
-      amount: BigInt(formData.assetAmount.times("1e9").toFixed()), // TODO: Get the precision programmatically
-      symbol: formData.assetSymbol,
-      memo: [memo, formData.destinationAddress],
+      amount: BigInt(myFormData.assetAmount.times("1e9").toFixed()), // All tokens on the current MANY chain have a 1e9 decimal precision
+      symbol: myFormData.assetSymbol,
+      memo: [myMemo, myFormData.destinationAddress],
     }
-  }, [formData, memo])
 
-  // Perform the token transaction on the MANY chain
-  // The send function is either sendTokens or sendTokensMultisig depending on the form data
-  const handleTokenTransaction = useCallback(
-    async (sendFunction: SendFunctionType) => {
-      try {
-        await sendFunction(getTokenPayload(), {
-          onSuccess: () => {
-            // We want to retrieve the transaction log as soon as the transaction is completed
-            // We need to set the log filters to the user address or the account address
-            dispatch(
-              setFilters({
-                accounts:
-                  formData.accountAddress !== ""
-                    ? [formData.accountAddress]
-                    : [formData.userAddress],
-                order: ListOrderType.descending,
-              }),
-            ) // Accounts filtering in the backend is an OR, not an AND
-          },
+    myFormData.accountAddress
+      ? sendTokensMultisig(payload, {
+          onSuccess: () => setMyFilters(filter),
           onError: error => {
             console.error(error)
             setError(error)
           },
         })
-      } catch (error) {
-        console.error(error as Error)
-        setError(error as Error)
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [getTokenPayload],
-  )
-
-  // Modify the form data
-  const handleFormData = (values: Partial<TokenMigrationFormData>) => {
-    dispatch(setFormData(values))
-  }
-
-  // Determine the send function to use based on the form data and perform the token transaction
-  const performSubmission = useCallback(async () => {
-    const sendFunction = formData.accountAddress
-      ? sendTokensMultisig
-      : sendTokens
-    await handleTokenTransaction(sendFunction)
-  }, [
-    formData.accountAddress,
-    handleTokenTransaction,
-    sendTokens,
-    sendTokensMultisig,
-  ])
+      : sendTokens(payload, {
+          onSuccess: () => setMyFilters(filter),
+          onError: error => {
+            console.error(error)
+            setError(error)
+          },
+        })
+    // eslint-disable-next-line
+  }, [myFormData, myMemo])
 
   // Set a flag when all the processing is done
   useEffect(() => {
-    if (memo !== "" && currentStep === StepNames.PROCESSING) {
-      performSubmission().then(() => {
-        dispatch(setProcessingDone(true))
-      })
+    if (myMemo !== "" && myCurrentStep === StepNames.PROCESSING) {
+      performSubmission()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [memo, currentStep])
+    // eslint-disable-next-line
+  }, [myMemo, myCurrentStep])
 
   // Handle the form submission
   // Set the current store user to the user address so the selected user can sign the transaction
   const handleSubmit = () => {
-    const userId = identityStore.getId(formData.userAddress)
+    const userId = identityStore.getId(myFormData.userAddress)
     if (userId !== undefined) {
       identityStore.setActiveId(userId)
     } else {
       setError(
         new Error(
-          `Unable to find user address ${formData.userAddress} in the store`,
+          `Unable to find user address ${myFormData.userAddress} in the store`,
         ),
       )
       return
     }
 
-    dispatch(setMemo(uuidv4())) // Each migration is assigned a UUID for traceability purposes
-    dispatch(setCurrentStep(StepNames.PROCESSING))
+    setMyMemo(uuidv4()) // Each migration is assigned a UUID for traceability purposes
+    setMyCurrentStep(StepNames.PROCESSING)
   }
 
   // Render the current step
   const renderStep = () => {
-    switch (currentStep) {
+    switch (myCurrentStep) {
       case StepNames.ADDRESS:
         return (
           <AddressStep
@@ -260,8 +200,8 @@ export const MigrationForm = () => {
             nextStep={nextStep}
             prevStep={prevStep}
             setFormData={handleFormData}
-            formData={formData}
-            initialValues={formData}
+            formData={myFormData}
+            initialValues={myFormData}
           />
         )
       case StepNames.DESTINATION_ADDRESS:
@@ -270,7 +210,7 @@ export const MigrationForm = () => {
             nextStep={nextStep}
             prevStep={prevStep}
             setFormData={handleFormData}
-            initialValues={formData}
+            initialValues={myFormData}
           />
         )
       case StepNames.USER_ADDRESS:
@@ -279,8 +219,8 @@ export const MigrationForm = () => {
             nextStep={nextStep}
             prevStep={prevStep}
             setFormData={handleFormData}
-            formData={formData}
-            initialValues={formData}
+            formData={myFormData}
+            initialValues={myFormData}
           />
         )
       case StepNames.CONFIRMATION:
@@ -289,13 +229,13 @@ export const MigrationForm = () => {
             prevStep={prevStep}
             handleSubmit={handleSubmit}
             setFormData={handleFormData}
-            formData={formData}
+            formData={myFormData}
           />
         )
       case StepNames.PROCESSING:
         return (
           <>
-            {!processingDone && (
+            {!myProcessingDone && (
               <HStack>
                 <h1>
                   Processing... The operation can take a couple of seconds.
