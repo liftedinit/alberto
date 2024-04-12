@@ -26,6 +26,8 @@ export const mockAsset = {
 }
 export const mockBlockHeight = 27291
 export const mockHash = "012345"
+export const mockHash2 = "6789ab"
+export const mockDateTime = "2021-09-01T00:00:00Z"
 const mockIdentity = new ArrayBuffer(0)
 export const mockUserAddr = "mah7vxcf3l4aklypotgjmwy36y2kk2metkqidcizo4jnfttild"
 export const mockUserAddr2 =
@@ -280,3 +282,39 @@ export const mockUseSingleSendTransactionList = (
   to: string,
 ) =>
   createMock(useSingleTransactionList, createMockSendTxList(eventIds, from, to))
+
+export const mockFetchTalib = () => {
+  createMock(
+    fetch,
+    Promise.resolve(
+      new Response(
+        JSON.stringify({
+          status: 4,
+          uuid: mockUuid,
+          manifestAddress: mockDestinationAddr,
+          manifestDateTime: mockDateTime,
+          manifestHash: mockHash2,
+          error: undefined,
+        }),
+      ),
+    ),
+  )
+}
+
+export const mockFetchTalibError = () => {
+  createMock(
+    fetch,
+    Promise.resolve(
+      new Response(
+        JSON.stringify({
+          status: 5,
+          uuid: mockUuid,
+          manifestAddress: mockDestinationAddr,
+          manifestDateTime: undefined,
+          manifestHash: undefined,
+          error: "this is an error",
+        }),
+      ),
+    ),
+  )
+}

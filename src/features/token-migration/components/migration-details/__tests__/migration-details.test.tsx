@@ -1,6 +1,6 @@
 import { renderChildren } from "test/render"
 import { MigrationDetails } from "features/token-migration/components/migration-details"
-import { screen } from "@testing-library/react"
+import { screen, waitFor } from "@testing-library/react"
 import { useParams } from "react-router-dom"
 import { useSingleTransactionList } from "features/transactions/queries"
 import { useGetBlock } from "features/network/queries"
@@ -8,7 +8,10 @@ import { mockBlockError } from "test/block"
 import {
   createMockSendTxList,
   mockBlockHeight,
+  mockFetchTalib,
+  mockFetchTalibError,
   mockHash,
+  mockHash2,
   mockInvalidEventId,
   mockLongBlockHeight,
   mockLongEventId,
@@ -40,6 +43,8 @@ jest.mock("features/network/queries", () => {
   }
 })
 
+global.fetch = jest.fn()
+
 // TODO: Test New Chain details when implemented
 describe("MigrationDetails", () => {
   beforeEach(() => {
@@ -52,12 +57,19 @@ describe("MigrationDetails", () => {
     )
   })
   afterEach(jest.clearAllMocks)
-  it("renders MigrationDetails with MANY migration details", () => {
+  it("renders MigrationDetails with MANY and MANIFEST migration details", async () => {
+    mockFetchTalib()
     renderChildren(<MigrationDetails />)
     expect(screen.getByTestId("migration-details")).toBeInTheDocument()
     expect(screen.getByText(mockSendEventId)).toBeInTheDocument()
     expect(screen.getByText(mockBlockHeight)).toBeInTheDocument()
     expect(screen.getByText(mockHash)).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText(mockHash2)).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByText("Completed")).toBeInTheDocument()
+    })
   })
   it("renders MigrationDetails with long event id and big block height", () => {
     mockUseParams({ eventId: mockLongEventId })
@@ -108,5 +120,12 @@ describe("MigrationDetails", () => {
         "Event number 5 is out of bounds for the transactions array.",
       ),
     ).toBeInTheDocument()
+  })
+  it("renders an error message when MANIFEST polling fails", async () => {
+    mockFetchTalibError()
+    renderChildren(<MigrationDetails />)
+    await waitFor(() => {
+      expect(screen.getByText("this is an error")).toBeInTheDocument()
+    })
   })
 })
