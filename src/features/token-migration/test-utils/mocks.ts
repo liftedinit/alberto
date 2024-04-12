@@ -236,7 +236,7 @@ export const mockUseBlock = (hash: string = mockHash) => {
 }
 export const mockUseCreateSendTransaction = () => {
   createMock(useCreateSendTxn, {
-    mutateAsync: jest.fn().mockResolvedValue(true),
+    mutate: jest.fn().mockResolvedValue(true),
   })
 }
 
