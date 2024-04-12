@@ -45,7 +45,6 @@ jest.mock("features/network/queries", () => {
 
 global.fetch = jest.fn()
 
-// TODO: Test New Chain details when implemented
 describe("MigrationDetails", () => {
   beforeEach(() => {
     mockUseParams({ eventId: mockSendEventId })
