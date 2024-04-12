@@ -39,7 +39,7 @@ export const ConfirmationStep = ({
       <Button
         data-testid="back-btn"
         mt={4}
-        colorScheme="blue"
+        colorScheme="brand.teal"
         onClick={() => {
           setFormData({ destinationAddress: "" })
           prevStep(StepNames.DESTINATION_ADDRESS)
@@ -50,7 +50,7 @@ export const ConfirmationStep = ({
       <Button
         mt={4}
         ml={2}
-        colorScheme="blue"
+        colorScheme="brand.teal"
         onClick={handleSubmit}
         data-testid="next-btn"
       >

@@ -94,7 +94,7 @@ export const DestinationAddressStep = ({
             <Button
               data-testid="back-btn"
               mt={4}
-              colorScheme="blue"
+              colorScheme="brand.teal"
               onClick={() => {
                 setFormData({ assetAmount: 0, assetType: "" })
                 prevStep(StepNames.AMOUNT_ASSET)
@@ -105,7 +105,7 @@ export const DestinationAddressStep = ({
             <Button
               mt={4}
               ml={2}
-              colorScheme="blue"
+              colorScheme="brand.teal"
               type="submit"
               data-testid="next-btn"
             >

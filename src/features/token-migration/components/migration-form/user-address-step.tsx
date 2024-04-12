@@ -77,7 +77,8 @@ export const UserAddressStep = ({
               Select the user address associated to the account.
             </Text>
             <Text mb={4}>
-              <strong>Note:</strong> TODO
+              <strong>Note:</strong> A Multi-signature transaction will be
+              submitted as the selected user.
             </Text>
             <FormControl
               isInvalid={!!(errors.userAddress && touched.userAddress)}
@@ -112,12 +113,12 @@ export const UserAddressStep = ({
             <Button
               data-testid="back-btn"
               mt={4}
-              colorScheme="blue"
+              colorScheme="brand.teal"
               onClick={() => {
                 setFormData({
                   accountAddress: "",
                   userAddress: "",
-                }) // TODO: Refactor this
+                })
                 prevStep(StepNames.ADDRESS)
               }}
             >
@@ -126,7 +127,7 @@ export const UserAddressStep = ({
             <Button
               mt={4}
               ml={2}
-              colorScheme="blue"
+              colorScheme="brand.teal"
               type="submit"
               data-testid="next-btn"
             >
