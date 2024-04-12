@@ -96,7 +96,7 @@ export const DestinationAddressStep = ({
               mt={4}
               colorScheme="blue"
               onClick={() => {
-                setFormData({ assetAmount: 0, assetType: "" }) // TODO: Refactor this
+                setFormData({ assetAmount: 0, assetType: "" })
                 prevStep(StepNames.AMOUNT_ASSET)
               }}
             >

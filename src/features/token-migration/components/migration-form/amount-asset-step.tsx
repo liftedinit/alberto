@@ -56,7 +56,7 @@ export const AmountAssetStep = ({
   const maxAmount = useMemo(() => {
     const assets = new Map()
     balances.ownedAssetsWithBalance.forEach(asset => {
-      assets.set(asset.identity, Big(asset.balance.toString()).times(1e-9)) // TODO: Get the precision programmatically
+      assets.set(asset.identity, Big(asset.balance.toString()).times(1e-9)) // Every token on the MANY chain has 9 decimal places
     })
     return assets
   }, [balances])
@@ -189,7 +189,7 @@ export const AmountAssetStep = ({
               mt={4}
               colorScheme="blue"
               onClick={() => {
-                setFormData({ userAddress: "" }) // TODO: Refactor this
+                setFormData({ userAddress: "" })
                 prevStep(
                   initialValues.accountAddress === ""
                     ? StepNames.ADDRESS
