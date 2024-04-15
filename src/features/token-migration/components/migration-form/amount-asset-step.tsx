@@ -8,8 +8,10 @@ import {
   FormLabel,
   HStack,
   Input,
+  ListItem,
   Select,
   Text,
+  UnorderedList,
 } from "@liftedinit/ui"
 import { useBalances } from "features/balances"
 import { Big } from "big.js"
@@ -96,6 +98,27 @@ export const AmountAssetStep = ({
           <Box p={4}>
             <Text mb={4}>
               Enter the asset amount and asset type to migrate to the new chain.
+            </Text>
+            <Text mb={4}>
+              As part of our migration to the MANIFEST chain, the amount of any
+              asset you transfer will be adjusted according to a 1:1000 token
+              migration ratio. This means:
+            </Text>
+            <UnorderedList mb={2} mt={2} pl={4}>
+              <ListItem>
+                {" "}
+                For every 1 MFX token you migrate, you will receive 1000 mfx
+                tokens on the MANIFEST chain.{" "}
+              </ListItem>
+              <ListItem>
+                {" "}
+                Even smaller amounts are adjusted accordingly: migrating
+                0.000000001 MFX token will result in receiving 1 umfx token.{" "}
+              </ListItem>
+            </UnorderedList>
+            <Text mb={4}>
+              This adjustment ensures that your assets are proportionately
+              represented on the new MANIFEST chain.
             </Text>
             <FormControl
               isInvalid={!!(errors.assetSymbol && touched.assetSymbol)}

@@ -224,6 +224,13 @@ describe("MigrationForm", () => {
         advanceFromDestinationAddrToConfirmationStep,
       )
       const nextBtn = screen.getByTestId("next-btn")
+      expect(nextBtn).toBeDisabled()
+      const checkbox = screen.getByRole("checkbox")
+      expect(checkbox).toBeInTheDocument()
+      expect(checkbox).not.toBeChecked()
+      await act(async () => await userEvent.click(checkbox))
+      expect(checkbox).toBeChecked()
+      expect(nextBtn).toBeEnabled()
       await act(async () => await userEvent.click(nextBtn))
 
       expect(navigate).toHaveBeenCalledWith(
@@ -315,6 +322,13 @@ describe("MigrationForm", () => {
         advanceFromDestinationAddrToConfirmationStep,
       )
       const nextBtn = screen.getByTestId("next-btn")
+      expect(nextBtn).toBeDisabled()
+      const checkbox = screen.getByRole("checkbox")
+      expect(checkbox).toBeInTheDocument()
+      expect(checkbox).not.toBeChecked()
+      await act(async () => await userEvent.click(checkbox))
+      expect(checkbox).toBeChecked()
+      expect(nextBtn).toBeEnabled()
       await act(async () => await userEvent.click(nextBtn))
 
       expect(navigate).toHaveBeenCalledWith(

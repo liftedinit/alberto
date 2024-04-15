@@ -79,9 +79,9 @@ export const AddressStep = ({
               migration.
             </Text>
             <Text mb={4}>
-              <strong>Note:</strong> It is advised to migrate a small amount of
-              tokens first to ensure the destination address is correct and
-              avoid any potential loss of tokens.
+              It is advised to migrate a small amount of tokens first to ensure
+              the destination address is correct and avoid any potential loss of
+              tokens.
             </Text>
             <FormControl isInvalid={!!(errors.address && touched.address)}>
               <FormLabel htmlFor="address">User/Account Address</FormLabel>

@@ -77,8 +77,8 @@ export const UserAddressStep = ({
               Select the user address associated to the account.
             </Text>
             <Text mb={4}>
-              <strong>Note:</strong> A Multi-signature transaction will be
-              submitted as the selected user.
+              A multi-signature transaction will be submitted as the selected
+              user.
             </Text>
             <FormControl
               isInvalid={!!(errors.userAddress && touched.userAddress)}

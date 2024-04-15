@@ -54,6 +54,17 @@ export const DestinationAddressStep = ({
               Enter the destination address on the new chain, e.g.,{" "}
               <em>manifest1abcqj48...f34qabc.</em>
             </Text>
+            <Text mb={4}>
+              The destination address is where your tokens will be transferred
+              during the migration. Ensure you have access to this address
+              before proceeding. If you do not yet have an address on the new
+              MANIFEST chain, you can create one using the MANIFEST wallet
+              application.
+            </Text>
+            <Text mb={4}>
+              Please note that user group addresses are also supported for this
+              migration.
+            </Text>
             <FormControl
               isInvalid={
                 !!(errors.destinationAddress && touched.destinationAddress)

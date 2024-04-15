@@ -21,7 +21,7 @@ export function MigrationBanner() {
       <AlertIcon />
       <AlertTitle>Migrate your tokens today!</AlertTitle>
       <AlertDescription>
-        The Lifted Initiative is migrating to the MANIFEST chain. Please migrate
+        The Lifted Initiative is moving to the MANIFEST chain. Please migrate
         your tokens to the MANIFEST chain{" "}
         <Link
           as={RouterLink}
