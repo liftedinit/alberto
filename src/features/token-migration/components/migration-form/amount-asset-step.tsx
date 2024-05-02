@@ -147,7 +147,6 @@ export const AmountAssetStep = ({
                   <option
                     key={index}
                     value={address}
-                    disabled={type !== "MFX"}
                     data-testid="symbol-option"
                   >
                     {type}
