@@ -67,12 +67,12 @@ export const AmountAssetStep = ({
     assetAmount: Yup.string()
       .test(
         "is-amount-in-range",
-        "Amount must be greater than 0 and less than or equal to your balance",
+        "Amount must be greater than 1e-9 and less than or equal to your balance",
         function (value) {
           if (value === undefined) return false
           try {
             const bigValue = Big(value)
-            return bigValue.gt(0) && bigValue.lte(currentMaxAmount)
+            return bigValue.gte(1e-9) && bigValue.lte(currentMaxAmount)
           } catch (error) {
             return false
           }
