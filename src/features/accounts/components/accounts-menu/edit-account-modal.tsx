@@ -94,6 +94,7 @@ export function EditAccountModal({
           <FormControl isRequired>
             <FormLabel htmlFor="name">Name</FormLabel>
             <Input
+              data-testid={"update-account-name-input"}
               autoFocus
               name="name"
               id="name"
@@ -121,6 +122,7 @@ export function EditAccountModal({
               </FormLabel>
               <HStack spacing={0}>
                 <Input
+                  data-testid={"remove-account-input"}
                   name="addressInput"
                   required
                   variant="filled"
@@ -130,6 +132,7 @@ export function EditAccountModal({
                   borderBottomRightRadius={0}
                 />
                 <Button
+                  data-testid={"remove-account-btn"}
                   borderTopLeftRadius={0}
                   borderBottomLeftRadius={0}
                   colorScheme="red"

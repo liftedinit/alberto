@@ -13,7 +13,10 @@ import { useAccountsStore, doesAccountExist } from "features/accounts"
 import { Ed25519KeyPairIdentity } from "@liftedinit/many-js"
 import { AddAccountMethodProps, toastTitle } from "./add-account-modal"
 
-export function SeedWords({ setAddMethod, onSuccess }: AddAccountMethodProps) {
+export function SeedWords({
+  setAddMethod,
+  onSuccess,
+}: Readonly<AddAccountMethodProps>) {
   const toast = useToast()
   const { createAccount, accounts } = useAccountsStore(
     ({ createAccount, byId }) => ({
@@ -74,6 +77,7 @@ export function SeedWords({ setAddMethod, onSuccess }: AddAccountMethodProps) {
           <FormControl isRequired>
             <FormLabel htmlFor="name">Name</FormLabel>
             <Input
+              data-testid={"seed-words-name-input"}
               autoFocus
               name="name"
               id="name"
@@ -85,6 +89,7 @@ export function SeedWords({ setAddMethod, onSuccess }: AddAccountMethodProps) {
           <FormControl isRequired>
             <FormLabel mt={6}>Seed Words</FormLabel>
             <Textarea
+              data-testid={"seed-words-input"}
               value={account.mnemonic}
               variant="filled"
               onChange={e => {

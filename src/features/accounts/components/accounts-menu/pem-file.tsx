@@ -75,6 +75,7 @@ export function PemFile({ setAddMethod, onSuccess }: AddAccountMethodProps) {
           <FormControl isRequired>
             <FormLabel htmlFor="name">Name</FormLabel>
             <Input
+              data-testid={"pem-name-input"}
               autoFocus
               name="name"
               id="name"
@@ -88,6 +89,7 @@ export function PemFile({ setAddMethod, onSuccess }: AddAccountMethodProps) {
               PEM File
             </FormLabel>
             <Textarea
+              data-testid={"pem-input"}
               value={pem}
               name="pem"
               id="pem"

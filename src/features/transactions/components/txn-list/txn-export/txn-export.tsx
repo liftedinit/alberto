@@ -11,7 +11,7 @@ export function TxnExport({
 }) {
   const accounts = symbol ? [address, symbol] : [address]
   const { data, isLoading, isError, error } = useAllTransactionsList({
-    accounts,
+    filters: { accounts },
   })
 
   const exportTransactions = () => {

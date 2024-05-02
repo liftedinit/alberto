@@ -22,6 +22,13 @@ import {
   useIsBaseBreakpoint,
 } from "@liftedinit/ui"
 import { logoSvg } from "@liftedinit/ui"
+import { FaExchangeAlt } from "react-icons/fa" // TODO: This should be in @liftedinit/ui
+import { IconProps } from "@chakra-ui/react"
+
+// TODO: This should be in @liftedinit/ui
+export function ExchangeIcon(props: IconProps) {
+  return <Icon as={FaExchangeAlt} {...props} />
+}
 
 export function AppMenu() {
   const location = useLocation()
@@ -50,6 +57,14 @@ export function AppMenu() {
       pathname: "/accounts",
       activeIcon: AccountsIcon,
       icon: AccountsOutlineIcon,
+      matcher: (pathname: string, currentPathname: string) =>
+        pathname.startsWith(currentPathname),
+    },
+    {
+      name: "Token Migration",
+      pathname: "/token-migration-portal",
+      activeIcon: ExchangeIcon,
+      icon: ExchangeIcon,
       matcher: (pathname: string, currentPathname: string) =>
         pathname.startsWith(currentPathname),
     },
