@@ -23,12 +23,12 @@ export function Symbols({
   onAssetClicked,
   accountAddress,
   renderAssetListItem,
-}: {
+}: Readonly<{
   address: string
   onAssetClicked: (asset: Asset) => void
   accountAddress?: string
   renderAssetListItem?: () => React.ReactNode
-}) {
+}>) {
   const { isOpen: isSendAssetModalOpen, onOpen, onClose } = useDisclosure()
   const { data, isError, isLoading, errors } = useBalances({
     address,
@@ -110,12 +110,12 @@ function AssetListItem({
   asset,
   onAssetClicked,
   onSendClicked,
-}: {
+}: Readonly<{
   asset: Asset
   address: string
   onAssetClicked: (asset: Asset) => void
   onSendClicked?: (assetAddress: string) => void
-}) {
+}>) {
   const [showActions, setShowActions] = React.useState(false)
   const toggleShowSend = useBreakpointValue({
     base: undefined,
