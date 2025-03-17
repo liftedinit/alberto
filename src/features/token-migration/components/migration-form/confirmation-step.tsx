@@ -1,7 +1,18 @@
 import React, { useState } from "react"
-import { Box, Button, Text } from "@chakra-ui/react"
+import { Box, Button, Link, Text } from "@chakra-ui/react"
 import { StepNames, TokenMigrationFormData } from "./types"
-import { Checkbox, HStack } from "@liftedinit/ui"
+import {
+  Checkbox,
+  HStack,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+} from "@liftedinit/ui"
+import { TokenMigrationTermsAndConditions } from "./terms-and-conditions"
 
 interface ConfirmationStepProps {
   prevStep: (prevStep: StepNames) => void
@@ -17,6 +28,16 @@ export const ConfirmationStep = ({
   formData,
 }: ConfirmationStepProps) => {
   const [isChecked, setIsChecked] = useState(false)
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false)
+
+  const openTermsModal = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setIsTermsModalOpen(true)
+  }
+
+  const closeTermsModal = () => {
+    setIsTermsModalOpen(false)
+  }
 
   return (
     <Box p={4} data-testid="confirmation-box">
@@ -46,10 +67,28 @@ export const ConfirmationStep = ({
         colorScheme="brand.teal"
         mt={4}
       >
-        I agree that the provided information is correct and acknowledge that
-        The Lifted Initiative is not responsible for any loss of tokens due to
-        incorrect or invalid information
+        By initiating the Token Migration, you are agreeing to the MFX Token
+        Migration{" "}
+        <Link color="brand.teal.500" href="#" onClick={openTermsModal}>
+          Terms and Conditions
+        </Link>
       </Checkbox>
+
+      <Modal isOpen={isTermsModalOpen} onClose={closeTermsModal} size="xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>MFX Token Migration Terms and Conditions</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <TokenMigrationTermsAndConditions />
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="brand.teal" onClick={closeTermsModal}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       <HStack mt={4}>
         <Button
