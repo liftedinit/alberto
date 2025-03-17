@@ -69,7 +69,12 @@ export const ConfirmationStep = ({
       >
         By initiating the Token Migration, you are agreeing to the MFX Token
         Migration{" "}
-        <Link color="brand.teal.500" href="#" onClick={openTermsModal}>
+        <Link
+          color="brand.teal.500"
+          onClick={openTermsModal}
+          cursor="pointer"
+          textDecoration="underline"
+        >
           Terms and Conditions
         </Link>
       </Checkbox>
