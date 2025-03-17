@@ -1,17 +1,7 @@
 import React, { useState } from "react"
 import { Box, Button, Link, Text } from "@chakra-ui/react"
 import { StepNames, TokenMigrationFormData } from "./types"
-import {
-  Checkbox,
-  HStack,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-} from "@liftedinit/ui"
+import { Checkbox, HStack, Modal } from "@liftedinit/ui"
 import { TokenMigrationTermsAndConditions } from "./terms-and-conditions"
 
 interface ConfirmationStepProps {
@@ -79,20 +69,20 @@ export const ConfirmationStep = ({
         </Link>
       </Checkbox>
 
-      <Modal isOpen={isTermsModalOpen} onClose={closeTermsModal} size="xl">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>MFX Token Migration Terms and Conditions</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <TokenMigrationTermsAndConditions />
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="brand.teal" onClick={closeTermsModal}>
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
+      <Modal
+        isOpen={isTermsModalOpen}
+        onClose={closeTermsModal}
+        size="xl"
+        header="MFX Token Migration Terms and Conditions"
+        footer={
+          <Button colorScheme="brand.teal" onClick={closeTermsModal}>
+            Close
+          </Button>
+        }
+      >
+        <Modal.Body>
+          <TokenMigrationTermsAndConditions />
+        </Modal.Body>
       </Modal>
 
       <HStack mt={4}>
