@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2025-03-24
+
+### Build
+
+- Bump braces from 3.0.2 to 3.0.3 ([#167](https://github.com/liftedinit/alberto/issues/167))
+- Bump ejs from 3.1.9 to 3.1.10 ([#168](https://github.com/liftedinit/alberto/issues/168))
+
+### Miscellaneous Tasks
+
+- Bump web3auth to 9.7.0 ([#169](https://github.com/liftedinit/alberto/issues/169))
+
 ## [0.2.2] - 2024-04-30
 
 ### Build
