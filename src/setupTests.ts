@@ -2,6 +2,8 @@
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
+require("./test/web3authMock")
+
 import "@testing-library/jest-dom"
 import * as mediaQueryHooks from "@chakra-ui/media-query"
 import { TextEncoder, TextDecoder } from "util"
