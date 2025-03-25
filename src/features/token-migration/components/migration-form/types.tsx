@@ -1,4 +1,5 @@
 import { Big } from "big.js"
+Big.strict = false
 
 export enum StepNames {
   ADDRESS,

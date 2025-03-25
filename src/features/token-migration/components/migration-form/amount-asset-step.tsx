@@ -14,8 +14,9 @@ import {
   UnorderedList,
 } from "@liftedinit/ui"
 import { useBalances } from "features/balances"
-import { Big } from "big.js"
 import { StepNames, TokenMigrationFormData } from "./types"
+import { Big } from "big.js"
+Big.strict = false
 
 interface FormValues {
   assetAmount: Big
