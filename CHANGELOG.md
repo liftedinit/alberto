@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2025-03-24
+
+### Build
+
+- Bump braces from 3.0.2 to 3.0.3 ([#167](https://github.com/liftedinit/alberto/issues/167))
+- Bump ejs from 3.1.9 to 3.1.10 ([#168](https://github.com/liftedinit/alberto/issues/168))
+
+### Miscellaneous Tasks
+
+- Bump web3auth to 9.7.0 ([#169](https://github.com/liftedinit/alberto/issues/169))
+
+## [0.2.2] - 2024-04-30
+
+### Build
+
+- Bump follow-redirects from 1.15.4 to 1.15.6 ([#166](https://github.com/liftedinit/alberto/issues/166))
+- Bump webpack-dev-middleware from 5.3.3 to 5.3.4 ([#163](https://github.com/liftedinit/alberto/issues/163))
+- Bump @solana/web3.js from 1.66.1 to 1.91.7 ([#164](https://github.com/liftedinit/alberto/issues/164))
+- Bump express from 4.18.2 to 4.19.2 ([#165](https://github.com/liftedinit/alberto/issues/165))
+
+### Miscellaneous Tasks
+
+- Dockerfile ([#162](https://github.com/liftedinit/alberto/issues/162))
+
 ## [0.2.1] - 2024-03-12
 
 ### Bug Fixes
