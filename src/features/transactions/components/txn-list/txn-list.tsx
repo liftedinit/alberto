@@ -18,13 +18,13 @@ import { TxnExport } from "./txn-export"
 export function TxnList({
   address,
   symbol,
-}: {
+}: Readonly<{
   address: string
   symbol?: string
-}) {
+}>) {
   const accounts = symbol ? [address, symbol] : [address]
   const queryData = useTransactionsList({
-    accounts,
+    filters: { accounts },
   })
   const {
     data,
@@ -63,7 +63,7 @@ export function TxnList({
         </Center>
       ) : (
         <TableContainer>
-          <Table size="sm">
+          <Table data-testid={"txn-table"} size="sm">
             <Tbody>
               {transactions.map((t: Event & { _id: string }) => {
                 return (

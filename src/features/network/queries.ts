@@ -1,14 +1,19 @@
 import React from "react"
 import { useQuery } from "react-query"
-import { LedgerInfo, NetworkAttributes } from "@liftedinit/many-js"
+import {
+  BlockchainBlock,
+  Event,
+  LedgerInfo,
+  NetworkAttributes,
+} from "@liftedinit/many-js"
 import { useNetworkContext } from "./network-provider"
 
-export function useLedgerInfo({ address }: { address: string }) {
+export function useLedgerInfo({ address }: { address?: string }) {
   const { query: network } = useNetworkContext()
   return useQuery<LedgerInfo, Error>({
     queryKey: ["ledger.info", address, network?.url],
     queryFn: async () => await network?.ledger.info(),
-    enabled: !!network?.url && !!address,
+    enabled: !!network?.url,
     initialData: { symbols: new Map() } as LedgerInfo,
   })
 }
@@ -50,4 +55,26 @@ export function useNetworkStatus() {
       getFeatures,
     }
   }, [data])
+}
+
+export function useGetBlock(height?: number, hash?: ArrayBuffer) {
+  const { query: network } = useNetworkContext()
+  return useQuery<BlockchainBlock, Error>({
+    queryKey: ["block", "get", network],
+    queryFn: async () => {
+      return network?.blockchain.block({ height, hash })
+    },
+    enabled: height !== undefined || hash !== undefined,
+  })
+}
+
+export function useGetEvents(filters: Record<string, any>) {
+  const { query: network } = useNetworkContext()
+  return useQuery<{ count: number; events: Event[] }, Error>({
+    queryKey: ["events", "list", network],
+    queryFn: async () => {
+      return network?.events.list(filters)
+    },
+    enabled: Object.keys(filters).length > 0,
+  })
 }

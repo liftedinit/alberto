@@ -14,6 +14,7 @@ import {
   Account,
   Base,
   Events,
+  Blockchain,
 } from "@liftedinit/many-js"
 import { useNetworkStore } from "./store"
 import { useAccountsStore } from "features/accounts"
@@ -29,7 +30,9 @@ export const NetworkContext = createContext<INetworkContext>({
   services: new Set(),
 })
 
-export function NetworkProvider({ children }: { children: ReactNode }) {
+export function NetworkProvider({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   const network = useNetworkStore().getActiveNetwork()
   const legacy_networks = useNetworkStore().getLegacyNetworks()
   const account = useAccountsStore(s => s.byId.get(s.activeId))
@@ -43,7 +46,7 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
     const identity = account?.identity ?? anonymous
 
     const query = new Network(url, anonymous)
-    query.apply([Ledger, IdStore, Account, Events, Base])
+    query.apply([Blockchain, Ledger, IdStore, Account, Events, Base])
 
     const legacy = legacy_urls?.map(url => {
       const n = new Network(url, anonymous)
