@@ -3,10 +3,14 @@ import { Box } from "@liftedinit/ui"
 import { marked } from "marked"
 
 export const TokenMigrationTermsAndConditions: React.FC = () => {
-  const htmlContent = marked(TermsAndConditions, { async: false })
+  const htmlContent = marked(TermsAndConditions, {
+    async: false,
+    breaks: true,
+    gfm: true,
+  })
 
   return (
-    <Box maxH="500px" overflowY="auto" p={4}>
+    <Box maxH="700px" overflowY="auto" p={4}>
       <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
     </Box>
   )
