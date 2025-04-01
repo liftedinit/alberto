@@ -28,15 +28,16 @@
     "@web3auth/modal": "^9.7.0",
     "big.js": "^6.2.1",
     "buffer": "^6.0.3",
+    "chakra-ui-markdown-renderer": "^4.1.0",
     "formik": "^2.4.5",
     "framer-motion": "^6.2.8",
     "localforage": "^1.10.0",
-    "marked": "^15.0.7",
     "process": "^0.11.10",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.33.1",
     "react-icons": "^4.3.1",
+    "react-markdown": "^7.1.2",
     "react-router": "^6.2.0",
     "react-router-dom": "^6.2.1",
     "stream-browserify": "^3.0.0",
@@ -54,7 +55,6 @@
     "@testing-library/user-event": "^14.5.2",
     "@types/big.js": "^6.2.2",
     "@types/jest": "^29.5.11",
-    "@types/marked": "^6.0.0",
     "@types/node": "^20.11.7",
     "@types/react": "^17.0.75",
     "@types/react-dom": "^17.0.25",
@@ -108,5 +108,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:8000"
+  "proxy": "https://qa.liftedinit.tech/api"
 }

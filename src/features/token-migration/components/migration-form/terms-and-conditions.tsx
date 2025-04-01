@@ -1,23 +1,22 @@
 import React from "react"
 import { Box } from "@liftedinit/ui"
-import { marked } from "marked"
+import ReactMarkdown from "react-markdown"
+import ChakraUIRenderer from "chakra-ui-markdown-renderer"
 
 export const TokenMigrationTermsAndConditions: React.FC = () => {
-  const htmlContent = marked(TermsAndConditions, {
-    async: false,
-    breaks: true,
-    gfm: true,
-  })
-
   return (
     <Box maxH="700px" overflowY="auto" p={4}>
-      <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      <ReactMarkdown
+        components={ChakraUIRenderer()}
+        children={TermsAndConditions}
+        skipHtml
+      />
     </Box>
   )
 }
 
 const TermsAndConditions = `
-**MFX Token Migration Terms and Conditions**
+### MFX Token Migration Terms and Conditions
 
 PLEASE READ THESE TOKEN MIGRATION TERMS AND CONDITIONS (AS AMENDED AS
 PROVIDED HEREIN, THE "TERMS") CAREFULLY BEFORE USING
@@ -36,7 +35,7 @@ PARTICIPATE IN THE TOKEN MIGRATION.
 The Terms are entered into by and between the Website user ("you/your")
 and Manifest Network, Ltd. (the "Company" or "we/our/us").
 
-1.  Purpose and Use of Tokens
+#### 1.  Purpose and Use of Tokens
 
 The purpose of the Mainnet MFX Tokens (the "Mainnet Tokens") is to
 incentivize users to participate in the Manifest Network, a
@@ -53,7 +52,7 @@ development purposes prior to the Token Migration to Mainnet Tokens. The
 term "Tokens" as used herein means collectively the Alpha Tokens and the
 Mainnet Tokens.
 
-2.  Use of the Token Migration
+#### 2.  Use of the Token Migration
 
 Unless otherwise stated in these Terms, these Terms govern only your
 migration of Alpha Tokens for Mainnet Tokens during the Migration Period
@@ -157,9 +156,7 @@ q.  You covenant that all activity and conduct in connection with your
     governmental or quasi-governmental body or regulatory agency, any
     self-regulatory organization.
 
-<!-- -->
-
-3.  Eligibility
+#### 3.  Eligibility
 
 By using the Website, you represent and warrant that you are of the
 legal age of majority in your jurisdiction as is required to access the
@@ -170,7 +167,7 @@ represent that you are responsible for ensuring full compliance with the
 applicable laws in your jurisdiction and acknowledge that we are not
 liable for your compliance and failure to comply with such laws.
 
-4.  Principles
+#### 4.  Principles
 
 You understand and accept that while the individuals and entities,
 including the Company, assigned to this task, will make reasonable
@@ -210,7 +207,7 @@ any similar relationship between you and the Company and/or other
 individuals or entities involved with the deployment or operation of the
 Manifest Network is created.
 
-5.  Cancellation; Rescission
+#### 5.  Cancellation; Rescission
 
 Your migration of Tokens during the Migration Period is final, and there
 are no refunds, cancellations or rescissions except as may be required
@@ -220,108 +217,108 @@ waive any right of set-off, netting, counterclaim, abatement or other
 similar remedy which you might otherwise have in respect of any Tokens
 or under these Terms under the laws of any jurisdiction.
 
-6.  Token Migration Procedures and Specifications
+#### 6.  Token Migration Procedures and Specifications
 
-    a.  Accepted Tokens. Only Alpha Tokens are accepted in exchange for
-        Mainnet Tokens. The Manifest Network does not accept any other
-        type of token or currency.
+a.  Accepted Tokens. Only Alpha Tokens are accepted in exchange for
+    Mainnet Tokens. The Manifest Network does not accept any other
+    type of token or currency.
 
-    b.  Migration Period. Alpha Tokens may be submitted in exchange for
-        Mainnet Tokens, on a 1-for-1000 ratio, beginning on March 31st,
-        2025, at 12:00 pm EST and will continue indefinitely until the
-        Alpha Network is no longer supported by The Lifted Initiative,
-        Inc. (issuer of the Alpha Tokens) (the "Migration Period").
+b.  Migration Period. Alpha Tokens may be submitted in exchange for
+    Mainnet Tokens, on a 1-for-1000 ratio, beginning on March 31st,
+    2025, at 12:00 pm EST and will continue indefinitely until the
+    Alpha Network is no longer supported by The Lifted Initiative,
+    Inc. (issuer of the Alpha Tokens) (the "Migration Period").
 
-    c.  Alpha Tokens exchanged for Mainnet Tokens will be permanently
-        decommissioned.
+c.  Alpha Tokens exchanged for Mainnet Tokens will be permanently
+    decommissioned.
 
-    d.  Migration Fees. There will be no fees associated with the Token
-        Migration.
+d.  Migration Fees. There will be no fees associated with the Token
+    Migration.
 
-    e.  Transferability of Mainnet Tokens. Notwithstanding any other
-        provision of these Terms, the Company reserves the right to
-        treat as void any transfer or attempted transfer of a Mainnet
-        Token that the Company reasonably believes to be unlawful for
-        any reason. Transferees of Mainnet Tokens in permitted transfers
-        shall be deemed to be bound by these Terms and the Manifest
-        Network Terms and Policies. The owner of the wallet in which any
-        Token is held will (except as otherwise required under
-        applicable law or as ordered by a court of competent
-        jurisdiction) be treated as the absolute owner of that Token for
-        all purposes (regardless of any notice of any trust or any other
-        interest, or the theft or loss of any private key), and neither
-        the Company nor any other person will be liable for so treating
-        that person as the absolute owner of such Token. By transferring
-        any Token in a permitted transfer, you assign all your rights,
-        title and interest under these Terms to the transferee.
-        Transfers of any Mainnet Token shall be effective only when the
-        time and date of the relevant transfer are included in a block
-        on the Manifest Network. If any rule of law requires written
-        notice to effect the transfer of any Mainnet Token, such notice
-        is deemed to have been given as an electronic record by
-        inclusion of the relevant transaction on a block on the Manifest
-        Network. Protections offered by applicable law in relation to
-        the acquisition, storage, sale and/or transfer of the
-        instruments and/or investments of the types do not apply to the
-        transfer of Mainnet Tokens under these Terms or to your storage,
-        sale and/or transfer of Mainnet Tokens.
+e.  Transferability of Mainnet Tokens. Notwithstanding any other
+    provision of these Terms, the Company reserves the right to
+    treat as void any transfer or attempted transfer of a Mainnet
+    Token that the Company reasonably believes to be unlawful for
+    any reason. Transferees of Mainnet Tokens in permitted transfers
+    shall be deemed to be bound by these Terms and the Manifest
+    Network Terms and Policies. The owner of the wallet in which any
+    Token is held will (except as otherwise required under
+    applicable law or as ordered by a court of competent
+    jurisdiction) be treated as the absolute owner of that Token for
+    all purposes (regardless of any notice of any trust or any other
+    interest, or the theft or loss of any private key), and neither
+    the Company nor any other person will be liable for so treating
+    that person as the absolute owner of such Token. By transferring
+    any Token in a permitted transfer, you assign all your rights,
+    title and interest under these Terms to the transferee.
+    Transfers of any Mainnet Token shall be effective only when the
+    time and date of the relevant transfer are included in a block
+    on the Manifest Network. If any rule of law requires written
+    notice to effect the transfer of any Mainnet Token, such notice
+    is deemed to have been given as an electronic record by
+    inclusion of the relevant transaction on a block on the Manifest
+    Network. Protections offered by applicable law in relation to
+    the acquisition, storage, sale and/or transfer of the
+    instruments and/or investments of the types do not apply to the
+    transfer of Mainnet Tokens under these Terms or to your storage,
+    sale and/or transfer of Mainnet Tokens.
 
-    f.  Excluded Contributions. The Token Migration involves only the
-        exchange of Alpha Tokens for Mainnet Tokens on a 1-for-1000
-        basis. Any other type of consideration, including any type of
-        fiat or cryptocurrency will not be accepted.
+f.  Excluded Contributions. The Token Migration involves only the
+    exchange of Alpha Tokens for Mainnet Tokens on a 1-for-1000
+    basis. Any other type of consideration, including any type of
+    fiat or cryptocurrency will not be accepted.
 
-    g.  Delivery. After completion of the Token Migration, the account
-        you used to migrate tokens will be credited with the appropriate
-        number of Mainnet Tokens from the total amount of Alpha Tokens
-        you exchanged during the Token Migration (the "Migration
-        Distribution"). All deliveries from the Migration Distribution
-        will be made electronically. Deliveries will be made directly to
-        the account, address or wallet associated with your Token
-        Migration. The Company reserves the right to prescribe
-        additional conditions relating to specific wallet requirements
-        for the Token Migration at any time, acting in its sole
-        discretion.
+g.  Delivery. After completion of the Token Migration, the account
+    you used to migrate tokens will be credited with the appropriate
+    number of Mainnet Tokens from the total amount of Alpha Tokens
+    you exchanged during the Token Migration (the "Migration
+    Distribution"). All deliveries from the Migration Distribution
+    will be made electronically. Deliveries will be made directly to
+    the account, address or wallet associated with your Token
+    Migration. The Company reserves the right to prescribe
+    additional conditions relating to specific wallet requirements
+    for the Token Migration at any time, acting in its sole
+    discretion.
 
-    h.  Third Party Service Provider or Agent. If you participate in the
-        Token Migration through a third party service provider or agent,
-        that service provider or agent is your agent, not ours, for the
-        purpose of the Token Migration. You, not we, are responsible for
-        ensuring that we actually receive the appropriate amount of
-        Alpha Tokens and that you receive the appropriate amount of
-        Mainnet Tokens. We are not responsible for any loss or delay of
-        Tokens due to your use of a third party service provider or
-        agent.
+h.  Third Party Service Provider or Agent. If you participate in the
+    Token Migration through a third party service provider or agent,
+    that service provider or agent is your agent, not ours, for the
+    purpose of the Token Migration. You, not we, are responsible for
+    ensuring that we actually receive the appropriate amount of
+    Alpha Tokens and that you receive the appropriate amount of
+    Mainnet Tokens. We are not responsible for any loss or delay of
+    Tokens due to your use of a third party service provider or
+    agent.
 
-    i.  Exchange Submission Rejection. Without limiting the grounds upon
-        which the Company may refuse to distribute Mainnet Tokens, if
-        distribution of Mainnet Tokens to you, or the holding of Mainnet
-        Tokens by you, is or becomes impossible or a violation of any
-        applicable legal or regulatory requirements, or the Company
-        suspects this may be the case, then: i. the Company need not
-        allow you to participate in the Token Migration or other
-        distribute any Mainnet Tokens to you nor, in either case, to any
-        other person or entity acting on your behalf; ii the Company may
-        request, require or facilitate that steps be taken to ensure the
-        full return of any Mainnet Tokens that you hold; iii. the
-        Company reserves the right to terminate its relationship with
-        you and take any actions considered necessary or desirable for
-        the Company to meet its legal and regulatory obligations;
-        and iv. such actions will be irrespective of any original
-        contribution that has been made by you to the Company and/or any
-        other third party in respect of the Mainnet Token, and the
-        Company may undertake any such actions at its sole discretion,
-        with or without disclosing the basis for such action.
+i.  Exchange Submission Rejection. Without limiting the grounds upon
+    which the Company may refuse to distribute Mainnet Tokens, if
+    distribution of Mainnet Tokens to you, or the holding of Mainnet
+    Tokens by you, is or becomes impossible or a violation of any
+    applicable legal or regulatory requirements, or the Company
+    suspects this may be the case, then: i. the Company need not
+    allow you to participate in the Token Migration or other
+    distribute any Mainnet Tokens to you nor, in either case, to any
+    other person or entity acting on your behalf; ii the Company may
+    request, require or facilitate that steps be taken to ensure the
+    full return of any Mainnet Tokens that you hold; iii. the
+    Company reserves the right to terminate its relationship with
+    you and take any actions considered necessary or desirable for
+    the Company to meet its legal and regulatory obligations;
+    and iv. such actions will be irrespective of any original
+    contribution that has been made by you to the Company and/or any
+    other third party in respect of the Mainnet Token, and the
+    Company may undertake any such actions at its sole discretion,
+    with or without disclosing the basis for such action.
 
-    j.  Remaining Mainnet Tokens. Any Mainnet Tokens that are not
-        migrated at the end of the Migration Period will be retained by
-        the Company and transferred to the Company token treasury. Any
-        unclaimed Mainnet Tokens will be used at the sole discretion of
-        the Company for staking rewards, ecosystem development,
-        marketing uses, and any other purpose that the Company may
-        elect.
+j.  Remaining Mainnet Tokens. Any Mainnet Tokens that are not
+    migrated at the end of the Migration Period will be retained by
+    the Company and transferred to the Company token treasury. Any
+    unclaimed Mainnet Tokens will be used at the sole discretion of
+    the Company for staking rewards, ecosystem development,
+    marketing uses, and any other purpose that the Company may
+    elect.
 
-7.  Acknowledgement and Assumption of Risks
+#### 7.  Acknowledgement and Assumption of Risks
 
 You acknowledge and agree that there are risks associated with
 purchasing Tokens, holding Tokens, migrating Tokens, and using Tokens
@@ -465,9 +462,7 @@ j.  Unanticipated Risks: Cryptographic tokens, including Mainnet Tokens
     combinations or variations of the discussed risks or the emergence
     of new risks.
 
-<!-- -->
-
-8.  Representation and Warranties
+#### 8.  Representation and Warranties
 
 By participating in the Token Migration, you represent, warrant, and
 covenant that:
@@ -539,7 +534,7 @@ h.  Your exchange of your Alpha Tokens for Mainnet Tokens complies with
 i.  You shall promptly provide to the Company, upon request, proof of
     identity and/or source of funds and/or other documentation or other
     information that the Company may request from time to time in
-    connection with the Company\'s obligations under, and compliance
+    connection with the Company's obligations under, and compliance
     with, applicable laws and regulations, including but not limited to
     anti money laundering legislation, regulations or guidance and/or
     tax information reporting or withholding legislation, regulations or
@@ -552,7 +547,7 @@ k.  You will comply with any applicable tax obligations, if any, in your
 
 l.  If you are exchanging Alpha Tokens for Mainnet Tokens on behalf of
     any entity, (i) you are authorized to accept these Terms on such
-    entity\'s behalf and such entity will be responsible for breach of
+    entity's behalf and such entity will be responsible for breach of
     these Terms by you or any other employee or agent of such entity
     (references to "you" in these Terms refer to you and such entity,
     jointly); (ii) the acceptance of these Terms and the entry into a
@@ -600,10 +595,10 @@ p.  You are not (i) a citizen or resident of a geographic area in which
     U.S. or other applicable comprehensive country sanctions or
     embargoes, or (iii) an individual, or an individual employed by or
     associated with an entity, identified on the U.S. Department of
-    Commerce\'s Denied Persons, Unverified, or Entity List, the U.S.
-    Department of Treasury\'s Specially Designated Nationals or Blocked
+    Commerce's Denied Persons, Unverified, or Entity List, the U.S.
+    Department of Treasury's Specially Designated Nationals or Blocked
     Persons or Foreign Sanctions Evaders Lists, or the U.S. Department
-    of State\'s Debarred Parties List. You will not use the Mainnet
+    of State's Debarred Parties List. You will not use the Mainnet
     Tokens to conduct or facilitate any transactions with such persons
     described above. You agree that if your country of residence or
     other circumstances change such that the above representations are
@@ -667,9 +662,7 @@ x.  You have no right against any other party to request any refund of
 y.  You will not use the Tokens to finance, engage in or otherwise
     support any unlawful activities.
 
-<!-- -->
-
-9.  Limitation of Liability
+#### 9.  Limitation of Liability
 
 To the fullest extent allowed by applicable law, in no event shall the
 owners of, or contributors to, the Website be liable for any damages of
@@ -685,7 +678,7 @@ members, directors, officers, employees, agents, and representatives,
 suppliers, and contractors related to any of the risks set forth in this
 Terms.
 
-10. Indemnification
+#### 10. Indemnification
 
 You do hereby to the fullest extent permitted by applicable law, agree
 to defend, indemnify, and hold harmless the Company, The Lifted
@@ -697,7 +690,7 @@ contractors (collectively, "Indemnified Parties"), from and against any
 and all actual and threatened claims, lawsuits, demands, actions,
 investigations (whether formal or informal), liabilities, obligations,
 judgments, damages, penalties, interests, fees, losses, expenses
-(including reasonable attorneys\' fees and expenses), and costs
+(including reasonable attorneys' fees and expenses), and costs
 (including, without limitation, court costs, costs of settlement, and
 costs of pursuing indemnification and insurance), of every kind and
 nature whatsoever, whether claimed by governmental authorities, known or
@@ -741,7 +734,7 @@ negligence), arising out of or related to disputes between you and the
 acts or omissions of third parties. This indemnification shall survive
 any disposition of your Tokens.
 
-11. Arbitration
+#### 11. Arbitration
 
 PLEASE READ THIS CLAUSE CAREFULLY BECAUSE IT LIMITS THE MANNER IN WHICH
 YOU CAN SEEK RELIEF.
@@ -779,15 +772,15 @@ received by the applicable party, then either you or the Company may, as
 appropriate and in accordance with this Section 9, commence an
 arbitration proceeding.
 
-You agree that the laws of the \[JURISDICTION\], without regard to
+You agree that the laws of the [JURISDICTION], without regard to
 principles of conflict of laws, govern this Terms and any dispute
 between you and us. You further agree that the Token Migration shall be
-deemed to be based solely in the \[JURISDICTION\], and that although the
+deemed to be based solely in the [JURISDICTION], and that although the
 migration may be available in other jurisdictions, its availability does
 not give rise to general or specific personal jurisdiction in any forum
-outside the \[JURISDICTION\].
+outside the [JURISDICTION].
 
-You agree that the federal and state courts of \[FORUM LOCATION\] are
+You agree that the federal and state courts of [FORUM LOCATION] are
 the proper forum for any appeals of an arbitration award or for court
 proceedings in the event that this Terms binding arbitration clause is
 found to be unenforceable.
@@ -804,21 +797,21 @@ unfair or should not apply for any reason.
 With respect to all persons and entities, regardless of whether they
 have obtained or used the site for personal, commercial, or other
 purposes, all disputes, controversies, or claims must be brought in the
-parties\' individual capacity, and not as a plaintiff or class member in
+parties' individual capacity, and not as a plaintiff or class member in
 any class action, collective action, or other representative proceeding.
 This waiver applies to class arbitration, and unless we agree otherwise,
-the arbitrator may not consolidate more than one person\'s claims.
+the arbitrator may not consolidate more than one person's claims.
 
 The parties agree to arbitrate solely on an individual basis, and these
 Terms do not permit class arbitration, or any claims brought as a
 plaintiff or class member in any representative arbitration proceeding.
-The arbitral tribunal may not consolidate more than one person\'s claims
+The arbitral tribunal may not consolidate more than one person's claims
 and may not preside over any form of a representative or class
 proceeding. In the event the prohibition on class arbitration is deemed
 invalid or unenforceable, the remaining portions of this agreement to
 arbitrate will remain in force.
 
-13. Changes
+#### 13. Changes
 
 We may revise and update the Terms from time to time on our sole
 discretion and without notice. All changes are effective immediately
@@ -828,7 +821,7 @@ revised Terms means that you accept and agree to the changes. You are
 expected to check this page from time to time so you are aware of any
 changes, as they are binding on you.
 
-14. No Waivers
+#### 14. No Waivers
 
 The failure by us to enforce any provision of these Terms will not
 constitute a present or future waiver of such provision nor limit our
