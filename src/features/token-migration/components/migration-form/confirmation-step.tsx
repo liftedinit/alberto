@@ -72,7 +72,7 @@ export const ConfirmationStep = ({
       <Modal
         isOpen={isTermsModalOpen}
         onClose={closeTermsModal}
-        size="2xl"
+        size="4xl"
         header="MFX Token Migration Terms and Conditions"
         footer={
           <Button colorScheme="brand.teal" onClick={closeTermsModal}>
