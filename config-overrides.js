@@ -3,6 +3,11 @@ const webpack = require("webpack")
 module.exports = {
   webpack: function override(webpackConfig) {
     webpackConfig.module.rules.push({
+      test: /\.md$/,
+      use: "raw-loader",
+    })
+
+    webpackConfig.module.rules.push({
       test: /\.(js|mjs|jsx)$/,
       enforce: "pre",
       loader: require.resolve("source-map-loader"),

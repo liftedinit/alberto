@@ -1,10 +1,11 @@
 import React from "react"
-import { Text } from "@liftedinit/ui"
+import { Box } from "@liftedinit/ui"
+import termsContent from "../../assets/terms-and-conditions_migration.md"
 
 export const TokenMigrationTermsAndConditions: React.FC = () => {
   return (
-    <Text>
-      Full terms and conditions for the MFX Token Migration would go here...
-    </Text>
+    <Box maxH="500px" overflowY="auto" p={4}>
+      <div dangerouslySetInnerHTML={{ __html: termsContent }} />
+    </Box>
   )
 }
