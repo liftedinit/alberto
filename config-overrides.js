@@ -53,4 +53,36 @@ module.exports = {
       return configDevServer(proxy, allowedHosts)
     }
   },
+
+  jest: function (config) {
+    const esModules = [
+      /** react-markdown 9.0.1 */
+      "react-markdown",
+      "bail",
+      "character-entities.*",
+      "comma-separated-tokens",
+      "decode-named-character-reference",
+      "devlop/lib/default",
+      "estree-util-is-identifier-name",
+      "hast-util-.*",
+      "html-url-attributes",
+      "is-plain-obj",
+      "mdast-util-.*",
+      "micromark.*",
+      "property-information",
+      "remark-.*",
+      "space-separated-tokens",
+      "trim-lines",
+      "trough",
+      "unified",
+      "unist-.*",
+      "vfile-message",
+      /** react-markdown 8.0.3 */
+      "vfile",
+    ].join("|")
+    config.transformIgnorePatterns = [
+      `[/\\\\]node_modules[/\\\\](?!${esModules}).+\\.(js|jsx|mjs|cjs|ts|tsx)$`,
+    ]
+    return config
+  },
 }

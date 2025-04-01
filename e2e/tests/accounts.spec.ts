@@ -53,6 +53,17 @@ test("submit, approve, revoke, and execute a multisig transaction", async ({
   page,
 }) => {
   const { homePage, accountsPage } = await setup(page)
+
+  // Remove the /api/legacy network for this test as it is causing duplicate transactions listing
+  await homePage.openNetworkMenu()
+  await page.locator('[aria-label="edit network"]').last().click()
+  const removeBtn = page.locator("data-testid=remove network button")
+  expect(removeBtn).toBeDisabled()
+  const url = await page.locator('input[name="url"]').inputValue()
+  await page.locator('input[name="deleteUrl"]').fill(url as string)
+  expect(removeBtn).not.toBeDisabled()
+  await removeBtn.click()
+
   await homePage.switchWallet("wallet1")
   await accountsPage.goto()
   await page.locator("text=account name").click()

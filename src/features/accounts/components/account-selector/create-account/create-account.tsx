@@ -39,7 +39,7 @@ import {
   AccountOwnerField,
   accountLedgerFeature,
   accountMultisigFeature,
-  CreateAccountFormData,
+  CreateAccountTokenMigrationFormData,
   useCreateAccount,
   useAccountsStore,
   useAccountStore,
@@ -56,7 +56,7 @@ const steps = [
 
 export function CreateAccount() {
   const useStepsState = useSteps({ initialStep: 0 })
-  const formMethods = useForm<CreateAccountFormData>({
+  const formMethods = useForm<CreateAccountTokenMigrationFormData>({
     defaultValues: {
       features: {
         [accountLedgerFeature]: false,
@@ -320,8 +320,8 @@ function Review() {
 
   const { mutate, error, isLoading } = useCreateAccount()
 
-  function onCreateClick(formData: unknown) {
-    mutate(formData as CreateAccountFormData, {
+  function onCreateClick(TokenMigrationFormData: unknown) {
+    mutate(TokenMigrationFormData as CreateAccountTokenMigrationFormData, {
       onSuccess: res => {
         toast({
           status: "success",

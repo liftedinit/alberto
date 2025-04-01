@@ -15,19 +15,21 @@
   },
   "dependencies": {
     "@beam-australia/react-env": "^3.1.1",
-    "@chakra-ui/react": "^1.8.6",
-    "@emotion/react": "^11.8.2",
-    "@emotion/styled": "^11.8.1",
+    "@chakra-ui/react": "^1.8.9",
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^4.5.8",
-    "@liftedinit/many-js": "^0.2.1",
+    "@liftedinit/many-js": "^0.3.0",
     "@liftedinit/ui": "github:liftedinit/lifted-ui",
     "@tanstack/react-query": "^4.36.1",
     "@web3auth/auth-adapter": "^9.7.0",
-    "@web3auth/modal": "^9.7.0",
-    "@web3auth/base-provider": "^9.7.0",
     "@web3auth/base": "^9.7.0",
+    "@web3auth/base-provider": "^9.7.0",
+    "@web3auth/modal": "^9.7.0",
     "big.js": "^6.2.1",
     "buffer": "^6.0.3",
+    "chakra-ui-markdown-renderer": "^4.1.0",
+    "formik": "^2.4.5",
     "framer-motion": "^6.2.8",
     "localforage": "^1.10.0",
     "process": "^0.11.10",
@@ -35,27 +37,34 @@
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.33.1",
     "react-icons": "^4.3.1",
-    "react-query": "^4.0.0-alpha.20",
+    "react-markdown": "^7.1.2",
     "react-router": "^6.2.0",
     "react-router-dom": "^6.2.1",
     "stream-browserify": "^3.0.0",
     "typescript": "^4.5.4",
+    "validator": "^13.11.0",
     "web-vitals": "^1.1.2",
+    "yup": "^1.3.3",
     "zustand": "^3.7.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.24.2",
-    "@testing-library/jest-dom": "^5.16.1",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.8.3",
-    "@types/jest": "^27.4.1",
-    "@types/node": "^12.20.37",
-    "@types/react": "^17.0.37",
-    "@types/react-dom": "^17.0.11",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@playwright/test": "^1.41.2",
+    "@testing-library/jest-dom": "^6.3.0",
+    "@testing-library/react": "^12.1.5",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/big.js": "^6.2.2",
+    "@types/jest": "^29.5.11",
+    "@types/node": "^20.11.7",
+    "@types/react": "^17.0.75",
+    "@types/react-dom": "^17.0.25",
+    "@types/validator": "^13.11.8",
     "browserstack-local": "^1.5.1",
     "dotenv": "^16.0.1",
     "eslint-config-react-app": "^7.0.0",
     "husky": "^8.0.1",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "prettier": "^2.6.0",
     "react-app-rewired": "^2.2.1",
     "react-error-overlay": "^6.0.9",
@@ -84,6 +93,9 @@
       ]
     }
   },
+  "jest": {
+    "testEnvironment": "jest-environment-jsdom"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -96,5 +108,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:8000"
+  "proxy": "https://qa.liftedinit.tech/api"
 }
