@@ -28,7 +28,7 @@ import env from "@beam-australia/react-env"
 
 const TALIB_ROOT_URL = env("TALIB_ROOT_URL")
 const TALIB_NEIGHBORHOOD_ID = env("TALIB_NEIGHBORHOOD_ID")
-const TALIB_URL = `${TALIB_ROOT_URL}/neighborhoods/${TALIB_NEIGHBORHOOD_ID}`
+const TALIB_URL = `${TALIB_ROOT_URL}neighborhoods/${TALIB_NEIGHBORHOOD_ID}`
 const statusMapping: { [key: number]: string } = {
   1: "Created",
   2: "Claimed",
