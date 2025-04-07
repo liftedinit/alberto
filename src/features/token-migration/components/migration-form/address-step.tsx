@@ -118,11 +118,7 @@ export const AddressStep = ({
                           >
                             {idType === IdTypes.USER ? "User" : "Account"}:{" "}
                             {address} {name ? `(${name})` : null}
-                            {isWhitelisted ? null : (
-                              <Text color="red.500" fontSize="sm">
-                                (Not whitelisted)
-                              </Text>
-                            )}
+                            {isWhitelisted ? null : "- (Not whitelisted)"}
                           </option>
                         )
                       },
