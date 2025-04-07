@@ -11,7 +11,6 @@ import {
 import { Account, useAccountsStore, useGetAccountInfo } from "features/accounts"
 import { useEffect, useMemo, useState } from "react"
 import { StepNames, TokenMigrationFormData } from "./types"
-import { useMigrationWhitelist } from "../../queries"
 
 interface FormValues {
   userAddress: string
@@ -50,15 +49,8 @@ export const UserAddressStep = ({
   const memoizedAccountUsers = useMemo(() => accountUsers, [])
   const accStore = useAccountsStore()
   const identityById = accStore.byId
-  const { whitelist, isLoading } = useMigrationWhitelist()
-
-  const allLoaded = !isLoading || isSuccess
 
   useEffect(() => {
-    if (!allLoaded) {
-      return
-    }
-
     const matchingAccounts = Array.from(identityById.values()).filter(
       identity => memoizedAccountUsers.includes(identity.address),
     )
@@ -66,7 +58,7 @@ export const UserAddressStep = ({
       setCommonAddresses(matchingAccounts)
     }
     setIsLoaded(true)
-  }, [identityById, memoizedAccountUsers, allLoaded])
+  }, [isSuccess, identityById, memoizedAccountUsers])
 
   return (
     <Formik
@@ -103,22 +95,15 @@ export const UserAddressStep = ({
                 placeholder="Select user"
               >
                 {isLoaded
-                  ? commonAddresses.map(account => {
-                      const isWhitelisted =
-                        !isLoading && whitelist?.includes(account.address)
-
-                      return (
-                        <option
-                          key={account.address}
-                          value={account.address}
-                          data-testid="user-option"
-                          disabled={!isWhitelisted}
-                        >
-                          User: {account.address} ({account.name})
-                          {!isWhitelisted && " - Not whitelisted"}
-                        </option>
-                      )
-                    })
+                  ? commonAddresses.map(account => (
+                      <option
+                        key={account.address}
+                        value={account.address}
+                        data-testid="user-option"
+                      >
+                        User: {account.address} ({account.name})
+                      </option>
+                    ))
                   : null}
               </Field>
               {errors.userAddress && touched.userAddress ? (
