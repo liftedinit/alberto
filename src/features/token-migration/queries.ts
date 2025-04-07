@@ -6,6 +6,7 @@ const TALIB_URL = env("TALIB_URL")
 // Separate fetch function for reusability
 const fetchMigrationWhitelist = async () => {
   const url = new URL("migrations-whitelist", TALIB_URL)
+  console.log(`Fetching migration whitelist from ${url}`)
   const response = await fetch(url)
 
   if (!response.ok) {
