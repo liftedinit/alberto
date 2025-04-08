@@ -15,6 +15,7 @@ import {
 import { useParams } from "react-router-dom"
 import { EventType, ILLEGAL_IDENTITY } from "@liftedinit/many-js"
 import { hexToArrBuf } from "../../../test/buffer"
+import { useMigrationWhitelist } from "../queries"
 
 const mockUserName = "mockUser"
 const mockAccountName = "mockAccount"
@@ -195,6 +196,13 @@ export const mockUseCombinedAccountInfo = () => {
     ],
   ])
   createMock(useCombinedAccountInfo, mockCombinedAccountInfo)
+}
+export const mockUseMigrationWhitelist = () => {
+  createMock(useMigrationWhitelist, {
+    data: [mockUserAddr, mockAccountAddr],
+    isLoading: false,
+    error: undefined,
+  })
 }
 export const mockUseGetAccountInfo = () => {
   createMock(useGetAccountInfo, {
