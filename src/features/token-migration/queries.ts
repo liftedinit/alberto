@@ -6,7 +6,7 @@ const TALIB_ROOT_URL = env("TALIB_ROOT_URL")
 // Separate fetch function for reusability
 const fetchMigrationWhitelist = async (address: string) => {
   const response = await fetch(
-    `${TALIB_ROOT_URL}/migration-whitelist/${address}`,
+    `${TALIB_ROOT_URL}/migrations-whitelist/${address}`,
   )
   if (!response.ok) {
     throw new Error("Network response was not ok")
