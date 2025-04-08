@@ -52,7 +52,8 @@ export const AddressStep = ({
     () => combinedAccountAndIdentities,
     [combinedAccountAndIdentities],
   )
-  const { whitelist, isLoading } = useMigrationWhitelist()
+  const addresses = Array.from(memoizedCombinedAccountAndIdentities.keys())
+  const { data: whitelist, isLoading } = useMigrationWhitelist(addresses)
 
   useEffect(() => {
     if (isLoading) {
