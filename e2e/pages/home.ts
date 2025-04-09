@@ -1,4 +1,4 @@
-import { Locator, Page, expect } from "@playwright/test"
+import { expect, Locator, Page } from "@playwright/test"
 
 export class HomePage {
   readonly url = "/#/"
@@ -47,8 +47,7 @@ export class HomePage {
     await this.page.locator('input[name="name"]').fill(name)
     await this.page.locator("button", { hasText: "Save" }).click()
     await this.verifyActiveWallet(name)
-    const address = this.getActiveWalletAddress()
-    return address
+    return this.getActiveWalletAddress()
   }
 
   async importWalletViaPem({
@@ -66,8 +65,7 @@ export class HomePage {
     await this.page.locator('textarea[name="pem"]').fill(pem)
     await this.page.locator("text=Save").click()
     await this.verifyActiveWallet(name)
-    const address = this.getActiveWalletAddress()
-    return address
+    return this.getActiveWalletAddress()
   }
 
   async importWalletViaSeed({
@@ -94,8 +92,7 @@ export class HomePage {
     const saveBtn = this.page.locator("text=Save")
     await saveBtn.click()
     await this.verifyActiveWallet(name)
-    const address = this.getActiveWalletAddress()
-    return address
+    return this.getActiveWalletAddress()
   }
 
   async switchWallet(name: string) {
@@ -161,5 +158,16 @@ export class HomePage {
     const title = await this.activeWalletAddress.getAttribute("title")
     expect(title).not.toBe(null)
     return title as string
+  }
+
+  async removeLegacyNetwork() {
+    await this.openNetworkMenu()
+    await this.page.locator('[aria-label="edit network"]').last().click()
+    const removeBtn = this.page.locator("data-testid=remove network button")
+    await expect(removeBtn).toBeDisabled()
+    const url = await this.page.locator('input[name="url"]').inputValue()
+    await this.page.locator('input[name="deleteUrl"]').fill(url as string)
+    await expect(removeBtn).not.toBeDisabled()
+    await removeBtn.click()
   }
 }

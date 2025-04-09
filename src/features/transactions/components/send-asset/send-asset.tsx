@@ -412,6 +412,7 @@ export function SendAssetForm({
                           size="sm"
                           rightIcon={<ChevronDownIcon boxSize={4} />}
                           aria-label="select token"
+                          data-testid={"select-token-btn"}
                           onClick={onOpen}
                           variant="link"
                         >

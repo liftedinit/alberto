@@ -14,6 +14,7 @@ interface AccountMethods {
   deleteAccount: (id: AccountId) => void
   updateAccount: (id: AccountId, a: Partial<Account>) => void
   setActiveId: (id: AccountId) => void
+  getId: (address: string) => AccountId | undefined
 }
 
 const initialState: AccountsState = {
@@ -33,7 +34,7 @@ const initialState: AccountsState = {
 
 export const useAccountsStore = create<AccountsState & AccountMethods>(
   persist(
-    set => ({
+    (set, get) => ({
       ...initialState,
       createAccount: async (account: Partial<Account>) => {
         try {
@@ -72,6 +73,15 @@ export const useAccountsStore = create<AccountsState & AccountMethods>(
         set({
           activeId: id,
         }),
+      getId(address: string) {
+        const byId = get().byId
+        for (let [id, acct] of byId) {
+          if (acct.address === address) {
+            return id
+          }
+        }
+        return undefined
+      },
     }),
     {
       name: "ALBERTO.IDENTITIES",

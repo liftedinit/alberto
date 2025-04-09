@@ -317,6 +317,7 @@ function NetworkDetailsModal({
                   borderBottomRightRadius={0}
                 />
                 <Button
+                  name="remove"
                   borderTopLeftRadius={0}
                   borderBottomLeftRadius={0}
                   colorScheme="red"

@@ -60,6 +60,7 @@ export function AssetSelector({
               variant="ghost"
               justifyContent="flex-start"
               aria-label="select asset"
+              data-testid={"select-asset-btn"}
               h="auto"
               p={2}
               onClick={() => {
