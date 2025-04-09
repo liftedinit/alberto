@@ -11,6 +11,7 @@ import {
 import { useEffect, useMemo, useState } from "react"
 import { IdentitiesAndAccounts, IdTypes, StepNames } from "./types"
 import { useCombinedAccountInfo } from "features/accounts/queries"
+import { useMigrationWhitelist } from "../../queries"
 
 interface FormValues {
   address: string
@@ -51,11 +52,16 @@ export const AddressStep = ({
     () => combinedAccountAndIdentities,
     [combinedAccountAndIdentities],
   )
+  const addresses = Array.from(memoizedCombinedAccountAndIdentities.keys())
+  const { data: whitelist, isLoading } = useMigrationWhitelist(addresses)
 
   useEffect(() => {
+    if (isLoading) {
+      return
+    }
     setAccountsAndIdentities(memoizedCombinedAccountAndIdentities)
     setIsLoaded(true)
-  }, [memoizedCombinedAccountAndIdentities])
+  }, [memoizedCombinedAccountAndIdentities, isLoading])
 
   const handleSubmit = (values: FormValues) => {
     const addressType = detectAddressType(values.address)
@@ -101,16 +107,22 @@ export const AddressStep = ({
               >
                 {isLoaded
                   ? Array.from(accountsAndIdentities.values()).map(
-                      ({ idType, address, name }) => (
-                        <option
-                          key={address}
-                          value={address}
-                          data-testid="form-option"
-                        >
-                          {idType === IdTypes.USER ? "User" : "Account"}:{" "}
-                          {address} {name ? `(${name})` : null}
-                        </option>
-                      ),
+                      ({ idType, address, name }) => {
+                        const isWhitelisted =
+                          !isLoading && whitelist?.includes(address)
+                        return (
+                          <option
+                            key={address}
+                            value={address}
+                            data-testid="form-option"
+                            disabled={!isWhitelisted}
+                          >
+                            {idType === IdTypes.USER ? "User" : "Account"}:{" "}
+                            {address} {name ? `(${name})` : null}
+                            {isWhitelisted ? null : " - (Not whitelisted)"}
+                          </option>
+                        )
+                      },
                     )
                   : null}
               </Field>

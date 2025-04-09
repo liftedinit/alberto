@@ -25,6 +25,7 @@ import {
   mockToken,
   createMockMultisigSubmitTxList,
   createMockSendTxList,
+  mockUseMigrationWhitelist,
 } from "features/token-migration/test-utils/mocks"
 
 jest.mock("features/accounts/queries", () => {
@@ -73,6 +74,13 @@ jest.mock("features/network/queries", () => {
   return {
     ...jest.requireActual("features/network/queries"),
     useGetBlock: jest.fn(),
+  }
+})
+
+jest.mock("features/token-migration/queries", () => {
+  return {
+    ...jest.requireActual("features/token-migration/queries"),
+    useMigrationWhitelist: jest.fn(),
   }
 })
 
@@ -162,6 +170,7 @@ describe("MigrationForm", () => {
       mockUseCreateSendTransaction()
       mockUseBlock()
       mockUseCombinedAccountInfo()
+      mockUseMigrationWhitelist()
     })
     it("should render the form", async () => {
       renderChildren(<MigrationForm />)
@@ -263,6 +272,7 @@ describe("MigrationForm", () => {
       mockUseCombinedAccountInfo()
       mockUseGetAccountInfo()
       mockUseAccountsStore()
+      mockUseMigrationWhitelist()
     })
     it("should advance to the user address step", async () => {
       renderChildren(<MigrationForm />)
@@ -342,6 +352,7 @@ describe("MigrationForm", () => {
       mockUseCreateSendTransaction()
       mockUseBlock()
       mockUseCombinedAccountInfo()
+      mockUseMigrationWhitelist()
     })
     it("should display an error message when the user address is not selected", async () => {
       const mock = useCombinedAccountInfo as jest.Mock
