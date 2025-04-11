@@ -70,6 +70,7 @@ export const AmountAssetStep = ({
         if (!value) return false
         try {
           Big(value)
+          return true
         } catch (error) {
           return false
         }
