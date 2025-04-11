@@ -68,12 +68,12 @@ export const AmountAssetStep = ({
     assetAmount: Yup.string()
       .test(
         "is-amount-in-range",
-        "Amount must be greater than 1e-9 and less than or equal to your balance",
+        "Amount must be greater than 1e-8 and less than or equal to your balance",
         function (value) {
           if (value === undefined) return false
           try {
             const bigValue = Big(value)
-            return bigValue.gte(1e-9) && bigValue.lte(currentMaxAmount)
+            return bigValue.gte(1e-8) && bigValue.lte(currentMaxAmount)
           } catch (error) {
             return false
           }
@@ -102,19 +102,23 @@ export const AmountAssetStep = ({
             </Text>
             <Text mb={4}>
               As part of our migration to the MANIFEST chain, the amount of any
-              asset you transfer will be adjusted according to a 1:1000 token
+              asset you transfer will be adjusted according to a 1:100 token
               migration ratio. This means:
             </Text>
             <UnorderedList mb={2} mt={2} pl={4}>
               <ListItem>
                 {" "}
-                For every 1 MFX token you migrate, you will receive 1000 mfx
+                For every 1 MFX token you migrate, you will receive 100 MFX
                 tokens on the MANIFEST chain.{" "}
               </ListItem>
               <ListItem>
                 {" "}
                 Even smaller amounts are adjusted accordingly: migrating
-                0.000000001 MFX token will result in receiving 1 umfx token.{" "}
+                0.00000001 MFX token will result in receiving 1 umfx token.{" "}
+              </ListItem>
+              <ListItem>
+                {" "}
+                Amounts less than 0.00000001 MFX token will not be migrated.{" "}
               </ListItem>
             </UnorderedList>
             <Text mb={4}>
