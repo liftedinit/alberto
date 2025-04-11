@@ -66,6 +66,15 @@ export const AmountAssetStep = ({
 
   const AmountAssetStepValidationSchema = Yup.object().shape({
     assetAmount: Yup.string()
+      .test("is-valid-number", "Invalid number format", value => {
+        if (!value) return false
+        try {
+          const bigValue = Big(value)
+          return !bigValue.isNaN() && !bigValue.isNegative()
+        } catch (error) {
+          return false
+        }
+      })
       .test(
         "is-amount-in-range",
         "Amount must be greater than 1e-8 and less than or equal to your balance",
@@ -79,6 +88,11 @@ export const AmountAssetStep = ({
           }
         },
       )
+      .test("decimal-places", "Cannot exceed 8 decimal places", value => {
+        if (!value) return false
+        const decimalPlaces = value.split(".")[1]
+        return !decimalPlaces || decimalPlaces.length <= 8
+      })
       .required("Required"),
     assetSymbol: Yup.string().required("Required"),
   })
