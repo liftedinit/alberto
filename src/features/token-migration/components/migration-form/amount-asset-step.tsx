@@ -69,8 +69,7 @@ export const AmountAssetStep = ({
       .test("is-valid-number", "Invalid number format", value => {
         if (!value) return false
         try {
-          const bigValue = Big(value)
-          return !bigValue.isNaN() && !bigValue.isNegative()
+          Big(value)
         } catch (error) {
           return false
         }
