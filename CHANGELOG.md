@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.1] - 2025-05-13
+
+### Bug Fixes
+
+- New 1:100 split and more validation ([#171](https://github.com/liftedinit/alberto/issues/171))
+- Group destination address ([#172](https://github.com/liftedinit/alberto/issues/172))
+
+### Features
+
+- Token migration portal ([#159](https://github.com/liftedinit/alberto/issues/159))
+
 ## [0.3.0] - 2025-03-24
 
 ### Build
