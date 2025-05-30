@@ -122,13 +122,14 @@ export const AmountAssetStep = ({
             <UnorderedList mb={2} mt={2} pl={4}>
               <ListItem>
                 {" "}
-                For every 1 MFX token you migrate, you will receive 10 MFX
-                tokens on the MANIFEST chain.{" "}
+                For every 1 MFX token you migrate from the MANY chain, you will
+                receive 10 MFX tokens on the MANIFEST chain.{" "}
               </ListItem>
               <ListItem>
                 {" "}
                 Even smaller amounts are adjusted accordingly: migrating
-                0.0000001 MFX token will result in receiving 1 umfx token.{" "}
+                0.0000001 MFX token from the MANY chain will result in receiving
+                0.000001 MFX token on the MANIFEST chain.{" "}
               </ListItem>
               <ListItem>
                 {" "}
