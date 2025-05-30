@@ -224,7 +224,7 @@ a.  Accepted Tokens. Only Alpha Tokens are accepted in exchange for
     type of token or currency.
 
 b.  Migration Period. Alpha Tokens may be submitted in exchange for
-    Mainnet Tokens, on a 1-for-100 ratio, beginning on March 31st,
+    Mainnet Tokens, on a 1-for-10 ratio, beginning on March 31st,
     2025, at 12:00 pm EST and will continue indefinitely until the
     Alpha Network is no longer supported by The Lifted Initiative,
     Inc. (issuer of the Alpha Tokens) (the "Migration Period").
@@ -264,7 +264,7 @@ e.  Transferability of Mainnet Tokens. Notwithstanding any other
     sale and/or transfer of Mainnet Tokens.
 
 f.  Excluded Contributions. The Token Migration involves only the
-    exchange of Alpha Tokens for Mainnet Tokens on a 1-for-100
+    exchange of Alpha Tokens for Mainnet Tokens on a 1-for-10
     basis. Any other type of consideration, including any type of
     fiat or cryptocurrency will not be accepted.
 
