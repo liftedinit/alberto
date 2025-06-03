@@ -77,21 +77,21 @@ export const AmountAssetStep = ({
       })
       .test(
         "is-amount-in-range",
-        "Amount must be greater than 1e-8 and less than or equal to your balance",
+        "Amount must be greater than 1e-7 and less than or equal to your balance",
         function (value) {
           if (value === undefined) return false
           try {
             const bigValue = Big(value)
-            return bigValue.gte(1e-8) && bigValue.lte(currentMaxAmount)
+            return bigValue.gte(1e-7) && bigValue.lte(currentMaxAmount)
           } catch (error) {
             return false
           }
         },
       )
-      .test("decimal-places", "Cannot exceed 8 decimal places", value => {
+      .test("decimal-places", "Cannot exceed 7 decimal places", value => {
         if (!value) return false
         const decimalPlaces = value.split(".")[1]
-        return !decimalPlaces || decimalPlaces.length <= 8
+        return !decimalPlaces || decimalPlaces.length <= 7
       })
       .required("Required"),
     assetSymbol: Yup.string().required("Required"),
@@ -116,23 +116,24 @@ export const AmountAssetStep = ({
             </Text>
             <Text mb={4}>
               As part of our migration to the MANIFEST chain, the amount of any
-              asset you transfer will be adjusted according to a 1:100 token
+              asset you transfer will be adjusted according to a 1:10 token
               migration ratio. This means:
             </Text>
             <UnorderedList mb={2} mt={2} pl={4}>
               <ListItem>
                 {" "}
-                For every 1 MFX token you migrate, you will receive 100 MFX
-                tokens on the MANIFEST chain.{" "}
+                For every 1 MFX token you migrate from the MANY chain, you will
+                receive 10 MFX tokens on the MANIFEST chain.{" "}
               </ListItem>
               <ListItem>
                 {" "}
                 Even smaller amounts are adjusted accordingly: migrating
-                0.00000001 MFX token will result in receiving 1 umfx token.{" "}
+                0.0000001 MFX token from the MANY chain will result in receiving
+                0.000001 MFX token on the MANIFEST chain.{" "}
               </ListItem>
               <ListItem>
                 {" "}
-                Amounts less than 0.00000001 MFX token will not be migrated.{" "}
+                Amounts less than 0.0000001 MFX token will not be migrated.{" "}
               </ListItem>
             </UnorderedList>
             <Text mb={4}>
