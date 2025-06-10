@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.1] - 2025-06-10
+
+### Bug Fixes
+
+- Remove migration banner ([#175](https://github.com/liftedinit/alberto/issues/175))
+
 ## [0.4.0] - 2025-06-04
 
 ### Bug Fixes
