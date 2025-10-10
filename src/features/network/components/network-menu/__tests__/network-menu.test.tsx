@@ -2,7 +2,7 @@ import { renderChildren } from "test/render"
 import { NetworkMenu } from "features/network/components/network-menu"
 import { screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { act } from "react-dom/test-utils"
+import { act } from "react"
 
 jest.mock("@liftedinit/ui", () => {
   const originalModule = jest.requireActual("@liftedinit/ui")

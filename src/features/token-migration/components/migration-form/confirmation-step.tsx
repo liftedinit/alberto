@@ -101,7 +101,7 @@ export const ConfirmationStep = ({
           colorScheme="brand.teal"
           onClick={handleSubmit}
           data-testid="next-btn"
-          disabled={!isChecked}
+          isDisabled={!isChecked}
         >
           Submit
         </Button>

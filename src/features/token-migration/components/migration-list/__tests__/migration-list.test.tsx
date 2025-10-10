@@ -7,7 +7,7 @@ import {
   mockUseGetMultisigTxnInfo,
   mockUseTransactionList,
 } from "features/token-migration/test-utils/mocks"
-import { act } from "react-dom/test-utils"
+import { act } from "react"
 
 jest.mock("features/transactions", () => {
   return {

@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event"
 import { addAccountToStore } from "../../../test/account-store"
 import { MockEd25519KeyPairIdentity } from "../../../test/types"
 import { mockNetwork } from "../../../test/network-store"
-import { act } from "react-dom/test-utils"
+import { act } from "react"
 
 jest.mock("features/network/network-provider", () => {
   return {

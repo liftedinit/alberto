@@ -500,9 +500,9 @@ export function MultisigActions({
             <Button
               variant="outline"
               colorScheme="brand.teal"
-              isFullWidth
+              w="full"
               isLoading={isApproveLoading}
-              disabled={isLoading}
+              isDisabled={isLoading}
               onClick={e => {
                 e.preventDefault()
                 resetErrors()
@@ -523,10 +523,10 @@ export function MultisigActions({
 
           {canRevoke && (
             <Button
-              disabled={isLoading}
+              isDisabled={isLoading}
               variant="outline"
               colorScheme="brand.teal"
-              isFullWidth
+              w="full"
               isLoading={isRevokeLoading}
               onClick={e => {
                 e.preventDefault()
@@ -547,10 +547,10 @@ export function MultisigActions({
           )}
           {canWithdraw && (
             <Button
-              disabled={isLoading}
+              isDisabled={isLoading}
               variant="outline"
               colorScheme="brand.teal"
-              isFullWidth
+              w="full"
               isLoading={isWithdrawLoading}
               onClick={e => {
                 e.preventDefault()
@@ -572,10 +572,10 @@ export function MultisigActions({
         </VStack>
         {canExecute && (
           <Button
-            disabled={isLoading}
+            isDisabled={isLoading}
             isLoading={isExecuteLoading}
             colorScheme="brand.teal"
-            isFullWidth
+            w="full"
             onClick={e => {
               e.preventDefault()
               resetErrors()

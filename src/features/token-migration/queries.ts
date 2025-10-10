@@ -17,12 +17,12 @@ const fetchMigrationWhitelist = async (address: string) => {
 export function useMigrationWhitelist(addresses: string[]) {
   // The ordering is guaranteed to be the same as the order of the addresses
   // results[i] is the result of the query for addresses[i]
-  const results = useQueries({
-    queries: addresses.map(address => ({
+  const results = useQueries(
+    addresses.map(address => ({
       queryKey: ["migration-whitelist", address],
       queryFn: () => fetchMigrationWhitelist(address),
     })),
-  })
+  )
 
   const isLoading = results.some(result => result.isLoading)
   const error = results.find(result => result.isError)?.error

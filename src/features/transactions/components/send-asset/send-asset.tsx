@@ -76,7 +76,7 @@ export function SendAssetModal({
           <Button
             width={{ base: "full", md: "auto" }}
             colorScheme="brand.teal"
-            disabled={sendAssetState.isNextDisabled}
+            isDisabled={sendAssetState.isNextDisabled}
             onClick={sendAssetState.formMethods.handleSubmit(
               sendAssetState.onNext,
             )}
@@ -547,7 +547,7 @@ export function SendAssetForm({
             <Flex justifyContent="flex-end" w="full">
               <Button
                 width={{ base: "full", md: "auto" }}
-                disabled={isNextDisabled}
+                isDisabled={isNextDisabled}
                 colorScheme="brand.teal"
                 onClick={formMethods.handleSubmit(onNext)}
               >
@@ -633,7 +633,7 @@ function ConfirmTxnDialog({
         >
           <Button
             width={{ base: "full", md: "auto" }}
-            disabled={isLoading}
+            isDisabled={isLoading}
             onClick={onClose}
             ref={cancelTxnRef}
           >
@@ -643,7 +643,7 @@ function ConfirmTxnDialog({
             width={{ base: "full", md: "auto" }}
             isLoading={isLoading}
             colorScheme="brand.teal"
-            disabled={!isConfirmed || isLoading}
+            isDisabled={!isConfirmed || isLoading}
             form="confirm-txn-form"
             type="submit"
             data-testid="send-txn-btn"

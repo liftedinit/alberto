@@ -23,6 +23,20 @@ jest.mock("features/network/network-provider", () => {
   }
 })
 
+jest.mock("@chakra-ui/media-query", () => {
+  const actual = jest.requireActual("@chakra-ui/media-query")
+  return {
+    ...actual,
+    useBreakpointValue: jest.fn((values: any) => {
+      if (Array.isArray(values)) return values[0]
+      if (values && typeof values === "object") {
+        return values.base ?? values.sm ?? values.md ?? values.lg ?? values.xl
+      }
+      return values
+    }),
+  }
+})
+
 beforeAll(() => {
   jest.spyOn(console, "error").mockImplementation(() => {})
 })

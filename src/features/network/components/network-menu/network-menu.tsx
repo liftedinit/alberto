@@ -50,7 +50,7 @@ export function NetworkMenu() {
           as={Button}
           rightIcon={<ChevronDownIcon />}
           leftIcon={
-            activeNetwork ? <Circle bg="green.400" size="10px" /> : null
+            activeNetwork ? <Circle bg="green.400" size="10px" /> : undefined
           }
           size="md"
           minWidth="100px"
@@ -89,7 +89,7 @@ export function NetworkMenu() {
           <MenuDivider mt={0} />
           <MenuItem as={Box} _hover={{ backgroundColor: "transparent" }}>
             <Button
-              isFullWidth
+              w="full"
               onClick={() => {
                 setEditingNetwork(undefined)
                 onOpen()
@@ -283,7 +283,7 @@ function NetworkDetailsModal({
                 variant="filled"
                 onChange={onChange}
                 value={formValues.name}
-                disabled={IS_MANIFEST}
+                isDisabled={IS_MANIFEST}
               />
             </FormControl>
             <FormControl isRequired>
@@ -321,7 +321,7 @@ function NetworkDetailsModal({
                   borderTopLeftRadius={0}
                   borderBottomLeftRadius={0}
                   colorScheme="red"
-                  disabled={deleteUrl !== formValues.url}
+                  isDisabled={deleteUrl !== formValues.url}
                   onClick={() => onDelete(network[0])}
                   data-testid="remove network button"
                 >

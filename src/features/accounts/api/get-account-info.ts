@@ -53,11 +53,11 @@ export function useGetAccountsInfo(accountAddresses: string[]) {
   const activeIdentity = useAccountsStore(s => s.byId.get(s.activeId))
   const address = activeIdentity?.address
 
-  return useQueries({
-    queries: accountAddresses.map(accountAddress => ({
+  return useQueries(
+    accountAddresses.map(accountAddress => ({
       queryKey: ["accountinfo", accountAddress],
       queryFn: () => fetchAccountInfo(n, accountAddress, address),
       enabled: Boolean(accountAddress),
     })),
-  })
+  )
 }

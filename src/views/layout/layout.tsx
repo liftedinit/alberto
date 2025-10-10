@@ -1,4 +1,4 @@
-import React, { Dispatch } from "react"
+import React, { Dispatch, ReactNode } from "react"
 import { Grid, GridItem, GridItemProps } from "@liftedinit/ui"
 import { AppNav } from "./app-nav"
 import { AppMenu } from "./app-menu"
@@ -66,12 +66,21 @@ Layout.Nav = makeLayoutGridItem({
   alignItems: "center",
 })
 
+type RenderChild = (args: { gridItemProps: GridItemProps }) => ReactNode
+
+type FancyGridItemProps = Omit<GridItemProps, "children"> & {
+  children?: ReactNode | RenderChild
+}
+
 function makeLayoutGridItem(defaultGridItemProps: GridItemProps) {
-  return function ({ children, ...props }: GridItemProps) {
-    return typeof children === "function" ? (
-      children({ gridItemprops: defaultGridItemProps })
-    ) : (
-      <GridItem {...defaultGridItemProps} {...props}>
+  return function ({ children, ...props }: FancyGridItemProps) {
+    if (typeof children === "function") {
+      const render = children as RenderChild // type narrow
+      return <>{render({ gridItemProps: defaultGridItemProps })}</>
+    }
+
+    return (
+      <GridItem {...defaultGridItemProps} {...(props as GridItemProps)}>
         {children}
       </GridItem>
     )

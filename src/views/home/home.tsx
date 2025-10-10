@@ -21,7 +21,7 @@ import React from "react"
 import { AnonymousIdentity } from "@liftedinit/many-js"
 
 import { Assets } from "./assets"
-import { UseDisclosureProps } from "@chakra-ui/hooks/src/use-disclosure"
+import { UseDisclosureReturn } from "@chakra-ui/react"
 
 enum TabNames {
   assets = "Assets",
@@ -29,7 +29,7 @@ enum TabNames {
 }
 
 export function Home(
-  props: Readonly<{ modalDisclosure?: UseDisclosureProps }>,
+  props: Readonly<{ modalDisclosure?: UseDisclosureReturn }>,
 ) {
   const onOpenAddAccount = props.modalDisclosure?.onOpen || (() => {})
   const isBase = useIsBaseBreakpoint()

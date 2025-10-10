@@ -8,9 +8,11 @@ import {
 import userEvent from "@testing-library/user-event"
 import { AccountsMenu } from "features/accounts/components/accounts-menu"
 import { renderChildren } from "test/render"
-import { toast } from "@liftedinit/ui"
+import { createStandaloneToast } from "@liftedinit/ui"
 import { MockAccount, MockEd25519KeyPairIdentity } from "test/types"
 import { addAccountToStore, setupMnemonicMock } from "test/account-store"
+
+const { toast } = createStandaloneToast()
 
 const mockAccount1 = {
   name: "m1234",

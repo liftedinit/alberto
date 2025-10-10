@@ -8,9 +8,11 @@ import { Home } from "views/home"
 import { renderChildren } from "test/render"
 import { addAccountToStore } from "test/account-store"
 import { MockEd25519KeyPairIdentity } from "test/types"
-import { base64ToArrayBuffer, toast } from "@liftedinit/ui"
+import { base64ToArrayBuffer, createStandaloneToast } from "@liftedinit/ui"
 import { mockNetwork } from "test/network-store"
 import userEvent from "@testing-library/user-event"
+
+const { toast } = createStandaloneToast()
 
 const privKey =
   "dyhNjZFhrjw7w40CB/ETD7XkwjKpJq3T9CnADVjGI8PVnjGlzRLgVLr0z4Ylqm2BDJO5HAsoEy/Amo83hcpFxg=="
@@ -31,6 +33,20 @@ jest.mock("features/network/network-provider", () => {
     ...jest.requireActual("features/network/network-provider"),
     useNetworkContext: () => ({
       query: mockNetwork(),
+    }),
+  }
+})
+
+jest.mock("@chakra-ui/media-query", () => {
+  const actual = jest.requireActual("@chakra-ui/media-query")
+  return {
+    ...actual,
+    useBreakpointValue: jest.fn((values: any) => {
+      if (Array.isArray(values)) return values[0]
+      if (values && typeof values === "object") {
+        return values.base ?? values.sm ?? values.md ?? values.lg ?? values.xl
+      }
+      return values
     }),
   }
 })

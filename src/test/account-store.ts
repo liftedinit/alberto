@@ -1,5 +1,5 @@
 import { MockAccount, MockEd25519KeyPairIdentity } from "./types"
-import { act } from "react-dom/test-utils"
+import { act } from "react"
 import { useAccountsStore } from "../features/accounts"
 import { Ed25519KeyPairIdentity } from "@liftedinit/many-js"
 
@@ -31,25 +31,23 @@ export const setupMnemonicMock = () => {
 }
 
 export function addAccountToStore(account: MockAccount) {
-  act(() =>
-    useAccountsStore.setState(s => {
-      const nextId = s.nextId + 1
-      return {
-        ...s,
-        activeId: s.nextId,
-        nextId: nextId,
-        byId: new Map([
-          ...s.byId.entries(),
-          [
-            s.nextId,
-            {
-              address: account.address,
-              name: account.name,
-              identity: account.identity,
-            },
-          ],
-        ]),
-      }
-    }),
-  )
+  useAccountsStore.setState(s => {
+    const nextId = s.nextId + 1
+    return {
+      ...s,
+      activeId: s.nextId,
+      nextId: nextId,
+      byId: new Map([
+        ...s.byId.entries(),
+        [
+          s.nextId,
+          {
+            address: account.address,
+            name: account.name,
+            identity: account.identity,
+          },
+        ],
+      ]),
+    }
+  })
 }

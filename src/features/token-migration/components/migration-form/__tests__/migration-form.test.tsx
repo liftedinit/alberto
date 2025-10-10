@@ -4,7 +4,7 @@ import { useTransactionsList } from "features/transactions"
 import { screen } from "@testing-library/react"
 import { useCombinedAccountInfo } from "features/accounts/queries"
 import userEvent from "@testing-library/user-event"
-import { act } from "react-dom/test-utils"
+import { act } from "react"
 import { ILLEGAL_IDENTITY } from "@liftedinit/many-js"
 import { useNavigate } from "react-router-dom"
 import {

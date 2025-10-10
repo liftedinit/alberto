@@ -56,7 +56,7 @@ export function AssetSelector({
             <ListItem
               key={asset.identity}
               as={Button}
-              isFullWidth
+              w="full"
               variant="ghost"
               justifyContent="flex-start"
               aria-label="select asset"
