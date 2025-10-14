@@ -21,22 +21,17 @@ import React from "react"
 import { get, useForm } from "react-hook-form"
 import { useMutation, useQuery } from "react-query"
 
-import env from "@beam-australia/react-env"
 import { Ed25519KeyPairIdentity } from "@liftedinit/many-js"
 import {
-  CHAIN_NAMESPACES,
-  CustomChainConfig,
   UserInfo,
-  WALLET_ADAPTERS,
-} from "@web3auth/base"
-import { Web3Auth, Web3AuthOptions } from "@web3auth/modal"
-import { CommonPrivateKeyProvider } from "@web3auth/base-provider"
-import { AuthAdapter } from "@web3auth/auth-adapter"
+  Web3Auth,
+  Web3AuthOptions,
+  WALLET_CONNECTORS,
+} from "@web3auth/modal"
 
-const WEB3AUTH_CLIENT_ID = env("WEB3AUTH_CLIENTID")
-const WEB3AUTH_NETWORK = (env("WEB3AUTH_NETWORK") ?? "testnet") as
-  | "testnet"
-  | "cyan"
+const WEB3AUTH_CLIENT_ID = import.meta.env.VITE_WEB3AUTH_CLIENTID
+const WEB3AUTH_NETWORK =
+  import.meta.env.VITE_WEB3AUTH_NETWORK ?? ("testnet" as "testnet" | "cyan")
 
 export const LOGIN_PROVIDER = {
   GOOGLE: "google",
@@ -88,7 +83,7 @@ export function SocialLogin({ onSuccess }: { onSuccess: () => void }) {
         })
       }
 
-      const loginType = isEmailPasswordless ? "email" : userInfo?.typeOfLogin
+      const loginType = isEmailPasswordless ? "email" : userInfo?.authConnection
 
       await createAccount({
         name: `${userInfo?.name} (${loginType})`,
@@ -205,23 +200,12 @@ function useWeb3auth() {
         return web3authRef.current
       }
       try {
-        const chainConfig: CustomChainConfig = {
-          chainId: "other",
-          rpcTarget: "other",
-          chainNamespace: CHAIN_NAMESPACES.OTHER,
-        }
-        const privateKeyProvider = new CommonPrivateKeyProvider({
-          config: { chainConfig },
-        })
         const web3AuthOptions: Web3AuthOptions = {
           clientId: WEB3AUTH_CLIENT_ID,
           web3AuthNetwork: WEB3AUTH_NETWORK,
-          privateKeyProvider,
         }
 
         const web3authCore = new Web3Auth(web3AuthOptions)
-        const authAdapter = new AuthAdapter({})
-        web3authCore.configureAdapter(authAdapter)
 
         await web3authCore.init()
         web3authRef.current = web3authCore
@@ -252,12 +236,13 @@ function useWeb3auth() {
       isEmailPasswordless: boolean
       loginHint?: string
     }) => {
-      const web3authProvider = await web3auth?.connectTo(WALLET_ADAPTERS.AUTH, {
-        loginProvider,
-        ...(isEmailPasswordless && loginHint
-          ? { login_hint: loginHint }
-          : null),
-      })
+      const web3authProvider = await web3auth?.connectTo(
+        WALLET_CONNECTORS.AUTH,
+        {
+          authConnection: loginProvider,
+          loginHint: loginHint,
+        },
+      )
       if (web3authProvider === null) throw new Error("web3auth connect error")
       const privateKey = (await web3authProvider?.request({
         method: "private_key",

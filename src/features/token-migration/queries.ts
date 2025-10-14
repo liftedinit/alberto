@@ -1,7 +1,6 @@
 import { useQueries } from "react-query"
-import env from "@beam-australia/react-env"
 
-const TALIB_ROOT_URL = env("TALIB_ROOT_URL")
+const TALIB_ROOT_URL = import.meta.env.VITE_TALIB_ROOT_URL
 
 // Separate fetch function for reusability
 const fetchMigrationWhitelist = async (address: string) => {
