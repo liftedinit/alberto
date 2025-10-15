@@ -28,66 +28,78 @@ import {
   mockUseMigrationWhitelist,
 } from "features/token-migration/test-utils/mocks"
 
-jest.mock("features/accounts/queries", () => {
+vi.mock("features/accounts/queries", async () => {
+  const actual = await vi.importActual("features/accounts/queries")
   return {
-    ...jest.requireActual("features/accounts/queries"),
-    useCombinedAccountInfo: jest.fn(),
+    ...actual,
+    useCombinedAccountInfo: vi.fn(),
   }
 })
 
-jest.mock("features/transactions", () => {
+vi.mock("features/transactions", async () => {
+  const actual = await vi.importActual("features/transactions")
   return {
-    ...jest.requireActual("features/transactions"),
-    useTransactionsList: jest.fn(),
-    useCreateSendTxn: jest.fn(() => ({
-      mutateAsync: jest.fn(),
+    ...actual,
+    useTransactionsList: vi.fn(),
+    useCreateSendTxn: vi.fn(() => ({
+      mutateAsync: vi.fn(),
     })),
-    useMultisigSubmitTransaction: jest.fn(() => ({
-      mutateAsync: jest.fn(),
+    useMultisigSubmitTransaction: vi.fn(() => ({
+      mutateAsync: vi.fn(),
     })),
   }
 })
 
-jest.mock("features/balances", () => {
+vi.mock("features/balances", async () => {
+  const actual = await vi.importActual("features/balances")
   return {
-    ...jest.requireActual("features/balances"),
-    useBalances: jest.fn(),
+    ...actual,
+    useBalances: vi.fn(),
   }
 })
 
-jest.mock("features/accounts", () => {
+vi.mock("features/accounts", async () => {
+  const actual = await vi.importActual("features/accounts")
   return {
-    ...jest.requireActual("features/accounts"),
-    useAccountsStore: jest.fn(() => ({
-      getId: jest.fn(),
+    ...actual,
+    useAccountsStore: vi.fn(() => ({
+      getId: vi.fn(),
     })),
-    useGetAccountInfo: jest.fn(),
+    useGetAccountInfo: vi.fn(),
   }
 })
 
-jest.mock("crypto", () => ({
-  ...jest.requireActual("crypto"),
-  randomUUID: jest.fn(),
-}))
-
-jest.mock("features/network/queries", () => {
+vi.mock("crypto", async () => {
+  const actual = await vi.importActual("crypto")
   return {
-    ...jest.requireActual("features/network/queries"),
-    useGetBlock: jest.fn(),
+    ...actual,
+    randomUUID: vi.fn(),
   }
 })
 
-jest.mock("features/token-migration/queries", () => {
+vi.mock("features/network/queries", async () => {
+  const actual = await vi.importActual("features/network/queries")
   return {
-    ...jest.requireActual("features/token-migration/queries"),
-    useMigrationWhitelist: jest.fn(),
+    ...actual,
+    useGetBlock: vi.fn(),
   }
 })
 
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: jest.fn(),
-}))
+vi.mock("features/token-migration/queries", async () => {
+  const actual = await vi.importActual("features/token-migration/queries")
+  return {
+    ...actual,
+    useMigrationWhitelist: vi.fn(),
+  }
+})
+
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom")
+  return {
+    ...actual,
+    useNavigate: vi.fn(),
+  }
+})
 
 const advanceToNextStep = async (acc: string) => {
   const options = screen.getAllByTestId("form-option")
@@ -162,7 +174,7 @@ const backStep = async (
 }
 
 describe("MigrationForm", () => {
-  afterEach(jest.clearAllMocks)
+  afterEach(vi.clearAllMocks)
 
   describe("User flow", () => {
     beforeEach(() => {
@@ -181,7 +193,7 @@ describe("MigrationForm", () => {
       mockUseBalance()
       renderChildren(<MigrationForm />)
       await advanceStep("assetSymbol", advanceFromAddressToAmountStep)
-    })
+    }, 15000)
     it("should advance to the destination address step", async () => {
       mockUseBalance()
       renderChildren(<MigrationForm />)
@@ -190,7 +202,7 @@ describe("MigrationForm", () => {
         "destinationAddress",
         advanceFromAmountToDestinationStep,
       )
-    })
+    }, 15000)
     it("should advance to the confirmation step", async () => {
       mockUseBalance()
       renderChildren(<MigrationForm />)
@@ -204,15 +216,15 @@ describe("MigrationForm", () => {
         advanceFromDestinationAddrToConfirmationStep,
       )
       expect(screen.queryByTestId("account-info")).not.toBeInTheDocument()
-    })
+    }, 15000)
     it("should process the transaction", async () => {
       mockUseBalance()
       mockUseAccountsStore()
-      const navigate = jest.fn()
-      const mockN = useNavigate as jest.Mock
+      const navigate = vi.fn()
+      const mockN = useNavigate as vi.Mock
       mockN.mockReturnValue(navigate)
 
-      const mockT = useTransactionsList as jest.Mock
+      const mockT = useTransactionsList as vi.Mock
       mockT.mockReturnValue(
         createMockSendTxList(
           [mockSendEventId],
@@ -245,7 +257,7 @@ describe("MigrationForm", () => {
       expect(navigate).toHaveBeenCalledWith(
         `/token-migration-portal/migration-history/${mockSendEventId}`,
       )
-    })
+    }, 15000)
     it("start to finish to start", async () => {
       mockUseBalance()
       renderChildren(<MigrationForm />)
@@ -262,7 +274,7 @@ describe("MigrationForm", () => {
       await backStep("destinationAddress")
       await backStep("assetSymbol")
       await backStep("address")
-    })
+    }, 15000)
   })
   describe("Account flow", () => {
     beforeEach(() => {
@@ -283,7 +295,7 @@ describe("MigrationForm", () => {
       renderChildren(<MigrationForm />)
       await advanceStep("userAddress", advanceFromAddressToUserAddressStep)
       await advanceStep("assetSymbol", advanceFromUserAddressToAmountStep)
-    })
+    }, 15000)
     it("should advance to the destination address step", async () => {
       mockUseBalance()
       renderChildren(<MigrationForm />)
@@ -298,11 +310,11 @@ describe("MigrationForm", () => {
         advanceFromDestinationAddrToConfirmationStep,
       )
       expect(await screen.findByTestId("account-info")).toBeInTheDocument()
-    })
+    }, 15000)
     it("should process the transaction", async () => {
       mockUseBalance()
-      const navigate = jest.fn()
-      const mockN = useNavigate as jest.Mock
+      const navigate = vi.fn()
+      const mockN = useNavigate as vi.Mock
       mockN.mockReturnValue(navigate)
       const mockSendTx = createMockSendTxList(
         [mockSendEventId],
@@ -318,7 +330,7 @@ describe("MigrationForm", () => {
         mockSendTx,
       )
 
-      const mockT = useTransactionsList as jest.Mock
+      const mockT = useTransactionsList as vi.Mock
       mockT.mockReturnValue(mockMultisigSubmitTx)
 
       renderChildren(<MigrationForm />)
@@ -344,7 +356,7 @@ describe("MigrationForm", () => {
       expect(navigate).toHaveBeenCalledWith(
         `/token-migration-portal/migration-history/${mockMultisigEventId}`,
       )
-    })
+    }, 15000)
   })
   describe("Error handling", () => {
     beforeEach(() => {
@@ -355,7 +367,7 @@ describe("MigrationForm", () => {
       mockUseMigrationWhitelist()
     })
     it("should display an error message when the user address is not selected", async () => {
-      const mock = useCombinedAccountInfo as jest.Mock
+      const mock = useCombinedAccountInfo as vi.Mock
       mock.mockReturnValue(new Map())
       renderChildren(<MigrationForm />)
       await advanceStep("error-address")

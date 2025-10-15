@@ -11,6 +11,7 @@ import { MockEd25519KeyPairIdentity } from "test/types"
 import { base64ToArrayBuffer, createStandaloneToast } from "@liftedinit/ui"
 import { mockNetwork } from "test/network-store"
 import userEvent from "@testing-library/user-event"
+import { act } from "react"
 
 const { toast } = createStandaloneToast()
 
@@ -28,20 +29,21 @@ const mockAccount1 = {
 }
 
 // TODO: After multiple attempts, I don't know how to have this mock scoped to a single test.
-jest.mock("features/network/network-provider", () => {
+vi.mock("features/network/network-provider", async () => {
+  const actual = await vi.importActual("features/network/network-provider")
   return {
-    ...jest.requireActual("features/network/network-provider"),
+    ...actual,
     useNetworkContext: () => ({
       query: mockNetwork(),
     }),
   }
 })
 
-jest.mock("@chakra-ui/media-query", () => {
-  const actual = jest.requireActual("@chakra-ui/media-query")
+vi.mock("@chakra-ui/media-query", () => {
+  const actual = vi.importActual("@chakra-ui/media-query")
   return {
     ...actual,
-    useBreakpointValue: jest.fn((values: any) => {
+    useBreakpointValue: vi.fn((values: any) => {
       if (Array.isArray(values)) return values[0]
       if (values && typeof values === "object") {
         return values.base ?? values.sm ?? values.md ?? values.lg ?? values.xl
@@ -57,9 +59,9 @@ describe("Home Tests", () => {
     const toasts = screen.queryAllByRole("listitem")
     await Promise.all(toasts.map(toasts => waitForElementToBeRemoved(toasts)))
 
-    jest.resetModules()
-    jest.resetAllMocks()
-    jest.clearAllMocks()
+    vi.resetModules()
+    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
   it("should render home page without crashing", () => {
     renderChildren(<Home />)
@@ -71,7 +73,7 @@ describe("Home Tests", () => {
   })
   it("should list the balances of each token the account holds", async function () {
     renderChildren(<Home />)
-    addAccountToStore(mockAccount1)
+    act(() => addAccountToStore(mockAccount1))
     expect(await screen.findByText(/abc/i)).toBeInTheDocument()
     expect(await screen.findByText("0.001")).toBeInTheDocument()
     expect(await screen.findByText(/ghi/i)).toBeInTheDocument()
@@ -79,7 +81,7 @@ describe("Home Tests", () => {
   })
   it("should show asset details and transactions", async () => {
     renderChildren(<Home />)
-    addAccountToStore(mockAccount1)
+    act(() => addAccountToStore(mockAccount1))
 
     await waitFor(() => screen.findByText(/abc/i))
     const assets = await screen.findAllByLabelText(/asset list item/i)
@@ -107,7 +109,7 @@ describe("Home Tests", () => {
   })
   it("should show list of account transaction history", async () => {
     renderChildren(<Home />)
-    addAccountToStore(mockAccount1)
+    act(() => addAccountToStore(mockAccount1))
     // TODO: Enabling the following lines cause a
     //       Warning: Can't perform a React state update on an unmounted component.
     //       This is a no-op, but it indicates a memory leak in your application.

@@ -9,13 +9,13 @@ import {
   AlertTitle,
   AlertDescription,
   Table,
+  Thead,
   Tbody,
   Tr,
   Td,
   Th,
 } from "@liftedinit/ui"
 import { useEffect, useState } from "react"
-import { Thead } from "@chakra-ui/react"
 import { useSingleTransactionList } from "features/transactions/queries"
 import { ShareLocationButton } from "features/utils/share-button"
 import { extractTransactionHash } from "features/token-migration/block-utils"

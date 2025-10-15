@@ -150,7 +150,7 @@ const mockMultiSigTx = createMockMultisigSubmitEvent(
 )
 
 const createMock = (hook: unknown, implementation: any) => {
-  const mock = hook as jest.Mock
+  const mock = hook as vi.Mock
   mock.mockImplementation(() => implementation)
 }
 
@@ -165,8 +165,8 @@ export const mockUseAccountsStore = () => {
       },
     ],
   ])
-  const mockGetId = jest.fn().mockReturnValue(1)
-  const mockSetActiveId = jest.fn().mockResolvedValue(1)
+  const mockGetId = vi.fn().mockReturnValue(1)
+  const mockSetActiveId = vi.fn().mockResolvedValue(1)
   createMock(useAccountsStore, {
     getId: mockGetId,
     setActiveId: mockSetActiveId,
@@ -244,7 +244,7 @@ export const mockUseBlock = (hash: string = mockHash) => {
 }
 export const mockUseCreateSendTransaction = () => {
   createMock(useCreateSendTxn, {
-    mutate: jest.fn().mockResolvedValue(true),
+    mutate: vi.fn().mockResolvedValue(true),
   })
 }
 

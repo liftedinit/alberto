@@ -11,6 +11,7 @@ import {
   Text,
   VStack,
   useIsBaseBreakpoint,
+  UseDisclosureReturn,
 } from "@liftedinit/ui"
 import { Layout } from "views"
 import { useAccountsStore } from "features/accounts"
@@ -21,7 +22,6 @@ import React from "react"
 import { AnonymousIdentity } from "@liftedinit/many-js"
 
 import { Assets } from "./assets"
-import { UseDisclosureReturn } from "@chakra-ui/react"
 
 enum TabNames {
   assets = "Assets",

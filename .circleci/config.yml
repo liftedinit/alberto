@@ -19,7 +19,7 @@ jobs:
       - install-packages
       - run:
           name: Run tests
-          command: npm run test -- --coverage
+          command: npm run test:run -- --coverage
       - codecov/upload
       - when:
           condition:

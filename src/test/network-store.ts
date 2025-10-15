@@ -75,18 +75,18 @@ export const mockNetwork = () => {
   return {
     url: "mock/api",
     events: {
-      list: jest.fn().mockImplementation(listEvents),
+      list: vi.fn().mockImplementation(listEvents),
     },
     ledger: {
-      info: jest.fn().mockImplementation(getLedgerInfo),
-      balance: jest.fn().mockImplementation(getBalance),
+      info: vi.fn().mockImplementation(getLedgerInfo),
+      balance: vi.fn().mockImplementation(getBalance),
     },
   }
 }
 
 export const mockErrorNetwork = () => {
   const network = mockNetwork()
-  network.ledger.balance = jest
+  network.ledger.balance = vi
     .fn()
     .mockRejectedValue(new Error("an unexpected error occurred"))
   return network

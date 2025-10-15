@@ -1,7 +1,14 @@
 import React, { useState } from "react"
-import { Box, Button, Link, Text } from "@chakra-ui/react"
 import { StepNames, TokenMigrationFormData } from "./types"
-import { Checkbox, HStack, Modal } from "@liftedinit/ui"
+import {
+  Checkbox,
+  HStack,
+  Modal,
+  Box,
+  Button,
+  Link,
+  Text,
+} from "@liftedinit/ui"
 import { TokenMigrationTermsAndConditions } from "./terms-and-conditions"
 
 interface ConfirmationStepProps {

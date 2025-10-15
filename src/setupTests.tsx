@@ -1,13 +1,32 @@
+;(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true
 import "@testing-library/jest-dom"
-import { TextEncoder, TextDecoder } from "util"
 
-require("./test/web3authMock")
+const matchMediaStub = (query: string) => {
+  return {
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  } as unknown as MediaQueryList
+}
 
-jest.mock("react-dom/test-utils", () => {
-  const React = require("react")
-  return { act: React.act }
+vi.stubGlobal("matchMedia", matchMediaStub)
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: matchMediaStub,
 })
 
-global.TextEncoder = TextEncoder
-// @ts-ignore
-global.TextDecoder = TextDecoder
+if (
+  typeof globalThis.TextEncoder === "undefined" ||
+  typeof globalThis.TextDecoder === "undefined"
+) {
+  const { TextEncoder, TextDecoder } = await import("node:util")
+  globalThis.TextEncoder = globalThis.TextEncoder ?? TextEncoder
+  globalThis.TextDecoder = globalThis.TextDecoder ?? TextDecoder
+}
+
+require("./test/web3authMock")

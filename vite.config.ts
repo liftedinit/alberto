@@ -17,8 +17,6 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      // CRA's "proxy": "https://qa.liftedinit.tech/api"
-      // becomes Vite's explicit proxy:
       "/api": {
         target: "https://qa.liftedinit.tech",
         changeOrigin: true,
@@ -34,7 +32,6 @@ export default defineConfig({
     "process.env": {},
   },
   resolve: {
-    // If you had aliases in rewires, put them here.
     alias: {
       stream: "stream-browserify",
       process: "process/browser",
@@ -45,8 +42,7 @@ export default defineConfig({
       lib: fileURLToPath(new URL("./src/lib", import.meta.url)),
       public: fileURLToPath(new URL("./public", import.meta.url)),
       shared: fileURLToPath(new URL("./src/shared", import.meta.url)),
-      // example:
-      // "@": fileURLToPath(new URL("./src", import.meta.url)),
+      test: fileURLToPath(new URL("./src/test", import.meta.url)),
     },
   },
   optimizeDeps: {

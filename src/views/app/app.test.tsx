@@ -11,11 +11,11 @@ describe("App", () => {
         matches: false,
         media: query,
         onchange: null,
-        addListener: jest.fn(), // deprecated
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
+        addListener: vi.fn(), // deprecated
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
       }),
     })
   })
@@ -28,24 +28,9 @@ describe("App", () => {
   })
 
   it("renders the layout grid after the splash screen", async () => {
-    jest.useFakeTimers() // if App uses setTimeout to dismiss splash
     renderChildren(<App />)
 
-    act(() => {
-      jest.runAllTimers() // advance past splash delay
-    })
-
-    // If there’s an animation/transition gate, you may need this:
-    // fireEvent.transitionEnd(document.querySelector('[data-testid="splash-screen"]')!)
-
-    // drive timers forward if needed
-    // act(() => {
-    //   jest.runOnlyPendingTimers()
-    // or: jest.advanceTimersByTime(3000)
-    // })
-
-    // Now assert the layout
+    await waitForElementToBeRemoved(() => screen.getByTestId("splash-screen"))
     expect(await screen.findByTestId("layout-grid")).toBeInTheDocument()
-    jest.useRealTimers()
   })
 })

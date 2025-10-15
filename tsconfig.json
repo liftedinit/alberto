@@ -12,7 +12,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strict": true,
-    "types": ["vite/client", "jest", "node"]
+    "types": ["vite/client", "vitest/globals", "node"]
   },
-  "include": ["src"]
+  "include": ["src", "src/types"]
 }

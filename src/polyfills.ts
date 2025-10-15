@@ -1,6 +1,9 @@
 import processShim from "process"
 import { Buffer } from "buffer"
 
+import "core-js/actual/typed-array/from-hex"
+import "core-js/actual/typed-array/to-hex"
+
 ;(globalThis as any).process = Object.assign(
   {}, // don’t mutate the imported object
   processShim,

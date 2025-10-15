@@ -70,7 +70,7 @@ export function SocialLogin({ onSuccess }: { onSuccess: () => void }) {
       })
 
       const identity = Ed25519KeyPairIdentity.fromHex(
-        Buffer.from(privateKey, "hex"),
+        Uint8Array.fromHex(privateKey),
       )
       const address = (await identity.getAddress()).toString()
 
@@ -230,10 +230,8 @@ function useWeb3auth() {
     async ({
       loginProvider,
       loginHint,
-      isEmailPasswordless,
     }: {
       loginProvider: string
-      isEmailPasswordless: boolean
       loginHint?: string
     }) => {
       const web3authProvider = await web3auth?.connectTo(

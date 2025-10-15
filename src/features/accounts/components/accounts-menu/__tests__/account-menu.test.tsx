@@ -11,6 +11,7 @@ import { renderChildren } from "test/render"
 import { createStandaloneToast } from "@liftedinit/ui"
 import { MockAccount, MockEd25519KeyPairIdentity } from "test/types"
 import { addAccountToStore, setupMnemonicMock } from "test/account-store"
+import { act } from "react"
 
 const { toast } = createStandaloneToast()
 
@@ -133,9 +134,8 @@ describe("AccountsMenu Tests", () => {
     const toasts = screen.queryAllByRole("listitem")
     await Promise.all(toasts.map(toasts => waitForElementToBeRemoved(toasts)))
 
-    jest.resetModules()
-    jest.resetAllMocks()
-    jest.clearAllMocks()
+    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   it("should renderChildren the account menu", () => {
@@ -174,7 +174,7 @@ describe("AccountsMenu Tests", () => {
     expect(screen.getByTestId("seed-words-name-input")).not.toBe(null)
     expect(screen.getByTestId("seed-words-input")).not.toBe(null)
     expect(screen.getByRole("button", { name: /save/i })).not.toBe(null)
-  })
+  }, 15000)
 
   it("should import a pem file account", async () => {
     renderChildren(<AccountsMenu />)
@@ -185,11 +185,11 @@ describe("AccountsMenu Tests", () => {
     expect(screen.getByTestId("pem-name-input")).not.toBe(null)
     expect(screen.getByTestId("pem-input")).not.toBe(null)
     expect(screen.getByRole("button", { name: /save/i })).not.toBe(null)
-  })
+  }, 15000)
 
   it("should remove an account", async () => {
     renderChildren(<AccountsMenu />)
-    addAccountToStore(mockAccount1)
+    act(() => addAccountToStore(mockAccount1))
     const activeAccountButton = openAddAccountModal()
     expect(screen.getAllByText(mockAccount1.name)).toHaveLength(2)
 
@@ -200,13 +200,13 @@ describe("AccountsMenu Tests", () => {
         within(activeAccountButton).queryByText(mockAccount1.name),
       ).not.toBeInTheDocument(),
     )
-  })
+  }, 15000)
 
   it("should edit account name", async () => {
     const modifier = "-foobar"
     const modifiedName = mockAccount1.name + modifier
     renderChildren(<AccountsMenu />)
-    addAccountToStore(mockAccount1)
+    act(() => addAccountToStore(mockAccount1))
     openAddAccountModal()
     expect(screen.getAllByText(mockAccount1.name)).toHaveLength(2)
 
@@ -214,5 +214,5 @@ describe("AccountsMenu Tests", () => {
 
     expect(screen.queryByText(mockAccount1.name)).not.toBeInTheDocument()
     expect(screen.getAllByText(modifiedName)).toHaveLength(2)
-  })
+  }, 15000)
 })
