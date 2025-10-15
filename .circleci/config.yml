@@ -63,9 +63,6 @@ jobs:
           name: Build << parameters.app_env >> app
           command: npm run build:<< parameters.app_env >>
       - run:
-          name: Rename dist to build
-          command: mv ./dist ./build
-      - run:
           name: Compress artifacts
           command: >
             tar -cvzf /tmp/artifacts/alberto_<< parameters.app_env >>_<< parameters.release_id >>_${CIRCLE_SHA1}.tar.gz ./build
