@@ -139,7 +139,7 @@ export function ContactsManagement({
           <Button variant="outline">Import Contacts</Button>
         </InputGroup>
         <InputGroup onClick={exportContacts}>
-          <Button variant="outline" disabled={!total}>
+          <Button variant="outline" isDisabled={!total}>
             Export Contacts
           </Button>
         </InputGroup>

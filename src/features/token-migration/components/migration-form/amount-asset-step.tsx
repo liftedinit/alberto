@@ -221,7 +221,7 @@ export const AmountAssetStep = ({
               </HStack>
               {errors.assetAmount && touched.assetAmount ? (
                 <Text color="red.500" data-testid="error-assetAmount">
-                  {errors.assetAmount}
+                  <>{errors.assetAmount}</>
                 </Text>
               ) : null}
             </FormControl>

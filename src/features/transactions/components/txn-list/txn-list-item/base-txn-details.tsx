@@ -6,7 +6,22 @@ import {
   useDisclosure,
 } from "@liftedinit/ui"
 
-export function BaseTxnDetails({ children }: React.PropsWithChildren<{}>) {
+type RenderDetails = (args: {
+  isOpen: boolean
+  onClose: () => void
+}) => React.ReactNode
+
+type BaseTxnDetailsProps = {
+  children: React.ReactNode | RenderDetails
+}
+
+function isRenderDetails(
+  child: BaseTxnDetailsProps["children"],
+): child is RenderDetails {
+  return typeof child === "function"
+}
+
+export function BaseTxnDetails({ children }: BaseTxnDetailsProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
@@ -19,8 +34,7 @@ export function BaseTxnDetails({ children }: React.PropsWithChildren<{}>) {
         icon={<ChevronRightIcon />}
       />
       {isOpen &&
-        typeof children === "function" &&
-        children({ isOpen, onClose })}
+        (isRenderDetails(children) ? children({ isOpen, onClose }) : children)}
     </Flex>
   )
 }

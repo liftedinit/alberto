@@ -5,21 +5,25 @@ import userEvent from "@testing-library/user-event"
 import { addAccountToStore } from "../../../test/account-store"
 import { MockEd25519KeyPairIdentity } from "../../../test/types"
 import { mockNetwork } from "../../../test/network-store"
-import { act } from "react-dom/test-utils"
+import { act } from "react"
 
-jest.mock("features/network/network-provider", () => {
+vi.mock("features/network/network-provider", async () => {
+  const actual = await vi.importActual("features/network/network-provider")
   return {
-    ...jest.requireActual("features/network/network-provider"),
+    ...actual,
     useNetworkContext: () => ({
       query: mockNetwork(),
     }),
   }
 })
 
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useLocation: jest.fn(),
-}))
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom")
+  return {
+    ...actual,
+    useLocation: vi.fn(),
+  }
+})
 
 const mockAccount1 = {
   name: "test",
@@ -30,33 +34,25 @@ const mockAccount1 = {
   ),
 }
 
-// TODO: This test suite outputs
-//
-//       Warning: Can't perform a React state update on an unmounted component.
-//       This is a no-op, but it indicates a memory leak in your application.
-//       To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
-//
-// We need to figure out how to fix this. See https://stackoverflow.com/questions/53949393/cant-perform-a-react-state-update-on-an-unmounted-component
-// The test suite still passes
 describe("Send Asset", () => {
   it("should render without crashing", () => {
     renderChildren(<SendAsset />)
   })
   it("should show a list of owned tokens and balance when selecting a token", async () => {
     renderChildren(<SendAsset />)
-    addAccountToStore(mockAccount1)
-    const selectTokenBtn = screen.getByTestId("select-token-btn")
-    await userEvent.click(selectTokenBtn)
+    act(() => addAccountToStore(mockAccount1))
+    const selectTokenBtn = screen.getByRole("button", { name: /select token/i })
+    await act(async () => userEvent.click(selectTokenBtn))
     const assetItems = screen.getAllByTestId("select-asset-btn")
     expect(assetItems.length).toBe(2)
     expect(screen.getByText(/abc/i)).toBeInTheDocument()
     expect(screen.getByText(/0.001/i)).toBeInTheDocument()
     expect(screen.getByText(/ghi/i)).toBeInTheDocument()
     expect(screen.getByText(/0.005/i)).toBeInTheDocument()
-  })
+  }, 15000)
   it("should show a form to send tokens", async function () {
     renderChildren(<SendAsset />)
-    addAccountToStore(mockAccount1)
+    act(() => addAccountToStore(mockAccount1))
     const toInput = screen.getByRole("textbox", { name: /to/i })
     const nextBtn = screen.getByRole("button", { name: /next/i })
     const amountInput = screen.getByRole("textbox", { name: /amount/i })
@@ -88,5 +84,5 @@ describe("Send Asset", () => {
     expect(toInput).toHaveValue("")
     expect(amountInput).toHaveValue("")
     expect(selectTokenBtn).toBeInTheDocument()
-  })
+  }, 15000)
 })

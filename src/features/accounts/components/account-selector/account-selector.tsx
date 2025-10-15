@@ -13,18 +13,33 @@ import { CreateAccount } from "./create-account"
 
 export type OnAccountSelected = (address: string) => void
 
+type DisclosureRenderProps = {
+  onOpen: () => void
+  onClose: () => void
+  isOpen: boolean
+}
+
+type AccountSelectorProps = {
+  onAccountSelected: OnAccountSelected
+  children?:
+    | React.ReactNode
+    | ((props: DisclosureRenderProps) => React.ReactNode)
+}
+
 export function AccountSelector({
   onAccountSelected,
   children,
-}: React.PropsWithChildren<{
-  onAccountSelected: OnAccountSelected
-}>) {
+}: AccountSelectorProps) {
   const { onClose, isOpen, onOpen } = useDisclosure()
 
   return (
     <>
       {typeof children === "function" ? (
-        children({ onOpen, onClose, isOpen })
+        (children as (props: DisclosureRenderProps) => React.ReactNode)({
+          onOpen,
+          onClose,
+          isOpen,
+        })
       ) : (
         <IconButton
           rounded="full"

@@ -19,6 +19,19 @@ import { BaseTxnDetails } from "./base-txn-details"
 import { AccountRoles } from "features/accounts"
 
 export function AddFeaturesTxnListItem({ txn }: { txn: AddFeaturesEvent }) {
+  type DetailsRender = (args: {
+    isOpen: boolean
+    onClose: () => void
+  }) => JSX.Element
+
+  const renderDetails: DetailsRender = ({ isOpen, onClose }) => (
+    <AddFeaturesEventDetailsModal
+      isOpen={isOpen}
+      onClose={onClose}
+      roles={txn?.roles}
+      features={txn?.features}
+    />
+  )
   return (
     <BaseTxnListItem
       icon={<EditIcon boxSize={5} />}
@@ -26,14 +39,7 @@ export function AddFeaturesTxnListItem({ txn }: { txn: AddFeaturesEvent }) {
       txnTime={txn?.time}
       txnDetails={
         <BaseTxnDetails>
-          {({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => (
-            <AddFeaturesEventDetailsModal
-              isOpen={isOpen}
-              onClose={onClose}
-              roles={txn?.roles}
-              features={txn?.features}
-            />
-          )}
+          {renderDetails as unknown as React.ReactNode}
         </BaseTxnDetails>
       }
     />

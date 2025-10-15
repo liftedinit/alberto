@@ -143,7 +143,7 @@ export function AccountsMenu() {
           >
             <Button
               data-testid="add wallet btn"
-              isFullWidth
+              w="full"
               onClick={onAddModalOpen}
             >
               Add Account

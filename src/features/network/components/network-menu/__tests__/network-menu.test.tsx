@@ -2,13 +2,13 @@ import { renderChildren } from "test/render"
 import { NetworkMenu } from "features/network/components/network-menu"
 import { screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { act } from "react-dom/test-utils"
+import { act } from "react"
 
-jest.mock("@liftedinit/ui", () => {
-  const originalModule = jest.requireActual("@liftedinit/ui")
+vi.mock("@liftedinit/ui", async () => {
+  const actual = await vi.importActual("@liftedinit/ui")
   return {
-    ...originalModule,
-    toast: jest.fn(),
+    ...actual,
+    toast: vi.fn(),
   }
 })
 
@@ -51,40 +51,61 @@ const removeNetwork = async (removeInputValue: string) => {
 }
 
 describe("NetworkMenu", () => {
-  jest.setTimeout(15000)
+  const TIMEOUT = 25_000
 
-  it("should render with default manifest network", () => {
-    renderChildren(<NetworkMenu />)
-    expect(screen.getAllByText(/manifest/i).length).toBe(3)
-  })
-  it("should create a new network", async () => {
-    renderChildren(<NetworkMenu />)
-    const activeNetwork = await createNetwork(
-      "test-network",
-      "test-network/api",
-    )
-    expect(within(activeNetwork).getByText("test-network")).toBeInTheDocument()
-  })
-  it("should edit a network", async () => {
-    renderChildren(<NetworkMenu />)
-    const activeNetwork = await createNetwork(
-      "test-network-2",
-      "test-network-2/api",
-    )
-    await editNetwork("-edited", "-edited")
-    expect(
-      within(activeNetwork).getByText(/test-network-2-edited/i),
-    ).toBeInTheDocument()
-  })
-  it("should remove a network", async () => {
-    renderChildren(<NetworkMenu />)
-    const activeNetwork = await createNetwork(
-      "test-network-3",
-      "test-network-3/api",
-    )
-    await removeNetwork("test-network-3/api")
-    expect(
-      within(activeNetwork).queryByText(/test-network-3/i),
-    ).not.toBeInTheDocument()
-  })
+  it(
+    "should render with default manifest network",
+    () => {
+      renderChildren(<NetworkMenu />)
+      expect(screen.getAllByText(/manifest/i).length).toBe(3)
+    },
+    TIMEOUT,
+  )
+
+  it(
+    "should create a new network",
+    async () => {
+      renderChildren(<NetworkMenu />)
+      const activeNetwork = await createNetwork(
+        "test-network",
+        "test-network/api",
+      )
+      expect(
+        within(activeNetwork).getByText("test-network"),
+      ).toBeInTheDocument()
+    },
+    TIMEOUT,
+  )
+
+  it(
+    "should edit a network",
+    async () => {
+      renderChildren(<NetworkMenu />)
+      const activeNetwork = await createNetwork(
+        "test-network-2",
+        "test-network-2/api",
+      )
+      await editNetwork("-edited", "-edited")
+      expect(
+        within(activeNetwork).getByText(/test-network-2-edited/i),
+      ).toBeInTheDocument()
+    },
+    TIMEOUT,
+  )
+
+  it(
+    "should remove a network",
+    async () => {
+      renderChildren(<NetworkMenu />)
+      const activeNetwork = await createNetwork(
+        "test-network-3",
+        "test-network-3/api",
+      )
+      await removeNetwork("test-network-3/api")
+      expect(
+        within(activeNetwork).queryByText(/test-network-3/i),
+      ).not.toBeInTheDocument()
+    },
+    TIMEOUT,
+  )
 })

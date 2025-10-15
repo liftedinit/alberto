@@ -9,13 +9,13 @@ import {
   AlertTitle,
   AlertDescription,
   Table,
+  Thead,
   Tbody,
   Tr,
   Td,
   Th,
 } from "@liftedinit/ui"
 import { useEffect, useState } from "react"
-import { Thead } from "@chakra-ui/react"
 import { useSingleTransactionList } from "features/transactions/queries"
 import { ShareLocationButton } from "features/utils/share-button"
 import { extractTransactionHash } from "features/token-migration/block-utils"
@@ -24,10 +24,9 @@ import {
   extractEventDetails,
   extractEventMemo,
 } from "features/token-migration/event-details"
-import env from "@beam-australia/react-env"
 
-const TALIB_ROOT_URL = env("TALIB_ROOT_URL")
-const TALIB_NEIGHBORHOOD_ID = env("TALIB_NEIGHBORHOOD_ID")
+const TALIB_ROOT_URL = import.meta.env.VITE_TALIB_ROOT_URL
+const TALIB_NEIGHBORHOOD_ID = import.meta.env.VITE_TALIB_NEIGHBORHOOD_ID
 const TALIB_URL = `${TALIB_ROOT_URL}neighborhoods/${TALIB_NEIGHBORHOOD_ID}/`
 const statusMapping: { [key: number]: string } = {
   1: "Created",

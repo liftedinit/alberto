@@ -18,7 +18,11 @@ export function AppProvider({ children }: AppProviderProps) {
       <QueryClientProvider client={queryClient}>
         <Web3authProvider>
           <NetworkProvider>
-            <HashRouter>{children}</HashRouter>
+            <HashRouter
+              future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+            >
+              {children}
+            </HashRouter>
           </NetworkProvider>
         </Web3authProvider>
       </QueryClientProvider>

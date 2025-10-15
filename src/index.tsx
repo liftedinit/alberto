@@ -1,3 +1,5 @@
+import "./polyfills"
+
 import { App, AppProvider } from "views"
 import React from "react"
 import ReactDOM from "react-dom"

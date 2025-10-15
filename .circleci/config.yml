@@ -19,13 +19,13 @@ jobs:
       - install-packages
       - run:
           name: Run tests
-          command: npm run test -- --coverage
+          command: npm run test:run -- --coverage
       - codecov/upload
       - when:
           condition:
             and:
               - not:
-                  equal: ["20.9.0", << parameters.node_version >>]
+                  equal: ["22.20.0", << parameters.node_version >>]
           steps:
             # node 17+ workaround https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported
             - run:
@@ -35,7 +35,7 @@ jobs:
           condition:
             and:
               - not:
-                  equal: ["20.9.0", << parameters.node_version >>]
+                  equal: ["22.20.0", << parameters.node_version >>]
           steps:
             # node 17+ workaround https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported
             - run:
@@ -54,7 +54,7 @@ jobs:
         default: "RELEASE"
     executor:
       name: node/default
-      tag: "20.9.0"
+      tag: "22.20.0"
     resource_class: large
     steps:
       - install-packages
@@ -114,7 +114,7 @@ workflows:
           matrix:
             parameters:
               node_version:
-                - "20.9.0"
+                - "22.20.0"
       - create:
           name: create-<< matrix.app_env >>
           matrix:

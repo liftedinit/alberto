@@ -136,7 +136,7 @@ export function EditAccountModal({
                   borderTopLeftRadius={0}
                   borderBottomLeftRadius={0}
                   colorScheme="red"
-                  disabled={!addressStr || address !== addressStr}
+                  isDisabled={!addressStr || address !== addressStr}
                   onClick={() => onDelete(account[0])}
                   aria-label="remove account"
                 >

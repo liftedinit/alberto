@@ -24,26 +24,31 @@ import {
   mockUseSingleSendTransactionList,
 } from "features/token-migration/test-utils/mocks"
 
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useParams: jest.fn(),
-}))
-
-jest.mock("features/transactions/queries", () => {
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom")
   return {
-    ...jest.requireActual("features/transactions/queries"),
-    useSingleTransactionList: jest.fn(),
+    ...actual,
+    useParams: vi.fn(),
   }
 })
 
-jest.mock("features/network/queries", () => {
+vi.mock("features/transactions/queries", async () => {
+  const actual = await vi.importActual("features/transactions/queries")
   return {
-    ...jest.requireActual("features/network/queries"),
-    useGetBlock: jest.fn(),
+    ...actual,
+    useSingleTransactionList: vi.fn(),
   }
 })
 
-global.fetch = jest.fn()
+vi.mock("features/network/queries", async () => {
+  const actual = await vi.importActual("features/network/queries")
+  return {
+    ...actual,
+    useGetBlock: vi.fn(),
+  }
+})
+
+global.fetch = vi.fn()
 
 describe("MigrationDetails", () => {
   beforeEach(() => {
@@ -55,7 +60,7 @@ describe("MigrationDetails", () => {
       mockUserAddr2,
     )
   })
-  afterEach(jest.clearAllMocks)
+  afterEach(vi.clearAllMocks)
   it("renders MigrationDetails with MANY and MANIFEST migration details", async () => {
     mockFetchTalib()
     renderChildren(<MigrationDetails />)
@@ -84,13 +89,13 @@ describe("MigrationDetails", () => {
     expect(screen.getByText(mockHash)).toBeInTheDocument()
   })
   it("renders an error message when eventId is invalid", () => {
-    const mock = useParams as jest.Mock
+    const mock = useParams as vi.Mock
     mock.mockImplementation(() => ({ eventId: "invalid_id" }))
     renderChildren(<MigrationDetails />)
     expect(screen.getByText("Invalid event id")).toBeInTheDocument()
   })
   it("renders an error message when transactionList query fails", () => {
-    const mock = useSingleTransactionList as jest.Mock
+    const mock = useSingleTransactionList as vi.Mock
     mock.mockImplementation(() => mockSingleTxListError)
     renderChildren(<MigrationDetails />)
     expect(
@@ -98,7 +103,7 @@ describe("MigrationDetails", () => {
     ).toBeInTheDocument()
   })
   it("renders an error message when block query fails", () => {
-    const mock = useGetBlock as jest.Mock
+    const mock = useGetBlock as vi.Mock
     mock.mockImplementation(() => mockBlockError)
     renderChildren(<MigrationDetails />)
     expect(
@@ -106,9 +111,9 @@ describe("MigrationDetails", () => {
     ).toBeInTheDocument()
   })
   it("renders an error message when eventNumber is out of bounds", () => {
-    const mockP = useParams as jest.Mock
+    const mockP = useParams as vi.Mock
     mockP.mockImplementation(() => ({ eventId: mockInvalidEventId }))
-    const mockT = useSingleTransactionList as jest.Mock
+    const mockT = useSingleTransactionList as vi.Mock
     mockT.mockImplementation(() =>
       createMockSendTxList([mockInvalidEventId], mockUserAddr, mockUserAddr2),
     )
