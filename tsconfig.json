@@ -10,7 +10,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "strict": true,
     "types": ["vite/client", "vitest/globals", "node"]
   },

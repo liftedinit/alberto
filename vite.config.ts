@@ -7,12 +7,12 @@ export default defineConfig({
   plugins: [
     react(),
     nodePolyfills({
+      protocolImports: true,
+      include: ["buffer", "process", "stream", "crypto"],
       globals: {
         Buffer: true,
-        global: true,
         process: true,
       },
-      protocolImports: true,
     }),
   ],
   server: {
@@ -28,6 +28,10 @@ export default defineConfig({
     outDir: "build",
     emptyOutDir: true,
     sourcemap: true,
+    minify: "esbuild",
+  },
+  esbuild: {
+    keepNames: true,
   },
   define: {
     global: "globalThis",
@@ -35,9 +39,11 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      buffer: "buffer",
       stream: "stream-browserify",
       process: "process/browser",
-      "readable-stream": "readable-stream",
+      crypto: "crypto-browserify",
+
       "@": fileURLToPath(new URL("./src", import.meta.url)),
       views: fileURLToPath(new URL("./src/views", import.meta.url)),
       features: fileURLToPath(new URL("./src/features", import.meta.url)),
@@ -48,6 +54,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ["buffer", "process", "stream-browserify", "readable-stream"],
+    include: ["buffer", "process", "stream-browserify", "crypto-browserify"],
   },
 })
