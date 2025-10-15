@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:prod": "cross-env VITE_APP_ENV=production vite build",
-    "build:staging": "cross-env VITE_APP_ENV=staging vite build",
+    "build:prod": "vite build --mode production",
+    "build:staging": "vite build --mode staging",
     "preview": "vite preview",
     "test": "vitest --ui",
     "test:run": "vitest run",
