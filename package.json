@@ -20,7 +20,7 @@
     "@emotion/styled": "11.14.1",
     "@fontsource/roboto": "4.5.8",
     "@liftedinit/many-js": "0.3.0",
-    "@liftedinit/ui": "github:fmorency/lifted-ui#b4a0ea1",
+    "@liftedinit/ui": "github:liftedinit/lifted-ui",
     "@tanstack/react-query": "4.41.0",
     "@web3auth/modal": "10.4.0",
     "crypto-browserify": "3.12.1",
