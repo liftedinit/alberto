@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:prod": "vite build --mode production",
-    "build:staging": "vite build --mode staging",
+    "build:prod": "NODE_OPTIONS=--max-old-space-size=4096 vite build --mode production",
+    "build:staging": "NODE_OPTIONS=--max-old-space-size=4096 vite build --mode staging",
     "preview": "vite preview",
     "test": "vitest --ui",
     "test:run": "vitest run",
