@@ -64,6 +64,9 @@ export function AddAccountModal({
       data-testid="add-account-form-container"
       closeOnOverlayClick={!hasAddMethod}
       closeOnEsc={!hasAddMethod}
+      trapFocus={false}
+      autoFocus={false}
+      lockFocusAcrossFrames={false}
     >
       {!hasAddMethod && (
         <ScaleFade in={true} initialScale={0.9}>
@@ -88,13 +91,13 @@ export function AddAccountModal({
           )}
           {(addMethod === AddAccountMethodTypes.importAuthenticator ||
             addMethod === AddAccountMethodTypes.createAuthenticator) && (
-              <HardwareAuthenticator
-                addMethod={addMethod}
-                setAddMethod={setAddMethod}
-                onSuccess={onSuccess}
-                setShowDefaultFooter={setShowDefaultFooter}
-              />
-            )}
+            <HardwareAuthenticator
+              addMethod={addMethod}
+              setAddMethod={setAddMethod}
+              onSuccess={onSuccess}
+              setShowDefaultFooter={setShowDefaultFooter}
+            />
+          )}
           {showDefaultFooter && (
             <Modal.Footer>
               <Flex justifyContent="flex-end">
