@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.1] - 2025-10-24
+
+### Bug Fixes
+
+- Focus trap ([#177](https://github.com/liftedinit/alberto/issues/177))
+
 ## [0.5.0] - 2025-10-15
 
 ### Miscellaneous Tasks
