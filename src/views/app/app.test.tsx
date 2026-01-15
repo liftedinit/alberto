@@ -1,6 +1,6 @@
 import { App } from "views"
 import { renderChildren } from "test/render"
-import { screen, waitForElementToBeRemoved } from "@testing-library/react"
+import { screen, waitFor } from "@testing-library/react"
 import { act } from "react"
 
 describe("App", () => {
@@ -28,9 +28,23 @@ describe("App", () => {
   })
 
   it("renders the layout grid after the splash screen", async () => {
+    vi.useFakeTimers()
+
     renderChildren(<App />)
 
-    await waitForElementToBeRemoved(() => screen.getByTestId("splash-screen"))
-    expect(await screen.findByTestId("layout-grid")).toBeInTheDocument()
+    // Verify splash screen is shown initially
+    expect(screen.getByTestId("splash-screen")).toBeInTheDocument()
+
+    // Advance timers past the 1 second splash delay
+    await act(async () => {
+      vi.advanceTimersByTime(1100)
+    })
+
+    // Now the layout should be visible
+    await waitFor(() => {
+      expect(screen.getByTestId("layout-grid")).toBeInTheDocument()
+    })
+
+    vi.useRealTimers()
   })
 })

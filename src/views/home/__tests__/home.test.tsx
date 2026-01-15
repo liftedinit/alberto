@@ -1,9 +1,4 @@
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-  within,
-} from "@testing-library/react"
+import { screen, waitFor, within } from "@testing-library/react"
 import { Home } from "views/home"
 import { renderChildren } from "test/render"
 import { addAccountToStore } from "test/account-store"
@@ -28,38 +23,27 @@ const mockAccount1 = {
   ),
 }
 
-// TODO: After multiple attempts, I don't know how to have this mock scoped to a single test.
-vi.mock("features/network/network-provider", async () => {
-  const actual = await vi.importActual("features/network/network-provider")
-  return {
-    ...actual,
-    useNetworkContext: () => ({
-      query: mockNetwork(),
-    }),
-  }
-})
+// Mock network provider
+vi.mock("features/network/network-provider", () => ({
+  useNetworkContext: () => ({
+    query: mockNetwork(),
+  }),
+}))
 
-vi.mock("@chakra-ui/media-query", () => {
-  const actual = vi.importActual("@chakra-ui/media-query")
-  return {
-    ...actual,
-    useBreakpointValue: vi.fn((values: any) => {
-      if (Array.isArray(values)) return values[0]
-      if (values && typeof values === "object") {
-        return values.base ?? values.sm ?? values.md ?? values.lg ?? values.xl
-      }
-      return values
-    }),
-  }
-})
+// Mock breakpoint hook
+vi.mock("@chakra-ui/media-query", () => ({
+  useBreakpointValue: vi.fn((values: any) => {
+    if (Array.isArray(values)) return values[0]
+    if (values && typeof values === "object") {
+      return values.base ?? values.sm ?? values.md ?? values.lg ?? values.xl
+    }
+    return values
+  }),
+}))
 
 describe("Home Tests", () => {
-  beforeEach(async () => {
+  beforeEach(() => {
     toast.closeAll()
-    const toasts = screen.queryAllByRole("listitem")
-    await Promise.all(toasts.map(toasts => waitForElementToBeRemoved(toasts)))
-
-    vi.resetModules()
     vi.resetAllMocks()
     vi.clearAllMocks()
   })

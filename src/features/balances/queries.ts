@@ -1,4 +1,4 @@
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import { Balances } from "@liftedinit/many-js"
 import { useLedgerInfo, useNetworkContext } from "features/network"
 import { Asset } from "./types"

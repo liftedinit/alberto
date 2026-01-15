@@ -6,7 +6,7 @@ import {
   Memo,
   Network,
 } from "@liftedinit/many-js"
-import { useMutation, useQuery, useQueryClient } from "react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import { arrayBufferToBase64 } from "@liftedinit/ui"
 
@@ -20,8 +20,8 @@ export function useCreateSendTxn() {
     unknown,
     Error,
     { from?: string; to: string; amount: bigint; symbol: string; memo?: Memo }
-  >(
-    async (vars: {
+  >({
+    mutationFn: async (vars: {
       from?: string
       to: string
       amount: bigint
@@ -30,14 +30,12 @@ export function useCreateSendTxn() {
     }) => {
       return network?.ledger.send(vars)
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["balances"])
-        queryClient.invalidateQueries(["events", "list"])
-        queryClient.invalidateQueries(["block", "get"])
-      },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["balances"] })
+      queryClient.invalidateQueries({ queryKey: ["events", "list"] })
+      queryClient.invalidateQueries({ queryKey: ["block", "get"] })
     },
-  )
+  })
 }
 
 const processRawEvents = (events?: Event[]) => {
@@ -172,8 +170,8 @@ export function useTransactionsList({
     } as IndexedEvents
   }
 
-  const { data, isError, error, isLoading } = useQuery<IndexedEvents, Error>(
-    [
+  const { data, isError, error, isLoading } = useQuery<IndexedEvents, Error>({
+    queryKey: [
       "events",
       "list",
       filters,
@@ -182,11 +180,9 @@ export function useTransactionsList({
       keymod,
       pageData,
     ],
-    fetchData,
-    {
-      enabled: Object.keys(filters).length > 0,
-    },
-  )
+    queryFn: fetchData,
+    enabled: Object.keys(filters).length > 0,
+  })
 
   const result = processRawEvents(data?.events)
 
@@ -233,9 +229,9 @@ export function useSingleTransactionList({ txId }: { txId?: ArrayBuffer }) {
 
   const networks = [activeNetwork, ...(legacyNetworks ?? [])]
 
-  const { data, isError, error, isLoading } = useQuery<Event[], Error>(
-    ["events", "list", txId],
-    async () => {
+  const { data, isError, error, isLoading } = useQuery<Event[], Error>({
+    queryKey: ["events", "list", txId],
+    queryFn: async () => {
       if (!txId) return []
       for (const network of networks) {
         const events = await fetchEvents({
@@ -250,7 +246,7 @@ export function useSingleTransactionList({ txId }: { txId?: ArrayBuffer }) {
 
       return []
     },
-  )
+  })
 
   const result = processRawEvents(data)
 
@@ -303,10 +299,10 @@ export function useAllTransactionsList({
     return accumulatedData
   }
 
-  const { data, isError, error, isLoading } = useQuery<Event[], Error>(
-    ["list", filters, activeNetwork, legacyNetworks],
-    fetchData,
-  )
+  const { data, isError, error, isLoading } = useQuery<Event[], Error>({
+    queryKey: ["list", filters, activeNetwork, legacyNetworks],
+    queryFn: fetchData,
+  })
 
   const result = processRawEvents(data)
 

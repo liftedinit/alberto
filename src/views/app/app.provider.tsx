@@ -1,12 +1,10 @@
 import { HashRouter } from "react-router-dom"
-import {
-  QueryClientProvider,
-  ThemeProvider,
-  queryClient,
-  theme,
-} from "@liftedinit/ui"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { ThemeProvider, theme } from "@liftedinit/ui"
 import { NetworkProvider } from "features/network"
 import { Web3authProvider } from "features/accounts"
+
+const queryClient = new QueryClient()
 
 type AppProviderProps = {
   children: React.ReactNode

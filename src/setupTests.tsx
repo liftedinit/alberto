@@ -1,5 +1,11 @@
 ;(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true
 import "@testing-library/jest-dom"
+import { cleanup } from "@testing-library/react"
+
+// Cleanup after each test
+afterEach(() => {
+  cleanup()
+})
 
 const matchMediaStub = (query: string) => {
   return {

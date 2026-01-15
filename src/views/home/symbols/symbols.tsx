@@ -12,9 +12,9 @@ import {
   Text,
   useDisclosure,
   useBreakpointValue,
-  cubePng,
   amountFormatter,
 } from "@liftedinit/ui"
+import cubePng from "@/assets/cube.png"
 import { Asset, useBalances } from "features/balances"
 import { SendAssetModal } from "features/transactions"
 

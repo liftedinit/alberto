@@ -1,4 +1,4 @@
-import { useMutation } from "react-query"
+import { useMutation } from "@tanstack/react-query"
 import { useNetworkContext } from "features/network"
 import {
   AccountFeatureTypes,
@@ -24,20 +24,22 @@ export function useCreateAccount() {
     CreateAccountResponse,
     Error,
     CreateAccountTokenMigrationFormData
-  >(async (vars: CreateAccountTokenMigrationFormData) => {
-    const name = vars.accountSettings.name
-    const roles = vars.accountSettings.owners.reduce(
-      (
-        acc: Map<string, string[]>,
-        owner: { address: string; roles: string[] },
-      ) => {
-        acc.set(owner.address, owner.roles)
-        return acc
-      },
-      new Map(),
-    )
-    const features = makeFeatures(vars.features, vars.featureSettings)
-    return await n?.account.create({ name, roles, features })
+  >({
+    mutationFn: async (vars: CreateAccountTokenMigrationFormData) => {
+      const name = vars.accountSettings.name
+      const roles = vars.accountSettings.owners.reduce(
+        (
+          acc: Map<string, string[]>,
+          owner: { address: string; roles: string[] },
+        ) => {
+          acc.set(owner.address, owner.roles)
+          return acc
+        },
+        new Map(),
+      )
+      const features = makeFeatures(vars.features, vars.featureSettings)
+      return await n?.account.create({ name, roles, features })
+    },
   })
 }
 

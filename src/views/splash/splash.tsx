@@ -1,4 +1,4 @@
-import { cubePng } from "@liftedinit/ui"
+import cubePng from "@/assets/cube.png"
 import "./splash.css"
 
 export function Splash() {

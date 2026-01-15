@@ -2,16 +2,18 @@ import "./polyfills"
 
 import { App, AppProvider } from "views"
 import React from "react"
-import ReactDOM from "react-dom"
+import { createRoot } from "react-dom/client"
 import reportWebVitals from "./reportWebVitals"
 
-ReactDOM.render(
+const container = document.getElementById("root")!
+const root = createRoot(container)
+
+root.render(
   <React.StrictMode>
     <AppProvider>
       <App />
     </AppProvider>
   </React.StrictMode>,
-  document.getElementById("root"),
 )
 
 reportWebVitals(console.log)

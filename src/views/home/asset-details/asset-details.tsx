@@ -6,8 +6,8 @@ import {
   Image,
   VStack,
   amountFormatter,
-  cubePng,
 } from "@liftedinit/ui"
+import cubePng from "@/assets/cube.png"
 import { TxnList } from "features/transactions"
 import { Asset } from "features/balances"
 

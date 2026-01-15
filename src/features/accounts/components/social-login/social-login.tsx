@@ -19,7 +19,7 @@ import {
 import { doesAccountExist, useAccountsStore } from "features/accounts"
 import React from "react"
 import { get, useForm } from "react-hook-form"
-import { useMutation, useQuery } from "react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 
 import { Ed25519KeyPairIdentity } from "@liftedinit/many-js"
 import {
@@ -226,8 +226,8 @@ function useWeb3auth() {
     },
     Error,
     { loginProvider: string; loginHint?: string; isEmailPasswordless: boolean }
-  >(
-    async ({
+  >({
+    mutationFn: async ({
       loginProvider,
       loginHint,
     }: {
@@ -252,12 +252,10 @@ function useWeb3auth() {
 
       return { privateKey, userInfo }
     },
-    {
-      onSettled: async () => {
-        await web3auth?.logout()
-      },
+    onSettled: async () => {
+      await web3auth?.logout()
     },
-  )
+  })
   return { query, mutation }
 }
 

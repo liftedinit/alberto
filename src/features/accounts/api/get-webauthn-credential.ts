@@ -1,4 +1,4 @@
-import { useMutation } from "react-query"
+import { useMutation } from "@tanstack/react-query"
 import { useNetworkContext } from "features/network"
 import { RecoverOptions } from "../types"
 
@@ -7,13 +7,13 @@ import { RecoverOptions } from "../types"
  */
 export function useGetWebauthnCredential() {
   const { query } = useNetworkContext()
-  return useMutation(
-    async ({ getFrom, value }: { getFrom: RecoverOptions; value: string }) => {
+  return useMutation({
+    mutationFn: async ({ getFrom, value }: { getFrom: RecoverOptions; value: string }) => {
       const getFn =
         getFrom === RecoverOptions.phrase
           ? query?.idStore.getFromRecallPhrase
           : query?.idStore.getFromAddress
       return await getFn(value)
     },
-  )
+  })
 }

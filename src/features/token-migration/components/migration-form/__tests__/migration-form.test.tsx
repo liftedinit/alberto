@@ -1,7 +1,7 @@
 import { MigrationForm } from "features/token-migration"
 import { renderChildren } from "test/render"
 import { useTransactionsList } from "features/transactions"
-import { screen } from "@testing-library/react"
+import { screen, fireEvent } from "@testing-library/react"
 import { useCombinedAccountInfo } from "features/accounts/queries"
 import userEvent from "@testing-library/user-event"
 import { act } from "react"
@@ -28,73 +28,57 @@ import {
   mockUseMigrationWhitelist,
 } from "features/token-migration/test-utils/mocks"
 
-vi.mock("features/accounts/queries", async () => {
-  const actual = await vi.importActual("features/accounts/queries")
-  return {
-    ...actual,
-    useCombinedAccountInfo: vi.fn(),
-  }
-})
+vi.mock("features/accounts/queries", () => ({
+  useCombinedAccountInfo: vi.fn(),
+}))
 
-vi.mock("features/transactions", async () => {
-  const actual = await vi.importActual("features/transactions")
-  return {
-    ...actual,
-    useTransactionsList: vi.fn(),
-    useCreateSendTxn: vi.fn(() => ({
-      mutateAsync: vi.fn(),
-    })),
-    useMultisigSubmitTransaction: vi.fn(() => ({
-      mutateAsync: vi.fn(),
-    })),
-  }
-})
+vi.mock("features/transactions", () => ({
+  useTransactionsList: vi.fn(),
+  useCreateSendTxn: vi.fn(() => ({
+    mutateAsync: vi.fn(),
+  })),
+  useMultisigSubmitTransaction: vi.fn(() => ({
+    mutateAsync: vi.fn(),
+  })),
+}))
 
-vi.mock("features/balances", async () => {
-  const actual = await vi.importActual("features/balances")
-  return {
-    ...actual,
-    useBalances: vi.fn(),
-  }
-})
+vi.mock("features/balances", () => ({
+  useBalances: vi.fn(),
+}))
 
 vi.mock("features/accounts", async () => {
-  const actual = await vi.importActual("features/accounts")
+  const actual = await vi.importActual<typeof import("features/accounts")>("features/accounts")
   return {
     ...actual,
     useAccountsStore: vi.fn(() => ({
       getId: vi.fn(),
     })),
     useGetAccountInfo: vi.fn(),
+    useMultisigSubmit: vi.fn(() => ({
+      mutate: vi.fn(),
+      mutateAsync: vi.fn(),
+    })),
   }
 })
 
 vi.mock("crypto", async () => {
-  const actual = await vi.importActual("crypto")
+  const actual = await vi.importActual<typeof import("crypto")>("crypto")
   return {
     ...actual,
-    randomUUID: vi.fn(),
+    randomUUID: vi.fn(() => mockUuid),
   }
 })
 
-vi.mock("features/network/queries", async () => {
-  const actual = await vi.importActual("features/network/queries")
-  return {
-    ...actual,
-    useGetBlock: vi.fn(),
-  }
-})
+vi.mock("features/network/queries", () => ({
+  useGetBlock: vi.fn(),
+}))
 
-vi.mock("features/token-migration/queries", async () => {
-  const actual = await vi.importActual("features/token-migration/queries")
-  return {
-    ...actual,
-    useMigrationWhitelist: vi.fn(),
-  }
-})
+vi.mock("features/token-migration/queries", () => ({
+  useMigrationWhitelist: vi.fn(),
+}))
 
 vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual("react-router-dom")
+  const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom")
   return {
     ...actual,
     useNavigate: vi.fn(),
@@ -130,12 +114,19 @@ const advanceFromAmountToDestinationStep = async () => {
   expect(options.length).toBe(1)
 
   const symbolField = screen.getByTestId("assetSymbol")
-  await act(
-    async () => await userEvent.selectOptions(symbolField, [mockAsset.symbol]),
-  )
 
-  const amountField = screen.getByTestId("assetAmount")
-  await act(async () => await userEvent.type(amountField, "1"))
+  // Use fireEvent for select to trigger onChange handler
+  await act(async () => {
+    fireEvent.change(symbolField, { target: { value: mockAsset.identity } })
+  })
+
+  // Wait for the balance to be displayed (indicates state has updated)
+  await screen.findByText(/Balance:\s*2/i)
+
+  // Click the "Max" button to set the value via Formik's setFieldValue
+  // This ensures validation uses the updated currentMaxAmount
+  const maxButton = screen.getByRole("button", { name: /max/i })
+  await act(async () => await userEvent.click(maxButton))
 }
 
 const advanceFromDestinationAddrToConfirmationStep = async () => {
@@ -383,7 +374,9 @@ describe("MigrationForm", () => {
       renderChildren(<MigrationForm />)
       await advanceStep("assetSymbol", advanceFromAddressToAmountStep)
       const symbolField = screen.getByTestId("assetSymbol")
-      await act(async () => await userEvent.selectOptions(symbolField, ["MFX"]))
+      await act(async () => {
+        fireEvent.change(symbolField, { target: { value: mockAsset.identity } })
+      })
       await advanceStep("error-assetAmount")
     })
     it("should display an error message when the asset symbol is selected and the balance is over the maximum", async () => {
