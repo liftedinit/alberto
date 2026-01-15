@@ -27,10 +27,10 @@ import {
   useToast,
   useDisclosure,
   VStack,
-  cubePng,
   amountFormatter,
   parseNumberToBigInt,
 } from "@liftedinit/ui"
+import cubePng from "@/assets/cube.png"
 import {
   accountMultisigFeature,
   MultisigSettingsFields,

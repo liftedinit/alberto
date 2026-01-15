@@ -1,4 +1,4 @@
-import { useQueries, useQuery } from "react-query"
+import { useQueries, useQuery } from "@tanstack/react-query"
 import { useNetworkContext } from "features/network"
 import {
   AccountFeatureTypes,
@@ -53,11 +53,11 @@ export function useGetAccountsInfo(accountAddresses: string[]) {
   const activeIdentity = useAccountsStore(s => s.byId.get(s.activeId))
   const address = activeIdentity?.address
 
-  return useQueries(
-    accountAddresses.map(accountAddress => ({
+  return useQueries({
+    queries: accountAddresses.map(accountAddress => ({
       queryKey: ["accountinfo", accountAddress],
       queryFn: () => fetchAccountInfo(n, accountAddress, address),
       enabled: Boolean(accountAddress),
     })),
-  )
+  })
 }

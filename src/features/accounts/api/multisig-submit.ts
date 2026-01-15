@@ -1,4 +1,4 @@
-import { useMutation } from "react-query"
+import { useMutation } from "@tanstack/react-query"
 import { useNetworkContext } from "features/network"
 import { EventType, Memo } from "@liftedinit/many-js"
 
@@ -14,7 +14,9 @@ type SubmitData = {
 }
 export function useMultisigSubmit() {
   const { command: n } = useNetworkContext()
-  return useMutation<undefined, Error, SubmitData>(async vars => {
-    return await n?.account.submitMultisigTxn(EventType.send, vars)
+  return useMutation<undefined, Error, SubmitData>({
+    mutationFn: async vars => {
+      return await n?.account.submitMultisigTxn(EventType.send, vars)
+    },
   })
 }

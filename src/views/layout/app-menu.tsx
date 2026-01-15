@@ -21,7 +21,7 @@ import {
   WalletOutlineIcon,
   useIsBaseBreakpoint,
 } from "@liftedinit/ui"
-import { logoSvg } from "@liftedinit/ui"
+import logoSvg from "@/assets/logo.svg"
 import { FaExchangeAlt } from "react-icons/fa" // TODO: This should be in @liftedinit/ui
 import { IconProps } from "@chakra-ui/react"
 

@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useNetworkContext } from "features/network"
 
 type MultisigDefaults = {
@@ -9,8 +9,8 @@ type MultisigDefaults = {
 export function useMultisigSetDefaults(account: string) {
   const { command: n } = useNetworkContext()
   const queryClient = useQueryClient()
-  return useMutation<undefined, Error, MultisigDefaults>(
-    async ({
+  return useMutation<undefined, Error, MultisigDefaults>({
+    mutationFn: async ({
       threshold,
       executeAutomatically,
       expireInSecs,
@@ -22,10 +22,8 @@ export function useMultisigSetDefaults(account: string) {
         expireInSecs,
       })
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["accountinfo", account])
-      },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["accountinfo", account] })
     },
-  )
+  })
 }

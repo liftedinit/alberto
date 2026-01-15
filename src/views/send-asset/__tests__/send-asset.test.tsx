@@ -7,18 +7,48 @@ import { MockEd25519KeyPairIdentity } from "../../../test/types"
 import { mockNetwork } from "../../../test/network-store"
 import { act } from "react"
 
-vi.mock("features/network/network-provider", async () => {
-  const actual = await vi.importActual("features/network/network-provider")
+// Mock SlideFade to bypass animation (renders content immediately)
+vi.mock("@liftedinit/ui", async () => {
+  const actual = await vi.importActual<typeof import("@liftedinit/ui")>("@liftedinit/ui")
   return {
     ...actual,
-    useNetworkContext: () => ({
-      query: mockNetwork(),
+    SlideFade: ({ children, in: inProp }: { children: React.ReactNode; in?: boolean }) =>
+      inProp !== false ? children : null,
+  }
+})
+
+// Mock network provider
+vi.mock("features/network/network-provider", () => ({
+  useNetworkContext: () => ({
+    query: mockNetwork(),
+  }),
+}))
+
+// Mock useBalances to provide data synchronously
+vi.mock("features/balances", async () => {
+  const actual = await vi.importActual<typeof import("features/balances")>("features/balances")
+  return {
+    ...actual,
+    useBalances: () => ({
+      data: {
+        allAssetsWithBalance: [
+          { identity: "mabc", symbol: "ABC", balance: BigInt(1000000) },
+          { identity: "mghi", symbol: "GHI", balance: BigInt(5000000) },
+        ],
+        ownedAssetsWithBalance: [
+          { identity: "mabc", symbol: "ABC", balance: BigInt(1000000) },
+          { identity: "mghi", symbol: "GHI", balance: BigInt(5000000) },
+        ],
+      },
+      isLoading: false,
+      isError: false,
     }),
   }
 })
 
+// Mock react-router-dom
 vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual("react-router-dom")
+  const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom")
   return {
     ...actual,
     useLocation: vi.fn(),

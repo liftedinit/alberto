@@ -15,10 +15,10 @@ import {
   Text,
   useDisclosure,
   VStack,
-  cubePng,
   useDebounce,
   amountFormatter,
 } from "@liftedinit/ui"
+import cubePng from "@/assets/cube.png"
 import { Asset } from "features/balances"
 
 export function AssetSelector({
