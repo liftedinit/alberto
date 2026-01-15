@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.0] - 2026-01-15
+
+### Miscellaneous Tasks
+
+- Bumps ([#178](https://github.com/liftedinit/alberto/issues/178))
+
 ## [0.5.1] - 2025-10-24
 
 ### Bug Fixes
