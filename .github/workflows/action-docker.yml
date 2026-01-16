@@ -17,7 +17,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build image
-      run: docker build -t lifted/alberto:${GITHUB_SHA} .
+      run: docker build --target production -t lifted/alberto:${GITHUB_SHA} .
 
     - name: Tag for latest
       run: docker tag lifted/alberto:${GITHUB_SHA} lifted/alberto:latest
