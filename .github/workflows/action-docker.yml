@@ -16,14 +16,11 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Build image
-      run: docker build --target production -t lifted/alberto:${GITHUB_SHA} .
-
-    - name: Tag for latest
-      run: docker tag lifted/alberto:${GITHUB_SHA} lifted/alberto:latest
-
-    - name: Push image
-      run: |
-        docker push lifted/alberto:${GITHUB_SHA}
-        docker push lifted/alberto:latest
-
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        push: true
+        tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/alberto:${{ github.sha }}
+          ${{ secrets.DOCKERHUB_USERNAME }}/alberto:latest
