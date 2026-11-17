@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.0] - 2026-11-17
+
+### Miscellaneous Tasks
+
+- Security updates ([#182](https://github.com/liftedinit/alberto/issues/182))
+
 ## [0.6.0] - 2026-01-15
 
 ### Miscellaneous Tasks
