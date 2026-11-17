@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.1] - 2026-11-17
+
+### CI
+
+- Move CI and releases to GitHub Actions ([#183](https://github.com/liftedinit/alberto/issues/183))
+
 ## [0.7.0] - 2026-11-17
 
 ### Miscellaneous Tasks
