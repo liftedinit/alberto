@@ -1,0 +1,52 @@
+name: Build artifacts
+permissions:
+  contents: read
+
+on:
+  workflow_call:
+    inputs:
+      release_id:
+        description: Identifier used in the artifact file names (a tag, a PR number or a branch name)
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Build ${{ matrix.app_env }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app_env: [staging, prod]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          # No dependency cache, so a cache entry can never stand in for the lockfile install.
+          package-manager-cache: false
+      - name: Install dependencies
+        run: npm ci
+      - name: Build ${{ matrix.app_env }} app
+        run: npm run build:${{ matrix.app_env }}
+      - name: Package artifact
+        env:
+          APP_ENV: ${{ matrix.app_env }}
+          RELEASE_ID: ${{ inputs.release_id }}
+          # On pull requests github.sha is the temporary merge commit, not the PR head.
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        # File names, archive layout and checksum format match the earlier CircleCI
+        # pipeline, so anything consuming release assets keeps working.
+        run: |
+          mkdir -p /tmp/artifacts
+          name="${APP_ENV}_${RELEASE_ID}_${COMMIT_SHA}"
+          tar -czf "/tmp/artifacts/alberto_${name}.tar.gz" ./build
+          sha1sum "/tmp/artifacts/alberto_${name}.tar.gz" > "/tmp/artifacts/shasum_${name}.txt"
+          cat "/tmp/artifacts/shasum_${name}.txt"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: alberto_${{ matrix.app_env }}
+          path: /tmp/artifacts/
+          if-no-files-found: error
